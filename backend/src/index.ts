@@ -1,4 +1,5 @@
 import koa from 'koa';
+import cors from '@koa/cors';
 
 const { ApolloServer, gql } = require('apollo-server-koa');
 // const { typeDefs, resolvers } = require('./schema');
@@ -44,6 +45,8 @@ const server = new ApolloServer({
 });
 
 const app = new koa();
+
+app.use(cors({origin: 'http://localhost:3000'}));
 
 server.applyMiddleware({ app });
 
