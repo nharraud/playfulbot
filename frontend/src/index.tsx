@@ -3,21 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {client} from './apolloConfig';
-
-import { gql } from '@apollo/client';
-client
-  .query({
-    query: gql`
-      query GetRates {
-        books {
-          title
-          author
-        }
-      }
-    `
-  })
-  .then(result => console.log(result));
 
 ReactDOM.render(
   <React.StrictMode>
