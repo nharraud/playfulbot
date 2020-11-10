@@ -18,8 +18,21 @@ const typeDefs = gql`
     myData: JSON
   }
 
+  type Cube {
+    id: ID
+    position: Coord3D
+    rotation: Coord3D
+  }
+
+  type Coord3D {
+    x: Int
+    y: Int
+    z: Int
+  }
+
   type Subscription {
     myDataPatched: JSON
+    gamePatch: JSON
   }
 
   # The "Query" type is special: it lists all of the available queries that
@@ -27,6 +40,7 @@ const typeDefs = gql`
   # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
     books: [Book]
+    cubes: [Cube]
   }
 `;
 
@@ -44,9 +58,20 @@ const books = [
   },
 ];
 
+const cubes = [
+  {
+    id: 0,
+    position: {x: 1, y: 1, z: 1},
+    rotation: {x: 0, y: 0, z: 0},
+  }
+];
+
 const pubsub = new PubSub();
 
 const MY_DATA_PATCHED = 'MY_DATA_PATCHED';
+
+
+const CUBES_CHANGED = 'CUBES_CHANGED';
 
 const resolvers = {
   Subscription: {
@@ -54,9 +79,14 @@ const resolvers = {
       // Additional event labels can be passed to asyncIterator creation
       subscribe: () => pubsub.asyncIterator([MY_DATA_PATCHED]),
     },
+    gamePatch: {
+      // Additional event labels can be passed to asyncIterator creation
+      subscribe: () => pubsub.asyncIterator([CUBES_CHANGED]),
+    },
   },
   Query: {
     books: () => books,
+    cubes: () => cubes,
   },
   JSON: GraphQLJSON,
 };
@@ -74,7 +104,18 @@ function intervalFunc() {
   counter += 1;
 }
 
+let counter2 = 0;
+function intervalFunc2() {
+  pubsub.publish(CUBES_CHANGED, {
+    gamePatch: [
+        { "op": "replace", "path": "/cubes/0/rotation/z", "value": counter2 },
+      ]
+  });
+  counter2 += 1;
+}
+
 setInterval(intervalFunc, 3000);
+setInterval(intervalFunc2, 3000);
 
 
 const server = new ApolloServer({

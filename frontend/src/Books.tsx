@@ -25,10 +25,10 @@ export function Books() {
     console.log("Redraw books");
     const { subscribeToMore, loading, error, data } = useQuery(BOOKS_QUERY);
 
-    const { data: patch, loading: subLoading } = useSubscription(
-        MY_DATA_PATCHED,
-        { }
-      );
+    // const { data: patch, loading: subLoading } = useSubscription(
+    //     MY_DATA_PATCHED,
+    //     { }
+    //   );
     useEffect(() => {
         const unsubscribe = subscribeToMore({
             document: MY_DATA_PATCHED,
@@ -82,7 +82,8 @@ export function Books() {
             //     </p>
             // </div>
             <Profiler id={`Book ${id}`} onRender={(...props)=> {console.log(props);}}>
-            <Book key={id} title={title} author={author} id={id}/>
+            {/* <Book key={id} title={title} author={author} id={id}/> */}
+            <MemoBook key={id} title={title} author={author} id={id}/>
             </Profiler>
             ))
         }
@@ -97,7 +98,8 @@ export function Books() {
     )
   }
 
-  export function Book(props) {
+  
+  function Book(props) {
       console.log(`redrawing ${props.id}`)
     return (<div key={props.id}>
         <p>
@@ -105,3 +107,5 @@ export function Books() {
         </p>
     </div>);
   }
+
+const MemoBook = React.memo(Book);
