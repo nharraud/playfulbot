@@ -1,8 +1,9 @@
 import React from 'react';
-import { useEffect, useRef, useContext } from 'react';
+import { useEffect, useRef, useContext, useState } from 'react';
 
 import { Canvas } from 'react-three-fiber';
 import { Color } from 'three';
+import { a, useSpring } from 'react-spring/three'
 
 import { applyPatch } from 'fast-json-patch';
 
@@ -24,6 +25,7 @@ const CUBES_QUERY = gql`
             y
             z
           }
+          color
         }
       }
     `;
@@ -61,40 +63,76 @@ function GameView() {
         updateQuery: (prev, { subscriptionData }) => {
             if (!subscriptionData.data) return prev;
             const patch = subscriptionData.data.gamePatch;
-            console.log(patch)
-            console.log(prev)
+            // console.log(patch)
+            // console.log(prev)
             const newDoc = applyPatch(prev, patch, false, false);
-            console.log(newDoc.newDocument);
+            // console.log(newDoc.newDocument);
             return newDoc.newDocument;
         }
     })
     return () => unsubscribe();
   }, [])
 
-
-  const mesh = useRef<any>();
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
-    const color = new Color("red")
   return (
     // <div/>
     <group>
     {
-      data.cubes.map(({ position, rotation, id }) => (
-      <mesh
-      key={id}
-        ref={mesh}
-        rotation={[-10,-10,rotation.z]}
-        position={[position.x,position.y,position.z]}
-      >
-        <boxBufferGeometry args={[1,1,1]} />
-        <meshLambertMaterial color={color}/> 
-        {/* <meshLambertMaterial color='blue'/>  */}
-      </mesh>
+      data.cubes.map(({ position, rotation, color, id }) => (
+        // <Box position={position} rotation={rotation} id={id} colorName={color}/>
+        <BoxMemo position={position} rotation={rotation} id={id} colorName={color}/>
+      // <a.mesh
+      // key={id}
+      //   ref={mesh}
+      //   rotation={[-10,-10,rotation.z]}
+      //   position={[position.x,position.y,position.z]}
+      //   scale={scale}
+      // >
+      //   <boxBufferGeometry args={[1,1,1]} />
+      //   <meshLambertMaterial color={color}/> 
+      //   {/* <meshLambertMaterial color='blue'/>  */}
+      // </a.mesh>
       ))
     }
     </group>
   );
 }
+
+function Box(props) {
+  console.log(`render ${props.id}`)
+  const [reverse, setReverse] = useState(false)
+
+  const { scale } = useSpring({
+    from: {
+      scale: [1,1,1],
+    },
+    to: {
+      scale: [2,1,1],
+    },
+    reverse: reverse,
+    onRest: () => {
+      console.log("Reverse!!!!!")
+      setReverse(!reverse)
+    },
+  })
+  const color = new Color(props.colorName)
+
+  // const mesh = useRef<any>();
+  return (
+    <a.mesh
+    key={props.id}
+      // ref={mesh}
+      rotation={[-10,-10,props.rotation.z]}
+      position={[props.position.x,props.position.y,props.position.z]}
+      scale={scale}
+    >
+      <boxBufferGeometry args={[1,1,1]} />
+      <meshLambertMaterial color={color}/> 
+      {/* <meshLambertMaterial color='blue'/>  */}
+    </a.mesh>
+  )
+}
+
+const BoxMemo = React.memo(Box);

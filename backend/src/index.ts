@@ -22,6 +22,7 @@ const typeDefs = gql`
     id: ID
     position: Coord3D
     rotation: Coord3D
+    color: String
   }
 
   type Coord3D {
@@ -63,6 +64,12 @@ const cubes = [
     id: 0,
     position: {x: 1, y: 1, z: 1},
     rotation: {x: 0, y: 0, z: 0},
+    color: "red",
+  }, {
+    id: 1,
+    position: {x: -1, y: -1, z: 1},
+    rotation: {x: 0, y: 0, z: 0},
+    color: "blue",
   }
 ];
 
@@ -111,11 +118,11 @@ function intervalFunc2() {
         { "op": "replace", "path": "/cubes/0/rotation/z", "value": counter2 },
       ]
   });
-  counter2 += 1;
+  counter2 += 0.1;
 }
 
 setInterval(intervalFunc, 3000);
-setInterval(intervalFunc2, 3000);
+setInterval(intervalFunc2, 100);
 
 
 const server = new ApolloServer({
