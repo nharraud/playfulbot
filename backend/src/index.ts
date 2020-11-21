@@ -1,128 +1,63 @@
 import koa from 'koa';
 import cors from '@koa/cors';
 
+import { init, actions } from "~team_builder/games/tictactoe";
+
 const { ApolloServer, gql, PubSub } = require('apollo-server-koa');
 const GraphQLJSON = require('graphql-type-json');
-// const { typeDefs, resolvers } = require('./schema');
 
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   scalar JSON
 
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    id: ID
-    title: String
-    author: String
-    myData: JSON
-  }
-
-  type Cube {
-    id: ID
-    position: Coord3D
-    rotation: Coord3D
-    color: String
-  }
-
-  type Coord3D {
-    x: Int
-    y: Int
-    z: Int
-  }
+  # type Mutation {
+  #   # TODO: add mutation to send game actions
+  # }
 
   type Subscription {
-    myDataPatched: JSON
     gamePatch: JSON
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
-    books: [Book]
-    cubes: [Cube]
+    game: JSON
   }
 `;
 
-
-const books = [
-  {
-    id: 0,
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    id: 1,
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-];
-
-const cubes = [
-  {
-    id: 0,
-    position: {x: 1, y: 1, z: 1},
-    rotation: {x: 0, y: 0, z: 0},
-    color: "red",
-  }, {
-    id: 1,
-    position: {x: -1, y: -1, z: 1},
-    rotation: {x: 0, y: 0, z: 0},
-    color: "blue",
-  }
-];
+const gameState = init();
 
 const pubsub = new PubSub();
 
-const MY_DATA_PATCHED = 'MY_DATA_PATCHED';
-
-
-const CUBES_CHANGED = 'CUBES_CHANGED';
+const GAME_STATE_CHANGED = 'GAME_STATE_CHANGED';
 
 const resolvers = {
   Subscription: {
-    myDataPatched: {
-      // Additional event labels can be passed to asyncIterator creation
-      subscribe: () => pubsub.asyncIterator([MY_DATA_PATCHED]),
-    },
     gamePatch: {
-      // Additional event labels can be passed to asyncIterator creation
-      subscribe: () => pubsub.asyncIterator([CUBES_CHANGED]),
+    subscribe: () => pubsub.asyncIterator([GAME_STATE_CHANGED]),
     },
   },
   Query: {
-    books: () => books,
-    cubes: () => cubes,
+    game: () => gameState,
   },
   JSON: GraphQLJSON,
 };
-let counter = 0;
-
-function intervalFunc() {
-  pubsub.publish(MY_DATA_PATCHED, {
-    myDataPatched: [
-        { "op": "replace", "path": "/books/0/title", "value": `Updated 1 ${counter}` },
-        // { "op": "replace", "path": "/books/1/title", "value": `Updated 2 ${counter}` },
-      // title: `Never Ending Story ${counter}`,
-      // author: `Infinite Loop ${counter}`,
-      ]
-  });
-  counter += 1;
-}
 
 let counter2 = 0;
 function intervalFunc2() {
-  pubsub.publish(CUBES_CHANGED, {
+  let symbol: string = "";
+  if (counter2 % 3 == 0) {
+    symbol = "x";
+  } else if (counter2 % 3 == 1) {
+    symbol = "o";
+  }
+  pubsub.publish(GAME_STATE_CHANGED, {
     gamePatch: [
-        { "op": "replace", "path": "/cubes/0/rotation/z", "value": counter2 },
+        { "op": "replace", "path": "/game/grid/0", "value": symbol },
       ]
   });
-  counter2 += 0.1;
+  counter2 += 1;
 }
-
-setInterval(intervalFunc, 3000);
-setInterval(intervalFunc2, 100);
+setInterval(intervalFunc2, 1000);
 
 
 const server = new ApolloServer({
