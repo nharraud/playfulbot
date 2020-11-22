@@ -2,22 +2,22 @@ import * as gameStateSchema from "./gameStateSchema.json";
 import * as fillSpaceActionSchema from "./fillSpaceActionSchema.json";
 import FillSpaceAction from "./FillSpaceAction";
 import GameState from "./GameState";
-import { ActionResult } from "~team_builder/Game"
+import { ActionResult, Action, ActionHandler } from "~team_builder/Game"
 
 // import typeDefs from "./graphql";
 
-function fillSpace(player: number, currentState: GameState, newState: GameState,
+function fillSpace(player: number, state: GameState,
                    action: FillSpaceAction): ActionResult {
-    newState.grid[action.space] = newState.players[player].symbol;
+    state.grid[action.space] = state.players[player].symbol;
     return new ActionResult();
 }
 
-const actions = {
+const actions: Map<string, Action<GameState, any>> = new Map(Object.entries({
     fillSpace: {
         schema: fillSpaceActionSchema,
         handler: fillSpace
     }
-}
+}));
 
 function init(): GameState {
     return {

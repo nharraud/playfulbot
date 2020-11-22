@@ -2,7 +2,11 @@ import React from 'react';
 import useGame from '../useGame';
 
 export default function TicTacToe() {
-    const { subscribeToMore, loading, error, data } = useGame();
+    const { playAction, loading, error, data } = useGame();
+
+    function fillSpace(idx) {
+      playAction("fillSpace", {space: idx})
+    }
   
     if (loading || error) return (
       
@@ -59,6 +63,7 @@ export default function TicTacToe() {
                   key={index}
                   rotation={[-10,-10,10]}
                   position={[index % 3 - 1.5, Math.ceil(-index / 3) + 1,0]}
+                  onClick={(event) => fillSpace(index)}
                 >
                   <boxBufferGeometry args={[0.1,0.1,0.1]} />
                   <meshLambertMaterial color={'white'}/> 

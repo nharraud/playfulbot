@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { applyPatch } from 'fast-json-patch';
-import { useQuery, useSubscription, gql } from '@apollo/client';
+import { useQuery, useMutation, gql } from '@apollo/client';
 
 export default function useGame() {
     const GAME_QUERY = gql`
@@ -22,13 +22,31 @@ export default function useGame() {
           updateQuery: (prev, { subscriptionData }) => {
               if (!subscriptionData.data) return prev;
               const patch = subscriptionData.data.gamePatch;
-              const newDoc = applyPatch(prev, patch, false, false);
-              return newDoc.newDocument;
+              const newDoc = applyPatch(prev.game, patch, false, false);
+              return { game: newDoc.newDocument };
           }
       })
       return () => unsubscribe();
     }, [])
-    return { subscribeToMore, loading, error, data };
+
+
+    const ACTION_MUTATION = gql`
+      mutation Play($action: String!, $data: JSON!) {
+        play(action: $action, data: $data)
+      }
+    `;
+
+    const [playMutation, result/*{ playLoading, playError }*/] = useMutation<any, any>(ACTION_MUTATION);
+
+    const playAction = useCallback(
+      (action, data) =>  {
+        console.log("Playing " + action)
+        playMutation({ variables: { action, data } });
+      }
+    , [playMutation]);
+
+
+    return { subscribeToMore, playAction, loading, error, data };
   }
   
   
