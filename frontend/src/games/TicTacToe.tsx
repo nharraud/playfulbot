@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import useGame from '../useGame';
+import Text from '../Text';
 
 export default function TicTacToe() {
     const { playAction, loading, error, data } = useGame();
@@ -7,9 +8,8 @@ export default function TicTacToe() {
     function fillSpace(idx) {
       playAction("fillSpace", {space: idx})
     }
-  
-    if (loading || error) return (
-      
+
+    const loadingWidget = (
       <mesh
         rotation={[-10,-10,10]}
         position={[0,0,0]}
@@ -17,12 +17,17 @@ export default function TicTacToe() {
         <boxBufferGeometry args={[1,1,1]} />
         <meshLambertMaterial color={'white'}/> 
       </mesh>
-    // <p>Loading...</p>;
-    )
+    );
+  
+    if (loading || error) return loadingWidget;
     console.log(data)
   
     return (
+      <Suspense fallback={loadingWidget}>
       <group>
+        <Text position={[-2.3,2,0]}>
+          Tic Tac Toe
+        </Text>
         {
           data.game.grid.map((cell, index) => {
             if (cell === "x") {
@@ -73,6 +78,7 @@ export default function TicTacToe() {
           })
         }
       </group>
+      </Suspense>
     );
   }
   
