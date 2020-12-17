@@ -61,7 +61,6 @@ export async function logoutResolver(parent: any, args: any, { koaContext, user 
 }
 
 
-
 export async function validateAuthToken(token: string, fingerprint: string) {
   try {
     const tokenData: any = await jwtVerifyAsync(token, SECRET_KEY);
