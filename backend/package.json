@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r tsconfig-paths/register src/index.ts"
+    "dev": "nodemon --inspect src/index.ts"
   },
   "author": "Nicolas Harraudeau",
   "dependencies": {
