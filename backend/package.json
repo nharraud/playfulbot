@@ -10,10 +10,14 @@
   "author": "Nicolas Harraudeau",
   "dependencies": {
     "@koa/cors": "^3.1.0",
+    "@types/bcrypt": "^3.0.0",
+    "@types/jsonwebtoken": "^8.5.0",
     "apollo-server-koa": "^2.19.0",
+    "bcrypt": "^5.0.0",
     "fast-json-patch": "^3.0.0-1",
     "graphql": "^15.4.0",
     "graphql-type-json": "^0.3.2",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.0.0"

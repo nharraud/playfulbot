@@ -1,8 +1,13 @@
 import koa from 'koa';
 import cors from '@koa/cors';
 
-const { ApolloServer, gql, PubSub } = require('apollo-server-koa');
-const GraphQLJSON = require('graphql-type-json');
+import Cookies from 'cookies';
+
+import {
+  ApolloServer, gql, PubSub, AuthenticationError
+} from 'apollo-server-koa';
+
+import GraphQLJSON from 'graphql-type-json';
 
 import * as jsonpatch from "fast-json-patch";
 
@@ -10,13 +15,32 @@ import { init, actions } from "~team_builder/games/tictactoe";
 
 import { UnknownAction } from "./Errors";
 
+import {
+  validateAuthToken, loginResolver, logoutResolver
+} from '~team_builder/resolvers/authentication';
+
+import { authenticatedUserResolver } from '~team_builder/resolvers/authenticatedUser';
+
+
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   scalar JSON
 
+  type User {
+    id: ID,
+    username: String
+  }
+
+  type LoginResult {
+    user: User,
+    token: String
+  }
+
   type Mutation {
     play(action: String!, data: JSON!): JSON
+    login(username: String!, password: String!): LoginResult
+    logout: Boolean
   }
 
   type Subscription {
@@ -25,6 +49,7 @@ const typeDefs = gql`
 
   type Query {
     game: JSON
+    authenticatedUser: User
   }
 `;
 
@@ -42,6 +67,7 @@ const resolvers = {
   },
   Query: {
     game: () => gameState,
+    authenticatedUser: authenticatedUserResolver
   },
   Mutation: {
     play: (parent: any, args: any, context: any, info: any) => {
@@ -58,37 +84,62 @@ const resolvers = {
       pubsub.publish(GAME_STATE_CHANGED, {
         gamePatch: patch
       });
-    }
+    },
+
+    login: loginResolver,
+    logout: logoutResolver
   },
   JSON: GraphQLJSON,
 };
 
-// let counter2 = 0;
-// function intervalFunc2() {
-//   let symbol: string = "";
-//   if (counter2 % 3 == 0) {
-//     symbol = "x";
-//   } else if (counter2 % 3 == 1) {
-//     symbol = "o";
-//   }
-//   pubsub.publish(GAME_STATE_CHANGED, {
-//     gamePatch: [
-//         { "op": "replace", "path": "/game/grid/0", "value": symbol },
-//       ]
-//   });
-//   counter2 += 1;
-// }
-// setInterval(intervalFunc2, 1000);
-
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async (params: any) => {
+
+    if (params.connection) {
+      // Request from a websocket. It has already been authenticated at connection time.
+      return {
+        user: params.connection.context.user
+      }
+    } else {
+      // HTTP request
+      const koaContext = params.ctx;
+
+      const headers = params.ctx?.req.headers;
+
+      if (headers.authorization) {
+        if (!headers.authorization.startsWith('Bearer '))
+          throw new AuthenticationError('Unsupported authorization');
+        const token = headers.authorization.split(' ')[1];
+        
+        const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
+        return {
+          koaContext: koaContext,
+          user: tokenData.user
+        }
+      }
+      return {
+        koaContext: koaContext
+      }
+    }
+  },
+  subscriptions: {
+    onConnect: async (connectionParams: any, webSocket: any, context: any) => {
+      const cookies = new Cookies(context.request, null);
+
+      if (!connectionParams.authToken) {
+        throw new AuthenticationError('Missing token.');
+      }
+      const tokenData = await validateAuthToken(connectionParams.authToken, cookies.get('JWTFingerprint'));
+      return Promise.resolve({ user: tokenData.user });
+    }
+  },
 });
 
 const app = new koa();
 
-app.use(cors({origin: 'http://localhost:3000'}));
+app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 
 server.applyMiddleware({ app });
 

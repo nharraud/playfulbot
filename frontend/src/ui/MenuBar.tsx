@@ -12,6 +12,8 @@ import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
+import { useAuthenticatedUser, useLogout } from '../hooksAndQueries/authenticatedUser';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -29,7 +31,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function MenuAppBar() {
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(true);
+  const { authenticatedUser } = useAuthenticatedUser();
+  const { logout } = useLogout();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -41,6 +44,10 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className={classes.root}>
       <AppBar position="sticky" elevation={0}>
@@ -49,9 +56,9 @@ export default function MenuAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Photos
+            Team Builder
           </Typography>
-          {auth && (
+          {authenticatedUser && (
             <div>
               <IconButton
                 aria-label="account of current user"
@@ -79,6 +86,7 @@ export default function MenuAppBar() {
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
           )}
