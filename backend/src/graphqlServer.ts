@@ -4,10 +4,10 @@ import {
   ApolloServer, gql, AuthenticationError
 } from 'apollo-server-koa';
 
-import { validateAuthToken } from '~team_builder/graphqlResolvers/authentication';
+import { validateAuthToken } from '~playfulbot/graphqlResolvers/authentication';
 
-import { typeDefs } from '~team_builder/graphqlSchema';
-import { resolvers } from '~team_builder/graphqlResolvers';
+import { typeDefs } from '~playfulbot/graphqlSchema';
+import { resolvers } from '~playfulbot/graphqlResolvers';
 
 
 export const apolloServer = new ApolloServer({

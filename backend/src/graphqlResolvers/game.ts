@@ -1,8 +1,8 @@
 import * as jsonpatch from 'fast-json-patch';
 
-import { init, actions } from '~team_builder/games/tictactoe';
+import { init, actions } from '~playfulbot/games/tictactoe';
 
-import { UnknownAction } from '~team_builder/Errors';
+import { UnknownAction } from '~playfulbot/Errors';
 
 import { PubSub } from 'apollo-server-koa';
 

@@ -2,7 +2,7 @@ import * as gameStateSchema from "./gameStateSchema.json";
 import * as fillSpaceActionSchema from "./fillSpaceActionSchema.json";
 import FillSpaceAction from "./FillSpaceAction";
 import GameState from "./GameState";
-import { ActionResult, Action, ActionHandler } from "~team_builder/Game"
+import { ActionResult, Action, ActionHandler } from "~playfulbot/Game"
 
 // import typeDefs from "./graphql";
 

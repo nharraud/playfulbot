@@ -2,10 +2,10 @@ import GraphQLJSON from 'graphql-type-json';
 
 import {
   loginResolver, logoutResolver
-} from '~team_builder/graphqlResolvers/authentication';
+} from '~playfulbot/graphqlResolvers/authentication';
 
-import { authenticatedUserResolver } from '~team_builder/graphqlResolvers/authenticatedUser';
-import { gamePatchResolver, playResolver, gameResolver } from '~team_builder/graphqlResolvers/game';
+import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
+import { gamePatchResolver, playResolver, gameResolver } from '~playfulbot/graphqlResolvers/game';
 
 
 export const resolvers = {

@@ -1,5 +1,5 @@
-import { ApolloContext } from '~team_builder/types/apolloTypes';
-import { users } from '~team_builder/Model/Users';
+import { ApolloContext } from '~playfulbot/types/apolloTypes';
+import { users } from '~playfulbot/Model/Users';
 
 export function authenticatedUserResolver(parent: any, args: any, { koaContext, user }: ApolloContext) {
   if (user) {

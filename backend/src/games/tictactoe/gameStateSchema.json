@@ -1,5 +1,5 @@
 {
-  "$id": "https://team_builder.com/tictactoe.schema.json",
+  "$id": "https://playfulbot.com/tictactoe.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "TicTacToe",
   "type": "object",

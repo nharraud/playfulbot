@@ -12,8 +12,8 @@ import bcrypt from 'bcrypt';
 import { AuthenticationError } from 'apollo-server-koa';
 
 
-import { ApolloContext } from '~team_builder/types/apolloTypes';
-import { users } from '~team_builder/Model/Users';
+import { ApolloContext } from '~playfulbot/types/apolloTypes';
+import { users } from '~playfulbot/Model/Users';
 
 
 

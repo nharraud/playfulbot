@@ -1,7 +1,7 @@
 import koa from 'koa';
 import cors from '@koa/cors';
 
-import { apolloServer } from '~team_builder/graphqlServer';
+import { apolloServer } from '~playfulbot/graphqlServer';
 
 
 const app = new koa();
