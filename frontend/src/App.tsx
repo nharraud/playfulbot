@@ -7,11 +7,13 @@ import {
   Link
 } from "react-router-dom";
 
+
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
 import logo from './logo.svg';
 import './App.css';
-import GameCanvas from './GameCanvas';
+import GameCanvas from './ui/Challenge/GameCanvas';
 import Login from './ui/Login';
 import Registration from './ui/Registration';
 
@@ -19,17 +21,19 @@ import { ApolloProvider } from '@apollo/client';
 import { client } from './apolloConfig';
 
 import MenuBar from './ui/MenuBar';
+import ChallengePage from './ui/Challenge/ChallengePage';
 
 function App() {
   return (
     <ApolloProvider client={client}>
+    <CssBaseline />
     <div className="App" style={{height:"100%",width:"100%"}}>
       <Router>
       <MenuBar/>
 
       <Switch>
-        <Route path="/game">
-          <GameCanvas/>
+        <Route path="/challenge">
+          <ChallengePage/>
         </Route>
         <Route path="/login">
           <Login/>
