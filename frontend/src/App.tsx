@@ -9,6 +9,7 @@ import {
 
 
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import logo from './logo.svg';
@@ -23,9 +24,16 @@ import { client } from './apolloConfig';
 import MenuBar from './ui/MenuBar';
 import ChallengePage from './ui/Challenge/ChallengePage';
 
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+  },
+});
+
 function App() {
   return (
     <ApolloProvider client={client}>
+    <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <div className="App" style={{height:"100%",width:"100%"}}>
       <Router>
@@ -46,6 +54,7 @@ function App() {
       
       </Router>
     </div>
+    </MuiThemeProvider>
     </ApolloProvider>
   );
 }
