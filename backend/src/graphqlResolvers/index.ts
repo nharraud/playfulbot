@@ -5,7 +5,7 @@ import {
 } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
-import { gamePatchResolver, playResolver, gameResolver } from '~playfulbot/graphqlResolvers/game';
+import { gamePatchResolver, playResolver, debugGameResolver, gameResolver } from '~playfulbot/graphqlResolvers/game';
 
 
 export const resolvers = {
@@ -14,6 +14,7 @@ export const resolvers = {
     },
     Query: {
       game: gameResolver,
+      debugGame: debugGameResolver,
       authenticatedUser: authenticatedUserResolver
     },
     Mutation: {

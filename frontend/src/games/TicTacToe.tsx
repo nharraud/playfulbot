@@ -1,12 +1,10 @@
 import React, { Suspense } from 'react';
-import useGame from '../useGame';
 import Text from '../Text';
 
-export default function TicTacToe() {
-    const { playAction, loading, error, data } = useGame();
+export default function TicTacToe(props) {
 
     function fillSpace(idx) {
-      playAction("fillSpace", {space: idx})
+      props.game.playAction("fillSpace", {space: idx})
     }
 
     const loadingWidget = (
@@ -19,9 +17,6 @@ export default function TicTacToe() {
       </mesh>
     );
   
-    if (loading || error) return loadingWidget;
-    console.log(data)
-  
     return (
       <Suspense fallback={loadingWidget}>
       <group>
@@ -29,7 +24,7 @@ export default function TicTacToe() {
           Tic Tac Toe
         </Text>
         {
-          data.game.grid.map((cell, index) => {
+          props.game.data.gameState.grid.map((cell, index) => {
             if (cell === "x") {
               return (
                 <group

@@ -8,7 +8,8 @@ import TicTacToe from '../../games/TicTacToe';
 import { getApolloContext } from '@apollo/client/react/context/ApolloContext';
 
 
-export default function GameCanvas() {
+export default function GameCanvas(props) {
+
   const apolloContext = getApolloContext()
   const aplloContextValue = useContext(getApolloContext())
   return (
@@ -16,7 +17,7 @@ export default function GameCanvas() {
     <color attach="background" args={[0,0,0]} />
     <pointLight position={[10, -10, 10]} />
     <apolloContext.Provider value={aplloContextValue}>
-      <TicTacToe/>
+      <TicTacToe game={props.game}/>
     </apolloContext.Provider>
   </Canvas>
   );

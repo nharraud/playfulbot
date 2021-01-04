@@ -5,16 +5,17 @@ const randomBytes = promisify(crypto.randomBytes);
 
 
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
-const jwtVerifyAsync = promisify(jwt.verify);
+const jwtVerifyAsync: any = promisify(jwt.verify);
 
 import bcrypt from 'bcrypt';
 
 import { AuthenticationError } from 'apollo-server-koa';
 
 
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
+import { ApolloContext, User } from '~playfulbot/types/apolloTypes';
 import { users } from '~playfulbot/Model/Users';
 
+import { JWTokenData } from '~playfulbot/types/token'
 
 
 const SECRET_KEY = 'secret!'
@@ -54,28 +55,29 @@ export async function loginResolver(parent: any, args: any, { koaContext }: Apol
 }
 
 
-export async function logoutResolver(parent: any, args: any, { koaContext, user }: ApolloContext) {
-  console.log(user)
+export async function logoutResolver(parent: any, args: any, { koaContext, userID }: ApolloContext) {
+  console.log(userID)
   koaContext.cookies.set('JWTFingerprint');
   return true;
 }
 
 
-export async function validateAuthToken(token: string, fingerprint: string) {
+export async function validateAuthToken(token: string, fingerprint?: string): Promise<JWTokenData> {
   try {
-    const tokenData: any = await jwtVerifyAsync(token, SECRET_KEY);
+    const tokenData: JWTokenData = await jwtVerifyAsync(token, SECRET_KEY);
 
-    const strFingerprint = fingerprint
-    if (!fingerprint) {
-      throw new AuthenticationError('Invalid authorization token: missing fingerprint.');
-    }
-    const hash = crypto.createHash('sha256');
-    hash.update(fingerprint);
-    const fingerprintHash = hash.digest('hex');
-    hash.end();
+    if (tokenData.JWTFingerprint) {
+      if (!fingerprint) {
+        throw new AuthenticationError('Invalid authorization token: missing fingerprint.');
+      }
+      const hash = crypto.createHash('sha256');
+      hash.update(fingerprint);
+      const fingerprintHash = hash.digest('hex');
+      hash.end();
 
-    if (fingerprintHash !== tokenData.JWTFingerprint) {
-      throw new AuthenticationError('Invalid authorization token: fingerprint doesn\'t match');
+      if (fingerprintHash !== tokenData.JWTFingerprint) {
+        throw new AuthenticationError('Invalid authorization token: fingerprint doesn\'t match');
+      }
     }
 
     return tokenData;
@@ -87,4 +89,11 @@ export async function validateAuthToken(token: string, fingerprint: string) {
     }
     throw e;
   }
+}
+
+export async function createPlayerToken(userID: string, playerNumber: number, gameID: string) {
+  return jwt.sign(
+    { user: userID, game: gameID, playerNumber: playerNumber},
+    SECRET_KEY,
+  );
 }

@@ -2,32 +2,61 @@ import { useCallback, useEffect } from 'react';
 import { applyPatch } from 'fast-json-patch';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
-export default function useGame() {
-    const GAME_QUERY = gql`
+export default function useGame(gameID: string, debug: boolean) {
+
+  let GAME_QUERY;
+  // if (!debug) {
+  //   GAME_QUERY = gql`
+  //     query GetGame {
+  //       game(gameID)
+  //     }
+  //   `;
+  // } else {
+    GAME_QUERY = gql`
       query GetGame {
-      game
+        debugGame {
+          id
+          players {
+            playerNumber, token
+          }
+          gameState
+          }
       }
-    `;
+  `;
+  // }
   
-    const MY_DATA_PATCHED = gql`
-      subscription onGameChanges {
-        gamePatch
-      }
-    `;
     const { subscribeToMore, loading, error, data } = useQuery(GAME_QUERY);
   
     useEffect(() => {
+      if (!data) {
+        return;
+      }
+
+      const gameID = data.debugGame?.id || data.game.id;
+      const MY_DATA_PATCHED = gql`
+        subscription onGameChanges($gameID: ID!) {
+          gamePatch(gameID: $gameID)
+        }
+      `;
       const unsubscribe = subscribeToMore({
           document: MY_DATA_PATCHED,
+          variables: { gameID: gameID },
           updateQuery: (prev, { subscriptionData }) => {
               if (!subscriptionData.data) return prev;
               const patch = subscriptionData.data.gamePatch;
-              const newDoc = applyPatch(prev.game, patch, false, false);
-              return { game: newDoc.newDocument };
+              if (debug) {
+                const newGame = { debugGame: { ...prev.debugGame } }
+                newGame.debugGame.gameState = applyPatch(prev.debugGame.gameState, patch, false, false).newDocument;
+                return newGame;
+              } else {
+                const newGame = { game: { ...prev.debugGame } }
+                newGame.game.gameState = applyPatch(prev.game.gameState, patch, false, false).newDocument;
+                return newGame;
+              }
           }
       })
       return () => unsubscribe();
-    }, [])
+    }, [data])
 
 
     const ACTION_MUTATION = gql`
@@ -46,7 +75,7 @@ export default function useGame() {
     , [playMutation]);
 
 
-    return { subscribeToMore, playAction, loading, error, data };
+    return { subscribeToMore, playAction, loading, error, data: data?.game || data?.debugGame };
   }
   
   

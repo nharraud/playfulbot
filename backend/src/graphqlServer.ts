@@ -18,7 +18,9 @@ export const apolloServer = new ApolloServer({
       if (params.connection) {
         // Request from a websocket. It has already been authenticated at connection time.
         return {
-          user: params.connection.context.user
+          user: params.connection.context.user,
+          game: params.connection.context?.game,
+          playerNumber: params.connection.context?.playerNumber
         }
       } else {
         // HTTP request
@@ -34,7 +36,9 @@ export const apolloServer = new ApolloServer({
           const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
           return {
             koaContext: koaContext,
-            user: tokenData.user
+            user: tokenData.user,
+            game: tokenData?.game,
+            playerNumber: tokenData?.playerNumber
           }
         }
         return {
@@ -50,7 +54,11 @@ export const apolloServer = new ApolloServer({
           throw new AuthenticationError('Missing token.');
         }
         const tokenData = await validateAuthToken(connectionParams.authToken, cookies.get('JWTFingerprint'));
-        return Promise.resolve({ user: tokenData.user });
+        return Promise.resolve({
+          user: tokenData.user,
+          game: tokenData?.game,
+          playerNumber: tokenData?.playerNumber
+        });
       }
     },
   });

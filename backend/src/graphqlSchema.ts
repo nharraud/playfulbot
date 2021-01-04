@@ -17,6 +17,18 @@ type LoginResult {
   token: String
 }
 
+type Player {
+  playerNumber: Int!
+  user: User!
+  token: String,
+}
+
+type Game {
+  id: ID
+  players: [Player!]!
+  gameState: JSON!
+}
+
 type Mutation {
   play(action: String!, data: JSON!): JSON
   login(username: String!, password: String!): LoginResult
@@ -24,11 +36,12 @@ type Mutation {
 }
 
 type Subscription {
-  gamePatch: JSON
+  gamePatch(gameID: ID!): JSON
 }
 
 type Query {
-  game: JSON
+  game(gameID: ID): Game
+  debugGame: Game
   authenticatedUser: User
 }
 `;
