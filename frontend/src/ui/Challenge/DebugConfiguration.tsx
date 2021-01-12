@@ -15,18 +15,5 @@ export default function DebugConfiguration(props) {
         <Dialog aria-labelledby="debug-configuration" open={true}>
         <DialogTitle id="debug-configuration">Configure bot debugging</DialogTitle>
         </Dialog>
-
-    //     <Modal
-    //     open={true}
-    //     aria-labelledby="simple-modal-title"
-    //     aria-describedby="simple-modal-description"
-    //     >
-    //         <p>This is a test</p>
-    //     </Modal>
-    // <Popper open={true} anchorEl={props.anchor}>
-    //     <Paper>
-    //         This is a test
-    //     </Paper>
-    // </Popper>
     );
 }

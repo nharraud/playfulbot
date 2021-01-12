@@ -7,6 +7,7 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 
 import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 
 const httpLink = new HttpLink({
@@ -42,19 +43,37 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 
-const wsLink = new WebSocketLink({
-  uri: `${process.env.REACT_APP_API_WEBSOCKET_URL}/graphql`,
-  options: {
-    reconnect: true,
-    lazy: true,
-    connectionParams: async () => {
-      const token = localStorage.getItem('token');
-      return {
-        authToken: token,
-      }
+// const wsLink = new WebSocketLink({
+//   uri: `${process.env.REACT_APP_API_WEBSOCKET_URL}/graphql`,
+//   options: {
+//     reconnect: true,
+//     lazy: true,
+//     connectionParams: async () => {
+//       const token = localStorage.getItem('token');
+//       return {
+//         authToken: token,
+//       }
+//     },
+//   }
+// });
+
+
+  const subscriptionClient = new SubscriptionClient(
+    `${process.env.REACT_APP_API_WEBSOCKET_URL}/graphql`,
+    {
+      reconnect: true,
+      lazy: true,
+      connectionParams: async () => {
+        const token = localStorage.getItem('token');
+        return {
+          authToken: token,
+        }
     },
-  }
-});
+  });
+  subscriptionClient.onError((err) => console.log('onError', { err }));
+  subscriptionClient.onConnected((args) => console.log(`Success ${JSON.stringify(args)}`));
+
+  const wsLink = new WebSocketLink(subscriptionClient);
 
 // The split function takes three parameters:
 //

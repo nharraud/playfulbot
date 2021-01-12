@@ -16,10 +16,6 @@ import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   box: {
-    // height: `calc(100vh - 100px)`
-    // flex: 1,
-    // flexFlow: 'column',
-    // height: '100vh',
     flex: "1 1 auto",
     display: 'flex',
     flexFlow: 'column',
@@ -45,7 +41,6 @@ export default function Debug() {
   const loadingWidget = <CircularProgress />
   return (
     <Box className={classes.box} style={{overflow: 'hidden'}}>
-    {/* <div style={{display: 'flex', flex: '1 1 auto', overflow: 'hidden'}}> */}
       <Suspense fallback={loadingWidget}>
         {content}
       </Suspense>

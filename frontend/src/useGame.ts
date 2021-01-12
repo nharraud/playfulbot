@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { applyPatch } from 'fast-json-patch';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, useMutation, gql, ApolloError } from '@apollo/client';
+import { ErrorSharp } from '@material-ui/icons';
 
 export default function useGame(gameID: string, debug: boolean) {
 
@@ -20,12 +21,12 @@ export default function useGame(gameID: string, debug: boolean) {
             playerNumber, token
           }
           gameState
-          }
+        }
       }
   `;
   // }
   
-    const { subscribeToMore, loading, error, data } = useQuery(GAME_QUERY);
+    const { subscribeToMore, loading, error, data, refetch } = useQuery(GAME_QUERY);
   
     useEffect(() => {
       if (!data) {
@@ -35,33 +36,55 @@ export default function useGame(gameID: string, debug: boolean) {
       const gameID = data.debugGame?.id || data.game.id;
       const MY_DATA_PATCHED = gql`
         subscription onGameChanges($gameID: ID!) {
-          gamePatch(gameID: $gameID)
+          gamePatch(gameID: $gameID) {
+            gameID, version, patch
+          }
         }
       `;
+
       const unsubscribe = subscribeToMore({
           document: MY_DATA_PATCHED,
           variables: { gameID: gameID },
           updateQuery: (prev, { subscriptionData }) => {
               if (!subscriptionData.data) return prev;
-              const patch = subscriptionData.data.gamePatch;
-              if (debug) {
-                const newGame = { debugGame: { ...prev.debugGame } }
-                newGame.debugGame.gameState = applyPatch(prev.debugGame.gameState, patch, false, false).newDocument;
-                return newGame;
-              } else {
-                const newGame = { game: { ...prev.debugGame } }
-                newGame.game.gameState = applyPatch(prev.game.gameState, patch, false, false).newDocument;
-                return newGame;
+              const patch = subscriptionData.data.gamePatch.patch;
+              const queryRoot = debug ? 'debugGame' : 'game';
+              if (subscriptionData.data.gamePatch.version > prev[queryRoot].version ||
+                  subscriptionData.data.gamePatch.gameID !== prev[queryRoot].id) {
+                refetch();
+                return prev;
               }
+              const newGame = {}
+              newGame[queryRoot] = { ...prev[queryRoot] }
+              newGame[queryRoot].gameState = applyPatch(prev[queryRoot].gameState, patch, false, false).newDocument;
+              console.log(newGame[queryRoot].gameState)
+              newGame[queryRoot].version = subscriptionData.data.gamePatch.version
+              return newGame;
+          },
+          onError(error: ApolloError) {
+            if (!error.graphQLErrors) {
+              throw error;
+            }
+            let haneledErrors = 0;
+            for (const err of error.graphQLErrors) {
+              if (err.extensions?.code === 'NOT_FOUND') {
+                refetch()
+                haneledErrors += 1;
+              }
+            }
+            if (error.graphQLErrors.length !== haneledErrors) {
+              throw error;
+            }
           }
       })
       return () => unsubscribe();
-    }, [data])
+    }, [loading, error, data?.debugGame?.id, data?.game?.id])
 
+    const gameData = data?.game || data?.debugGame;
 
     const ACTION_MUTATION = gql`
-      mutation Play($action: String!, $data: JSON!) {
-        play(action: $action, data: $data)
+      mutation Play($gameID: ID!, $player: Int!, $action: String!, $data: JSON!) {
+        play(gameID: $gameID, player: $player, action: $action, data: $data)
       }
     `;
 
@@ -69,13 +92,14 @@ export default function useGame(gameID: string, debug: boolean) {
 
     const playAction = useCallback(
       (action, data) =>  {
-        console.log("Playing " + action)
-        playMutation({ variables: { action, data } });
+        console.log("Playing " + action);
+        const player = gameData.gameState.players.findIndex((player) => player.playing);
+        playMutation({ variables: { gameID: gameData.id, player: player, action, data } });
       }
-    , [playMutation]);
+    , [playMutation, data]);
 
 
-    return { subscribeToMore, playAction, loading, error, data: data?.game || data?.debugGame };
+    return { subscribeToMore, playAction, loading, error, data: gameData };
   }
   
   

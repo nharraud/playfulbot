@@ -25,18 +25,26 @@ type Player {
 
 type Game {
   id: ID
+  version: Int!
   players: [Player!]!
   gameState: JSON!
 }
 
+type GamePatch {
+  patch: JSON!
+  gameID: ID!
+  version: Int!
+}
+
 type Mutation {
-  play(action: String!, data: JSON!): JSON
+  play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
   login(username: String!, password: String!): LoginResult
   logout: Boolean
+  newDebugGame: Game
 }
 
 type Subscription {
-  gamePatch(gameID: ID!): JSON
+  gamePatch(gameID: ID!): GamePatch
 }
 
 type Query {

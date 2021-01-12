@@ -2,10 +2,8 @@ import * as gameStateSchema from "./gameStateSchema.json";
 import * as fillSpaceActionSchema from "./fillSpaceActionSchema.json";
 import FillSpaceAction from "./FillSpaceAction";
 import GameState from "./GameState";
-import { /*ActionResult,*/ Action, ActionHandler } from "~playfulbot/Game"
+import { Action, ActionHandler } from "~playfulbot/Game"
 import { IllegalPlayAction } from "~playfulbot/Errors";
-
-// import typeDefs from "./graphql";
 
 function findWinner(grid: string[]): string {
     for (const idx of [0, 1, 2]) {
@@ -26,7 +24,7 @@ function findWinner(grid: string[]): string {
 }
 
 function fillSpace(player: number, state: GameState,
-                   action: FillSpaceAction)/*: ActionResult*/ {
+                   action: FillSpaceAction) {
     if (state.grid[action.space]) {
         throw new IllegalPlayAction("Space already filled."); 
     }
@@ -48,7 +46,6 @@ function fillSpace(player: number, state: GameState,
     }
 
     state.players[(player + 1) % 2].playing = true
-    // return new ActionResult();
 }
 
 const actions: Map<string, Action<GameState, any>> = new Map(Object.entries({
@@ -62,7 +59,7 @@ function init(): GameState {
     return {
         end: false,
         grid: [
-            "x", "o", "",
+            "", "", "",
             "", "", "",
             "", "", "",
         ],
