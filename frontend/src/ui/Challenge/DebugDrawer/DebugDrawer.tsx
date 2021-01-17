@@ -66,7 +66,7 @@ export default function DebugDrawer(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-          <DebugStatusTab game={props.game} />
+          <DebugStatusTab createDebugGame={props.createDebugGame} game={props.game} />
       </TabPanel>
     </div>
   );

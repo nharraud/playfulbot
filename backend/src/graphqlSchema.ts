@@ -38,18 +38,25 @@ type GamePatch {
 
 type Mutation {
   play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
+  createNewDebugGame: DebugGame
+
   login(username: String!, password: String!): LoginResult
   logout: Boolean
-  newDebugGame: Game
+}
+
+type DebugGame {
+  id: ID!
+  game: Game
 }
 
 type Subscription {
   gamePatch(gameID: ID!): GamePatch
+  debugGameChanges: DebugGame
 }
 
 type Query {
   game(gameID: ID): Game
-  debugGame: Game
+  debugGame: DebugGame
   authenticatedUser: User
 }
 `;

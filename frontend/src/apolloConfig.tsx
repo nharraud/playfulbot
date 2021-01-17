@@ -72,6 +72,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   });
   subscriptionClient.onError((err) => console.log('onError', { err }));
   subscriptionClient.onConnected((args) => console.log(`Success ${JSON.stringify(args)}`));
+  subscriptionClient.onReconnected((args) => client.resetStore());
 
   const wsLink = new WebSocketLink(subscriptionClient);
 

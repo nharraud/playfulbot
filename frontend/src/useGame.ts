@@ -1,105 +1,136 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { applyPatch } from 'fast-json-patch';
-import { useQuery, useMutation, gql, ApolloError } from '@apollo/client';
-import { ErrorSharp } from '@material-ui/icons';
+import { useQuery, useMutation, useSubscription, gql } from '@apollo/client';
 
-export default function useGame(gameID: string, debug: boolean) {
-
-  let GAME_QUERY;
-  // if (!debug) {
-  //   GAME_QUERY = gql`
-  //     query GetGame {
-  //       game(gameID)
-  //     }
-  //   `;
-  // } else {
-    GAME_QUERY = gql`
-      query GetGame {
-        debugGame {
+export default function useDebugGame() {
+  const GAME_QUERY = gql`
+    query GetGame {
+      debugGame {
+        id
+        game {
           id
+          version,
           players {
             playerNumber, token
           }
           gameState
         }
       }
+    }
   `;
-  // }
-  
-    const { subscribeToMore, loading, error, data, refetch } = useQuery(GAME_QUERY);
-  
-    useEffect(() => {
-      if (!data) {
-        return;
-      }
 
-      const gameID = data.debugGame?.id || data.game.id;
-      const MY_DATA_PATCHED = gql`
-        subscription onGameChanges($gameID: ID!) {
-          gamePatch(gameID: $gameID) {
-            gameID, version, patch
-          }
+  const { loading, error, data } = useQuery(GAME_QUERY);
+  useGameSubscription(data?.debugGame?.game?.id);
+
+  const playAction = usePlayAction(data?.debugGame.game);
+  const createDebugGame = useCreateDebugGame();
+
+  return { playAction, createDebugGame, loading, error, data: data?.debugGame.game };
+}
+
+function useGameSubscription(gameID: string) {
+
+  const GAME_PATCH_SUBSCRIPTION = gql`
+    subscription onGameChanges($gameID: ID!) {
+      gamePatch(gameID: $gameID) {
+        gameID, version, patch
+      }
+    }
+  `;
+
+  useSubscription(GAME_PATCH_SUBSCRIPTION, {
+    variables: { gameID: gameID },
+    skip: !gameID,
+    shouldResubscribe: true,
+    onSubscriptionData: ({ subscriptionData, client }) => {
+      if (subscriptionData.error) {
+        console.log(subscriptionData.error); // never called
+      } else if (subscriptionData.data) {
+        const { patch, version } = subscriptionData.data.gamePatch;
+        const fullGameID = `Game:${gameID}`;
+        const currentGame = client.readFragment({
+          id: fullGameID,
+          fragment: gql`
+            fragment PatchedGame on Game {
+              version
+              gameState
+            }
+          `,
+        });
+
+        if (version !== currentGame.version + 1) {
+          client.cache.evict({ id: fullGameID })
+          return;
         }
-      `;
 
-      const unsubscribe = subscribeToMore({
-          document: MY_DATA_PATCHED,
-          variables: { gameID: gameID },
-          updateQuery: (prev, { subscriptionData }) => {
-              if (!subscriptionData.data) return prev;
-              const patch = subscriptionData.data.gamePatch.patch;
-              const queryRoot = debug ? 'debugGame' : 'game';
-              if (subscriptionData.data.gamePatch.version > prev[queryRoot].version ||
-                  subscriptionData.data.gamePatch.gameID !== prev[queryRoot].id) {
-                refetch();
-                return prev;
-              }
-              const newGame = {}
-              newGame[queryRoot] = { ...prev[queryRoot] }
-              newGame[queryRoot].gameState = applyPatch(prev[queryRoot].gameState, patch, false, false).newDocument;
-              console.log(newGame[queryRoot].gameState)
-              newGame[queryRoot].version = subscriptionData.data.gamePatch.version
-              return newGame;
+        const newGameState = applyPatch(currentGame.gameState, patch, false, false).newDocument;
+
+        client.writeFragment({
+          id: fullGameID,
+          fragment: gql`
+            fragment PatchedGame on Game {
+              gameState
+            }
+          `,
+          data: {
+            gameState: newGameState,
+            version: version
           },
-          onError(error: ApolloError) {
-            if (!error.graphQLErrors) {
-              throw error;
-            }
-            let haneledErrors = 0;
-            for (const err of error.graphQLErrors) {
-              if (err.extensions?.code === 'NOT_FOUND') {
-                refetch()
-                haneledErrors += 1;
-              }
-            }
-            if (error.graphQLErrors.length !== haneledErrors) {
-              throw error;
-            }
+        });
+      }
+    },
+  });
+}
+
+function usePlayAction(game) {
+
+  const ACTION_MUTATION = gql`
+    mutation Play($gameID: ID!, $player: Int!, $action: String!, $data: JSON!) {
+      play(gameID: $gameID, player: $player, action: $action, data: $data)
+    }
+  `;
+
+  const [playMutation, result/*{ playLoading, playError }*/] = useMutation<any, any>(ACTION_MUTATION);
+
+  const playAction = useCallback(
+    (action, data) =>  {
+      console.log("Playing " + action);
+      const player = game.gameState.players.findIndex((player) => player.playing);
+      playMutation({ variables: { gameID: game.id, player: player, action, data } });
+    }
+  , [playMutation, game]);
+
+  return playAction;
+}
+
+
+function useCreateDebugGame() {
+
+  const NEW_DEBUG_GAME_MUTATION = gql`
+    mutation CreateNewDebugGame {
+      createNewDebugGame {
+        id
+        game {
+          id
+          version,
+          players {
+            playerNumber, token
           }
-      })
-      return () => unsubscribe();
-    }, [loading, error, data?.debugGame?.id, data?.game?.id])
-
-    const gameData = data?.game || data?.debugGame;
-
-    const ACTION_MUTATION = gql`
-      mutation Play($gameID: ID!, $player: Int!, $action: String!, $data: JSON!) {
-        play(gameID: $gameID, player: $player, action: $action, data: $data)
+          gameState
+        }
       }
-    `;
+    }
+  `;
 
-    const [playMutation, result/*{ playLoading, playError }*/] = useMutation<any, any>(ACTION_MUTATION);
+  const [createNewDebugGameMutation, newDebugGame/*{ playLoading, playError }*/] = useMutation<any, any>(NEW_DEBUG_GAME_MUTATION);
 
-    const playAction = useCallback(
-      (action, data) =>  {
-        console.log("Playing " + action);
-        const player = gameData.gameState.players.findIndex((player) => player.playing);
-        playMutation({ variables: { gameID: gameData.id, player: player, action, data } });
-      }
-    , [playMutation, data]);
+  console.log(newDebugGame);
+  const createDebugGame = useCallback(
+    () =>  {
+      console.log("Creating new debug game");
+      createNewDebugGameMutation();
+    }
+  , [createNewDebugGameMutation]);
 
-
-    return { subscribeToMore, playAction, loading, error, data: gameData };
-  }
-  
-  
+  return createDebugGame;
+}

@@ -1,67 +1,77 @@
 import * as jsonpatch from 'fast-json-patch';
 
-import { init, actions } from '~playfulbot/games/tictactoe';
+import { actions } from '~playfulbot/games/tictactoe';
 
-import { UnknownAction, NotFoundError } from '~playfulbot/Errors';
+import { UnknownAction, GameNotFoundError } from '~playfulbot/Errors';
 
-import { ApolloError, ForbiddenError, PubSub } from 'apollo-server-koa';
+import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 
 import { ApolloContext } from '~playfulbot/types/apolloTypes'
-
-import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication'
 
 import { GameState } from '~playfulbot/gameState/types'
 
 import { PlayingOutOfTurn } from '~playfulbot/Errors'
 
-import { v4 as uuidv4 } from 'uuid';
+import { Game, DebugGame, NoDebugGame, DebugGameResult, User } from '~playfulbot/types/graphql'
 
-
-const gameState: GameState = init();
+import { getGame, getDebugGame, createNewDebugGame } from '~playfulbot/Model/Games'
 
 const pubsub = new PubSub();
 
 const GAME_STATE_CHANGED = 'GAME_STATE_CHANGED';
+const DEBUG_GAME_CHANGED = 'DEBUG_GAME_CHANGED';
 
-function newGame() {
-  const id = uuidv4()
-  return {
-    id: id,
-    version: 0,
-    players: [
-      {playerNumber: 0, user: '1', token: createPlayerToken('1', 0, id)},
-      {playerNumber: 1, user: '1', token: createPlayerToken('1', 1, id)}
-    ],
-    gameState
-  }
-}
-
-const games: any = {}
-let debugGame = newGame();
-games[debugGame.id] = debugGame
-
-export function gameResolver(_: any, __: any, ctx: ApolloContext)  {
+export function gameResolver(_: any, __: any, ctx: ApolloContext): Game<GameState> {
   if (!ctx.game) {
-    throw new Error("No game ID");
+    throw new UserInputError('No game ID provided');
   }
-  return games[ctx.game];
+  const game = getGame(ctx.game);
+  if (!game) {
+    throw new GameNotFoundError();
+  }
+  return game;
 }
 
 
-export function debugGameResolver(_: any, __: any, ctx: ApolloContext)  {
+export async function debugGameResolver(_: any, __: any, ctx: ApolloContext): Promise<DebugGameResult> {
+  let debugGame = getDebugGame();
+  if (!debugGame) {
+    await createNewDebugGame()
+    debugGame = getDebugGame();
+  }
+  if (debugGame) {
+    return debugGame;
+  }
+  return new NoDebugGame();
+}
+
+export async function createNewDebugGameResolver(_: any, __: any, ctx: ApolloContext): Promise<DebugGame> {
+  const debugGame = await createNewDebugGame();
+  pubsub.publish(DEBUG_GAME_CHANGED, debugGame);
   return debugGame;
+}
+
+export const DebugGameChangesResolver = {
+  subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
+    return pubsub.asyncIterator([DEBUG_GAME_CHANGED])
+  },
 }
 
 export const gamePatchResolver = {
   subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
-    console.log(JSON.stringify(args))
-    if (!(args.gameID in games)) {
-      throw new NotFoundError('Game not found');
+    const game = getGame(args.gameID);
+    if (!game) {
+      throw new GameNotFoundError();
     }
     return pubsub.asyncIterator([GAME_STATE_CHANGED])
   },
 }
 
+export const debugGameChangesResolver = {
+  subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
+    return pubsub.asyncIterator([DEBUG_GAME_CHANGED])
+  },
+}
 
 export function playResolver(parent: any, args: any, context: ApolloContext, info: any) {
   console.log("playing " + args.action)
@@ -70,15 +80,16 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
   if (context.game && context.game !== args.gameID) {
     throw new ForbiddenError('Not allowed to play to this game.');
   }
-  const game = games[args.gameID];
+  const game = getGame(args.gameID);
 
   if (args.player < 0 || args.player >= game.players.length) {
     throw new ApolloError(`Game does not have player ${args.player}.`);
   }
   const player = game.players[args.player];
+  const playerState = game.gameState.players[args.player];
 
   if ((context.playerNumber && context.playerNumber !== args.player) ||
-      context.userID === player.user) {
+      context.userID === player.user.id) {
     throw new ForbiddenError(`Not allowed to play as player ${args.player}.`);
   }
 
@@ -91,7 +102,7 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
   }
   const observer = jsonpatch.observe<object>(gameState);
 
-  if (player.playing) {
+  if (!playerState.playing) {
     throw new PlayingOutOfTurn();
   }
   gameAction.handler(player.playerNumber, gameState as any, args.data);

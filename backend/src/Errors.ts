@@ -11,3 +11,9 @@ export class NotFoundError extends ApolloError {
     super(message, 'NOT_FOUND', additionalProperties)
   }
 }
+
+export class GameNotFoundError extends NotFoundError {
+  constructor() {
+    super('Game not found')
+  }
+}

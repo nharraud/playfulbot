@@ -8,7 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
-import useGame from '../../useGame';
+import useDebugGame from '../../useGame';
 
 
 import Button from '@material-ui/core/Button';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Debug() {
   const classes = useStyles();
 
-  const { playAction, loading, error, data } = useGame(null, true);
+  const { playAction, createDebugGame, loading, error, data } = useDebugGame();
   const gameProps = { playAction, data };
   const ref = React.createRef();
   let content = null;
@@ -34,7 +34,7 @@ export default function Debug() {
     content = (
       <>
         <GameCanvas game={gameProps}/>
-        <DebugBottomDrawer game={gameProps}/>
+        <DebugBottomDrawer createDebugGame={createDebugGame} game={gameProps}/>
       </>
     )
   }

@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 import CopyToClipboardButton from '../../../utils/CopyToClipboardButton';
 
@@ -28,6 +29,10 @@ export default function DebugStatusTab(props) {
 
   let players = null;
   players = (
+    <>
+    <Button variant="contained" size="small" color="primary" onClick={props.createDebugGame}>
+      Create New Debug Game
+    </Button>
     <TableContainer component={Paper}>
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
@@ -56,6 +61,7 @@ export default function DebugStatusTab(props) {
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   )
   
   return (
