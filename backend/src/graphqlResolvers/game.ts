@@ -1,16 +1,13 @@
 import * as jsonpatch from 'fast-json-patch';
 
+import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 import { actions } from '~playfulbot/games/tictactoe';
 
-import { UnknownAction, GameNotFoundError } from '~playfulbot/Errors';
-
-import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
+import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/Errors';
 
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
 import { GameState } from '~playfulbot/gameState/types';
-
-import { PlayingOutOfTurn } from '~playfulbot/Errors';
 
 import { Game, DebugGame, NoDebugGame, DebugGameResult, User } from '~playfulbot/types/graphql';
 
@@ -59,9 +56,8 @@ export async function createNewDebugGameResolver(
 }
 
 export const DebugGameChangesResolver = {
-  subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
-    return pubsub.asyncIterator([DEBUG_GAME_CHANGED]);
-  },
+  subscribe: (model: any, args: any, context: ApolloContext, info: any) =>
+    pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
 };
 
 export const gamePatchResolver = {
@@ -75,13 +71,12 @@ export const gamePatchResolver = {
 };
 
 export const debugGameChangesResolver = {
-  subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
-    return pubsub.asyncIterator([DEBUG_GAME_CHANGED]);
-  },
+  subscribe: (model: any, args: any, context: ApolloContext, info: any) =>
+    pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
 };
 
 export function playResolver(parent: any, args: any, context: ApolloContext, info: any) {
-  console.log('playing ' + args.action);
+  console.log(`playing ${args.action}`);
   console.log(JSON.stringify(args.data));
 
   if (context.game && context.game !== args.gameID) {
@@ -104,7 +99,7 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
 
   const gameAction = actions.get(args.action);
 
-  const gameState: GameState = game.gameState;
+  const { gameState } = game;
 
   if (!gameAction) {
     throw new UnknownAction(args.action);

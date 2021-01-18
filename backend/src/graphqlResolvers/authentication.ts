@@ -1,10 +1,8 @@
 import { promisify } from 'util';
 
 import crypto from 'crypto';
-const randomBytes = promisify(crypto.randomBytes);
 
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
-const jwtVerifyAsync: any = promisify(jwt.verify);
 
 import bcrypt from 'bcrypt';
 
@@ -14,6 +12,9 @@ import { ApolloContext, User } from '~playfulbot/types/apolloTypes';
 import { users } from '~playfulbot/Model/Users';
 
 import { JWTokenData } from '~playfulbot/types/token';
+
+const randomBytes = promisify(crypto.randomBytes);
+const jwtVerifyAsync: any = promisify(jwt.verify);
 
 const SECRET_KEY = 'secret!';
 
@@ -86,5 +87,5 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
 }
 
 export async function createPlayerToken(userID: string, playerNumber: number, gameID: string) {
-  return jwt.sign({ user: userID, game: gameID, playerNumber: playerNumber }, SECRET_KEY);
+  return jwt.sign({ user: userID, game: gameID, playerNumber }, SECRET_KEY);
 }

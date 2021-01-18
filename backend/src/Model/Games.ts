@@ -1,7 +1,6 @@
 // import { newDebugGameResolver } from "~playfulbot/graphqlResolvers/game";
-import { DebugGame, Game, User } from '~playfulbot/types/graphql';
-
 import { v4 as uuidv4 } from 'uuid';
+import { DebugGame, Game, User } from '~playfulbot/types/graphql';
 
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
 import { init } from '~playfulbot/games/tictactoe';
@@ -44,11 +43,11 @@ async function newGame(): Promise<Game<GameState>> {
   const id = uuidv4();
   const token = await createPlayerToken('1', 0, id);
   return {
-    id: id,
+    id,
     version: 0,
     players: [
-      { playerNumber: 0, user: user, token: token },
-      { playerNumber: 1, user: user, token: token },
+      { playerNumber: 0, user, token },
+      { playerNumber: 1, user, token },
     ],
     gameState: init(),
   };

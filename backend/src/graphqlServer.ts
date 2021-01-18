@@ -18,29 +18,28 @@ export const apolloServer = new ApolloServer({
         game: params.connection.context?.game,
         playerNumber: params.connection.context?.playerNumber,
       };
-    } else {
-      // HTTP request
-      const koaContext = params.ctx;
+    }
+    // HTTP request
+    const koaContext = params.ctx;
 
-      const headers = params.ctx?.req.headers;
+    const headers = params.ctx?.req.headers;
 
-      if (headers.authorization) {
-        if (!headers.authorization.startsWith('Bearer '))
-          throw new AuthenticationError('Unsupported authorization');
-        const token = headers.authorization.split(' ')[1];
+    if (headers.authorization) {
+      if (!headers.authorization.startsWith('Bearer '))
+        throw new AuthenticationError('Unsupported authorization');
+      const token = headers.authorization.split(' ')[1];
 
-        const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
-        return {
-          koaContext: koaContext,
-          user: tokenData.user,
-          game: tokenData?.game,
-          playerNumber: tokenData?.playerNumber,
-        };
-      }
+      const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
       return {
-        koaContext: koaContext,
+        koaContext,
+        user: tokenData.user,
+        game: tokenData?.game,
+        playerNumber: tokenData?.playerNumber,
       };
     }
+    return {
+      koaContext,
+    };
   },
   subscriptions: {
     onConnect: async (connectionParams: any, webSocket: any, context: any) => {
