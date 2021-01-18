@@ -1,62 +1,60 @@
-import {
-  gql
-} from 'apollo-server-koa';
+import { gql } from 'apollo-server-koa';
 
 export const typeDefs = gql`
-# Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-scalar JSON
+  scalar JSON
 
-type User {
-  id: ID,
-  username: String
-}
+  type User {
+    id: ID
+    username: String
+  }
 
-type LoginResult {
-  user: User,
-  token: String
-}
+  type LoginResult {
+    user: User
+    token: String
+  }
 
-type Player {
-  playerNumber: Int!
-  user: User!
-  token: String,
-}
+  type Player {
+    playerNumber: Int!
+    user: User!
+    token: String
+  }
 
-type Game {
-  id: ID
-  version: Int!
-  players: [Player!]!
-  gameState: JSON!
-}
+  type Game {
+    id: ID
+    version: Int!
+    players: [Player!]!
+    gameState: JSON!
+  }
 
-type GamePatch {
-  patch: JSON!
-  gameID: ID!
-  version: Int!
-}
+  type GamePatch {
+    patch: JSON!
+    gameID: ID!
+    version: Int!
+  }
 
-type Mutation {
-  play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
-  createNewDebugGame: DebugGame
+  type Mutation {
+    play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
+    createNewDebugGame: DebugGame
 
-  login(username: String!, password: String!): LoginResult
-  logout: Boolean
-}
+    login(username: String!, password: String!): LoginResult
+    logout: Boolean
+  }
 
-type DebugGame {
-  id: ID!
-  game: Game
-}
+  type DebugGame {
+    id: ID!
+    game: Game
+  }
 
-type Subscription {
-  gamePatch(gameID: ID!): GamePatch
-  debugGameChanges: DebugGame
-}
+  type Subscription {
+    gamePatch(gameID: ID!): GamePatch
+    debugGameChanges: DebugGame
+  }
 
-type Query {
-  game(gameID: ID): Game
-  debugGame: DebugGame
-  authenticatedUser: User
-}
+  type Query {
+    game(gameID: ID): Game
+    debugGame: DebugGame
+    authenticatedUser: User
+  }
 `;

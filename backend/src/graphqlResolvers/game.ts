@@ -6,15 +6,15 @@ import { UnknownAction, GameNotFoundError } from '~playfulbot/Errors';
 
 import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 
-import { ApolloContext } from '~playfulbot/types/apolloTypes'
+import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
-import { GameState } from '~playfulbot/gameState/types'
+import { GameState } from '~playfulbot/gameState/types';
 
-import { PlayingOutOfTurn } from '~playfulbot/Errors'
+import { PlayingOutOfTurn } from '~playfulbot/Errors';
 
-import { Game, DebugGame, NoDebugGame, DebugGameResult, User } from '~playfulbot/types/graphql'
+import { Game, DebugGame, NoDebugGame, DebugGameResult, User } from '~playfulbot/types/graphql';
 
-import { getGame, getDebugGame, createNewDebugGame } from '~playfulbot/Model/Games'
+import { getGame, getDebugGame, createNewDebugGame } from '~playfulbot/Model/Games';
 
 const pubsub = new PubSub();
 
@@ -32,11 +32,14 @@ export function gameResolver(_: any, __: any, ctx: ApolloContext): Game<GameStat
   return game;
 }
 
-
-export async function debugGameResolver(_: any, __: any, ctx: ApolloContext): Promise<DebugGameResult> {
+export async function debugGameResolver(
+  _: any,
+  __: any,
+  ctx: ApolloContext
+): Promise<DebugGameResult> {
   let debugGame = getDebugGame();
   if (!debugGame) {
-    await createNewDebugGame()
+    await createNewDebugGame();
     debugGame = getDebugGame();
   }
   if (debugGame) {
@@ -45,7 +48,11 @@ export async function debugGameResolver(_: any, __: any, ctx: ApolloContext): Pr
   return new NoDebugGame();
 }
 
-export async function createNewDebugGameResolver(_: any, __: any, ctx: ApolloContext): Promise<DebugGame> {
+export async function createNewDebugGameResolver(
+  _: any,
+  __: any,
+  ctx: ApolloContext
+): Promise<DebugGame> {
   const debugGame = await createNewDebugGame();
   pubsub.publish(DEBUG_GAME_CHANGED, debugGame);
   return debugGame;
@@ -53,9 +60,9 @@ export async function createNewDebugGameResolver(_: any, __: any, ctx: ApolloCon
 
 export const DebugGameChangesResolver = {
   subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
-    return pubsub.asyncIterator([DEBUG_GAME_CHANGED])
+    return pubsub.asyncIterator([DEBUG_GAME_CHANGED]);
   },
-}
+};
 
 export const gamePatchResolver = {
   subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
@@ -63,19 +70,19 @@ export const gamePatchResolver = {
     if (!game) {
       throw new GameNotFoundError();
     }
-    return pubsub.asyncIterator([GAME_STATE_CHANGED])
+    return pubsub.asyncIterator([GAME_STATE_CHANGED]);
   },
-}
+};
 
 export const debugGameChangesResolver = {
   subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
-    return pubsub.asyncIterator([DEBUG_GAME_CHANGED])
+    return pubsub.asyncIterator([DEBUG_GAME_CHANGED]);
   },
-}
+};
 
 export function playResolver(parent: any, args: any, context: ApolloContext, info: any) {
-  console.log("playing " + args.action)
-  console.log(JSON.stringify(args.data))
+  console.log('playing ' + args.action);
+  console.log(JSON.stringify(args.data));
 
   if (context.game && context.game !== args.gameID) {
     throw new ForbiddenError('Not allowed to play to this game.');
@@ -88,8 +95,10 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
   const player = game.players[args.player];
   const playerState = game.gameState.players[args.player];
 
-  if ((context.playerNumber && context.playerNumber !== args.player) ||
-      context.userID === player.user.id) {
+  if (
+    (context.playerNumber && context.playerNumber !== args.player) ||
+    context.userID === player.user.id
+  ) {
     throw new ForbiddenError(`Not allowed to play as player ${args.player}.`);
   }
 
@@ -112,6 +121,6 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
 
   jsonpatch.unobserve(gameState, observer);
   pubsub.publish(GAME_STATE_CHANGED, {
-    gamePatch: { patch, gameID: game.id, version: game.version }
+    gamePatch: { patch, gameID: game.id, version: game.version },
   });
 }

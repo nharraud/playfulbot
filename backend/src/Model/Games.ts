@@ -1,24 +1,22 @@
 // import { newDebugGameResolver } from "~playfulbot/graphqlResolvers/game";
-import { DebugGame, Game, User } from "~playfulbot/types/graphql";
+import { DebugGame, Game, User } from '~playfulbot/types/graphql';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication'
-import { init } from "~playfulbot/games/tictactoe";
-import GameState from "~playfulbot/games/tictactoe/GameState";
-
+import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
+import { init } from '~playfulbot/games/tictactoe';
+import GameState from '~playfulbot/games/tictactoe/GameState';
 
 const user: User = {
   id: '1',
   username: 'test',
-}
+};
 
 const games = new Map<string, Game<GameState>>();
 class PlayerState {
-  debugGame: DebugGame
+  debugGame: DebugGame;
 }
 const mainPlayerState = new PlayerState();
-
 
 export async function createNewDebugGame(): Promise<DebugGame> {
   const game = await newGame();
@@ -28,7 +26,7 @@ export async function createNewDebugGame(): Promise<DebugGame> {
   }
   mainPlayerState.debugGame = {
     id: '21',
-    game
+    game,
   };
   games.set(game.id, game);
   return mainPlayerState.debugGame;
@@ -42,17 +40,16 @@ export function getGame(id: string) {
   return games.get(id);
 }
 
-
 async function newGame(): Promise<Game<GameState>> {
-  const id = uuidv4()
+  const id = uuidv4();
   const token = await createPlayerToken('1', 0, id);
   return {
     id: id,
     version: 0,
     players: [
-      {playerNumber: 0, user: user, token: token},
-      {playerNumber: 1, user: user, token: token}
+      { playerNumber: 0, user: user, token: token },
+      { playerNumber: 1, user: user, token: token },
     ],
-    gameState: init()
-  }
+    gameState: init(),
+  };
 }

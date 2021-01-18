@@ -1,13 +1,13 @@
 {
-    "$id": "https://playfulbot.com/tictactoe.schema.json",
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "TicTacToe",
-    "type": "object",
-    "properties": {
-      "space": {
-        "type": "integer",
-        "minimum": 0,
-        "maximum": 8
-      }
-    }  
+  "$id": "https://playfulbot.com/tictactoe.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TicTacToe",
+  "type": "object",
+  "properties": {
+    "space": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8
+    }
   }
+}

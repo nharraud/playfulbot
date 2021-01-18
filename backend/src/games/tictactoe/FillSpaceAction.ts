@@ -1,3 +1,3 @@
 export default interface FillSpaceAction {
-    space: number;
+  space: number;
 }

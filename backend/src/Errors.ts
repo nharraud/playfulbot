@@ -8,12 +8,12 @@ export class IllegalPlayAction extends Error {}
 
 export class NotFoundError extends ApolloError {
   constructor(message: string, additionalProperties?: Record<string, any>) {
-    super(message, 'NOT_FOUND', additionalProperties)
+    super(message, 'NOT_FOUND', additionalProperties);
   }
 }
 
 export class GameNotFoundError extends NotFoundError {
   constructor() {
-    super('Game not found')
+    super('Game not found');
   }
 }
