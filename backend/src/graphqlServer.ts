@@ -1,16 +1,22 @@
 import Cookies from 'cookies';
 
-import { ApolloServer, gql, AuthenticationError } from 'apollo-server-koa';
+import { ApolloServer, AuthenticationError } from 'apollo-server-koa';
 
+import { ConnectionContext } from 'subscriptions-transport-ws';
 import { validateAuthToken } from '~playfulbot/graphqlResolvers/authentication';
 
-import { typeDefs } from '~playfulbot/graphqlSchema';
-import { resolvers } from '~playfulbot/graphqlResolvers';
+import typeDefs from '~playfulbot/graphqlSchema';
+import resolvers from '~playfulbot/graphqlResolvers';
+import {
+  WSConnectionParams,
+  WSConnectionContext,
+  ContextParams,
+} from '~playfulbot/types/apolloTypes';
 
-export const apolloServer = new ApolloServer({
+export default new ApolloServer({
   typeDefs,
   resolvers,
-  context: async (params: any) => {
+  context: async (params: ContextParams) => {
     if (params.connection) {
       // Request from a websocket. It has already been authenticated at connection time.
       return {
@@ -42,7 +48,11 @@ export const apolloServer = new ApolloServer({
     };
   },
   subscriptions: {
-    onConnect: async (connectionParams: any, webSocket: any, context: any) => {
+    onConnect: async (
+      connectionParams: WSConnectionParams,
+      webSocket: unknown,
+      context: ConnectionContext
+    ): Promise<WSConnectionContext> => {
       const cookies = new Cookies(context.request, null);
 
       if (!connectionParams.authToken) {

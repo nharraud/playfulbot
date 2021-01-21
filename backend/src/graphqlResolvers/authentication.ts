@@ -8,26 +8,36 @@ import bcrypt from 'bcrypt';
 
 import { AuthenticationError } from 'apollo-server-koa';
 
-import { ApolloContext, User } from '~playfulbot/types/apolloTypes';
+import { ApolloContext } from '~playfulbot/types/apolloTypes';
+import { LoginResult } from '~playfulbot/types/graphql';
 import { users } from '~playfulbot/Model/Users';
 
 import { JWTokenData } from '~playfulbot/types/token';
 
 const randomBytes = promisify(crypto.randomBytes);
-const jwtVerifyAsync: any = promisify(jwt.verify);
+const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
 
 const SECRET_KEY = 'secret!';
 
-export async function loginResolver(parent: any, args: any, { koaContext }: ApolloContext) {
+interface LoginArguments {
+  username: string;
+  password: string;
+}
+
+export async function loginResolver(
+  parent: unknown,
+  args: LoginArguments,
+  { koaContext }: ApolloContext
+): Promise<LoginResult> {
   const foundUser = users.find((user) => user.name === args.username);
 
   if (!foundUser) {
-    return new AuthenticationError(`Could not find account: ${args.username}`);
+    throw new AuthenticationError(`Could not find account: ${args.username}`);
   }
   const match = await bcrypt.compare(args.password, foundUser.password);
 
   if (!match) {
-    return new AuthenticationError('Incorrect credentials');
+    throw new AuthenticationError('Incorrect credentials');
   }
 
   const binFingerprint = await randomBytes(50);
@@ -49,19 +59,18 @@ export async function loginResolver(parent: any, args: any, { koaContext }: Apol
   };
 }
 
-export async function logoutResolver(
-  parent: any,
-  args: any,
+export function logoutResolver(
+  parent: unknown,
+  args: unknown,
   { koaContext, userID }: ApolloContext
-) {
-  console.log(userID);
+): boolean {
   koaContext.cookies.set('JWTFingerprint');
   return true;
 }
 
 export async function validateAuthToken(token: string, fingerprint?: string): Promise<JWTokenData> {
   try {
-    const tokenData: JWTokenData = await jwtVerifyAsync(token, SECRET_KEY);
+    const tokenData: JWTokenData = (await jwtVerifyAsync(token, SECRET_KEY)) as JWTokenData;
 
     if (tokenData.JWTFingerprint) {
       if (!fingerprint) {
@@ -86,6 +95,6 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
   }
 }
 
-export async function createPlayerToken(userID: string, playerNumber: number, gameID: string) {
+export function createPlayerToken(userID: string, playerNumber: number, gameID: string): string {
   return jwt.sign({ user: userID, game: gameID, playerNumber }, SECRET_KEY);
 }

@@ -11,37 +11,9 @@ const user: User = {
   username: 'test',
 };
 
-const games = new Map<string, Game<GameState>>();
-class PlayerState {
-  debugGame: DebugGame;
-}
-const mainPlayerState = new PlayerState();
-
-export async function createNewDebugGame(): Promise<DebugGame> {
-  const game = await newGame();
-  if (mainPlayerState.debugGame) {
-    games.delete(mainPlayerState.debugGame.id);
-    mainPlayerState.debugGame = null;
-  }
-  mainPlayerState.debugGame = {
-    id: '21',
-    game,
-  };
-  games.set(game.id, game);
-  return mainPlayerState.debugGame;
-}
-
-export function getDebugGame() {
-  return mainPlayerState.debugGame;
-}
-
-export function getGame(id: string) {
-  return games.get(id);
-}
-
-async function newGame(): Promise<Game<GameState>> {
+function newGame(): Game<GameState> {
   const id = uuidv4();
-  const token = await createPlayerToken('1', 0, id);
+  const token = createPlayerToken('1', 0, id);
   return {
     id,
     version: 0,
@@ -51,4 +23,32 @@ async function newGame(): Promise<Game<GameState>> {
     ],
     gameState: init(),
   };
+}
+
+const games = new Map<string, Game<GameState>>();
+class PlayerState {
+  debugGame: DebugGame;
+}
+const mainPlayerState = new PlayerState();
+
+export async function createNewDebugGame(): Promise<DebugGame> {
+  const game = newGame();
+  if (mainPlayerState.debugGame) {
+    games.delete(mainPlayerState.debugGame.id);
+    mainPlayerState.debugGame = null;
+  }
+  mainPlayerState.debugGame = {
+    id: '21',
+    game,
+  };
+  games.set(game.id, game);
+  return Promise.resolve(mainPlayerState.debugGame);
+}
+
+export function getDebugGame(): DebugGame {
+  return mainPlayerState.debugGame;
+}
+
+export function getGame(id: string): Game<GameState> {
+  return games.get(id);
 }

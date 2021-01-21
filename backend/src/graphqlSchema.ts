@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server-koa';
 
-export const typeDefs = gql`
+const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   scalar JSON
@@ -58,3 +58,5 @@ export const typeDefs = gql`
     authenticatedUser: User
   }
 `;
+
+export default typeDefs;

@@ -5,6 +5,11 @@ export interface User {
   username: string;
 }
 
+export interface LoginResult {
+  user: User;
+  token: string;
+}
+
 export interface Player {
   playerNumber: number;
   user: User;
@@ -22,13 +27,3 @@ export interface DebugGame {
   id: string;
   game: Game<GameState>;
 }
-
-enum NoDebugGameReason {
-  SERVER_ERROR,
-}
-
-export class NoDebugGame {
-  reason: NoDebugGameReason;
-}
-
-export type DebugGameResult = DebugGame | NoDebugGame;

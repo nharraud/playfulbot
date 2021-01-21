@@ -17,6 +17,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: './tsconfig.json',
   },
+  ignorePatterns: ['.eslintrc.js'],
   settings: {
     'import/resolver': {
       typescript: {},
@@ -35,5 +36,17 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    '@typescript-eslint/no-unused-vars': 'off',
+    // '@typescript-eslint/no-explicit-any': 'off',
+    // '@typescript-eslint/no-unsafe-assignment': 'off',
+    'import/prefer-default-export': 'off',
+    'new-cap': 'off',
+    'no-restricted-syntax': [
+      'error',
+      'ForInStatement',
+      'LabeledStatement',
+      'WithStatement',
+    ],
+    'no-param-reassign': ['error', { 'props': false }],
   },
 };

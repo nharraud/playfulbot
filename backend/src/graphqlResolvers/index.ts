@@ -1,5 +1,6 @@
 import GraphQLJSON from 'graphql-type-json';
 
+import { IResolvers } from 'apollo-server-koa';
 import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
@@ -11,7 +12,7 @@ import {
   gameResolver,
 } from '~playfulbot/graphqlResolvers/game';
 
-export const resolvers = {
+const resolvers: IResolvers = {
   Subscription: {
     gamePatch: gamePatchResolver,
   },
@@ -29,3 +30,5 @@ export const resolvers = {
   },
   JSON: GraphQLJSON,
 };
+
+export default resolvers;

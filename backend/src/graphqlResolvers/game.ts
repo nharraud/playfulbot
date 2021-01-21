@@ -1,6 +1,7 @@
 import * as jsonpatch from 'fast-json-patch';
 
 import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
+import { GraphQLResolveInfo } from 'graphql';
 import { actions } from '~playfulbot/games/tictactoe';
 
 import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/Errors';
@@ -9,7 +10,7 @@ import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
 import { GameState } from '~playfulbot/gameState/types';
 
-import { Game, DebugGame, NoDebugGame, DebugGameResult, User } from '~playfulbot/types/graphql';
+import { Game, DebugGame } from '~playfulbot/types/graphql';
 
 import { getGame, getDebugGame, createNewDebugGame } from '~playfulbot/Model/Games';
 
@@ -18,7 +19,7 @@ const pubsub = new PubSub();
 const GAME_STATE_CHANGED = 'GAME_STATE_CHANGED';
 const DEBUG_GAME_CHANGED = 'DEBUG_GAME_CHANGED';
 
-export function gameResolver(_: any, __: any, ctx: ApolloContext): Game<GameState> {
+export function gameResolver(parent: unknown, args: unknown, ctx: ApolloContext): Game<GameState> {
   if (!ctx.game) {
     throw new UserInputError('No game ID provided');
   }
@@ -30,10 +31,10 @@ export function gameResolver(_: any, __: any, ctx: ApolloContext): Game<GameStat
 }
 
 export async function debugGameResolver(
-  _: any,
-  __: any,
+  parent: unknown,
+  args: unknown,
   ctx: ApolloContext
-): Promise<DebugGameResult> {
+): Promise<DebugGame> {
   let debugGame = getDebugGame();
   if (!debugGame) {
     await createNewDebugGame();
@@ -42,26 +43,39 @@ export async function debugGameResolver(
   if (debugGame) {
     return debugGame;
   }
-  return new NoDebugGame();
+  throw new Error('Not implemented');
 }
 
 export async function createNewDebugGameResolver(
-  _: any,
-  __: any,
+  parent: unknown,
+  args: unknown,
   ctx: ApolloContext
 ): Promise<DebugGame> {
   const debugGame = await createNewDebugGame();
-  pubsub.publish(DEBUG_GAME_CHANGED, debugGame);
+  await pubsub.publish(DEBUG_GAME_CHANGED, debugGame);
   return debugGame;
 }
 
 export const DebugGameChangesResolver = {
-  subscribe: (model: any, args: any, context: ApolloContext, info: any) =>
-    pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
+  subscribe: (
+    model: unknown,
+    args: unknown,
+    context: ApolloContext,
+    info: GraphQLResolveInfo
+  ): AsyncIterator<unknown, unknown, undefined> => pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
 };
 
+interface GamePatchArguments {
+  gameID: string;
+}
+
 export const gamePatchResolver = {
-  subscribe: (model: any, args: any, context: ApolloContext, info: any) => {
+  subscribe: (
+    model: unknown,
+    args: GamePatchArguments,
+    context: ApolloContext,
+    info: GraphQLResolveInfo
+  ): AsyncIterator<unknown, unknown, undefined> => {
     const game = getGame(args.gameID);
     if (!game) {
       throw new GameNotFoundError();
@@ -71,14 +85,27 @@ export const gamePatchResolver = {
 };
 
 export const debugGameChangesResolver = {
-  subscribe: (model: any, args: any, context: ApolloContext, info: any) =>
-    pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
+  subscribe: (
+    model: unknown,
+    args: unknown,
+    context: ApolloContext,
+    info: GraphQLResolveInfo
+  ): AsyncIterator<unknown, unknown, undefined> => pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
 };
 
-export function playResolver(parent: any, args: any, context: ApolloContext, info: any) {
-  console.log(`playing ${args.action}`);
-  console.log(JSON.stringify(args.data));
+interface PlayArguments {
+  gameID: string;
+  player: number;
+  action: string;
+  data: Record<string, unknown>;
+}
 
+export async function playResolver(
+  parent: unknown,
+  args: PlayArguments,
+  context: ApolloContext,
+  info: GraphQLResolveInfo
+): Promise<void> {
   if (context.game && context.game !== args.gameID) {
     throw new ForbiddenError('Not allowed to play to this game.');
   }
@@ -104,18 +131,19 @@ export function playResolver(parent: any, args: any, context: ApolloContext, inf
   if (!gameAction) {
     throw new UnknownAction(args.action);
   }
-  const observer = jsonpatch.observe<object>(gameState);
+  const observer = jsonpatch.observe<GameState>(gameState);
 
   if (!playerState.playing) {
     throw new PlayingOutOfTurn();
   }
-  gameAction.handler(player.playerNumber, gameState as any, args.data);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gameAction.handler(player.playerNumber, gameState, args.data as any);
 
   const patch = jsonpatch.generate(observer);
   game.version += 1;
 
   jsonpatch.unobserve(gameState, observer);
-  pubsub.publish(GAME_STATE_CHANGED, {
+  await pubsub.publish(GAME_STATE_CHANGED, {
     gamePatch: { patch, gameID: game.id, version: game.version },
   });
 }

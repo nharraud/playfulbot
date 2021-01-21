@@ -2,7 +2,7 @@ import * as gameStateSchema from './gameStateSchema.json';
 import * as fillSpaceActionSchema from './fillSpaceActionSchema.json';
 import FillSpaceAction from './FillSpaceAction';
 import GameState from './GameState';
-import { Action, ActionHandler } from '~playfulbot/Game';
+import { Action, ActionData, ActionHandler } from '~playfulbot/Game';
 import { IllegalPlayAction } from '~playfulbot/Errors';
 
 function findWinner(grid: string[]): string {
@@ -27,7 +27,6 @@ function fillSpace(player: number, state: GameState, action: FillSpaceAction) {
   if (state.grid[action.space]) {
     throw new IllegalPlayAction('Space already filled.');
   }
-  const playing = state.players.findIndex((player) => player.playing);
   state.grid[action.space] = state.players[player].symbol;
   state.players[player].playing = false;
 
@@ -47,6 +46,7 @@ function fillSpace(player: number, state: GameState, action: FillSpaceAction) {
   state.players[(player + 1) % 2].playing = true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const actions: Map<string, Action<GameState, any>> = new Map(
   Object.entries({
     fillSpace: {
