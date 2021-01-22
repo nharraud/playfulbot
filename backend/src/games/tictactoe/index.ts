@@ -2,8 +2,8 @@ import * as gameStateSchema from './gameStateSchema.json';
 import * as fillSpaceActionSchema from './fillSpaceActionSchema.json';
 import FillSpaceAction from './FillSpaceAction';
 import GameState from './GameState';
-import { Action, ActionData, ActionHandler } from '~playfulbot/Game';
-import { IllegalPlayAction } from '~playfulbot/Errors';
+import { Action } from '~playfulbot/types/action';
+import { IllegalPlayAction } from '~playfulbot/errors';
 
 function findWinner(grid: string[]): string {
   for (const idx of [0, 1, 2]) {

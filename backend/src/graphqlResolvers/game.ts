@@ -4,7 +4,7 @@ import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-serv
 import { GraphQLResolveInfo } from 'graphql';
 import { actions } from '~playfulbot/games/tictactoe';
 
-import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/Errors';
+import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/errors';
 
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
