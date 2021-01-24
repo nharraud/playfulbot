@@ -1,7 +1,7 @@
 import {
   GameState as PBGameState,
   PlayerState as PBPlayerState,
-} from '~playfulbot/gameState/types';
+} from '~playfulbot/types/gameState';
 
 export interface PlayerState extends PBPlayerState {
   symbol: string;

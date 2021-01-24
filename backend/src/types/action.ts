@@ -1,4 +1,4 @@
-import { GameState } from '~playfulbot/gameState/types';
+import { GameState } from '~playfulbot/types/gameState';
 
 export type ActionData = Record<string, unknown>;
 

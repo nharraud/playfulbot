@@ -8,7 +8,7 @@ import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/
 
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
-import { GameState } from '~playfulbot/gameState/types';
+import { GameState } from '~playfulbot/types/gameState';
 
 import { Game, DebugGame } from '~playfulbot/types/graphql';
 
