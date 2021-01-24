@@ -11,16 +11,17 @@ import {
   WSConnectionParams,
   WSConnectionContext,
   ContextParams,
+  ApolloContext,
 } from '~playfulbot/types/apolloTypes';
 
 export default new ApolloServer({
   typeDefs,
   resolvers,
-  context: async (params: ContextParams) => {
+  context: async (params: ContextParams): Promise<ApolloContext> => {
     if (params.connection) {
       // Request from a websocket. It has already been authenticated at connection time.
       return {
-        user: params.connection.context.user,
+        userID: params.connection.context.user,
         game: params.connection.context?.game,
         playerNumber: params.connection.context?.playerNumber,
       };
@@ -38,7 +39,7 @@ export default new ApolloServer({
       const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
       return {
         koaContext,
-        user: tokenData.user,
+        userID: tokenData.user,
         game: tokenData?.game,
         playerNumber: tokenData?.playerNumber,
       };

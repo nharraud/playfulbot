@@ -119,7 +119,7 @@ export async function playResolver(
 
   if (
     (context.playerNumber && context.playerNumber !== args.player) ||
-    context.userID === player.user.id
+    context.userID !== player.user.id
   ) {
     throw new ForbiddenError(`Not allowed to play as player ${args.player}.`);
   }

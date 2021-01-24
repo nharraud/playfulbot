@@ -2,7 +2,7 @@ import { Context as KoaContext } from 'koa';
 
 export type ApolloContext = {
   koaContext?: KoaContext;
-  userID: string;
+  userID?: string;
   game?: string;
   playerNumber?: number;
 };
