@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, within, fireEvent } from '@testing-library/react';
-import DebugStatusTab from './DebugStatusTab';
+import DebugPlayersTab from './DebugPlayersTab';
 
 import copy from 'copy-to-clipboard';
 
@@ -23,8 +23,8 @@ const game = {
 };
 
 test('Every player is listed', () => {
-  render(<DebugStatusTab createDebugGame={() => {}} game={game} />);
-  const players = screen.getByRole('table', { name: /players/i });
+  render(<DebugPlayersTab game={game} />);
+  const players = screen.getByRole('table');
   const rows = within(players).getAllByRole('row');
   expect(rows).toHaveLength(3);
 
@@ -36,8 +36,8 @@ test('Every player is listed', () => {
 });
 
 test('Copying the token works', () => {
-  render(<DebugStatusTab createDebugGame={() => {}} game={game} />);
-  const players = screen.getByRole('table', { name: /players/i });
+  render(<DebugPlayersTab game={game} />);
+  const players = screen.getByRole('table');
   const buttons = within(players).getAllByRole('button', { name:/copy token/i });
   expect(buttons).toHaveLength(2);
 
