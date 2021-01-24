@@ -34,7 +34,7 @@ export default function Debug() {
     content = (
       <>
         <GameCanvas game={gameProps}/>
-        <DebugBottomDrawer createDebugGame={createDebugGame} game={gameProps}/>
+        <DebugBottomDrawer createDebugGame={createDebugGame} game={gameProps?.data}/>
       </>
     )
   }

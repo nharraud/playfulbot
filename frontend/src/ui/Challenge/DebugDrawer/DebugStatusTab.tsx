@@ -11,6 +11,10 @@ import Button from '@material-ui/core/Button';
 
 import CopyToClipboardButton from '../../../utils/CopyToClipboardButton';
 
+import { Game } from 'src/types/graphql';
+import { GameState } from 'src/types/gameState';
+import { Typography } from '@material-ui/core';
+
 const useStyles = makeStyles((theme) => ({
   root: {},
   table: {
@@ -24,7 +28,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function DebugStatusTab(props) {
+const DebugStatusTab: React.FunctionComponent<{
+  createDebugGame: () => void,
+  game: Game<GameState>,
+}> = (props) => {
   const classes = useStyles();
 
   let players = null;
@@ -34,7 +41,10 @@ export default function DebugStatusTab(props) {
       Create New Debug Game
     </Button>
     <TableContainer component={Paper}>
-      <Table className={classes.table} size="small" aria-label="a dense table">
+      <Typography variant="h6" id="playersTableTitle" component="p">
+        Players status
+      </Typography>
+      <Table className={classes.table} size="small" aria-labelledby="playersTableTitle">
         <TableHead>
           <TableRow>
             <TableCell>Player</TableCell>
@@ -43,17 +53,17 @@ export default function DebugStatusTab(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.game.data.players.map((player) => (
+          {props.game.players.map((player) => (
             <TableRow key={player.playerNumber}>
               <TableCell component="th" scope="row">
-                {player.playerNumber}
+                Player {player.playerNumber}
               </TableCell>
-              <TableCell component="th" scope="row">
+              <TableCell>
                 <CopyToClipboardButton text={player.token}>
                   Copy Token
                 </CopyToClipboardButton>
               </TableCell>
-              <TableCell className={classes.not_connected} component="th" scope="row">
+              <TableCell className={classes.not_connected}>
                 Not connected
               </TableCell>
             </TableRow>
@@ -70,3 +80,5 @@ export default function DebugStatusTab(props) {
     </div>
   );
 }
+
+export default DebugStatusTab;
