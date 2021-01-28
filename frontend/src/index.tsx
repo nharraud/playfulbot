@@ -5,9 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <React.StrictMode>
+  // Strict mode is disabled because of https://github.com/apollographql/apollo-client/issues/6037
+  // <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  // </React.StrictMode>
+  ,
   document.getElementById('root')
 );
 
