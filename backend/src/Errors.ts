@@ -26,6 +26,12 @@ export class NotFoundError extends ApolloError {
   }
 }
 
+export class GameScheduleNotFoundError extends NotFoundError {
+  constructor() {
+    super('Game schedule not found');
+  }
+}
+
 export class GameNotFoundError extends NotFoundError {
   constructor() {
     super('Game not found');

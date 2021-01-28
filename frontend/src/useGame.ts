@@ -20,6 +20,7 @@ export default function useDebugGame() {
   `;
 
   const { loading, error, data } = useQuery(GAME_QUERY);
+  useGameScheduleSubscription(data?.debugGame?.id);
   useGameSubscription(data?.debugGame?.game?.id);
 
   const playAction = usePlayAction(data?.debugGame.game);
@@ -27,6 +28,32 @@ export default function useDebugGame() {
 
   return { playAction, createDebugGame, loading, error, data: data?.debugGame.game };
 }
+
+
+function useGameScheduleSubscription(scheduleID: string) {
+  const GAME_SCHEDULE_SUBSCRIPTION = gql`
+    subscription onGameScheduleChanges($scheduleID: ID!) {
+      gameScheduleChanges(scheduleID: $scheduleID) {
+        id
+        game {
+          id
+          version,
+          players {
+            playerNumber, token
+          }
+          gameState
+        }
+      }
+    }
+  `;
+
+  const {error} = useSubscription(GAME_SCHEDULE_SUBSCRIPTION, {
+    variables: { scheduleID: scheduleID },
+    skip: !scheduleID,
+    shouldResubscribe: true,
+  });
+}
+
 
 function useGameSubscription(gameID: string) {
 
@@ -124,10 +151,8 @@ function useCreateDebugGame() {
 
   const [createNewDebugGameMutation, newDebugGame/*{ playLoading, playError }*/] = useMutation<any, any>(NEW_DEBUG_GAME_MUTATION);
 
-  console.log(newDebugGame);
   const createDebugGame = useCallback(
     () =>  {
-      console.log("Creating new debug game");
       createNewDebugGameMutation();
     }
   , [createNewDebugGameMutation]);

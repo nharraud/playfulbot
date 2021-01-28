@@ -23,7 +23,7 @@ export interface Game<GS extends GameState> {
   gameState: GS;
 }
 
-export interface DebugGame {
+export interface GameSchedule<GS extends GameState> {
   id: string;
-  game: Game<GameState>;
+  game: Game<GS>;
 }

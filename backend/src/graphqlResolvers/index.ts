@@ -10,15 +10,19 @@ import {
   debugGameResolver,
   createNewDebugGameResolver,
   gameResolver,
+  gameScheduleResolver,
+  gameScheduleChangesResolver,
 } from '~playfulbot/graphqlResolvers/game';
 
 const resolvers: IResolvers = {
   Subscription: {
     gamePatch: gamePatchResolver,
+    gameScheduleChanges: gameScheduleChangesResolver,
   },
   Query: {
     game: gameResolver,
     debugGame: debugGameResolver,
+    gameSchedule: gameScheduleResolver,
     authenticatedUser: authenticatedUserResolver,
   },
   Mutation: {

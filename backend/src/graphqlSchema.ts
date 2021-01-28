@@ -36,25 +36,26 @@ const typeDefs = gql`
 
   type Mutation {
     play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
-    createNewDebugGame: DebugGame
+    createNewDebugGame: GameSchedule
 
     login(username: String!, password: String!): LoginResult
     logout: Boolean
   }
 
-  type DebugGame {
+  type GameSchedule {
     id: ID!
     game: Game
   }
 
   type Subscription {
     gamePatch(gameID: ID!): GamePatch
-    debugGameChanges: DebugGame
+    gameScheduleChanges(scheduleID: ID!): GameSchedule
   }
 
   type Query {
     game(gameID: ID): Game
-    debugGame: DebugGame
+    debugGame: GameSchedule
+    gameSchedule(scheduleID: ID!): GameSchedule
     authenticatedUser: User
   }
 `;

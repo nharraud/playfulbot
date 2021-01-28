@@ -1,6 +1,6 @@
 // import { newDebugGameResolver } from "~playfulbot/graphqlResolvers/game";
 import { v4 as uuidv4 } from 'uuid';
-import { DebugGame, Game, User } from '~playfulbot/types/graphql';
+import { GameSchedule, Game, User } from '~playfulbot/types/graphql';
 
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
 import { init } from '~playfulbot/games/tictactoe';
@@ -27,11 +27,13 @@ function newGame(): Game<GameState> {
 
 const games = new Map<string, Game<GameState>>();
 class PlayerState {
-  debugGame: DebugGame;
+  debugGame: GameSchedule<GameState>;
 }
 const mainPlayerState = new PlayerState();
 
-export async function createNewDebugGame(): Promise<DebugGame> {
+const gameSchedules = new Map<string, GameSchedule<GameState>>();
+
+export async function createNewDebugGame(): Promise<GameSchedule<GameState>> {
   const game = newGame();
   if (mainPlayerState.debugGame) {
     games.delete(mainPlayerState.debugGame.id);
@@ -41,12 +43,17 @@ export async function createNewDebugGame(): Promise<DebugGame> {
     id: '21',
     game,
   };
+  gameSchedules.set(mainPlayerState.debugGame.id, mainPlayerState.debugGame);
   games.set(game.id, game);
   return Promise.resolve(mainPlayerState.debugGame);
 }
 
-export function getDebugGame(): DebugGame {
+export function getDebugGame(): GameSchedule<GameState> {
   return mainPlayerState.debugGame;
+}
+
+export function getGameSchedule(id: string): GameSchedule<GameState> {
+  return gameSchedules.get(id);
 }
 
 export function getGame(id: string): Game<GameState> {

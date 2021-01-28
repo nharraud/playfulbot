@@ -4,20 +4,30 @@ import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-serv
 import { GraphQLResolveInfo } from 'graphql';
 import { actions } from '~playfulbot/games/tictactoe';
 
-import { UnknownAction, GameNotFoundError, PlayingOutOfTurn } from '~playfulbot/errors';
+import {
+  UnknownAction,
+  GameScheduleNotFoundError,
+  GameNotFoundError,
+  PlayingOutOfTurn,
+} from '~playfulbot/errors';
 
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
 import { GameState } from '~playfulbot/types/gameState';
 
-import { Game, DebugGame } from '~playfulbot/types/graphql';
+import { Game, GameSchedule } from '~playfulbot/types/graphql';
 
-import { getGame, getDebugGame, createNewDebugGame } from '~playfulbot/Model/Games';
+import {
+  getGame,
+  getDebugGame,
+  createNewDebugGame,
+  getGameSchedule,
+} from '~playfulbot/Model/Games';
 
 const pubsub = new PubSub();
 
 const GAME_STATE_CHANGED = 'GAME_STATE_CHANGED';
-const DEBUG_GAME_CHANGED = 'DEBUG_GAME_CHANGED';
+const GAME_SCHEDULE_CHANGED = (id: string) => `GAME_SCHEDULE_CHANGED-${id}`;
 
 export function gameResolver(parent: unknown, args: unknown, ctx: ApolloContext): Game<GameState> {
   if (!ctx.game) {
@@ -34,7 +44,7 @@ export async function debugGameResolver(
   parent: unknown,
   args: unknown,
   ctx: ApolloContext
-): Promise<DebugGame> {
+): Promise<GameSchedule<GameState>> {
   let debugGame = getDebugGame();
   if (!debugGame) {
     await createNewDebugGame();
@@ -50,19 +60,40 @@ export async function createNewDebugGameResolver(
   parent: unknown,
   args: unknown,
   ctx: ApolloContext
-): Promise<DebugGame> {
+): Promise<GameSchedule<GameState>> {
   const debugGame = await createNewDebugGame();
-  await pubsub.publish(DEBUG_GAME_CHANGED, debugGame);
+  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
   return debugGame;
 }
 
-export const DebugGameChangesResolver = {
+interface GameScheduleArguments {
+  scheduleID: string;
+}
+
+export async function gameScheduleResolver(
+  parent: unknown,
+  args: GameScheduleArguments,
+  ctx: ApolloContext
+): Promise<GameSchedule<GameState>> {
+  const gameSchedule = getGameSchedule(args.scheduleID);
+  if (!gameSchedule) {
+    throw new GameScheduleNotFoundError();
+  }
+  return Promise.resolve(gameSchedule);
+}
+
+interface GameScheduleChangesArguments {
+  scheduleID: string;
+}
+
+export const gameScheduleChangesResolver = {
   subscribe: (
     model: unknown,
-    args: unknown,
+    args: GameScheduleChangesArguments,
     context: ApolloContext,
     info: GraphQLResolveInfo
-  ): AsyncIterator<unknown, unknown, undefined> => pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
+  ): AsyncIterator<unknown, unknown, undefined> =>
+    pubsub.asyncIterator([GAME_SCHEDULE_CHANGED(args.scheduleID)]),
 };
 
 interface GamePatchArguments {
@@ -82,15 +113,6 @@ export const gamePatchResolver = {
     }
     return pubsub.asyncIterator([GAME_STATE_CHANGED]);
   },
-};
-
-export const debugGameChangesResolver = {
-  subscribe: (
-    model: unknown,
-    args: unknown,
-    context: ApolloContext,
-    info: GraphQLResolveInfo
-  ): AsyncIterator<unknown, unknown, undefined> => pubsub.asyncIterator([DEBUG_GAME_CHANGED]),
 };
 
 interface PlayArguments {
