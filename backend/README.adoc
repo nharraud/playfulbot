@@ -1,0 +1,103 @@
+Requirements
+------------
+
+1. A User needs to have tokens which she/he will then provide to her/his bot.
+2. Bots and Users can play a game as a given player. The game needs to know if the User/Bot is allowed to play as this player.
+3. Some games can allow multiple players to play simultaneously.
+4. Users might play multiple players in debug mode.
+5. Points 3 and 4 imply that the User needs to say which player she/he wants to play.
+6. The token used by bots is used to create the connection which will last until every game is finished. Thus it needs to contain an identifier which can be used by the backend to identify which player the bot can for during each game.
+7. When Users and Bots are rescheduled from one game to the next their player number might change. Thus we can't use playerNumber as identifier. We need a unique identifier.
+
+
+Design
+------
+
+Game State
+~~~~~~~~~~
+- A Game State is just a JSON object.
+- A Game State has a flag indicating if the game is ongoing or finished.
+- A Game State has one or more Player Spots.
+- A Game State is not dependent on who are the Players.
+
+Game
+~~~~
+- A Game has a Game State.
+- A Game can be reset to a past or future state by just replacing its state.
+- A Game has one or more Players.
+- A Game links Players to Player Spots in the Game State.
+- A single Player can control multiple Player Spots. This is useful when a user debugs a bot, as she/he can control multiple oponent players at the same time.
+
+Player Spots
+~~~~~~~~~~~~
+- Each Player spot has a unique number.
+- Each Player spot has a flag indicating if the corresponding player is currently playing.
+- Multiple Player spots can play at the same time if the game allows it.
+
+Players
+~~~~~~~
+- A Player is either a bot or a user.
+- A Player has a unique identifier.
+
+User
+~~~~
+- A User belongs to a Team.
+- A User is authenticated via a browser.
+- A User has a User Token. It enables the server to recognize her/him at every request.
+
+Bot
+~~~
+- A Bot is owned by a Team.
+- A Bot connects to a Game Schedule using a token.
+
+Team
+~~~~
+- A Team regroups multiple Users and their Bots.
+- A Team can be composed of a single User or multiple Users.
+
+Tournament
+~~~~~~~~~~
+- Users join a Tournament and form Teams.
+- Teams fight in the Tournament Arena to win.
+- Teams can train in the Training Arena
+- Teams can test and debug their Bots in their own Debug Arenas.
+
+Game Schedule
+~~~~~~~~~~~~~
+- A Game Schedule is a sequence of Game to which subscribers play.
+- Multiple Players can subscribe to a single Game Schedule. They move together from Game to Game.
+- There are two kinds of Game Schedule: Debug Game Schedule and Versus Game Schedule.
+
+Debug Arena
+~~~~~~~~~~~
+- A Team has one Debug Arena per User in the Team.
+- Every User in a Team has access to every Debug Arena of this Team.
+- A Debug Arena runs successive Games. Users control when a new Game is started.
+- Users can configure the Game which will be started.
+- A Debug Arena has a single Game Schedule to which every Player connects.
+- A Debug Arena provides tokens for each Player Spot so that Bots can play them.
+
+Training Arena
+~~~~~~~~~~~~~~
+- Multiple Teams can connect to the Training Arena whenever they want.
+- Once every player is connected, Teams can start a Game against another Team of their choice. The other Team has to accept the Challenge.
+- Each Team has a single Game Schedule in the Training Arena. Team's Bots and Users connect to this Game Schedule. Every time a new Game is accepted the Game Schedule sends this Game to every player.
+
+Tournament Arena
+~~~~~~~~~~~~~~~~
+- The Tournament Arena opens only once.
+- Games in the Tournament Arena are scheduled automatically.
+- The Team winning the most Games in the Tournament Arena wins the Tournament.
+- Once a winning Team is chosen the Tournament is closed.
+- Each Team has a single Game Schedule in the Tournament Arena. Team's Bots and Users connect to this Game Schedule. Every time a new Game is accepted the Game Schedule sends this Game to every player.
+
+
+User Token
+~~~~~~~~~~
+- A user token contains the user ID. This user ID plays also the role of Player ID.
+
+Bot Token
+~~~~~~~~~
+- A Bot token contains a unique Player ID.
+- The PlayerID is unique to a Game Schedule. => The Token is different for the Debug Arena, Training Arena and Contest Arena.
+
