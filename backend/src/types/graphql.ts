@@ -23,6 +23,16 @@ export interface Game<GS extends GameState> {
   gameState: GS;
 }
 
+export interface GamePatch {
+  gameID: number;
+  version: number;
+  patch: JSON;
+}
+
+export interface GamePatchSubscriptionData {
+  gamePatch: GamePatch;
+}
+
 export interface GameSchedule<GS extends GameState> {
   id: string;
   game: Game<GS>;

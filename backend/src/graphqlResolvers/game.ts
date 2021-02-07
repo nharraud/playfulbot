@@ -2,6 +2,9 @@ import * as jsonpatch from 'fast-json-patch';
 
 import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 import { GraphQLResolveInfo } from 'graphql';
+
+import { withTransform } from '~playfulbot/withTransform';
+
 import { actions } from '~playfulbot/games/tictactoe';
 
 import {
@@ -15,7 +18,7 @@ import { ApolloContext } from '~playfulbot/types/apolloTypes';
 
 import { GameState } from '~playfulbot/types/gameState';
 
-import { Game, GameSchedule } from '~playfulbot/types/graphql';
+import { Game, GamePatchSubscriptionData, GameSchedule } from '~playfulbot/types/graphql';
 
 import {
   getGame,
@@ -101,18 +104,21 @@ interface GamePatchArguments {
 }
 
 export const gamePatchResolver = {
-  subscribe: (
-    model: unknown,
-    args: GamePatchArguments,
-    context: ApolloContext,
-    info: GraphQLResolveInfo
-  ): AsyncIterator<unknown, unknown, undefined> => {
-    const game = getGame(args.gameID);
-    if (!game) {
-      throw new GameNotFoundError();
-    }
-    return pubsub.asyncIterator([GAME_STATE_CHANGED]);
-  },
+  subscribe: withTransform<GamePatchSubscriptionData>(
+    (
+      model: unknown,
+      args: GamePatchArguments,
+      context: ApolloContext,
+      info: GraphQLResolveInfo
+    ): AsyncIterator<GamePatchSubscriptionData, unknown, undefined> => {
+      const game = getGame(args.gameID);
+      if (!game) {
+        throw new GameNotFoundError();
+      }
+      return pubsub.asyncIterator([GAME_STATE_CHANGED]);
+    },
+    (payload, variable, context, info) => payload // FIXME: remove any field which should not be visible to the current player
+  ),
 };
 
 interface PlayArguments {
