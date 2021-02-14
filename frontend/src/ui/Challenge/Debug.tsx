@@ -26,15 +26,14 @@ const useStyles = makeStyles((theme) => ({
 export default function Debug() {
   const classes = useStyles();
 
-  const { playAction, createDebugGame, loading, error, data } = useDebugGame();
-  const gameProps = { playAction, data };
+  const { playAction, createDebugGame, loading, error, gameSchedule } = useDebugGame();
   const ref = React.createRef();
   let content = null;
   if (!loading && !error) {
     content = (
       <>
-        <GameCanvas game={gameProps}/>
-        <DebugBottomDrawer createDebugGame={createDebugGame} game={gameProps?.data}/>
+        <GameCanvas playAction={playAction} game={gameSchedule?.game}  />
+        <DebugBottomDrawer createDebugGame={createDebugGame} gameSchedule={gameSchedule} />
       </>
     )
   }

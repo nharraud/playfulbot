@@ -1,39 +1,25 @@
-import { GameState } from '~playfulbot/types/gameState';
+import { GameID, PlayerID, UserID } from '~playfulbot/types/backend';
+import { GameState } from './gameState';
+import { JWToken } from './token';
 
-export interface User {
-  id: string;
+export interface UserResult {
+  id: UserID;
   username: string;
 }
 
 export interface LoginResult {
-  user: User;
-  token: string;
+  user: UserResult;
+  token: JWToken;
 }
 
-export interface Player {
+export interface PlayerAssignmentResult {
+  playerID: PlayerID;
   playerNumber: number;
-  user: User;
-  token: string;
 }
 
-export interface Game<GS extends GameState> {
-  id: string;
+export interface GameResult<GS extends GameState> {
+  id: GameID;
   version: number;
-  players: Player[];
+  assignments: PlayerAssignmentResult[];
   gameState: GS;
-}
-
-export interface GamePatch {
-  gameID: number;
-  version: number;
-  patch: JSON;
-}
-
-export interface GamePatchSubscriptionData {
-  gamePatch: GamePatch;
-}
-
-export interface GameSchedule<GS extends GameState> {
-  id: string;
-  game: Game<GS>;
 }

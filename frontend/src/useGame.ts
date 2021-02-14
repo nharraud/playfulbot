@@ -1,17 +1,23 @@
 import { useCallback } from 'react';
 import { applyPatch } from 'fast-json-patch';
 import { useQuery, useMutation, useSubscription, gql } from '@apollo/client';
+import { useAuthenticatedUser } from './hooksAndQueries/authenticatedUser';
 
 export default function useDebugGame() {
+  const { authenticatedUser } = useAuthenticatedUser();
+
   const GAME_QUERY = gql`
-    query GetGame {
-      debugGame {
+    query GetGame($userID: ID!) {
+      debugGame(userID: $userID) {
         id
+        players {
+          id, token
+        }
         game {
           id
           version,
-          players {
-            playerNumber, token
+          assignments {
+            playerID, playerNumber
           }
           gameState
         }
@@ -19,14 +25,17 @@ export default function useDebugGame() {
     }
   `;
 
-  const { loading, error, data } = useQuery(GAME_QUERY);
+  const { loading, error, data } = useQuery(GAME_QUERY, {
+    variables: { userID: authenticatedUser ? authenticatedUser.id : null },
+    skip: !authenticatedUser || !authenticatedUser.id
+  });
   useGameScheduleSubscription(data?.debugGame?.id);
   useGameSubscription(data?.debugGame?.game?.id);
 
   const playAction = usePlayAction(data?.debugGame.game);
   const createDebugGame = useCreateDebugGame();
 
-  return { playAction, createDebugGame, loading, error, data: data?.debugGame.game };
+  return { playAction, createDebugGame, loading, error, gameSchedule: data?.debugGame };
 }
 
 
@@ -35,11 +44,14 @@ function useGameScheduleSubscription(scheduleID: string) {
     subscription onGameScheduleChanges($scheduleID: ID!) {
       gameScheduleChanges(scheduleID: $scheduleID) {
         id
+        players {
+          id, token
+        }
         game {
           id
           version,
-          players {
-            playerNumber, token
+          assignments {
+            playerID, playerNumber
           }
           gameState
         }
@@ -112,18 +124,20 @@ function useGameSubscription(gameID: string) {
 function usePlayAction(game) {
 
   const ACTION_MUTATION = gql`
-    mutation Play($gameID: ID!, $player: Int!, $action: String!, $data: JSON!) {
-      play(gameID: $gameID, player: $player, action: $action, data: $data)
+    mutation Play($gameID: ID!, $playerID: ID!, $action: String!, $data: JSON!) {
+      play(gameID: $gameID, playerID: $playerID, action: $action, data: $data)
     }
   `;
 
-  const [playMutation, result/*{ playLoading, playError }*/] = useMutation<any, any>(ACTION_MUTATION);
+  const [playMutation, result/*, { playLoading, playError }*/] = useMutation<any, any>(ACTION_MUTATION);
+  console.log(result);
 
   const playAction = useCallback(
     (action, data) =>  {
       console.log("Playing " + action);
-      const player = game.gameState.players.findIndex((player) => player.playing);
-      playMutation({ variables: { gameID: game.id, player: player, action, data } });
+      const playerNumber = game.gameState.players.findIndex((player) => player.playing);
+      const assignment = game.assignments.find((assign) => assign.playerNumber === playerNumber)
+      playMutation({ variables: { gameID: game.id, playerID: assignment.playerID, action, data } });
     }
   , [playMutation, game]);
 
@@ -137,11 +151,14 @@ function useCreateDebugGame() {
     mutation CreateNewDebugGame {
       createNewDebugGame {
         id
+        players {
+          id, token
+        }
         game {
           id
           version,
-          players {
-            playerNumber, token
+          assignments {
+            playerID, playerNumber
           }
           gameState
         }

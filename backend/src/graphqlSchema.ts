@@ -6,25 +6,24 @@ const typeDefs = gql`
   scalar JSON
 
   type User {
-    id: ID
-    username: String
+    id: ID!
+    username: String!
   }
 
   type LoginResult {
-    user: User
-    token: String
+    user: User!
+    token: String!
   }
 
-  type Player {
+  type PlayerAssignment {
+    playerID: String!
     playerNumber: Int!
-    user: User!
-    token: String
   }
 
   type Game {
     id: ID
     version: Int!
-    players: [Player!]!
+    assignments: [PlayerAssignment!]!
     gameState: JSON!
   }
 
@@ -35,15 +34,21 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    play(gameID: ID!, player: Int!, action: String!, data: JSON!): Boolean
+    play(gameID: ID!, playerID: ID!, action: String!, data: JSON!): Boolean
     createNewDebugGame: GameSchedule
 
     login(username: String!, password: String!): LoginResult
     logout: Boolean
   }
 
+  type Player {
+    id: String
+    token: String
+  }
+
   type GameSchedule {
     id: ID!
+    players: [Player]
     game: Game
   }
 
@@ -54,7 +59,7 @@ const typeDefs = gql`
 
   type Query {
     game(gameID: ID): Game
-    debugGame: GameSchedule
+    debugGame(userID: ID!): GameSchedule
     gameSchedule(scheduleID: ID!): GameSchedule
     authenticatedUser: User
   }

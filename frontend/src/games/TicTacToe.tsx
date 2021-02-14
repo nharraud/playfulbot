@@ -4,7 +4,7 @@ import Text from '../Text';
 export default function TicTacToe(props) {
 
     function fillSpace(idx) {
-      props.game.playAction("fillSpace", {space: idx})
+      props.playAction("fillSpace", {space: idx})
     }
 
     const loadingWidget = (
@@ -24,7 +24,7 @@ export default function TicTacToe(props) {
           Tic Tac Toe
         </Text>
         {
-          props.game.data.gameState.grid.map((cell, index) => {
+          props.game.gameState.grid.map((cell, index) => {
             if (cell === "x") {
               return (
                 <group

@@ -17,7 +17,7 @@ export default function GameCanvas(props) {
     <color attach="background" args={[0,0,0]} />
     <pointLight position={[10, -10, 10]} />
     <apolloContext.Provider value={aplloContextValue}>
-      <TicTacToe game={props.game}/>
+      <TicTacToe {...props} />
     </apolloContext.Provider>
   </Canvas>
   );

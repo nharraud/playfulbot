@@ -43,3 +43,9 @@ export class UserNotFoundError extends NotFoundError {
     super('User not found');
   }
 }
+
+export class InvalidRequest extends ApolloError {
+  constructor(message: string, additionalProperties?: Record<string, unknown>) {
+    super(message, 'INVALID_REQUEST', additionalProperties);
+  }
+}

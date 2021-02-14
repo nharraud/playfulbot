@@ -1,19 +1,22 @@
-import { AuthenticationError } from 'apollo-server-koa';
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import { users } from '~playfulbot/Model/Users';
-import { User } from '~playfulbot/types/graphql';
+import { AuthenticationError, ForbiddenError } from 'apollo-server-koa';
+import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { getUserById } from '~playfulbot/Model/Users';
+import { UserResult } from '~playfulbot/types/graphql';
 
 export function authenticatedUserResolver(
   parent: unknown,
   args: unknown,
-  { koaContext, userID }: ApolloContext
-): User {
-  if (userID) {
-    const foundUser = users.find((userElt) => userElt.id === userID);
+  context: ApolloContext
+): UserResult {
+  if (!isUserContext(context)) {
+    throw new ForbiddenError('Only users are allowed to retrieve the current user');
+  }
+  if (context.userID) {
+    const foundUser = getUserById(context.userID);
     if (foundUser) {
       return {
         id: foundUser.id,
-        username: foundUser.name,
+        username: foundUser.username,
       };
     }
   }

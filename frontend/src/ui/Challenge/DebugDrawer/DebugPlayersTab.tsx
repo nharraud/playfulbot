@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 
 import CopyToClipboardButton from '../../../utils/CopyToClipboardButton';
 
-import { Game } from 'src/types/graphql';
+import { GameSchedule, PlayerID } from 'src/types/graphql';
 import { GameState } from 'src/types/gameState';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,9 +28,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DebugPlayersTab: React.FunctionComponent<{
-  game: Game<GameState>,
+  gameSchedule: GameSchedule<GameState>,
 }> = (props) => {
   const classes = useStyles();
+
+  function getPlayerNumber(playerID: PlayerID) {
+    const assignment = props.gameSchedule?.game.assignments.find((assign) => assign.playerID === playerID);
+    return assignment?.playerNumber;
+  }
   
   return (
     <div className={classes.root}>
@@ -38,16 +43,20 @@ const DebugPlayersTab: React.FunctionComponent<{
         <Table className={classes.table} size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Player</TableCell>
+              <TableCell>Player Assignment</TableCell>
+              <TableCell>Player ID</TableCell>
               <TableCell>Token</TableCell>
               <TableCell>Connected</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.game.players.map((player) => (
-              <TableRow key={player.playerNumber}>
+            {props.gameSchedule?.players.map((player) => (
+              <TableRow key={player.id}>
                 <TableCell component="th" scope="row">
-                  Player {player.playerNumber}
+                  {`Player ${getPlayerNumber(player.id)}`}
+                </TableCell>
+                <TableCell>
+                  {player.id}
                 </TableCell>
                 <TableCell>
                   <CopyToClipboardButton text={player.token}>

@@ -1,24 +1,21 @@
-import { GameState } from 'src/types/gameState';
+import { GameState } from '~playfulbot/types/gameState';
+import { JWToken } from './token';
 
 export type UserID = string;
 export type PlayerID = string;
 export type TeamID = string;
 export type GameID = string;
 export type GameScheduleID = string;
-export type JWToken = string;
 
 export interface User {
   id: UserID;
   username: string;
-}
-
-export interface LoginResult {
-  user: User;
-  token: JWToken;
+  password: string;
 }
 
 export interface PlayerAssignment {
   playerID: PlayerID;
+  userID?: UserID;
   playerNumber: number;
 }
 
@@ -27,6 +24,7 @@ export interface Game<GS extends GameState> {
   version: number;
   assignments: PlayerAssignment[];
   gameState: GS;
+  gameSchedules: GameScheduleID[];
 }
 
 export interface GamePatch {

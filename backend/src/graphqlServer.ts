@@ -13,17 +13,17 @@ import {
   ContextParams,
   ApolloContext,
 } from '~playfulbot/types/apolloTypes';
+import { isBotJWToken, isUserJWToken } from './types/token';
+import { InvalidRequest } from './errors';
 
 export default new ApolloServer({
   typeDefs,
   resolvers,
   context: async (params: ContextParams): Promise<ApolloContext> => {
+    // Request from a websocket. It has already been authenticated at connection time.
     if (params.connection) {
-      // Request from a websocket. It has already been authenticated at connection time.
       return {
-        userID: params.connection.context.user,
-        game: params.connection.context?.game,
-        playerNumber: params.connection.context?.playerNumber,
+        ...params.connection.context,
       };
     }
     // HTTP request
@@ -37,12 +37,19 @@ export default new ApolloServer({
       const token = headers.authorization.split(' ')[1];
 
       const tokenData = await validateAuthToken(token, params.ctx.cookies.get('JWTFingerprint'));
-      return {
-        koaContext,
-        userID: tokenData.user,
-        game: tokenData?.game,
-        playerNumber: tokenData?.playerNumber,
-      };
+      if (isUserJWToken(tokenData)) {
+        return {
+          koaContext,
+          userID: tokenData.userID,
+        };
+      }
+      if (isBotJWToken(tokenData)) {
+        return {
+          koaContext,
+          ...tokenData,
+        };
+      }
+      throw new Error('Unknown token type');
     }
     return {
       koaContext,
@@ -63,11 +70,17 @@ export default new ApolloServer({
         connectionParams.authToken,
         cookies.get('JWTFingerprint')
       );
-      return Promise.resolve({
-        user: tokenData.user,
-        game: tokenData?.game,
-        playerNumber: tokenData?.playerNumber,
-      });
+      if (isUserJWToken(tokenData)) {
+        return {
+          userID: tokenData.userID,
+        };
+      }
+      if (isBotJWToken(tokenData)) {
+        return {
+          ...tokenData,
+        };
+      }
+      throw new InvalidRequest('Invalid JWToken');
     },
   },
 });

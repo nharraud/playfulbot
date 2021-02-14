@@ -8,11 +8,13 @@ import bcrypt from 'bcrypt';
 
 import { AuthenticationError } from 'apollo-server-koa';
 
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import { LoginResult } from '~playfulbot/types/graphql';
-import { users } from '~playfulbot/Model/Users';
+import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { GameScheduleID, PlayerID } from '~playfulbot/types/backend';
+import { getUserByName } from '~playfulbot/Model/Users';
 
-import { JWTokenData } from '~playfulbot/types/token';
+import { JWTokenData, isUserJWToken, isBotJWToken, UserJWTokenData } from '~playfulbot/types/token';
+import { LoginResult } from '~playfulbot/types/graphql';
+import { InvalidRequest } from '~playfulbot/errors';
 
 const randomBytes = promisify(crypto.randomBytes);
 const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
@@ -29,7 +31,7 @@ export async function loginResolver(
   args: LoginArguments,
   { koaContext }: ApolloContext
 ): Promise<LoginResult> {
-  const foundUser = users.find((user) => user.name === args.username);
+  const foundUser = getUserByName(args.username);
 
   if (!foundUser) {
     throw new AuthenticationError(`Could not find account: ${args.username}`);
@@ -48,23 +50,27 @@ export async function loginResolver(
   const fingerprintHash = hash.digest('hex');
   hash.end();
 
-  const token = jwt.sign({ user: foundUser.id, JWTFingerprint: fingerprintHash }, SECRET_KEY);
+  const tokenData: UserJWTokenData = { userID: foundUser.id, JWTFingerprint: fingerprintHash };
+
+  const token = jwt.sign(tokenData, SECRET_KEY);
   koaContext.cookies.set('JWTFingerprint', strFingerprint);
   return {
     token: token.toString(),
     user: {
       id: foundUser.id,
-      username: foundUser.name,
+      username: foundUser.username,
     },
   };
 }
 
-export function logoutResolver(
-  parent: unknown,
-  args: unknown,
-  { koaContext, userID }: ApolloContext
-): boolean {
-  koaContext.cookies.set('JWTFingerprint');
+export function logoutResolver(parent: unknown, args: unknown, context: ApolloContext): boolean {
+  if (!isUserContext(context)) {
+    throw new InvalidRequest('Only authenticated users can logout');
+  }
+  if (context.koaContext === undefined) {
+    throw new InvalidRequest('Logout needs to be done via an HTTPS request, not via a websocket.');
+  }
+  context.koaContext.cookies.set('JWTFingerprint');
   return true;
 }
 
@@ -72,7 +78,7 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
   try {
     const tokenData: JWTokenData = (await jwtVerifyAsync(token, SECRET_KEY)) as JWTokenData;
 
-    if (tokenData.JWTFingerprint) {
+    if (isUserJWToken(tokenData)) {
       if (!fingerprint) {
         throw new AuthenticationError('Invalid authorization token: missing fingerprint.');
       }
@@ -84,6 +90,11 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
       if (fingerprintHash !== tokenData.JWTFingerprint) {
         throw new AuthenticationError("Invalid authorization token: fingerprint doesn't match");
       }
+    } else if (
+      isBotJWToken(tokenData) &&
+      (tokenData.gameScheduleID === undefined || tokenData.playerID === undefined)
+    ) {
+      throw new AuthenticationError('Invalid authorization token: token validation failed.');
     }
 
     return tokenData;
@@ -95,6 +106,6 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
   }
 }
 
-export function createPlayerToken(userID: string, playerNumber: number, gameID: string): string {
-  return jwt.sign({ user: userID, game: gameID, playerNumber }, SECRET_KEY);
+export function createPlayerToken(playerID: PlayerID, gameScheduleID: GameScheduleID): string {
+  return jwt.sign({ playerID, gameScheduleID }, SECRET_KEY);
 }
