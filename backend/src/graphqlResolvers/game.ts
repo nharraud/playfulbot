@@ -22,6 +22,7 @@ import {
   GameID,
   GamePatchSubscriptionData,
   GameSchedule,
+  GameScheduleID,
   PlayerID,
 } from '~playfulbot/types/backend';
 
@@ -35,8 +36,8 @@ import { GameResult } from '~playfulbot/types/graphql';
 
 const pubsub = new PubSub();
 
-const GAME_STATE_CHANGED = 'GAME_STATE_CHANGED';
-const GAME_SCHEDULE_CHANGED = (id: string) => `GAME_SCHEDULE_CHANGED-${id}`;
+const GAME_STATE_CHANGED = (id: GameID) => `GAME_STATE_CHANGED-${id}`;
+const GAME_SCHEDULE_CHANGED = (id: GameScheduleID) => `GAME_SCHEDULE_CHANGED-${id}`;
 
 interface gameQueryArguments {
   gameID: GameID;
@@ -136,7 +137,7 @@ export const gamePatchResolver = {
       if (!game) {
         throw new GameNotFoundError();
       }
-      return pubsub.asyncIterator([GAME_STATE_CHANGED]);
+      return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
     },
     (payload, variable, context, info) => payload // FIXME: remove any field which should not be visible to the current player
   ),
@@ -191,7 +192,7 @@ export async function playResolver(
   game.version += 1;
 
   jsonpatch.unobserve(gameState, observer);
-  await pubsub.publish(GAME_STATE_CHANGED, {
+  await pubsub.publish(GAME_STATE_CHANGED(game.id), {
     gamePatch: { patch, gameID: game.id, version: game.version },
   });
 }

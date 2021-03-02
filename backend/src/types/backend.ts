@@ -13,6 +13,12 @@ export interface User {
   password: string;
 }
 
+export interface Team {
+  id: TeamID;
+  name: string;
+  members: User[];
+}
+
 export interface PlayerAssignment {
   playerID: PlayerID;
   userID?: UserID;
@@ -44,6 +50,6 @@ export interface Player {
 
 export interface GameSchedule<GS extends GameState> {
   id: GameScheduleID;
-  game: Game<GS>;
+  game?: Game<GS>;
   players: Player[];
 }

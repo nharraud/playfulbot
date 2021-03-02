@@ -12,6 +12,12 @@ export interface User {
   username: string;
 }
 
+export interface Team {
+  id: TeamID;
+  name: string;
+  members: User[];
+}
+
 export interface LoginResult {
   user: User;
   token: JWToken;

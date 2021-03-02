@@ -4,6 +4,7 @@ import { IResolvers } from 'apollo-server-koa';
 import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
+import { teamResolver } from '~playfulbot/graphqlResolvers/team';
 import {
   gamePatchResolver,
   playResolver,
@@ -20,6 +21,7 @@ const resolvers: IResolvers = {
     gameScheduleChanges: gameScheduleChangesResolver,
   },
   Query: {
+    team: teamResolver,
     game: gameResolver,
     debugGame: debugGameResolver,
     gameSchedule: gameScheduleResolver,

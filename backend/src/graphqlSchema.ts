@@ -10,6 +10,12 @@ const typeDefs = gql`
     username: String!
   }
 
+  type Team {
+    id: ID!
+    name: String!
+    members: [User]!
+  }
+
   type LoginResult {
     user: User!
     token: String!
@@ -42,7 +48,7 @@ const typeDefs = gql`
   }
 
   type Player {
-    id: String
+    id: ID
     token: String
   }
 
@@ -61,6 +67,7 @@ const typeDefs = gql`
     game(gameID: ID): Game
     debugGame(userID: ID!): GameSchedule
     gameSchedule(scheduleID: ID!): GameSchedule
+    team(userID: ID): Team
     authenticatedUser: User
   }
 `;
