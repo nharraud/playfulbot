@@ -13,6 +13,7 @@ import {
   gameResolver,
   gameScheduleResolver,
   gameScheduleChangesResolver,
+  createNewDebugGameForUserResolver,
 } from '~playfulbot/graphqlResolvers/game';
 
 const resolvers: IResolvers = {
@@ -30,6 +31,7 @@ const resolvers: IResolvers = {
   Mutation: {
     play: playResolver,
     createNewDebugGame: createNewDebugGameResolver,
+    createNewDebugGameForUser: createNewDebugGameForUserResolver,
 
     login: loginResolver,
     logout: logoutResolver,

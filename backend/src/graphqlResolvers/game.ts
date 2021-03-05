@@ -91,6 +91,20 @@ export async function createNewDebugGameResolver(
   return debugGame;
 }
 
+interface createNewDebugGameForUserMutationArguments {
+  userID: string;
+}
+
+export async function createNewDebugGameForUserResolver(
+  parent: unknown,
+  args: createNewDebugGameForUserMutationArguments,
+  ctx: ApolloContext
+): Promise<GameSchedule<GameState>> {
+  const debugGame = await createNewDebugGame(args.userID);
+  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
+  return debugGame;
+}
+
 interface GameScheduleQueryArguments {
   scheduleID: string;
 }
