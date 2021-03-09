@@ -48,5 +48,6 @@ module.exports = {
       'WithStatement',
     ],
     'no-param-reassign': ['error', { 'props': false }],
+    'no-underscore-dangle': 'off',
   },
 };

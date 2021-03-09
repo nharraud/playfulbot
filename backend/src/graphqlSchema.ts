@@ -58,8 +58,10 @@ const typeDefs = gql`
     game: Game
   }
 
+  union LiveGame = Game | GamePatch
+
   type Subscription {
-    gamePatch(gameID: ID!): GamePatch
+    gamePatch(gameID: ID!): LiveGame
     gameScheduleChanges(scheduleID: ID!): GameSchedule
   }
 

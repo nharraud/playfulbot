@@ -15,6 +15,8 @@ import {
   gameScheduleChangesResolver,
   createNewDebugGameForUserResolver,
 } from '~playfulbot/graphqlResolvers/game';
+import { GamePatch, isGamePatch, LiveGame } from '~playfulbot/types/backend';
+import { GameState } from '~playfulbot/types/gameState';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -35,6 +37,14 @@ const resolvers: IResolvers = {
 
     login: loginResolver,
     logout: logoutResolver,
+  },
+  LiveGame: {
+    __resolveType(obj: LiveGame<GameState>): string {
+      if (isGamePatch(obj)) {
+        return 'GamePatch';
+      }
+      return 'Game';
+    },
   },
   JSON: GraphQLJSON,
 };

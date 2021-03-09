@@ -39,8 +39,18 @@ export interface GamePatch {
   patch: JSON;
 }
 
-export interface GamePatchSubscriptionData {
-  gamePatch: GamePatch;
+export type LiveGame<GS extends GameState> = Game<GS> | GamePatch;
+
+export function isGamePatch<GS extends GameState>(liveGame: LiveGame<GS>): liveGame is GamePatch {
+  return (liveGame as GamePatch).patch !== undefined;
+}
+
+export function isGame<GS extends GameState>(liveGame: LiveGame<GS>): liveGame is Game<GS> {
+  return (liveGame as Game<GS>).gameState !== undefined;
+}
+
+export interface GamePatchSubscriptionData<GS extends GameState> {
+  gamePatch: LiveGame<GS>;
 }
 
 export interface Player {

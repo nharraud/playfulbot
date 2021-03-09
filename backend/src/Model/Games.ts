@@ -36,7 +36,8 @@ function createNewGame(
 function createNewPlayers(gameScheduleID: string, nbplayers: number): Player[] {
   const result: Player[] = [];
   for (let idx = 0; idx < nbplayers; idx += 1) {
-    const playerID = uuidv4();
+    // const playerID = uuidv4();
+    const playerID = `player_${idx}`;
     result.push({
       id: playerID,
       token: createPlayerToken(playerID, gameScheduleID),

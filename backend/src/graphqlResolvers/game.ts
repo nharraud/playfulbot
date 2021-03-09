@@ -3,6 +3,9 @@ import * as jsonpatch from 'fast-json-patch';
 import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 import { GraphQLResolveInfo } from 'graphql';
 
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { PubSubAsyncIterator } from 'graphql-redis-subscriptions/dist/pubsub-async-iterator';
+
 import { withTransform } from '~playfulbot/withTransform';
 
 import { actions } from '~playfulbot/games/tictactoe';
@@ -33,8 +36,11 @@ import {
   getGameSchedule,
 } from '~playfulbot/Model/Games';
 import { GameResult } from '~playfulbot/types/graphql';
+import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
 
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
+
+const pubsub = new RedisPubSub();
 
 const GAME_STATE_CHANGED = (id: GameID) => `GAME_STATE_CHANGED-${id}`;
 const GAME_SCHEDULE_CHANGED = (id: GameScheduleID) => `GAME_SCHEDULE_CHANGED-${id}`;
@@ -140,21 +146,45 @@ interface GamePatchSubscriptionArguments {
 }
 
 export const gamePatchResolver = {
-  subscribe: withTransform<GamePatchSubscriptionData>(
+  subscribe: withTransform<GamePatchSubscriptionData<GameState>>(
     (
       model: unknown,
       args: GamePatchSubscriptionArguments,
       context: ApolloContext,
       info: GraphQLResolveInfo
-    ): AsyncIterator<GamePatchSubscriptionData, unknown, undefined> => {
+    ): AsyncIterator<GamePatchSubscriptionData<GameState>, unknown, undefined> => {
       const game = getGame(args.gameID);
-      if (!game) {
-        throw new GameNotFoundError();
-      }
-      return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
+      const pubSubIterator = pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
+      return mergeListAndIterator<GamePatchSubscriptionData<GameState>>(
+        [{ gamePatch: game }],
+        pubSubIterator as any
+      );
+      // return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)])
     },
-    (payload, variable, context, info) => payload // FIXME: remove any field which should not be visible to the current player
+    (payload, variable, context, info) => {
+      // console.log(`SENDING PATCH ${payload.gamePatch.version}`);
+      return payload; // FIXME: remove any field which should not be visible to the current player
+    }
   ),
+
+  // withTransform<GamePatchSubscriptionData>(
+  //   (
+  //     model: unknown,
+  //     args: GamePatchSubscriptionArguments,
+  //     context: ApolloContext,
+  //     info: GraphQLResolveInfo
+  //   ): AsyncIterator<GamePatchSubscriptionData, unknown, undefined> => {
+  //     const game = getGame(args.gameID);
+  //     if (!game) {
+  //       throw new GameNotFoundError();
+  //     }
+  //     return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
+  //   },
+  //   function (payload, variable, context, info) {
+  //     console.log(`SENDING PATCH ${payload.gamePatch.version}`)
+  //     return payload; // FIXME: remove any field which should not be visible to the current player
+  //   }
+  // ),
 };
 
 interface PlayMutationArguments {
@@ -186,6 +216,7 @@ export async function playResolver(
   }
 
   const playerState = game.gameState.players[assignment.playerNumber];
+  // console.log(`Player ${assignment.playerNumber.toString()} is playing`);
 
   const gameAction = actions.get(args.action);
 
@@ -197,6 +228,7 @@ export async function playResolver(
   const observer = jsonpatch.observe<GameState>(gameState);
 
   if (!playerState.playing) {
+    // console.log(`Player ${assignment.playerNumber.toString()} Playing out of turn`);
     throw new PlayingOutOfTurn();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,9 +236,17 @@ export async function playResolver(
 
   const patch = jsonpatch.generate(observer);
   game.version += 1;
+  // console.log(`VERSION: ${game.version} END: ${game.gameState.end.toString()}`);
 
   jsonpatch.unobserve(gameState, observer);
-  await pubsub.publish(GAME_STATE_CHANGED(game.id), {
-    gamePatch: { patch, gameID: game.id, version: game.version },
-  });
+
+  // console.log(`PUBLISHING PATCH ${game.version}`);
+  await pubsub
+    .publish(GAME_STATE_CHANGED(game.id), {
+      gamePatch: { patch, gameID: game.id, version: game.version },
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
 }
