@@ -146,6 +146,9 @@ interface GamePatchSubscriptionArguments {
 }
 
 export const gamePatchResolver = {
+  // There is no built-in way to confirm that a subscription is done via Graphql.
+  // See https://github.com/apollographql/subscriptions-transport-ws/issues/451
+  // Thus some messages might be missed. This is why we first send the whole game state
   subscribe: withTransform<GamePatchSubscriptionData<GameState>>(
     (
       model: unknown,
