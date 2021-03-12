@@ -16,9 +16,15 @@ import {
 import { isBotJWToken, isUserJWToken } from './types/token';
 import { InvalidRequest } from './errors';
 
+import logger from '~playfulbot/logging';
+
 export default new ApolloServer({
   typeDefs,
   resolvers,
+  formatError: (err) => {
+    logger.error(err);
+    return err;
+  },
   context: async (params: ContextParams): Promise<ApolloContext> => {
     // Request from a websocket. It has already been authenticated at connection time.
     if (params.connection) {

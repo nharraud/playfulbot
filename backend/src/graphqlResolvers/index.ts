@@ -17,6 +17,7 @@ import {
 } from '~playfulbot/graphqlResolvers/game';
 import { GamePatch, isGamePatch, LiveGame } from '~playfulbot/types/backend';
 import { GameState } from '~playfulbot/types/gameState';
+import { registerUserResolver } from './registration';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -35,6 +36,7 @@ const resolvers: IResolvers = {
     createNewDebugGame: createNewDebugGameResolver,
     createNewDebugGameForUser: createNewDebugGameForUserResolver,
 
+    registerUser: registerUserResolver,
     login: loginResolver,
     logout: logoutResolver,
   },

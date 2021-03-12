@@ -30,6 +30,6 @@ export function createTeam(name: string): Team {
 
 export function addTeamMember(teamID: TeamID, userID: UserID): void {
   const team = getTeamByID(teamID);
-  const user = getUserByID(userID);
-  team.members.push(user);
+  // const user = getUserByID(userID);
+  // team.members.push(user);
 }

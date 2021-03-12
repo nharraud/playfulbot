@@ -43,6 +43,8 @@ const typeDefs = gql`
     play(gameID: ID!, playerID: ID!, action: String!, data: JSON!): Boolean
     createNewDebugGame: GameSchedule
     createNewDebugGameForUser(userID: ID!): GameSchedule
+
+    registerUser(username: String!, password: String!): LoginResult
     login(username: String!, password: String!): LoginResult
     logout: Boolean
   }

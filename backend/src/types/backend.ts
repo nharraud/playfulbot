@@ -10,7 +10,7 @@ export type GameScheduleID = string;
 export interface User {
   id: UserID;
   username: string;
-  password: string;
+  password: Buffer;
 }
 
 export interface Team {

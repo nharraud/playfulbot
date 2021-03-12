@@ -3,16 +3,16 @@ import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { getUserByID } from '~playfulbot/Model/Users';
 import { UserResult } from '~playfulbot/types/graphql';
 
-export function authenticatedUserResolver(
+export async function authenticatedUserResolver(
   parent: unknown,
   args: unknown,
   context: ApolloContext
-): UserResult {
+): Promise<UserResult> {
   if (!isUserContext(context)) {
     throw new ForbiddenError('Only users are allowed to retrieve the current user');
   }
   if (context.userID) {
-    const foundUser = getUserByID(context.userID);
+    const foundUser = await getUserByID(context.userID);
     if (foundUser) {
       return {
         id: foundUser.id,

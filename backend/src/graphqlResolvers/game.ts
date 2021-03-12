@@ -3,7 +3,6 @@ import * as jsonpatch from 'fast-json-patch';
 import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { PubSubAsyncIterator } from 'graphql-redis-subscriptions/dist/pubsub-async-iterator';
 
 import { withTransform } from '~playfulbot/withTransform';
@@ -37,10 +36,9 @@ import {
 } from '~playfulbot/Model/Games';
 import { GameResult } from '~playfulbot/types/graphql';
 import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
+import { pubsub } from '~playfulbot/Model/redis';
 
 // const pubsub = new PubSub();
-
-const pubsub = new RedisPubSub();
 
 const GAME_STATE_CHANGED = (id: GameID) => `GAME_STATE_CHANGED-${id}`;
 const GAME_SCHEDULE_CHANGED = (id: GameScheduleID) => `GAME_SCHEDULE_CHANGED-${id}`;

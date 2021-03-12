@@ -1,24 +1,12 @@
-import koa from 'koa';
-import cors from '@koa/cors';
+/* eslint import/first: "off" */
 
-import apolloServer from '~playfulbot/graphqlServer';
+import dotenv from 'dotenv-flow';
 
-import logger from '~playfulbot/logging';
+dotenv.config();
 
-import { initDemo } from '~playfulbot/Model';
+import { execute } from '~playfulbot/cli';
 
-const app = new koa();
-
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-
-apolloServer.applyMiddleware({ app });
-
-const httpServer = app.listen({ port: 4000 }, () =>
-  logger.info(`🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`)
-);
-
-apolloServer.installSubscriptionHandlers(httpServer);
-
-initDemo().catch((reason) => {
-  console.log(reason);
+execute(process.argv).catch((error: Error) => {
+  console.log(JSON.stringify(error, null, 2));
+  console.log(error.stack);
 });

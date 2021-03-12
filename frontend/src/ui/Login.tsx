@@ -47,7 +47,7 @@ export default function Login(props) {
 
   const submitLogin = event => {
     event.preventDefault();
-    login({ variables: { username: username, password: password } });
+    login(username, password);
   }
 
 
