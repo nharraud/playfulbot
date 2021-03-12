@@ -1,7 +1,7 @@
 /* eslint no-template-curly-in-string: "off" */
 
 import { IDatabase, IMain } from 'pg-promise';
-import { User } from '~playfulbot/types/backend';
+import { User, UserID } from '~playfulbot/types/backend';
 import { DEFAULT } from '~playfulbot/Model/db/repos/helpers';
 
 export class UsersRepository {
@@ -15,11 +15,11 @@ export class UsersRepository {
     return this.db.one(query, { username, password, id: id || DEFAULT });
   }
 
-  async getByName(username: string): Promise<User> {
+  async getByName(username: string): Promise<User | null> {
     return this.db.oneOrNone('SELECT * FROM users WHERE username = $[username]', { username });
   }
 
-  async getByID(id: string): Promise<User> {
+  async getByID(id: UserID): Promise<User | null> {
     return this.db.oneOrNone('SELECT * FROM users WHERE id = $[id]', { id });
   }
 }

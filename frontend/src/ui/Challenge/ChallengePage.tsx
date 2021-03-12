@@ -2,12 +2,12 @@ import React from 'react';
 import { useContext } from 'react';
 
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useRouteMatch,
-    useParams
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useParams
 } from 'react-router-dom';
 
 
@@ -21,15 +21,19 @@ import List from '@material-ui/core/List';
 import ListItemLink from '../../utils/ListItemLink';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import PeopleIcon from '@material-ui/icons/People';
 
 import Debug from './Debug';
 import Info from './Info';
+import TeamSubPage from './TeamSubPage';
 import CodingIcon from '@material-ui/icons/Code';
 import InfoIcon from '@material-ui/icons/Info';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
 import TestIcon from '@material-ui/icons/SlowMotionVideo';
 import BugIcon from '@material-ui/icons/BugReport';
 import { useTournament } from 'src/hooksAndQueries/getTournament';
+import { CircularProgress } from '@material-ui/core';
+import LoadingWidget from '../Loading';
 
 
 const drawerWidth = 240;
@@ -80,7 +84,7 @@ export default function ChallengePage() {
 
   const { tournamentID } = useParams();
 
-  const { tournament } = useTournament(tournamentID);
+  const { loading, error, tournament } = useTournament(tournamentID);
 
   const classes = useStyles();
   const theme = useTheme();
@@ -93,60 +97,80 @@ export default function ChallengePage() {
   };
   const [open, setOpen] = React.useState(false);
 
-  return (
-    <>
-    <MenuBar location={tournament ? `${tournament.name} tournament` : undefined}/>
-    <div className={classes.root}>
-      <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: clsx({
+  let content = undefined;
+  if (tournament) {
+    content = (
+      <div className={classes.root}>
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
             [classes.drawerOpen]: open,
             [classes.drawerClose]: !open,
-          }),
-        }}
-      >
-        <div className={classes.appBarSpacer}></div>
-        <List>
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open,
+            }),
+          }}
+        >
+          <div className={classes.appBarSpacer}></div>
+          <List>
             <ListItemLink button key={'Info'} to={`${match.url}/info`}>
-                <ListItemIcon><InfoIcon fontSize="large"/></ListItemIcon>
-                <ListItemText primary={'Info'} />
+              <ListItemIcon><InfoIcon fontSize="large" /></ListItemIcon>
+              <ListItemText primary={'Info'} />
+            </ListItemLink>
+            <ListItemLink button key={'Team'} to={`${match.url}/team`}>
+              <ListItemIcon><PeopleIcon fontSize="large" /></ListItemIcon>
+              <ListItemText primary={'Team'} />
             </ListItemLink>
             <ListItemLink button key={'Coding'} to={`${match.url}/code`}>
-              <ListItemIcon><CodingIcon fontSize="large"/></ListItemIcon>
+              <ListItemIcon><CodingIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Coding'} />
-            </ListItemLink> 
+            </ListItemLink>
             <ListItemLink button key={'Debug'} to={`${match.url}/debug`}>
-              <ListItemIcon><BugIcon fontSize="large"/></ListItemIcon>
+              <ListItemIcon><BugIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Debug'} />
-            </ListItemLink> 
+            </ListItemLink>
             <ListItemLink button key={'Test'} to={`${match.url}/test`}>
-              <ListItemIcon><TestIcon fontSize="large"/></ListItemIcon>
+              <ListItemIcon><TestIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Test'} />
-            </ListItemLink> 
+            </ListItemLink>
             <ListItemLink button key={'Competition'} to={`${match.url}/compete`}>
-              <ListItemIcon><CompetitionIcon fontSize="large"/></ListItemIcon>
+              <ListItemIcon><CompetitionIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Competition'} />
-            </ListItemLink> 
-        </List>
-      </Drawer>
-      <main
-        className={classes.content}
-      >
-        <Switch>
-          <Route path={`${match.url}/info`}>
-            <Info/>
-          </Route>
-          <Route path={`${match.url}/debug`}>
-            <Debug/>
-          </Route>
-        </Switch>
-      </main>
-    </div>
-  </>
+            </ListItemLink>
+          </List>
+        </Drawer>
+        <main
+          className={classes.content}
+        >
+          <Switch>
+            <Route path={`${match.url}/info`}>
+              <Info />
+            </Route>
+            <Route path={`${match.url}/team`}>
+              <TeamSubPage tournament={tournament} />
+            </Route>
+            <Route path={`${match.url}/debug`}>
+              <Debug />
+            </Route>
+          </Switch>
+        </main>
+      </div>
+    )
+  } else if (loading) {
+    content = <LoadingWidget/>
+  } else if (error) {
+    content = (
+      <p>{ error.message }</p>
+    )
+  }
+
+  return (
+    <>
+      <MenuBar location={tournament ? `${tournament.name} tournament` : undefined} />
+      {content}
+    </>
   )
 }

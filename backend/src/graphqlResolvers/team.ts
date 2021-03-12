@@ -1,11 +1,14 @@
 import { ForbiddenError } from 'apollo-server-koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { Team, UserID } from '~playfulbot/types/backend';
-import { getTeamMemberID } from '~playfulbot/Model/Teams';
+import { Team, TeamID, TournamentID, UserID } from '~playfulbot/types/backend';
 import { InvalidRequest } from '~playfulbot/errors';
+import db from '~playfulbot/Model/db';
+import { userToUserResult } from './transformations';
+import { UserResult } from '~playfulbot/types/graphql';
 
 interface TeamQueryArguments {
   userID: UserID;
+  tournamentID: TournamentID;
 }
 
 export async function teamResolver(
@@ -14,11 +17,24 @@ export async function teamResolver(
   context: ApolloContext
 ): Promise<Team> {
   // if (!isUserContext(context)) {
-  //   throw new ForbiddenError('Only Users can ask for teams.');
+  //   throw new ForbiddenError('Only Users can ask for memberships.');
   // }
-  const team = getTeamMemberID(args.userID);
-  if (team === undefined) {
-    throw new InvalidRequest('User is not part of any team');
+  const team = await db.teams.getByMember(args.userID, args.tournamentID);
+  if (team === null) {
+    throw new InvalidRequest('User is not part of any team in this tournament.');
   }
-  return Promise.resolve(team);
+  return team;
+}
+
+interface TeamMembersQueryArguments {
+  teamID?: TeamID;
+}
+
+export async function teamMembersResolver(
+  parent: Team | undefined,
+  args: TeamMembersQueryArguments,
+  context: ApolloContext
+): Promise<UserResult[]> {
+  const result = await db.teams.getMembers(args.teamID || parent?.id);
+  return result.map(userToUserResult);
 }

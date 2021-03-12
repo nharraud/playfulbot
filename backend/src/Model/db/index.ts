@@ -1,6 +1,6 @@
 import pgPromise, { IInitOptions, IDatabase, IMain } from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
-import { IExtensions, TournamentsRepository, UsersRepository } from './repos';
+import { IExtensions, TeamsRepository, TournamentsRepository, UsersRepository } from './repos';
 
 type DB = IDatabase<IExtensions> & IExtensions;
 
@@ -10,6 +10,7 @@ const initOptions: IInitOptions<IExtensions> = {
     /* eslint-disable no-use-before-define */
     obj.users = new UsersRepository(obj, dbPGP);
     obj.tournaments = new TournamentsRepository(obj, dbPGP);
+    obj.teams = new TeamsRepository(obj, dbPGP);
     /* eslint-enable no-use-before-define */
   },
 };

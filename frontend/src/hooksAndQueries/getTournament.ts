@@ -18,5 +18,5 @@ export function useTournament(id: string) {
       skip: !id,
       variables: { tournamentID: id }
     });
-    return { tournament: data ? data.tournament: null };
+    return { loading, error, tournament: data ? data.tournament: null };
 };

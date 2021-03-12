@@ -1,6 +1,6 @@
 import { createUser } from './Users';
-import { createTeam, addTeamMember } from './Teams';
 import { createTournament } from './Tournaments';
+import db from '~playfulbot/Model/db';
 
 export async function initDemo(): Promise<void> {
   const user11 = await createUser('user11', 'pass11', '00000000-0000-0000-0000-000000000e11');
@@ -10,9 +10,7 @@ export async function initDemo(): Promise<void> {
     'Team Building',
     '00000000-0000-0000-0000-0000000000a1'
   );
-  // const team1 = createTeam('team1');
-  // addTeamMember(team1.id, user11.id);
-  // addTeamMember(team1.id, user12.id);
-  // const team2 = createTeam('team2');
-  // addTeamMember(team2.id, user2.id);
+  const team = await db.teams.add('team 1', tournament.id, '00000000-0000-0000-0000-000000000ea1');
+  await db.teams.addMember(user11.id, team.id);
+  await db.teams.addMember(user12.id, team.id);
 }

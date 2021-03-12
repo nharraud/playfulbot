@@ -4,7 +4,7 @@ import { IResolvers } from 'apollo-server-koa';
 import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
-import { teamResolver } from '~playfulbot/graphqlResolvers/team';
+import { teamMembersResolver, teamResolver } from '~playfulbot/graphqlResolvers/team';
 import {
   gamePatchResolver,
   playResolver,
@@ -42,6 +42,9 @@ const resolvers: IResolvers = {
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
+  },
+  Team: {
+    members: teamMembersResolver,
   },
   LiveGame: {
     __resolveType(obj: LiveGame<GameState>): string {

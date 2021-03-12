@@ -22,7 +22,6 @@ export interface Tournament {
 export interface Team {
   id: TeamID;
   name: string;
-  members: User[];
 }
 
 export interface PlayerAssignment {

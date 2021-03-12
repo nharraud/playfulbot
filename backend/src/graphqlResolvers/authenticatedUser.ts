@@ -2,6 +2,7 @@ import { AuthenticationError, ForbiddenError } from 'apollo-server-koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { getUserByID } from '~playfulbot/Model/Users';
 import { UserResult } from '~playfulbot/types/graphql';
+import { userToUserResult } from './transformations';
 
 export async function authenticatedUserResolver(
   parent: unknown,
@@ -14,10 +15,7 @@ export async function authenticatedUserResolver(
   if (context.userID) {
     const foundUser = await getUserByID(context.userID);
     if (foundUser) {
-      return {
-        id: foundUser.id,
-        username: foundUser.username,
-      };
+      return userToUserResult(foundUser);
     }
   }
   throw new AuthenticationError('User not found');

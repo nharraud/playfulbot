@@ -79,7 +79,7 @@ const typeDefs = gql`
     game(gameID: ID): Game
     debugGame(userID: ID!): GameSchedule
     gameSchedule(scheduleID: ID!): GameSchedule
-    team(userID: ID): Team
+    team(userID: ID!, tournamentID: ID!): Team
     authenticatedUser: User
   }
 `;

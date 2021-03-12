@@ -14,6 +14,7 @@ import Menu from '@material-ui/core/Menu';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
 import { useAuthenticatedUser, useLogout } from '../hooksAndQueries/authenticatedUser';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,6 +31,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     appBarSpacer: theme.mixins.toolbar,
+    userButton: {
+      marginLeft: 'auto'
+    }
   }),
 );
 
@@ -79,7 +83,7 @@ export default function MenuAppBar(props: { location?: string}) {
             Playful Bot
           </Typography> */}
           {authenticatedUser && (
-            <div>
+            <Box className={classes.userButton}>
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -108,7 +112,7 @@ export default function MenuAppBar(props: { location?: string}) {
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
-            </div>
+            </Box>
           )}
         </Toolbar>
       </AppBar>
