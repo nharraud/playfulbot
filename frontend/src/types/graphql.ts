@@ -1,6 +1,7 @@
 import { GameState } from 'src/types/gameState';
 
 export type UserID = string;
+export type TournamentID = string;
 export type PlayerID = string;
 export type TeamID = string;
 export type GameID = string;
@@ -10,6 +11,11 @@ export type JWToken = string;
 export interface User {
   id: UserID;
   username: string;
+}
+
+export interface Tournament {
+  id: TournamentID;
+  name: string;
 }
 
 export interface Team {

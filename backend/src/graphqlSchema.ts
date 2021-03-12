@@ -10,6 +10,11 @@ const typeDefs = gql`
     username: String!
   }
 
+  type Tournament {
+    id: ID!
+    name: String!
+  }
+
   type Team {
     id: ID!
     name: String!
@@ -47,6 +52,8 @@ const typeDefs = gql`
     registerUser(username: String!, password: String!): LoginResult
     login(username: String!, password: String!): LoginResult
     logout: Boolean
+
+    createTournament(name: String!): Tournament
   }
 
   type Player {
@@ -68,6 +75,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    tournament(tournamentID: ID): Tournament
     game(gameID: ID): Game
     debugGame(userID: ID!): GameSchedule
     gameSchedule(scheduleID: ID!): GameSchedule

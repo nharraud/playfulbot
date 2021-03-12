@@ -18,6 +18,7 @@ import {
 import { GamePatch, isGamePatch, LiveGame } from '~playfulbot/types/backend';
 import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
+import { createTournamentResolver, tournamentResolver } from './tournaments';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -30,6 +31,7 @@ const resolvers: IResolvers = {
     debugGame: debugGameResolver,
     gameSchedule: gameScheduleResolver,
     authenticatedUser: authenticatedUserResolver,
+    tournament: tournamentResolver,
   },
   Mutation: {
     play: playResolver,
@@ -39,6 +41,7 @@ const resolvers: IResolvers = {
     registerUser: registerUserResolver,
     login: loginResolver,
     logout: logoutResolver,
+    createTournament: createTournamentResolver,
   },
   LiveGame: {
     __resolveType(obj: LiveGame<GameState>): string {

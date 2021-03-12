@@ -6,3 +6,9 @@ CREATE TABLE users (
   password BYTEA NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE tournaments (
+  id uuid DEFAULT uuid_generate_v4() NOT NULL UNIQUE,
+  name VARCHAR(15) NOT NULL UNIQUE,
+  PRIMARY KEY (id)
+);

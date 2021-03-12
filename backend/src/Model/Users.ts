@@ -12,10 +12,10 @@ export async function createUser(name: string, password: string, id?: UserID): P
   return user;
 }
 
-export function getUserByName(username: string): Promise<User> {
+export function getUserByName(username: string): Promise<User | null> {
   return db.users.getByName(username);
 }
 
-export function getUserByID(id: UserID): Promise<User> {
+export function getUserByID(id: UserID): Promise<User | null> {
   return db.users.getByID(id);
 }

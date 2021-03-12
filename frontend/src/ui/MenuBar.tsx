@@ -11,6 +11,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
 import { useAuthenticatedUser, useLogout } from '../hooksAndQueries/authenticatedUser';
 
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function MenuAppBar() {
+export default function MenuAppBar(props: { location?: string}) {
   const classes = useStyles();
   const { authenticatedUser } = useAuthenticatedUser();
   const { logout } = useLogout();
@@ -51,6 +52,18 @@ export default function MenuAppBar() {
     logout();
   };
 
+  let locationWidget = undefined;
+  if (props.location) {
+    locationWidget = (
+      <>
+      <ArrowForwardIosRoundedIcon fontSize="small" color="secondary" />
+      <Typography variant="h6">
+        { props.location }
+      </Typography>
+      </>
+    )
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
@@ -61,9 +74,10 @@ export default function MenuAppBar() {
           <Typography variant="h6">
             Playful Bot
           </Typography>
-          <Typography variant="h6" className={classes.title}>
+          {locationWidget}
+          {/* <Typography variant="h6" className={classes.title}>
             Playful Bot
-          </Typography>
+          </Typography> */}
           {authenticatedUser && (
             <div>
               <IconButton

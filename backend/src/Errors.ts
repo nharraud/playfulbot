@@ -38,6 +38,12 @@ export class GameNotFoundError extends NotFoundError {
   }
 }
 
+export class TournamentNotFoundError extends NotFoundError {
+  constructor() {
+    super('Tournament not found');
+  }
+}
+
 export class UserNotFoundError extends NotFoundError {
   constructor() {
     super('User not found');

@@ -2,6 +2,7 @@ import { GameState } from '~playfulbot/types/gameState';
 import { JWToken } from './token';
 
 export type UserID = string;
+export type TournamentID = string;
 export type PlayerID = string;
 export type TeamID = string;
 export type GameID = string;
@@ -11,6 +12,11 @@ export interface User {
   id: UserID;
   username: string;
   password: Buffer;
+}
+
+export interface Tournament {
+  id: TournamentID;
+  name: string;
 }
 
 export interface Team {

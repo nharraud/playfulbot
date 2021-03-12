@@ -14,6 +14,7 @@ import {
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
+import MenuBar from '../MenuBar';
 
 import List from '@material-ui/core/List';
 // import ListItemLink from '@material-ui/core/ListItem';
@@ -28,6 +29,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
 import TestIcon from '@material-ui/icons/SlowMotionVideo';
 import BugIcon from '@material-ui/icons/BugReport';
+import { useTournament } from 'src/hooksAndQueries/getTournament';
 
 
 const drawerWidth = 240;
@@ -76,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ChallengePage() {
   let match = useRouteMatch();
 
+  const { tournamentID } = useParams();
+
+  const { tournament } = useTournament(tournamentID);
+
   const classes = useStyles();
   const theme = useTheme();
   const handleDrawerOpen = () => {
@@ -88,6 +94,8 @@ export default function ChallengePage() {
   const [open, setOpen] = React.useState(false);
 
   return (
+    <>
+    <MenuBar location={tournament ? `${tournament.name} tournament` : undefined}/>
     <div className={classes.root}>
       <Drawer
         variant="permanent"
@@ -139,5 +147,6 @@ export default function ChallengePage() {
         </Switch>
       </main>
     </div>
+  </>
   )
 }

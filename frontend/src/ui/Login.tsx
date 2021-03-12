@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import MenuBar from './MenuBar';
 import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/authenticatedUser';
 
 
@@ -52,6 +53,8 @@ export default function Login(props) {
 
 
   return (
+    <>
+    <MenuBar />
     <div className={classes.root}>
       {authenticatedUser ? authenticatedUser.username: "LOGGED OUT"}
       { result.error ? JSON.stringify(result.error): null}
@@ -83,5 +86,6 @@ export default function Login(props) {
         </Grid>
       </Grid>
     </div>
+    </>
   );
 }
