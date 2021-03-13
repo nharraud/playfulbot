@@ -1,26 +1,26 @@
 // import { newDebugGameResolver } from "~playfulbot/graphqlResolvers/game";
 import { v4 as uuidv4 } from 'uuid';
 import {
-  GameSchedule,
-  Game,
+  DbGameSchedule,
+  DbGame,
   UserID,
-  Player,
-  PlayerAssignment,
+  DbPlayer,
+  DbPlayerAssignment,
   GameScheduleID,
-} from '~playfulbot/types/backend';
+} from '~playfulbot/types/database';
 
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
 import { init } from '~playfulbot/games/tictactoe';
 import GameState from '~playfulbot/games/tictactoe/GameState';
 
-const games = new Map<string, Game<GameState>>();
-const debugGames = new Map<UserID, Game<GameState>>();
-const debugGameSchedules = new Map<UserID, GameSchedule<GameState>>();
+const games = new Map<string, DbGame<GameState>>();
+const debugGames = new Map<UserID, DbGame<GameState>>();
+const debugGameSchedules = new Map<UserID, DbGameSchedule<GameState>>();
 
 function createNewGame(
   gameScheduleID: GameScheduleID,
-  playerAssignments: PlayerAssignment[]
-): Game<GameState> {
+  playerAssignments: DbPlayerAssignment[]
+): DbGame<GameState> {
   const id = uuidv4();
   const game = {
     id,
@@ -33,8 +33,8 @@ function createNewGame(
   return game;
 }
 
-function createNewPlayers(gameScheduleID: string, nbplayers: number): Player[] {
-  const result: Player[] = [];
+function createNewPlayers(gameScheduleID: string, nbplayers: number): DbPlayer[] {
+  const result: DbPlayer[] = [];
   for (let idx = 0; idx < nbplayers; idx += 1) {
     // const playerID = uuidv4();
     const playerID = `player_${idx}`;
@@ -46,9 +46,9 @@ function createNewPlayers(gameScheduleID: string, nbplayers: number): Player[] {
   return result;
 }
 
-const gameSchedules = new Map<string, GameSchedule<GameState>>();
+const gameSchedules = new Map<string, DbGameSchedule<GameState>>();
 
-export async function createNewDebugGame(userID: UserID): Promise<GameSchedule<GameState>> {
+export async function createNewDebugGame(userID: UserID): Promise<DbGameSchedule<GameState>> {
   const gameScheduleID = userID;
   let gameSchedule = debugGameSchedules.get(gameScheduleID);
   if (!gameSchedule) {
@@ -61,7 +61,7 @@ export async function createNewDebugGame(userID: UserID): Promise<GameSchedule<G
     gameSchedules.set(gameScheduleID, gameSchedule);
   }
   const oldDebugGame = debugGames.get(userID);
-  let assignments: PlayerAssignment[];
+  let assignments: DbPlayerAssignment[];
   if (oldDebugGame) {
     games.delete(oldDebugGame.id);
     debugGames.delete(oldDebugGame.id);
@@ -80,14 +80,14 @@ export async function createNewDebugGame(userID: UserID): Promise<GameSchedule<G
   return Promise.resolve(gameSchedule);
 }
 
-export function getDebugGame(userID: UserID): GameSchedule<GameState> {
+export function getDebugGame(userID: UserID): DbGameSchedule<GameState> {
   return debugGameSchedules.get(userID);
 }
 
-export function getGameSchedule(id: string): GameSchedule<GameState> {
+export function getGameSchedule(id: string): DbGameSchedule<GameState> {
   return gameSchedules.get(id);
 }
 
-export function getGame(id: string): Game<GameState> {
+export function getGame(id: string): DbGame<GameState> {
   return games.get(id);
 }

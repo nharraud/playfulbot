@@ -1,0 +1,15 @@
+query GetTeam($userID: ID!, $tournamentID: ID!) {
+  team(userID: $userID, tournamentID: $tournamentID) {
+    ... on Team {
+      id
+      name
+      members {
+        id
+        usernames
+      }
+    }
+    ... on UserNotPartOfAnyTeam {
+      message
+    }
+  }
+}

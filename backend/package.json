@@ -7,7 +7,8 @@
     "test": "jest",
     "backend": "nodemon --inspect src/index.ts serve",
     "cli": "node --require ts-node/register --require tsconfig-paths/register src/index.ts",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "gen-graphql": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Nicolas Harraudeau",
   "dependencies": {
@@ -38,6 +39,9 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "1.21.2",
+    "@graphql-codegen/typescript": "1.21.1",
+    "@graphql-codegen/typescript-resolvers": "1.19.0",
     "@types/dotenv-flow": "^3.1.0",
     "@types/ioredis": "^4.22.0",
     "@types/koa": "^2.11.6",

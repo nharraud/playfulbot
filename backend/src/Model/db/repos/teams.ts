@@ -1,29 +1,29 @@
 /* eslint no-template-curly-in-string: "off" */
 
 import { IDatabase, IMain } from 'pg-promise';
-import { Team, TeamID, TournamentID, User, UserID } from '~playfulbot/types/backend';
+import { DbTeam, TeamID, TournamentID, DbUser, UserID } from '~playfulbot/types/database';
 import { DEFAULT } from '~playfulbot/Model/db/repos/helpers';
 
 export class TeamsRepository {
   // eslint-disable-next-line no-useless-constructor
   constructor(private db: IDatabase<unknown>, private pgp: IMain) {}
 
-  async add(name: string, tournamentID: string, teamID: string = undefined): Promise<Team> {
+  async add(name: string, tournamentID: string, teamID: string = undefined): Promise<DbTeam> {
     const query = `INSERT INTO teams(id, tournament_id, name)
                    VALUES($[team_id], $[tournament_id], $[name])
                    RETURNING *`;
     return this.db.one(query, { name, tournament_id: tournamentID, team_id: teamID || DEFAULT });
   }
 
-  async getByName(name: string): Promise<Team | null> {
+  async getByName(name: string): Promise<DbTeam | null> {
     return this.db.oneOrNone('SELECT * FROM teams WHERE name = $[name]', { name });
   }
 
-  async getByID(teamID: TeamID): Promise<Team | null> {
+  async getByID(teamID: TeamID): Promise<DbTeam | null> {
     return this.db.oneOrNone('SELECT * FROM teams WHERE id = $[id]', { team_id: teamID });
   }
 
-  async getByMember(userID: UserID, tournamentID: TournamentID): Promise<Team | null> {
+  async getByMember(userID: UserID, tournamentID: TournamentID): Promise<DbTeam | null> {
     const query = `SELECT teams.* FROM teams
                    JOIN team_memberships ON teams.id = team_memberships.team_id
                    WHERE team_memberships.user_id = $[user_id]
@@ -38,7 +38,7 @@ export class TeamsRepository {
     await this.db.one(query, { user_id: userID, team_id: teamID });
   }
 
-  async getMembers(teamID: TeamID): Promise<User[]> {
+  async getMembers(teamID: TeamID): Promise<DbUser[]> {
     const query = `SELECT users.* FROM team_memberships
                    JOIN users ON users.id = team_memberships.user_id
                    WHERE team_memberships.team_id = $[team_id]`;

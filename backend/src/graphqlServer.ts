@@ -3,9 +3,10 @@ import Cookies from 'cookies';
 import { ApolloServer, AuthenticationError } from 'apollo-server-koa';
 
 import { ConnectionContext } from 'subscriptions-transport-ws';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { validateAuthToken } from '~playfulbot/graphqlResolvers/authentication';
 
-import typeDefs from '~playfulbot/graphqlSchema';
 import resolvers from '~playfulbot/graphqlResolvers';
 import {
   WSConnectionParams,
@@ -17,6 +18,9 @@ import { isBotJWToken, isUserJWToken } from './types/token';
 import { InvalidRequest } from './errors';
 
 import logger from '~playfulbot/logging';
+
+// we must convert the file Buffer to a UTF-8 string
+const typeDefs = readFileSync(join(__dirname, 'graphqlSchema.graphql')).toString('utf-8');
 
 export default new ApolloServer({
   typeDefs,

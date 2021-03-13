@@ -1,4 +1,4 @@
-import { GameScheduleID, PlayerID, UserID } from './backend';
+import { GameScheduleID, PlayerID, UserID } from './database';
 
 export type JWToken = string;
 

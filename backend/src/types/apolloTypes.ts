@@ -1,5 +1,5 @@
 import { Context as KoaContext } from 'koa';
-import { GameScheduleID, PlayerID, UserID } from './backend';
+import { GameScheduleID, PlayerID, UserID } from './database';
 
 export type ApolloUnauthenticatedContext = {
   koaContext: KoaContext;

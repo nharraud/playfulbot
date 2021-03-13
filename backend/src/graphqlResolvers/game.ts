@@ -20,13 +20,7 @@ import { ApolloContext, isBotContext, isUserContext } from '~playfulbot/types/ap
 
 import { GameState } from '~playfulbot/types/gameState';
 
-import {
-  GameID,
-  GamePatchSubscriptionData,
-  GameSchedule,
-  GameScheduleID,
-  PlayerID,
-} from '~playfulbot/types/backend';
+import { GameID, GameScheduleID } from '~playfulbot/types/database';
 
 import {
   getGame,
@@ -34,7 +28,7 @@ import {
   createNewDebugGame,
   getGameSchedule,
 } from '~playfulbot/Model/Games';
-import { GameResult } from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/types/graphql';
 import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
 import { pubsub } from '~playfulbot/Model/redis';
 
@@ -43,15 +37,7 @@ import { pubsub } from '~playfulbot/Model/redis';
 const GAME_STATE_CHANGED = (id: GameID) => `GAME_STATE_CHANGED-${id}`;
 const GAME_SCHEDULE_CHANGED = (id: GameScheduleID) => `GAME_SCHEDULE_CHANGED-${id}`;
 
-interface gameQueryArguments {
-  gameID: GameID;
-}
-
-export function gameResolver(
-  parent: unknown,
-  args: gameQueryArguments,
-  ctx: ApolloContext
-): GameResult<GameState> {
+export const gameResolver: gqlTypes.QueryResolvers<ApolloContext>['game'] = (parent, args, ctx) => {
   if (!args.gameID) {
     throw new UserInputError('No game ID provided');
   }
@@ -60,17 +46,13 @@ export function gameResolver(
     throw new GameNotFoundError();
   }
   return game;
-}
+};
 
-interface debugGameQueryArguments {
-  userID: string;
-}
-
-export async function debugGameResolver(
-  parent: unknown,
-  args: debugGameQueryArguments,
-  ctx: ApolloContext
-): Promise<GameSchedule<GameState>> {
+export const debugGameResolver: gqlTypes.QueryResolvers<ApolloContext>['debugGame'] = async (
+  parent,
+  args,
+  ctx
+) => {
   let debugGame = getDebugGame(args.userID);
   if (!debugGame) {
     await createNewDebugGame(args.userID);
@@ -80,62 +62,45 @@ export async function debugGameResolver(
     return debugGame;
   }
   throw new Error('Not implemented');
-}
+};
 
-export async function createNewDebugGameResolver(
-  parent: unknown,
-  args: unknown,
-  ctx: ApolloContext
-): Promise<GameSchedule<GameState>> {
+export const createNewDebugGameResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGame'] = async (
+  parent,
+  args,
+  ctx
+) => {
   if (!isUserContext(ctx)) {
     throw new ForbiddenError('Only users are allowed to create games');
   }
   const debugGame = await createNewDebugGame(ctx.userID);
   await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
   return debugGame;
-}
+};
 
-interface createNewDebugGameForUserMutationArguments {
-  userID: string;
-}
-
-export async function createNewDebugGameForUserResolver(
-  parent: unknown,
-  args: createNewDebugGameForUserMutationArguments,
-  ctx: ApolloContext
-): Promise<GameSchedule<GameState>> {
+export const createNewDebugGameForUserResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGameForUser'] = async (
+  parent,
+  args,
+  ctx
+) => {
   const debugGame = await createNewDebugGame(args.userID);
   await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
   return debugGame;
-}
+};
 
-interface GameScheduleQueryArguments {
-  scheduleID: string;
-}
-
-export async function gameScheduleResolver(
-  parent: unknown,
-  args: GameScheduleQueryArguments,
-  ctx: ApolloContext
-): Promise<GameSchedule<GameState>> {
+export const gameScheduleResolver: gqlTypes.QueryResolvers<ApolloContext>['gameSchedule'] = async (
+  parent,
+  args,
+  ctx
+) => {
   const gameSchedule = getGameSchedule(args.scheduleID);
   if (!gameSchedule) {
     throw new GameScheduleNotFoundError();
   }
   return Promise.resolve(gameSchedule);
-}
+};
 
-interface GameScheduleChangesSubscriptionArguments {
-  scheduleID: string;
-}
-
-export const gameScheduleChangesResolver = {
-  subscribe: (
-    model: unknown,
-    args: GameScheduleChangesSubscriptionArguments,
-    context: ApolloContext,
-    info: GraphQLResolveInfo
-  ): AsyncIterator<unknown, unknown, undefined> =>
+export const gameScheduleChangesResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['gameScheduleChanges'] = {
+  subscribe: (model, args, context, info) =>
     pubsub.asyncIterator([GAME_SCHEDULE_CHANGED(args.scheduleID)]),
 };
 
@@ -143,64 +108,30 @@ interface GamePatchSubscriptionArguments {
   gameID: string;
 }
 
-export const gamePatchResolver = {
+export interface GamePatchSubscriptionData<GS extends GameState> {
+  gamePatch: gqlTypes.LiveGame<GS>;
+}
+
+export const gamePatchResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['gamePatch'] = {
   // There is no built-in way to confirm that a subscription is done via Graphql.
   // See https://github.com/apollographql/subscriptions-transport-ws/issues/451
   // Thus some messages might be missed. This is why we first send the whole game state
-  subscribe: withTransform<GamePatchSubscriptionData<GameState>>(
-    (
-      model: unknown,
-      args: GamePatchSubscriptionArguments,
-      context: ApolloContext,
-      info: GraphQLResolveInfo
-    ): AsyncIterator<GamePatchSubscriptionData<GameState>, unknown, undefined> => {
-      const game = getGame(args.gameID);
-      const pubSubIterator = pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
-      return mergeListAndIterator<GamePatchSubscriptionData<GameState>>(
-        [{ gamePatch: game }],
-        pubSubIterator as any
-      );
-      // return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)])
-    },
-    (payload, variable, context, info) => {
-      // console.log(`SENDING PATCH ${payload.gamePatch.version}`);
-      return payload; // FIXME: remove any field which should not be visible to the current player
-    }
-  ),
-
-  // withTransform<GamePatchSubscriptionData>(
-  //   (
-  //     model: unknown,
-  //     args: GamePatchSubscriptionArguments,
-  //     context: ApolloContext,
-  //     info: GraphQLResolveInfo
-  //   ): AsyncIterator<GamePatchSubscriptionData, unknown, undefined> => {
-  //     const game = getGame(args.gameID);
-  //     if (!game) {
-  //       throw new GameNotFoundError();
-  //     }
-  //     return pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
-  //   },
-  //   function (payload, variable, context, info) {
-  //     console.log(`SENDING PATCH ${payload.gamePatch.version}`)
-  //     return payload; // FIXME: remove any field which should not be visible to the current player
-  //   }
-  // ),
+  subscribe: (model, args, context, info) => {
+    const game = getGame(args.gameID);
+    const pubSubIterator = pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
+    return mergeListAndIterator<GamePatchSubscriptionData<GameState>>(
+      [{ gamePatch: { __typename: 'Game', ...game } }],
+      pubSubIterator as any
+    );
+  },
 };
 
-interface PlayMutationArguments {
-  gameID: GameID;
-  playerID: PlayerID;
-  action: string;
-  data: Record<string, unknown>;
-}
-
-export async function playResolver(
-  parent: unknown,
-  args: PlayMutationArguments,
-  context: ApolloContext,
-  info: GraphQLResolveInfo
-): Promise<void> {
+export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = async (
+  parent,
+  args,
+  context,
+  info
+) => {
   const game = getGame(args.gameID);
 
   const assignment = game.assignments.find((assign) => assign.playerID === args.playerID);
@@ -233,7 +164,7 @@ export async function playResolver(
     throw new PlayingOutOfTurn();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gameAction.handler(assignment.playerNumber, gameState, args.data as any);
+  gameAction.handler(assignment.playerNumber, gameState, args.data);
 
   const patch = jsonpatch.generate(observer);
   game.version += 1;
@@ -250,4 +181,5 @@ export async function playResolver(
       console.log(error);
       throw error;
     });
-}
+  return true;
+};

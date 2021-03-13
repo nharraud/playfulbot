@@ -10,7 +10,7 @@ import { AuthenticationError } from 'apollo-server-koa';
 
 import { Context } from 'koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { GameScheduleID, PlayerID, User } from '~playfulbot/types/backend';
+import { GameScheduleID, PlayerID, DbUser } from '~playfulbot/types/database';
 import { getUserByName } from '~playfulbot/Model/Users';
 
 import {
@@ -20,7 +20,7 @@ import {
   UserJWTokenData,
   JWToken,
 } from '~playfulbot/types/token';
-import { LoginResult } from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/types/graphql';
 import { InvalidRequest } from '~playfulbot/errors';
 
 const randomBytes = promisify(crypto.randomBytes);
@@ -28,7 +28,7 @@ const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
 
 const SECRET_KEY = 'secret!';
 
-export async function authenticate(user: User, koaContext: Context): Promise<JWToken> {
+export async function authenticate(user: DbUser, koaContext: Context): Promise<JWToken> {
   const binFingerprint = await randomBytes(50);
   const strFingerprint = binFingerprint.toString('base64');
 
@@ -44,16 +44,11 @@ export async function authenticate(user: User, koaContext: Context): Promise<JWT
   return token;
 }
 
-interface LoginArguments {
-  username: string;
-  password: string;
-}
-
-export async function loginResolver(
-  parent: unknown,
-  args: LoginArguments,
-  { koaContext }: ApolloContext
-): Promise<LoginResult> {
+export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async (
+  parent,
+  args,
+  ctx
+) => {
   const foundUser = await getUserByName(args.username);
 
   if (!foundUser) {
@@ -64,7 +59,7 @@ export async function loginResolver(
   if (!match) {
     throw new AuthenticationError('Incorrect credentials');
   }
-  const token = await authenticate(foundUser, koaContext);
+  const token = await authenticate(foundUser, ctx.koaContext);
   return {
     token,
     user: {
@@ -72,18 +67,22 @@ export async function loginResolver(
       username: foundUser.username,
     },
   };
-}
+};
 
-export function logoutResolver(parent: unknown, args: unknown, context: ApolloContext): boolean {
-  if (!isUserContext(context)) {
+export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout'] = (
+  parent,
+  args,
+  ctx
+) => {
+  if (!isUserContext(ctx)) {
     throw new InvalidRequest('Only authenticated users can logout');
   }
-  if (context.koaContext === undefined) {
+  if (ctx.koaContext === undefined) {
     throw new InvalidRequest('Logout needs to be done via an HTTPS request, not via a websocket.');
   }
-  context.koaContext.cookies.set('JWTFingerprint');
+  ctx.koaContext.cookies.set('JWTFingerprint');
   return true;
-}
+};
 
 export async function validateAuthToken(token: string, fingerprint?: string): Promise<JWTokenData> {
   try {

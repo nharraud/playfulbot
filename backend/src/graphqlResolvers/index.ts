@@ -15,10 +15,10 @@ import {
   gameScheduleChangesResolver,
   createNewDebugGameForUserResolver,
 } from '~playfulbot/graphqlResolvers/game';
-import { GamePatch, isGamePatch, LiveGame } from '~playfulbot/types/backend';
 import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
 import { createTournamentResolver, tournamentResolver } from './tournaments';
+import * as gqlTypes from '~playfulbot/types/graphql';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -47,11 +47,11 @@ const resolvers: IResolvers = {
     members: teamMembersResolver,
   },
   LiveGame: {
-    __resolveType(obj: LiveGame<GameState>): string {
-      if (isGamePatch(obj)) {
-        return 'GamePatch';
+    __resolveType(obj: gqlTypes.LiveGame<GameState>): string {
+      if (obj.__typename === 'Game') {
+        return 'Game';
       }
-      return 'Game';
+      return 'GamePatch';
     },
   },
   JSON: GraphQLJSON,
