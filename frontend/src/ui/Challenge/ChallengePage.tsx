@@ -25,7 +25,7 @@ import PeopleIcon from '@material-ui/icons/People';
 
 import Debug from './Debug';
 import Info from './Info';
-import TeamSubPage from './TeamSubPage';
+import TeamSubPage from './team/TeamSubPage';
 import CodingIcon from '@material-ui/icons/Code';
 import InfoIcon from '@material-ui/icons/Info';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
