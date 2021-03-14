@@ -72,12 +72,23 @@ function useGameSubscription(gameID: string) {
   const GAME_PATCH_SUBSCRIPTION = gql`
     subscription onGameChanges($gameID: ID!) {
       gamePatch(gameID: $gameID) {
-        gameID, version, patch
+
+        ... on GamePatch {
+          gameID, version, patch
+        }
+        ... on Game {
+          id
+          version,
+          assignments {
+            playerID, playerNumber
+          }
+          gameState
+        }
       }
     }
   `;
 
-  useSubscription(GAME_PATCH_SUBSCRIPTION, {
+  const result = useSubscription(GAME_PATCH_SUBSCRIPTION, {
     variables: { gameID: gameID },
     skip: !gameID,
     shouldResubscribe: true,
@@ -85,7 +96,12 @@ function useGameSubscription(gameID: string) {
       if (subscriptionData.error) {
         console.log(subscriptionData.error); // never called
       } else if (subscriptionData.data) {
-        const { patch, version } = subscriptionData.data.gamePatch;
+        if (subscriptionData.data.gamePatch.__typename === 'Game') {
+          return subscriptionData;
+        }
+
+        const version = subscriptionData.data.gamePatch.version;
+        const patch = subscriptionData.data.gamePatch.patch;
         const fullGameID = `Game:${gameID}`;
         const currentGame = client.readFragment({
           id: fullGameID,
@@ -108,6 +124,7 @@ function useGameSubscription(gameID: string) {
           id: fullGameID,
           fragment: gql`
             fragment PatchedGame on Game {
+              version
               gameState
             }
           `,
