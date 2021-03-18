@@ -39,7 +39,6 @@ function Cell(props) {
     } else if (trans.item === "o") {
       return (
         <animated.mesh
-          rotation={[0, 0, 0]}
           position={[props.index % 3 - 1.5, Math.ceil(-props.index / 3) + 1,0]}
           scale={trans.props.groupScale}
         >
@@ -50,7 +49,6 @@ function Cell(props) {
     } else {
       return (
         <animated.mesh
-          rotation={[-10,-10,10]}
           position={[props.index % 3 - 1.5, Math.ceil(-props.index / 3) + 1,0]}
           onClick={(event) => fillSpace(props.index)}
           scale={trans.props.groupScale}

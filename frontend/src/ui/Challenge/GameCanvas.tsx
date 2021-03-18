@@ -13,9 +13,16 @@ export default function GameCanvas(props) {
   const apolloContext = getApolloContext()
   const aplloContextValue = useContext(getApolloContext())
   return (
-  <Canvas>
+  <Canvas orthographic
+    camera={{
+      position: [0, 0, 30],
+      zoom: 100,
+      near: 0.1,
+      far: 31,
+  }}
+  >
     <color attach="background" args={[0,0,0]} />
-    <pointLight position={[10, -10, 10]} />
+    <ambientLight/>
     <apolloContext.Provider value={aplloContextValue}>
       <TicTacToe {...props} />
     </apolloContext.Provider>
