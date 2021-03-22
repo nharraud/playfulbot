@@ -62,18 +62,7 @@ function Cell(props) {
 }
 
 export default function TicTacToe(props) {
-
-    const loadingWidget = (
-      <mesh
-        rotation={[-10,-10,10]}
-        position={[0,0,0]}
-      >
-        <boxBufferGeometry args={[1,1,1]} />
-        <meshLambertMaterial color={'white'}/> 
-      </mesh>
-    );
     return (
-      <Suspense fallback={loadingWidget}>
       <group>
         <Text position={[-2.3,2,0]}>
           Tic Tac Toe
@@ -84,7 +73,6 @@ export default function TicTacToe(props) {
           })
         }
       </group>
-      </Suspense>
     );
   }
   
