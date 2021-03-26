@@ -14,6 +14,16 @@ export class PlayingOutOfTurn extends ApolloError {
   }
 }
 
+/**
+ * Error thrown when a game make players play simultaneously and a player sends
+ * two actions during a given turn.
+ */
+export class PlayingTwice extends ApolloError {
+  constructor() {
+    super('You already played for this turn.', 'PLAYING_TWICE', null);
+  }
+}
+
 export class IllegalPlayAction extends ApolloError {
   constructor(message: string) {
     super(message, 'ILLEGAL_ACTION', null);

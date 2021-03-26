@@ -1,0 +1,11 @@
+{
+  "$id": "https://playfulbot.com/wallrace-move-action.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WallRace's 'Move' action",
+  "type": "object",
+  "properties": {
+    "vector": {
+      "enum": [[0, 1], [1, 0], [-1, 0], [0, -1]]
+    }
+  }
+}

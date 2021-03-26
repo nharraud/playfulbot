@@ -1,0 +1,40 @@
+{
+  "$id": "https://playfulbot.com/wallrace.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WallRace",
+
+  "type": "object",
+  "properties": {
+    "arena": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "title": "Arena dimensions",
+          "description": "Note that the arena is always square",
+          "type": "number",
+          "minimum": 10
+        }
+      }
+    },
+    "walls": {
+      "title": "Walls created by each bike",
+      "description": "The wall index in this array corresponds to the player number.",
+      "type": "array",
+      "items": {
+        "title": "Turning points",
+        "description": "Turning point of each wall. The first point is where the bike started. The last point is the bike's current position.",
+        "type": "array",
+        "items": {
+          "title": "Coordinates",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

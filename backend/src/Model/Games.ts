@@ -10,8 +10,12 @@ import {
 } from '~playfulbot/types/database';
 
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
-import { init } from '~playfulbot/games/tictactoe';
-import GameState from '~playfulbot/games/tictactoe/GameState';
+
+// import { init } from '~playfulbot/games/tictactoe';
+// import GameState from '~playfulbot/games/tictactoe/GameState';
+
+import { init } from '~playfulbot/games/wallrace';
+import GameState from '~playfulbot/games/wallrace/GameState';
 
 const games = new Map<string, DbGame<GameState>>();
 const debugGames = new Map<UserID, DbGame<GameState>>();

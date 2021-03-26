@@ -6,14 +6,18 @@ import { Canvas } from 'react-three-fiber';
 import TicTacToe from '../../games/TicTacToe';
 
 import { getApolloContext } from '@apollo/client/react/context/ApolloContext';
+import Game from 'src/games/WallRace';
 
 
 export default function GameCanvas(props) {
 
   const apolloContext = getApolloContext()
   const aplloContextValue = useContext(getApolloContext())
+
   return (
-  <Canvas orthographic
+  <Canvas
+  orthographic
+  colorManagement
     camera={{
       position: [0, 0, 30],
       zoom: 100,
@@ -24,9 +28,9 @@ export default function GameCanvas(props) {
     <color attach="background" args={[0,0,0]} />
     <ambientLight/>
     <apolloContext.Provider value={aplloContextValue}>
-      <TicTacToe {...props} />
+      {/* <TicTacToe {...props} /> */}
+      <Game {...props} />
     </apolloContext.Provider>
   </Canvas>
   );
 }
-

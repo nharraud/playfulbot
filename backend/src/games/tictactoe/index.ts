@@ -2,7 +2,7 @@ import * as gameStateSchema from './gameStateSchema.json';
 import * as fillSpaceActionSchema from './fillSpaceActionSchema.json';
 import FillSpaceAction from './FillSpaceAction';
 import GameState from './GameState';
-import { Action } from '~playfulbot/types/action';
+import { Actions } from '~playfulbot/types/action';
 import { IllegalPlayAction } from '~playfulbot/errors';
 
 function findWinner(grid: string[]): string {
@@ -23,7 +23,8 @@ function findWinner(grid: string[]): string {
   return null;
 }
 
-function fillSpace(player: number, state: GameState, action: FillSpaceAction) {
+function fillSpace(state: GameState, actions: FillSpaceAction[]): void {
+  const { player, data: action } = actions[0];
   if (state.grid[action.space]) {
     throw new IllegalPlayAction('Space already filled.');
   }
@@ -47,14 +48,16 @@ function fillSpace(player: number, state: GameState, action: FillSpaceAction) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const actions: Map<string, Action<GameState, any>> = new Map(
-  Object.entries({
-    fillSpace: {
-      schema: fillSpaceActionSchema,
-      handler: fillSpace,
-    },
-  })
-);
+const actions: Actions<GameState, FillSpaceAction> = {
+  handler: fillSpace,
+  schemas: new Map(
+    Object.entries({
+      fillSpace: {
+        schema: fillSpaceActionSchema,
+      },
+    })
+  ),
+};
 
 function init(): GameState {
   return {

@@ -7,7 +7,8 @@ import { PubSubAsyncIterator } from 'graphql-redis-subscriptions/dist/pubsub-asy
 
 import { withTransform } from '~playfulbot/withTransform';
 
-import { actions } from '~playfulbot/games/tictactoe';
+// import { actions } from '~playfulbot/games/tictactoe';
+import { actions } from '~playfulbot/games/wallrace';
 
 import {
   UnknownAction,
@@ -31,6 +32,8 @@ import {
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
 import { pubsub } from '~playfulbot/Model/redis';
+import { deleteGameStore, getStoredActions, storeAction } from '~playfulbot/Model/ActionStore';
+import { Action } from '~playfulbot/types/action';
 
 // const pubsub = new PubSub();
 
@@ -131,7 +134,7 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = a
   args,
   context,
   info
-) => {
+): Promise<boolean> => {
   const game = getGame(args.gameID);
 
   const assignment = game.assignments.find((assign) => assign.playerID === args.playerID);
@@ -150,13 +153,30 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = a
   const playerState = game.gameState.players[assignment.playerNumber];
   // console.log(`Player ${assignment.playerNumber.toString()} is playing`);
 
-  const gameAction = actions.get(args.action);
-
+  // const gameAction = actions.schemas(args.action);
+  const action = {
+    player: assignment.playerNumber,
+    name: args.action,
+    data: args.data as Record<string, any>,
+  };
   const { gameState } = game;
 
-  if (!gameAction) {
-    throw new UnknownAction(args.action);
+  const expectedActions = game.gameState.players.filter((player) => player.playing).length;
+  let actionsToPlay = new Array<Action>();
+  if (expectedActions > 1) {
+    const nbStoredActions = storeAction(game.id, action);
+    if (nbStoredActions < expectedActions) {
+      return true;
+    }
+    actionsToPlay = getStoredActions(game.id);
+    deleteGameStore(game.id);
+  } else {
+    actionsToPlay = [action];
   }
+
+  // if (!gameAction) {
+  //   throw new UnknownAction(args.action);
+  // }
   const observer = jsonpatch.observe<GameState>(gameState);
 
   if (!playerState.playing) {
@@ -164,14 +184,16 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = a
     throw new PlayingOutOfTurn();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gameAction.handler(assignment.playerNumber, gameState, args.data);
+  actions.handler(gameState as any, actionsToPlay as any);
 
   const patch = jsonpatch.generate(observer);
-  game.version += 1;
-  // console.log(`VERSION: ${game.version} END: ${game.gameState.end.toString()}`);
-
   jsonpatch.unobserve(gameState, observer);
 
+  if (patch.length === 0) {
+    return true;
+  }
+  game.version += 1;
+  // console.log(`VERSION: ${game.version} END: ${game.gameState.end.toString()}`);
   // console.log(`PUBLISHING PATCH ${game.version}`);
   await pubsub
     .publish(GAME_STATE_CHANGED(game.id), {

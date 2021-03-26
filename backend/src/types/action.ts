@@ -1,14 +1,17 @@
 import { GameState } from '~playfulbot/types/gameState';
 
-export type ActionData = Record<string, unknown>;
+export interface Action {
+  player: number;
+  name: string;
+  data: Record<string, unknown> | null;
+}
 
-export type ActionHandler<GS, AD extends ActionData | null> = (
-  player: number,
+export type ActionHandler<GS extends GameState, Act extends Action> = (
   state: GS,
-  actionData: AD
+  actions: Act[]
 ) => void;
 
-export type Action<GS extends GameState, AD extends ActionData | null> = {
-  schema: Record<string, unknown>;
-  handler: ActionHandler<GS, AD>;
-};
+export interface Actions<GS extends GameState, Act extends Action> {
+  schemas: Map<string, Record<string, unknown>>;
+  handler: ActionHandler<GS, Act>;
+}
