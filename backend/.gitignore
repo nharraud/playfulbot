@@ -18,3 +18,9 @@ yarn-debug.log*
 yarn-error.log*
 
 docker-compose.override.yml
+
+*.0x
+isolate-0x*
+
+# generated grpc code
+src/grpc/proto/**/*.ts

@@ -1,5 +1,6 @@
 import { Command } from 'commander';
-import { startServer } from '~playfulbot/server';
+import { startServer as startGraphqlServer } from '~playfulbot/server';
+import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from '~playfulbot/Model/db/db_admin';
 
 import db from '~playfulbot/Model/db';
@@ -18,7 +19,8 @@ async function execute(argv: string[]): Promise<void> {
     .command('serve')
     .description('Start the backend server')
     .action(() => {
-      startServer();
+      startGraphqlServer();
+      startGrpcServer();
     });
 
   program

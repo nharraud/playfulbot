@@ -46,14 +46,6 @@ const resolvers: IResolvers = {
   Team: {
     members: teamMembersResolver,
   },
-  LiveGame: {
-    __resolveType(obj: gqlTypes.LiveGame<GameState>): string {
-      if (obj.__typename === 'Game') {
-        return 'Game';
-      }
-      return 'GamePatch';
-    },
-  },
   JSON: GraphQLJSON,
 };
 

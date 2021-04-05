@@ -17,7 +17,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: './tsconfig.json',
   },
-  ignorePatterns: ['.eslintrc.js', 'src/types/graphql-generated.ts'],
+  ignorePatterns: ['.eslintrc.js', 'src/types/graphql-generated.ts', 'src/grpc/proto/**/*.ts'],
   settings: {
     'import/resolver': {
       typescript: {},
@@ -50,5 +50,6 @@ module.exports = {
     'no-param-reassign': ['error', { 'props': false }],
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
+    'no-useless-constructor': 'off',
   },
 };

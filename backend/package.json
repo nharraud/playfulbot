@@ -6,12 +6,16 @@
   "scripts": {
     "test": "jest",
     "backend": "nodemon --inspect src/index.ts serve",
-    "cli": "node --require ts-node/register --require tsconfig-paths/register src/index.ts",
+    "cli": "node --prof --require ts-node/register/transpile-only --require tsconfig-paths/register src/index.ts",
+    "build": "tsc --outDir build",
     "lint": "eslint src",
-    "gen-graphql": "graphql-codegen --config graphql-codegen.yml"
+    "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
+    "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
   },
   "author": "Nicolas Harraudeau",
   "dependencies": {
+    "@grpc/grpc-js": "^1.2.12",
+    "@grpc/proto-loader": "^0.6.0-pre17",
     "@koa/cors": "^3.1.0",
     "@types/bcrypt": "^3.0.0",
     "@types/jsonwebtoken": "^8.5.0",
@@ -50,6 +54,7 @@
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
     "@typescript-eslint/parser": "^4.14.0",
+    "0x": "^4.10.2",
     "asciidoctor-kroki": "^0.11.0",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",

@@ -18,10 +18,11 @@ import {
 } from '~playfulbot/errors';
 
 import { ApolloContext, isBotContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { GamePatchMessage, GameScheduleChangeMessage } from '~playfulbot/types/pubsub';
 
 import { GameState } from '~playfulbot/types/gameState';
 
-import { GameID, GameScheduleID } from '~playfulbot/types/database';
+import { DbGame, GameID, GameScheduleID } from '~playfulbot/types/database';
 
 import {
   getGame,
@@ -31,14 +32,14 @@ import {
 } from '~playfulbot/Model/Games';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
-import { pubsub } from '~playfulbot/Model/redis';
+// import { pubsub } from '~playfulbot/Model/redis';
 import { deleteGameStore, getStoredActions, storeAction } from '~playfulbot/Model/ActionStore';
 import { Action } from '~playfulbot/types/action';
 
-// const pubsub = new PubSub();
+export const pubsub = new PubSub();
 
-const GAME_STATE_CHANGED = (id: GameID) => `GAME_STATE_CHANGED-${id}`;
-const GAME_SCHEDULE_CHANGED = (id: GameScheduleID) => `GAME_SCHEDULE_CHANGED-${id}`;
+export const GAME_STATE_CHANGED = (id: GameID): string => `GAME_STATE_CHANGED-${id}`;
+export const GAME_SCHEDULE_CHANGED = (id: GameScheduleID): string => `GAME_SCHEDULE_CHANGED-${id}`;
 
 export const gameResolver: gqlTypes.QueryResolvers<ApolloContext>['game'] = (parent, args, ctx) => {
   if (!args.gameID) {
@@ -86,7 +87,8 @@ export const createNewDebugGameForUserResolver: gqlTypes.MutationResolvers<Apoll
   ctx
 ) => {
   const debugGame = await createNewDebugGame(args.userID);
-  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
+  const pubSubMessage: GameScheduleChangeMessage = { gameScheduleChanges: debugGame };
+  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), pubSubMessage);
   return debugGame;
 };
 
@@ -129,35 +131,20 @@ export const gamePatchResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['g
   },
 };
 
-export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = async (
-  parent,
-  args,
-  context,
-  info
-): Promise<boolean> => {
-  const game = getGame(args.gameID);
-
-  const assignment = game.assignments.find((assign) => assign.playerID === args.playerID);
-  if (assignment === undefined) {
-    throw new ApolloError(`Game does not have player ${args.playerID}.`);
-  }
-
-  if (isUserContext(context) && (!assignment.userID || assignment.userID !== context.userID)) {
-    throw new ForbiddenError(`User is not allowed to play as player ${args.playerID}.`);
-  }
-
-  if (isBotContext(context) && context.playerID !== args.playerID) {
-    throw new ForbiddenError(`Bot is not allowed to play as player ${args.playerID}.`);
-  }
-
-  const playerState = game.gameState.players[assignment.playerNumber];
+export async function playGame(
+  game: DbGame<GameState>,
+  playerNumber: number,
+  actionName: string,
+  actionData: Record<string, any>
+): Promise<void> {
+  const playerState = game.gameState.players[playerNumber];
   // console.log(`Player ${assignment.playerNumber.toString()} is playing`);
 
   // const gameAction = actions.schemas(args.action);
   const action = {
-    player: assignment.playerNumber,
-    name: args.action,
-    data: args.data as Record<string, any>,
+    player: playerNumber,
+    name: actionName,
+    data: actionData,
   };
   const { gameState } = game;
 
@@ -166,7 +153,7 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = a
   if (expectedActions > 1) {
     const nbStoredActions = storeAction(game.id, action);
     if (nbStoredActions < expectedActions) {
-      return true;
+      return;
     }
     actionsToPlay = getStoredActions(game.id);
     deleteGameStore(game.id);
@@ -190,18 +177,43 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = a
   jsonpatch.unobserve(gameState, observer);
 
   if (patch.length === 0) {
-    return true;
+    return;
   }
   game.version += 1;
   // console.log(`VERSION: ${game.version} END: ${game.gameState.end.toString()}`);
   // console.log(`PUBLISHING PATCH ${game.version}`);
-  await pubsub
-    .publish(GAME_STATE_CHANGED(game.id), {
-      gamePatch: { patch, gameID: game.id, version: game.version },
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
+  const pubSubMessage: GamePatchMessage = {
+    gamePatch: { __typename: 'GamePatch', patch, gameID: game.id, version: game.version },
+  };
+
+  await pubsub.publish(GAME_STATE_CHANGED(game.id), pubSubMessage).catch((error) => {
+    console.log(error);
+    throw error;
+  });
+}
+
+export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = async (
+  parent,
+  args,
+  context,
+  info
+): Promise<boolean> => {
+  const game = getGame(args.gameID);
+
+  const assignment = game.assignments.find((assign) => assign.playerID === args.playerID);
+  if (assignment === undefined) {
+    throw new ApolloError(`Game does not have player ${args.playerID}.`);
+  }
+
+  if (isUserContext(context) && (!assignment.userID || assignment.userID !== context.userID)) {
+    throw new ForbiddenError(`User is not allowed to play as player ${args.playerID}.`);
+  }
+
+  if (isBotContext(context) && context.playerID !== args.playerID) {
+    throw new ForbiddenError(`Bot is not allowed to play as player ${args.playerID}.`);
+  }
+
+  await playGame(game, assignment.playerNumber, args.action, args.data as Record<string, any>);
+
   return true;
 };

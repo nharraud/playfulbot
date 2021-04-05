@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package playfulbot.v0;
+
+service PlayfulBot {
+  rpc FollowGameSchedule (FollowGameScheduleRequest) returns (stream FollowGameScheduleResponse) {}
+  rpc FollowGame (stream FollowGameRequest) returns (stream FollowGameResponse) {}
+  rpc PlayGame (stream PlayGameRequest) returns (PlayGameResponse) {}
+  rpc CreateNewDebugGameForUser (CreateNewDebugGameForUserRequest) returns (CreateNewDebugGameForUserResponse) {}
+}
+
+message Player {
+  string id = 1;
+  string token = 2;
+  repeated string snippets = 3;
+}
+
+message GameSchedule {
+  string id = 1;
+  repeated Player players = 2;
+  string game_id = 3;
+}
+
+message FollowGameScheduleRequest {
+  string schedule_id = 1;
+}
+
+message FollowGameScheduleResponse {
+  GameSchedule schedule = 1;
+}
+
+message PlayerAssignment {
+  string player_id = 1;
+  int32 player_number = 2;
+}
+
+message Game {
+  string game_id = 1;
+  int32 version = 2;
+  repeated PlayerAssignment assignments = 3;
+  string game_state = 4;
+}
+
+message GamePatch {
+  string game_id = 1;
+  int32 version = 2;
+  string patch = 3;
+}
+
+message PlayGameRequest {
+  string game_id = 1;
+  string player_id = 2;
+  string action = 3;
+  string data = 4;
+}
+message PlayGameResponse {}
+
+message FollowGameRequest {
+  string game_id = 1;
+}
+
+message FollowGameResponse {
+  oneof game_or_patch {
+    Game game = 1;
+    GamePatch patch = 2;
+  }
+}
+
+message CreateNewDebugGameForUserRequest {
+  string user_id = 1;
+}
+
+message CreateNewDebugGameForUserResponse {}
