@@ -1,4 +1,4 @@
-import { createUser } from '~playfulbot/Model/Users';
+import { createUser } from '~playfulbot/model/Users';
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 import { authenticate } from '~playfulbot/graphqlResolvers/authentication';
 import * as gqlTypes from '~playfulbot/types/graphql';

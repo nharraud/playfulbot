@@ -1,6 +1,6 @@
 import { createUser } from './Users';
 import { createTournament } from './Tournaments';
-import db from '~playfulbot/Model/db';
+import db from '~playfulbot/model/db';
 
 export async function initDemo(): Promise<void> {
   // const user11 = await createUser('user11', 'pass11', '00000000-0000-0000-0000-000000000e11');

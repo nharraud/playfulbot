@@ -1,5 +1,5 @@
-import sql from '~playfulbot/Model/db/sql';
-import db, { createAdminDB } from '~playfulbot/Model/db';
+import sql from '~playfulbot/model/db/sql';
+import db, { createAdminDB } from '~playfulbot/model/db';
 
 export async function dropDB(): Promise<void> {
   const adminDB = createAdminDB();

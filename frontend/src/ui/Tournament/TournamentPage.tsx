@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function ChallengePage() {
+export default function TournamentPage() {
   let match = useRouteMatch();
 
   const { tournamentID } = useParams();

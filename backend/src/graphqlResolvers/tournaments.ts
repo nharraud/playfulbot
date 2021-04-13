@@ -1,6 +1,6 @@
 import { ForbiddenError } from 'apollo-server-koa';
 import { TournamentNotFoundError } from '~playfulbot/errors';
-import { createTournament, getTournamentByID } from '~playfulbot/Model/Tournaments';
+import { createTournament, getTournamentByID } from '~playfulbot/model/Tournaments';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
 

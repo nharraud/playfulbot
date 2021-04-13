@@ -2,7 +2,7 @@ import { ForbiddenError } from 'apollo-server-koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { DbTeam, TeamID, TournamentID, UserID } from '~playfulbot/types/database';
 import { InvalidRequest } from '~playfulbot/errors';
-import db from '~playfulbot/Model/db';
+import db from '~playfulbot/model/db';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
 export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = async (

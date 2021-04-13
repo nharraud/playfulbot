@@ -1,4 +1,4 @@
-import db from '~playfulbot/Model/db';
+import db from '~playfulbot/model/db';
 
 import { DbTournament, TournamentID } from '~playfulbot/types/database';
 

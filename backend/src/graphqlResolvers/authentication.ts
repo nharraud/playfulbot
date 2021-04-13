@@ -11,7 +11,7 @@ import { AuthenticationError } from 'apollo-server-koa';
 import { Context } from 'koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { GameScheduleID, PlayerID, DbUser } from '~playfulbot/types/database';
-import { getUserByName } from '~playfulbot/Model/Users';
+import { getUserByName } from '~playfulbot/model/Users';
 
 import {
   JWTokenData,

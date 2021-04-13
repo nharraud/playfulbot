@@ -14,7 +14,7 @@ import Container from '@material-ui/core/Container';
 
 import logo from './logo.svg';
 import './App.css';
-import GameCanvas from './ui/Challenge/GameCanvas';
+import GameCanvas from './ui/Tournament/GameCanvas';
 import Login from './ui/Login';
 import Registration from './ui/Registration';
 
@@ -22,8 +22,8 @@ import { ApolloProvider } from '@apollo/client';
 import { client } from './apolloConfig';
 
 import MenuBar from './ui/MenuBar';
-import ChallengePage from './ui/Challenge/ChallengePage';
-import TournamentCreationPage from './ui/Challenge/TournamentCreationPage';
+import TournamentPage from './ui/Tournament/TournamentPage';
+import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -41,7 +41,7 @@ function App() {
 
       <Switch>
         <Route path="/tournament/:tournamentID">
-          <ChallengePage/>
+          <TournamentPage/>
         </Route>
         <Route path="/create_tournament">
           <TournamentCreationPage/>

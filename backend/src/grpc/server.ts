@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import * as path from 'path';
-import { createNewDebugGame, getGame, getGameSchedule } from '~playfulbot/Model/Games';
+import { createNewDebugGame, getGame, getGameSchedule } from '~playfulbot/model/Games';
 
 import logger from '~playfulbot/logging';
 

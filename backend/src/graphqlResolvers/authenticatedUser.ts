@@ -1,6 +1,6 @@
 import { AuthenticationError, ForbiddenError } from 'apollo-server-koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { getUserByID } from '~playfulbot/Model/Users';
+import { getUserByID } from '~playfulbot/model/Users';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
 export const authenticatedUserResolver: gqlTypes.QueryResolvers<ApolloContext>['authenticatedUser'] = async (

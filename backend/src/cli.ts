@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 import { startServer as startGraphqlServer } from '~playfulbot/server';
 import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
-import { createDB, dropDB } from '~playfulbot/Model/db/db_admin';
+import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 
-import db from '~playfulbot/Model/db';
-import { disconnect } from './Model/redis';
-import { initDemo } from './Model/demo';
+import db from '~playfulbot/model/db';
+import { disconnect } from './model/redis';
+import { initDemo } from './model/demo';
 
 async function closeConnections() {
   disconnect();

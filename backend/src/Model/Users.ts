@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import db from '~playfulbot/Model/db';
+import db from '~playfulbot/model/db';
 
 import { DbUser, UserID } from '~playfulbot/types/database';
 

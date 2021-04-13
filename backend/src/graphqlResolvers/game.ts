@@ -29,11 +29,11 @@ import {
   getDebugGame,
   createNewDebugGame,
   getGameSchedule,
-} from '~playfulbot/Model/Games';
+} from '~playfulbot/model/Games';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
 // import { pubsub } from '~playfulbot/Model/redis';
-import { deleteGameStore, getStoredActions, storeAction } from '~playfulbot/Model/ActionStore';
+import { deleteGameStore, getStoredActions, storeAction } from '~playfulbot/model/ActionStore';
 import { Action } from '~playfulbot/types/action';
 
 export const pubsub = new PubSub();

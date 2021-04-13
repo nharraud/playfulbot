@@ -2,7 +2,7 @@
 
 import { IDatabase, IMain } from 'pg-promise';
 import { DbTournament, TournamentID } from '~playfulbot/types/database';
-import { DEFAULT } from '~playfulbot/Model/db/repos/helpers';
+import { DEFAULT } from '~playfulbot/model/db/repos/helpers';
 
 export class TournamentsRepository {
   // eslint-disable-next-line no-useless-constructor
