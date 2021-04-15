@@ -10,7 +10,6 @@ export type UserJWTokenData = {
 export type BotJWTokenData = {
   playerID: PlayerID;
   gameScheduleID: GameScheduleID;
-  foo: number;
 };
 
 export type JWTokenData = UserJWTokenData | BotJWTokenData;

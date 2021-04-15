@@ -26,7 +26,7 @@ import { PlayGameResponse } from './proto/types/playfulbot/v0/PlayGameResponse';
 import { FollowGameRequest } from './proto/types/playfulbot/v0/FollowGameRequest';
 import { FollowGameResponse } from './proto/types/playfulbot/v0/FollowGameResponse';
 import { GamePatchMessage, GameScheduleChangeMessage } from '~playfulbot/types/pubsub';
-import { JWTokenData } from '~playfulbot/types/token';
+import { BotJWTokenData, JWTokenData } from '~playfulbot/types/token';
 import { requireAuthentication } from './authentication';
 
 const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot', 'v0', 'playfulbot_v0.proto');
@@ -66,7 +66,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
   FollowGameSchedule: requireAuthentication(
     (
       call: grpc.ServerWritableStream<FollowGameScheduleRequest, FollowGameScheduleResponse>,
-      token: JWTokenData
+      token: BotJWTokenData
     ) => {
       const gameSchedule = getGameSchedule(call.request.scheduleId);
       if (!gameSchedule) {
@@ -91,7 +91,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
         CreateNewDebugGameForUserResponse
       >,
       callback: grpc.sendUnaryData<CreateNewDebugGameForUserResponse>,
-      token: JWTokenData
+      token: BotJWTokenData
     ) => {
       logger.info(`creating a new game for user ${call.request.userId}`);
       createNewDebugGame(call.request.userId)
@@ -111,7 +111,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
   ),
 
   FollowGame: requireAuthentication(
-    (call: grpc.ServerDuplexStream<FollowGameRequest, FollowGameResponse>, token: JWTokenData) => {
+    (call: grpc.ServerDuplexStream<FollowGameRequest, FollowGameResponse>, token: BotJWTokenData) => {
       call.on('error', (error) => {
         console.log(error);
       });
@@ -155,7 +155,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
     (
       call: grpc.ServerReadableStream<PlayGameRequest, PlayGameResponse>,
       callback: grpc.sendUnaryData<PlayGameResponse>,
-      token: JWTokenData
+      token: BotJWTokenData
     ) => {
       call.on('error', (error) => {
         console.log(error);
@@ -163,7 +163,6 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
       call.on('end', () => {
         callback(null, {});
       });
-
       call.on('data', (request: PlayGameRequest) => {
         const game = getGame(request.gameId);
         if (!game) {

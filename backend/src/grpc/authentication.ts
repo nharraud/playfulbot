@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import { ServerSurfaceCall } from '@grpc/grpc-js/build/src/server-call';
 import { validateAuthToken } from '~playfulbot/graphqlResolvers/authentication';
-import { JWTokenData } from '~playfulbot/types/token';
+import { BotJWTokenData, isBotJWToken, JWTokenData } from '~playfulbot/types/token';
 
 type CallAndCallback<CALL extends ServerSurfaceCall, CALLBACK> = (
   call: CALL,
@@ -11,12 +11,12 @@ type CallAndCallback<CALL extends ServerSurfaceCall, CALLBACK> = (
 type CallAndCallbackWithToken<CALL, CALLBACK> = (
   call: CALL,
   callback: CALLBACK,
-  token: JWTokenData
+  token: BotJWTokenData
 ) => void;
 
 type Call<CALL> = (call: CALL) => void;
 
-type CallWithToken<CALL> = (call: CALL, token: JWTokenData) => void;
+type CallWithToken<CALL> = (call: CALL, token: BotJWTokenData) => void;
 
 export function requireAuthentication<CALL extends ServerSurfaceCall>(
   target: CallWithToken<CALL>
@@ -40,6 +40,13 @@ export function requireAuthentication<CALL extends ServerSurfaceCall, CALLBACK>(
 
     validateAuthToken(token[0].toString(), null)
       .then((tokenData: JWTokenData) => {
+        if (!isBotJWToken(tokenData)) {
+          call.emit('error', {
+            code: grpc.status.PERMISSION_DENIED,
+            message: 'Only bots are allowed to use GRPC',
+          });
+          return;
+        }
         if (callback !== null) {
           (target as CallAndCallbackWithToken<CALL, CALLBACK>)(call, callback, tokenData);
         } else {
