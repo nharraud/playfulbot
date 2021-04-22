@@ -6,8 +6,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
-// import DebugPlayersTab from './DebugPlayersTab';
+import DebugPlayersTab from './DebugPlayersTab';
 import DebugGameTab from './DebugGameTab';
+import { Game } from 'src/types/graphql-generated';
 
 
 interface TabPanelProps {
@@ -50,7 +51,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function DebugDrawer(props) {
+interface DebugDrawerProps {
+  game: Game,
+  createDebugGame: () => void,
+}
+
+export default function DebugDrawer(props: DebugDrawerProps) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -67,7 +73,7 @@ export default function DebugDrawer(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-          {/* <DebugPlayersTab gameSchedule={props.gameSchedule} /> */}
+          <DebugPlayersTab game={props.game} />
       </TabPanel>
       <TabPanel value={value} index={1}>
           <DebugGameTab createDebugGame={props.createDebugGame}/>

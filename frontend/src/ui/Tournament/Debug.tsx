@@ -37,7 +37,7 @@ export default function Debug(props: DebugProps) {
     content = (
       <>
         <GameCanvas playAction={undefined} game={game}  />
-        <DebugBottomDrawer createDebugGame={createDebugGame} />
+        <DebugBottomDrawer game={game} createDebugGame={createDebugGame} />
       </>
     )
   }
