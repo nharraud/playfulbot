@@ -10,7 +10,7 @@ import { AuthenticationError } from 'apollo-server-koa';
 
 import { Context } from 'koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { GameScheduleID, PlayerID, DbUser } from '~playfulbot/types/database';
+import { DbUser } from '~playfulbot/types/database';
 import { getUserByName } from '~playfulbot/model/Users';
 
 import {
@@ -22,6 +22,7 @@ import {
 } from '~playfulbot/types/token';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { InvalidRequest } from '~playfulbot/errors';
+import { PlayerID } from '~playfulbot/model/Player';
 
 const randomBytes = promisify(crypto.randomBytes);
 const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
@@ -100,10 +101,7 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
       if (fingerprintHash !== tokenData.JWTFingerprint) {
         throw new AuthenticationError("Invalid authorization token: fingerprint doesn't match");
       }
-    } else if (
-      isBotJWToken(tokenData) &&
-      (tokenData.gameScheduleID === undefined || tokenData.playerID === undefined)
-    ) {
+    } else if (isBotJWToken(tokenData) && tokenData.playerID === undefined) {
       throw new AuthenticationError('Invalid authorization token: token validation failed.');
     }
 
@@ -116,6 +114,6 @@ export async function validateAuthToken(token: string, fingerprint?: string): Pr
   }
 }
 
-export function createPlayerToken(playerID: PlayerID, gameScheduleID: GameScheduleID): string {
-  return jwt.sign({ playerID, gameScheduleID }, SECRET_KEY);
+export function createPlayerToken(playerID: PlayerID): string {
+  return jwt.sign({ playerID }, SECRET_KEY);
 }

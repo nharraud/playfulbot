@@ -1,0 +1,20 @@
+subscription game($gameID: ID!) {
+  game(gameID: $gameID) {
+
+    ... on GamePatch {
+      gameID, version, patch
+    }
+    ... on Game {
+      id
+      canceled
+      version
+      players {
+        id, token
+      }
+      gameState
+    }
+    ... on GameCanceled {
+      version
+    }
+  }
+}

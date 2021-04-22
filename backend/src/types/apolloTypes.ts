@@ -1,5 +1,6 @@
 import { Context as KoaContext } from 'koa';
-import { GameScheduleID, PlayerID, UserID } from './database';
+import { PlayerID } from '~playfulbot/model/Player';
+import { UserID } from './database';
 
 export type ApolloUnauthenticatedContext = {
   koaContext: KoaContext;
@@ -12,7 +13,6 @@ export type ApolloUserContext = {
 
 export type ApolloBotContext = {
   koaContext?: KoaContext;
-  gameScheduleID: GameScheduleID;
   playerID: PlayerID;
 };
 
@@ -44,7 +44,6 @@ export type UserWSConnectionContext = {
 };
 
 export type BotWSConnectionContext = {
-  gameScheduleID: GameScheduleID;
   playerID: PlayerID;
 };
 

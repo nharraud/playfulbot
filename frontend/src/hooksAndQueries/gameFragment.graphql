@@ -1,0 +1,10 @@
+fragment Game on Game {
+  id
+  version
+  canceled
+  players {
+    id
+    token
+  }
+  gameState
+}

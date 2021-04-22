@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
-import DebugPlayersTab from './DebugPlayersTab';
+// import DebugPlayersTab from './DebugPlayersTab';
 import DebugGameTab from './DebugGameTab';
 
 
@@ -67,7 +67,7 @@ export default function DebugDrawer(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-          <DebugPlayersTab gameSchedule={props.gameSchedule} />
+          {/* <DebugPlayersTab gameSchedule={props.gameSchedule} /> */}
       </TabPanel>
       <TabPanel value={value} index={1}>
           <DebugGameTab createDebugGame={props.createDebugGame}/>

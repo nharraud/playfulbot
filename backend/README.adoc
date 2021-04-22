@@ -128,10 +128,10 @@ class Game
 class TournamentGame
 class DebugGame
 
-class PlayerSchedule {
+class Player {
   +UUID PlayerId
 }
-class ObserverSchedule
+class Observer
 
 class Tournament
 class TeamMember
@@ -146,9 +146,9 @@ class GameRules {
 Game <|-- TournamentGame
 Game <|-- DebugGame
 
-PlayerSchedule "2..*" --> "*" Game: plays
-ObserverSchedule "*" --> "1" DebugGame: observes
-ObserverSchedule "1" --* "1" DebugArena
+Player "2..*" --> "*" Game: plays
+Observer "*" --> "1" DebugGame: observes
+Observer "1" --* "1" DebugArena
 
 Tournament "1" *-- "1" TournamentArena
 TournamentArena "1" *-- "1..*" TournamentRound
@@ -250,17 +250,13 @@ participant User Browser
 
 User Browser -) Server: Observe Debug Game (UserJWTokenData, GameId)
 activate Server
-Server -) GameStore: subscribeGame (GameId)
-GameStore -->> Server: Response (Game)
-Server --) User Browser: Subscription Event (Game & Game State)
+Server --) User Browser: Subscription Event (Game History)
 loop For each new game state update
   Bot ->> Server: Play Game (BotJWTokenData, Action)
   activate Server
-  Server ->> GameStore: Update Game State (new GameState)
   Server -->> Bot: Success
   deactivate Server
 
-  GameStore --) Server: SubscriptionEvent (GameState patch)
   Server --) User Browser: Subscription Event (GameState patch)
 end
 Server --) User Browser: Game end (End Observation)

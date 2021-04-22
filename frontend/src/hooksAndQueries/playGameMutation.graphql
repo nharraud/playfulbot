@@ -1,0 +1,3 @@
+mutation Play($gameID: ID!, $playerID: ID!, $action: String!, $data: JSON!) {
+  play(gameID: $gameID, playerID: $playerID, action: $action, data: $data)
+}

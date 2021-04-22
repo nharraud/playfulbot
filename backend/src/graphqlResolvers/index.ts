@@ -5,44 +5,33 @@ import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/auth
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
 import { teamMembersResolver, teamResolver } from '~playfulbot/graphqlResolvers/team';
-import {
-  gamePatchResolver,
-  playResolver,
-  debugGameResolver,
-  createNewDebugGameResolver,
-  gameResolver,
-  gameScheduleResolver,
-  gameScheduleChangesResolver,
-  createNewDebugGameForUserResolver,
-} from '~playfulbot/graphqlResolvers/game';
+import { gameResolver, playResolver } from '~playfulbot/graphqlResolvers/game';
 import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
 import { createTournamentResolver, tournamentResolver } from './tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
+import { playerGamesResolver } from './player';
 
 const resolvers: IResolvers = {
   Subscription: {
-    gamePatch: gamePatchResolver,
-    gameScheduleChanges: gameScheduleChangesResolver,
-  },
+    game: gameResolver,
+    playerGames: playerGamesResolver,
+    debugArena: debugArenaResolver,
+  } as gqlTypes.SubscriptionResolvers,
   Query: {
     team: teamResolver,
-    game: gameResolver,
-    debugGame: debugGameResolver,
-    gameSchedule: gameScheduleResolver,
     authenticatedUser: authenticatedUserResolver,
     tournament: tournamentResolver,
-  },
+  } as gqlTypes.QueryResolvers,
   Mutation: {
     play: playResolver,
     createNewDebugGame: createNewDebugGameResolver,
-    createNewDebugGameForUser: createNewDebugGameForUserResolver,
-
     registerUser: registerUserResolver,
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
-  },
+  } as gqlTypes.MutationResolvers,
   Team: {
     members: teamMembersResolver,
   },

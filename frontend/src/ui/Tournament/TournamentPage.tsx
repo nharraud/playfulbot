@@ -153,7 +153,7 @@ export default function TournamentPage() {
               <TeamSubPage tournament={tournament} />
             </Route>
             <Route path={`${match.url}/debug`}>
-              <Debug />
+              <Debug tournament={tournament}/>
             </Route>
           </Switch>
         </main>

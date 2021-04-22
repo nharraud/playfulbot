@@ -8,8 +8,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
-import useDebugGame from '../../useGame';
-
+import useDebugGame from '../../hooksAndQueries/useGame';
+import { Tournament } from 'src/types/graphql';
 
 import Button from '@material-ui/core/Button';
 
@@ -23,17 +23,21 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Debug() {
+interface DebugProps {
+  tournament: Tournament | undefined;
+}
+
+export default function Debug(props: DebugProps) {
   const classes = useStyles();
 
-  const { playAction, createDebugGame, loading, error, gameSchedule } = useDebugGame();
+  const { game, createDebugGame } = useDebugGame(props.tournament);
   const ref = React.createRef();
   let content = null;
-  if (!loading && !error) {
+  if (game) {
     content = (
       <>
-        <GameCanvas playAction={playAction} game={gameSchedule?.game}  />
-        <DebugBottomDrawer createDebugGame={createDebugGame} gameSchedule={gameSchedule} />
+        <GameCanvas playAction={undefined} game={game}  />
+        <DebugBottomDrawer createDebugGame={createDebugGame} />
       </>
     )
   }

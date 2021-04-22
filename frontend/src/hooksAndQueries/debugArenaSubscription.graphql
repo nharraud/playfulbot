@@ -1,0 +1,6 @@
+subscription debugArena($userID: ID!, $tournamentID: ID!) {
+  debugArena(userID: $userID, tournamentID: $tournamentID) {
+    id
+    game
+  }
+}

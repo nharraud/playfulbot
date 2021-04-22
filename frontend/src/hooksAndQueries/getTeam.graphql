@@ -5,7 +5,7 @@ query GetTeam($userID: ID!, $tournamentID: ID!) {
       name
       members {
         id
-        usernames
+        username
       }
     }
     ... on UserNotPartOfAnyTeam {

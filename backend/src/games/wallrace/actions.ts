@@ -1,9 +1,9 @@
 import P from 'pino';
 import GameState, { Coordinate } from '~playfulbot/games/wallrace/GameState';
 import * as moveActionSchema from './moveActionSchema.json';
-import { Action, Actions } from '~playfulbot/types/action';
+import { GameAction, GameActionDefinition } from '~playfulbot/types/action';
 
-interface MoveAction extends Action {
+interface MoveAction extends GameAction {
   data: {
     vector: Coordinate;
   };
@@ -75,15 +75,6 @@ function actionHandler(state: GameState, actions: MoveAction[]) {
   }
 }
 
-const actions: Actions<GameState, MoveAction> = {
+export const action: GameActionDefinition = {
   handler: actionHandler,
-  schemas: new Map(
-    Object.entries({
-      fillSpace: {
-        schema: moveActionSchema,
-      },
-    })
-  ),
 };
-
-export default actions;

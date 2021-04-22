@@ -1,0 +1,4 @@
+fragment GameCancel on Game {
+  version
+  canceled
+}

@@ -1,4 +1,5 @@
-import { GameScheduleID, PlayerID, UserID } from './database';
+import { PlayerID } from '~playfulbot/model/Player';
+import { UserID } from './database';
 
 export type JWToken = string;
 
@@ -9,7 +10,6 @@ export type UserJWTokenData = {
 
 export type BotJWTokenData = {
   playerID: PlayerID;
-  gameScheduleID: GameScheduleID;
 };
 
 export type JWTokenData = UserJWTokenData | BotJWTokenData;
@@ -19,5 +19,5 @@ export function isUserJWToken(token: JWTokenData): token is UserJWTokenData {
 }
 
 export function isBotJWToken(token: JWTokenData): token is BotJWTokenData {
-  return (token as BotJWTokenData).gameScheduleID !== undefined;
+  return (token as BotJWTokenData).playerID !== undefined;
 }

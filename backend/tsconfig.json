@@ -77,7 +77,7 @@
   // ],
   "exclude": [
     "types",
-    "src/**/*.test.ts"
+    // "src/**/*.test.ts"
   ]
 }
 

@@ -1,219 +1,84 @@
-import * as jsonpatch from 'fast-json-patch';
+import { ForbiddenError } from 'apollo-server-koa';
 
-import { ApolloError, ForbiddenError, PubSub, UserInputError } from 'apollo-server-koa';
-import { GraphQLResolveInfo } from 'graphql';
+import { GameNotFoundError } from '~playfulbot/errors';
 
-import { PubSubAsyncIterator } from 'graphql-redis-subscriptions/dist/pubsub-async-iterator';
-
-import { withTransform } from '~playfulbot/withTransform';
-
-// import { actions } from '~playfulbot/games/tictactoe';
-import { actions } from '~playfulbot/games/wallrace';
-
-import {
-  UnknownAction,
-  GameScheduleNotFoundError,
-  GameNotFoundError,
-  PlayingOutOfTurn,
-} from '~playfulbot/errors';
-
-import { ApolloContext, isBotContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { GamePatchMessage, GameScheduleChangeMessage } from '~playfulbot/types/pubsub';
-
-import { GameState } from '~playfulbot/types/gameState';
-
-import { DbGame, GameID, GameScheduleID } from '~playfulbot/types/database';
-
-import {
-  getGame,
-  getDebugGame,
-  createNewDebugGame,
-  getGameSchedule,
-} from '~playfulbot/model/Games';
+import { ApolloContext, isBotContext } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
-import { mergeListAndIterator } from '~playfulbot/utils/asyncIterators';
-// import { pubsub } from '~playfulbot/Model/redis';
-import { deleteGameStore, getStoredActions, storeAction } from '~playfulbot/model/ActionStore';
-import { Action } from '~playfulbot/types/action';
+import { Game } from '~playfulbot/model/Game';
+import { pubsub } from '~playfulbot/pubsub';
+import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
+import { Player } from '~playfulbot/model/Player';
+import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 
-export const pubsub = new PubSub();
-
-export const GAME_STATE_CHANGED = (id: GameID): string => `GAME_STATE_CHANGED-${id}`;
-export const GAME_SCHEDULE_CHANGED = (id: GameScheduleID): string => `GAME_SCHEDULE_CHANGED-${id}`;
-
-export const gameResolver: gqlTypes.QueryResolvers<ApolloContext>['game'] = (parent, args, ctx) => {
-  if (!args.gameID) {
-    throw new UserInputError('No game ID provided');
-  }
-  const game = getGame(args.gameID);
-  if (!game) {
-    throw new GameNotFoundError();
-  }
-  return game;
-};
-
-export const debugGameResolver: gqlTypes.QueryResolvers<ApolloContext>['debugGame'] = async (
-  parent,
-  args,
-  ctx
-) => {
-  let debugGame = getDebugGame(args.userID);
-  if (!debugGame) {
-    await createNewDebugGame(args.userID);
-    debugGame = getDebugGame(args.userID);
-  }
-  if (debugGame) {
-    return debugGame;
-  }
-  throw new Error('Not implemented');
-};
-
-export const createNewDebugGameResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGame'] = async (
-  parent,
-  args,
-  ctx
-) => {
-  if (!isUserContext(ctx)) {
-    throw new ForbiddenError('Only users are allowed to create games');
-  }
-  const debugGame = await createNewDebugGame(ctx.userID);
-  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), { gameScheduleChanges: debugGame });
-  return debugGame;
-};
-
-export const createNewDebugGameForUserResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGameForUser'] = async (
-  parent,
-  args,
-  ctx
-) => {
-  const debugGame = await createNewDebugGame(args.userID);
-  const pubSubMessage: GameScheduleChangeMessage = { gameScheduleChanges: debugGame };
-  await pubsub.publish(GAME_SCHEDULE_CHANGED(debugGame.id), pubSubMessage);
-  return debugGame;
-};
-
-export const gameScheduleResolver: gqlTypes.QueryResolvers<ApolloContext>['gameSchedule'] = async (
-  parent,
-  args,
-  ctx
-) => {
-  const gameSchedule = getGameSchedule(args.scheduleID);
-  if (!gameSchedule) {
-    throw new GameScheduleNotFoundError();
-  }
-  return Promise.resolve(gameSchedule);
-};
-
-export const gameScheduleChangesResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['gameScheduleChanges'] = {
-  subscribe: (model, args, context, info) =>
-    pubsub.asyncIterator([GAME_SCHEDULE_CHANGED(args.scheduleID)]),
-};
-
-interface GamePatchSubscriptionArguments {
-  gameID: string;
-}
-
-export interface GamePatchSubscriptionData<GS extends GameState> {
-  gamePatch: gqlTypes.LiveGame<GS>;
-}
-
-export const gamePatchResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['gamePatch'] = {
+export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game'] = {
   // There is no built-in way to confirm that a subscription is done via Graphql.
   // See https://github.com/apollographql/subscriptions-transport-ws/issues/451
   // Thus some messages might be missed. This is why we first send the whole game state
   subscribe: (model, args, context, info) => {
-    const game = getGame(args.gameID);
-    const pubSubIterator = pubsub.asyncIterator([GAME_STATE_CHANGED(args.gameID)]);
-    return mergeListAndIterator<GamePatchSubscriptionData<GameState>>(
-      [{ gamePatch: { __typename: 'Game', ...game } }],
-      pubSubIterator as any
-    );
+    const game = Game.getGame(args.gameID);
+    if (game === undefined) {
+      throw new GameNotFoundError();
+    }
+
+    const iterator = pubsub.listen('GAME_CHANGED', args.gameID);
+    const versionedIterator = new VersionedAsyncIterator(iterator, async () => {
+      const currentGame = Game.getGame(args.gameID);
+      if (currentGame === undefined) {
+        throw new GameNotFoundError();
+      }
+      const players = currentGame.players.map((assignment) => {
+        const player = Player.getPlayer(assignment.playerID);
+        // FIXME: add the token only when allowed.
+        return { id: player.id, token: player.token };
+      });
+      return Promise.resolve({
+        id: currentGame.id,
+        canceled: currentGame.canceled,
+        version: currentGame.version,
+        players,
+        gameState: currentGame.gameState,
+      });
+    });
+
+    setTimeout(() => {
+      game.play(game.players[0].playerID, 'move', { vector: [0, -1] });
+      game.play(game.players[1].playerID, 'move', { vector: [0, -1] });
+    }, 3000);
+
+    return new TransformAsyncIterator(versionedIterator, (message) => {
+      if ('patch' in message) {
+        return {
+          game: {
+            gameID: game.id,
+            __typename: 'GamePatch',
+            patch: message.patch,
+            version: message.version,
+          } as gqlTypes.GamePatch,
+        };
+      }
+      return {
+        game: {
+          __typename: 'Game',
+          ...message,
+        } as gqlTypes.Game,
+      };
+    });
   },
 };
 
-export async function playGame(
-  game: DbGame<GameState>,
-  playerNumber: number,
-  actionName: string,
-  actionData: Record<string, any>
-): Promise<void> {
-  const playerState = game.gameState.players[playerNumber];
-  // console.log(`Player ${assignment.playerNumber.toString()} is playing`);
-
-  // const gameAction = actions.schemas(args.action);
-  const action = {
-    player: playerNumber,
-    name: actionName,
-    data: actionData,
-  };
-  const { gameState } = game;
-
-  const expectedActions = game.gameState.players.filter((player) => player.playing).length;
-  let actionsToPlay = new Array<Action>();
-  if (expectedActions > 1) {
-    const nbStoredActions = storeAction(game.id, action);
-    if (nbStoredActions < expectedActions) {
-      return;
-    }
-    actionsToPlay = getStoredActions(game.id);
-    deleteGameStore(game.id);
-  } else {
-    actionsToPlay = [action];
-  }
-
-  // if (!gameAction) {
-  //   throw new UnknownAction(args.action);
-  // }
-  const observer = jsonpatch.observe<GameState>(gameState);
-
-  if (!playerState.playing) {
-    // console.log(`Player ${assignment.playerNumber.toString()} Playing out of turn`);
-    throw new PlayingOutOfTurn();
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  actions.handler(gameState as any, actionsToPlay as any);
-
-  const patch = jsonpatch.generate(observer);
-  jsonpatch.unobserve(gameState, observer);
-
-  if (patch.length === 0) {
-    return;
-  }
-  game.version += 1;
-  // console.log(`VERSION: ${game.version} END: ${game.gameState.end.toString()}`);
-  // console.log(`PUBLISHING PATCH ${game.version}`);
-  const pubSubMessage: GamePatchMessage = {
-    gamePatch: { __typename: 'GamePatch', patch, gameID: game.id, version: game.version },
-  };
-
-  await pubsub.publish(GAME_STATE_CHANGED(game.id), pubSubMessage).catch((error) => {
-    console.log(error);
-    throw error;
-  });
-}
-
-export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = async (
+export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = (
   parent,
   args,
   context,
   info
-): Promise<boolean> => {
-  const game = getGame(args.gameID);
-
-  const assignment = game.assignments.find((assign) => assign.playerID === args.playerID);
-  if (assignment === undefined) {
-    throw new ApolloError(`Game does not have player ${args.playerID}.`);
-  }
-
-  if (isUserContext(context) && (!assignment.userID || assignment.userID !== context.userID)) {
-    throw new ForbiddenError(`User is not allowed to play as player ${args.playerID}.`);
-  }
+): boolean => {
+  const game = Game.getGame(args.gameID);
 
   if (isBotContext(context) && context.playerID !== args.playerID) {
     throw new ForbiddenError(`Bot is not allowed to play as player ${args.playerID}.`);
   }
 
-  await playGame(game, assignment.playerNumber, args.action, args.data as Record<string, any>);
+  game.play(args.playerID, args.action, args.data);
 
   return true;
 };

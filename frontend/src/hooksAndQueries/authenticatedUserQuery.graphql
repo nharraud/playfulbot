@@ -1,0 +1,3 @@
+query getAuthenticatedUser {
+  authenticatedUser { id, username }
+}

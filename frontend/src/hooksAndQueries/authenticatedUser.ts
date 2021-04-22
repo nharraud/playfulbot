@@ -2,21 +2,17 @@ import { useQuery, useMutation, gql, ApolloCache } from '@apollo/client';
 import { useCallback } from 'react';
 import { client } from '../apolloConfig';
 
-const AUTHENTICATED_USER_QUERY = gql`
-    query getAuthenticatedUser {
-        authenticatedUser { id, username }
-    }
-`;
+import * as gqlTypes from '../types/graphql';
 
 export function useAuthenticatedUser() {
-    const { loading, error, data } = useQuery(AUTHENTICATED_USER_QUERY);
+    const { loading, error, data } = useQuery<gqlTypes.GetAuthenticatedUserQuery>(gqlTypes.GetAuthenticatedUserDocument);
     return { authenticatedUser: data ? data.authenticatedUser: null };
 };
 
 
 function updateAuthentication(cache: ApolloCache<any>, loginResult: any) {
     cache.writeQuery({
-        query: AUTHENTICATED_USER_QUERY,
+        query: gqlTypes.GetAuthenticatedUserDocument,
         data: { authenticatedUser: loginResult.user }
     });
     localStorage.setItem('token', loginResult.token);

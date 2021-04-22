@@ -1,0 +1,3 @@
+mutation CreateNewDebugGame($userID: ID!, $tournamentID: ID!) {
+  createNewDebugGame(userID: $userID, tournamentID: $tournamentID)
+}

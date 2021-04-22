@@ -29,28 +29,65 @@ type LoginResult {
   token: String!
 }
 
-type PlayerAssignment {
-  playerID: String!
-  playerNumber: Int!
-}
-
 type Game {
   id: ID
-  version: Int!
-  assignments: [PlayerAssignment!]!
+  version: Int
+  canceled: Boolean
+  players: [Player]
   gameState: JSON!
 }
 
 type GamePatch {
-  patch: JSON!
-  gameID: ID!
-  version: Int!
+  patch: JSON
+  gameID: ID
+  version: Int
+}
+
+type GameCanceled {
+  gameID: ID
+  version: Int
+}
+
+union LiveGame = Game | GamePatch | GameCanceled
+
+type Player {
+  id: ID
+  token: String
+}
+
+type DebugArena {
+  id: ID
+  game: ID
+}
+
+type PlayerGames {
+  playerID: ID
+  games: [ID]
+}
+
+type NewPlayerGames {
+  games: [ID]
+}
+
+# Note that there won't be any event for removed player's
+# games as querying the games is enought to know their status.
+union LivePlayerGames = PlayerGames | NewPlayerGames
+
+type Subscription {
+  game(gameID: ID!): LiveGame
+  debugArena(userID: ID!, tournamentID: ID!): DebugArena
+  playerGames(playerID: ID!): LivePlayerGames
+}
+
+type Query {
+  tournament(tournamentID: ID): Tournament
+  team(userID: ID!, tournamentID: ID!): UserTeamResult
+  authenticatedUser: User
 }
 
 type Mutation {
   play(gameID: ID!, playerID: ID!, action: String!, data: JSON!): Boolean
-  createNewDebugGame: GameSchedule
-  createNewDebugGameForUser(userID: ID!): GameSchedule
+  createNewDebugGame(tournamentID: ID!, userID: ID!): Boolean
 
   registerUser(username: String!, password: String!): LoginResult
   login(username: String!, password: String!): LoginResult
@@ -58,31 +95,3 @@ type Mutation {
 
   createTournament(name: String!): Tournament
 }
-
-type Player {
-  id: ID
-  token: String
-}
-
-type GameSchedule {
-  id: ID!
-  players: [Player]
-  game: Game
-}
-
-union LiveGame = Game | GamePatch
-
-type Subscription {
-  gamePatch(gameID: ID!): LiveGame
-  gameScheduleChanges(scheduleID: ID!): GameSchedule
-}
-
-type Query {
-  tournament(tournamentID: ID): Tournament
-  game(gameID: ID): Game
-  debugGame(userID: ID!): GameSchedule
-  gameSchedule(scheduleID: ID!): GameSchedule
-  team(userID: ID!, tournamentID: ID!): UserTeamResult
-  authenticatedUser: User
-}
-
