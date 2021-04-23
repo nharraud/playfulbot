@@ -70,12 +70,19 @@ export type GameCanceled = {
   version?: Maybe<Scalars['Int']>;
 };
 
-export type LiveGame = Game | GamePatch | GameCanceled;
+export type PlayerConnection = {
+  __typename?: 'PlayerConnection';
+  playerID?: Maybe<Scalars['ID']>;
+  connected?: Maybe<Scalars['Boolean']>;
+};
+
+export type LiveGame = Game | GamePatch | GameCanceled | PlayerConnection;
 
 export type Player = {
   __typename?: 'Player';
   id?: Maybe<Scalars['ID']>;
   token?: Maybe<Scalars['String']>;
+  connected?: Maybe<Scalars['Boolean']>;
 };
 
 export type DebugArena = {
@@ -225,13 +232,21 @@ export type GameFragment = (
   & Pick<Game, 'id' | 'version' | 'canceled' | 'gameState'>
   & { players?: Maybe<Array<Maybe<(
     { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'token'>
+    & Pick<Player, 'id' | 'token' | 'connected'>
   )>>> }
 );
 
 export type GamePatchFragment = (
   { __typename?: 'Game' }
   & Pick<Game, 'version' | 'gameState'>
+);
+
+export type GamePlayersFragment = (
+  { __typename?: 'Game' }
+  & { players?: Maybe<Array<Maybe<(
+    { __typename?: 'Player' }
+    & Pick<Player, 'id' | 'token' | 'connected'>
+  )>>> }
 );
 
 export type GameSubscriptionVariables = Exact<{
@@ -246,7 +261,7 @@ export type GameSubscription = (
     & Pick<Game, 'id' | 'canceled' | 'version' | 'gameState'>
     & { players?: Maybe<Array<Maybe<(
       { __typename?: 'Player' }
-      & Pick<Player, 'id' | 'token'>
+      & Pick<Player, 'id' | 'token' | 'connected'>
     )>>> }
   ) | (
     { __typename?: 'GamePatch' }
@@ -254,6 +269,9 @@ export type GameSubscription = (
   ) | (
     { __typename?: 'GameCanceled' }
     & Pick<GameCanceled, 'version'>
+  ) | (
+    { __typename?: 'PlayerConnection' }
+    & Pick<PlayerConnection, 'playerID' | 'connected'>
   )> }
 );
 
@@ -305,6 +323,7 @@ export const GameFragmentDoc = gql`
   players {
     id
     token
+    connected
   }
   gameState
 }
@@ -313,6 +332,15 @@ export const GamePatchFragmentDoc = gql`
     fragment GamePatch on Game {
   version
   gameState
+}
+    `;
+export const GamePlayersFragmentDoc = gql`
+    fragment GamePlayers on Game {
+  players {
+    id
+    token
+    connected
+  }
 }
     `;
 export const GetAuthenticatedUserDocument = gql`
@@ -429,11 +457,16 @@ export const GameDocument = gql`
       players {
         id
         token
+        connected
       }
       gameState
     }
     ... on GameCanceled {
       version
+    }
+    ... on PlayerConnection {
+      playerID
+      connected
     }
   }
 }

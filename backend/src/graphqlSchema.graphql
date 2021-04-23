@@ -48,11 +48,17 @@ type GameCanceled {
   version: Int
 }
 
-union LiveGame = Game | GamePatch | GameCanceled
+type PlayerConnection {
+  playerID: ID
+  connected: Boolean
+}
+
+union LiveGame = Game | GamePatch | GameCanceled | PlayerConnection
 
 type Player {
   id: ID
   token: String
+  connected: Boolean
 }
 
 type DebugArena {

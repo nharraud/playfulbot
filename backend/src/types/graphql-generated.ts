@@ -69,12 +69,19 @@ export type GameCanceled = {
   version?: Maybe<Scalars['Int']>;
 };
 
-export type LiveGame = Game | GamePatch | GameCanceled;
+export type PlayerConnection = {
+  __typename?: 'PlayerConnection';
+  playerID?: Maybe<Scalars['ID']>;
+  connected?: Maybe<Scalars['Boolean']>;
+};
+
+export type LiveGame = Game | GamePatch | GameCanceled | PlayerConnection;
 
 export type Player = {
   __typename?: 'Player';
   id?: Maybe<Scalars['ID']>;
   token?: Maybe<Scalars['String']>;
+  connected?: Maybe<Scalars['Boolean']>;
 };
 
 export type DebugArena = {
@@ -270,7 +277,8 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   GamePatch: ResolverTypeWrapper<GamePatch>;
   GameCanceled: ResolverTypeWrapper<GameCanceled>;
-  LiveGame: ResolversTypes['Game'] | ResolversTypes['GamePatch'] | ResolversTypes['GameCanceled'];
+  PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
+  LiveGame: ResolversTypes['Game'] | ResolversTypes['GamePatch'] | ResolversTypes['GameCanceled'] | ResolversTypes['PlayerConnection'];
   Player: ResolverTypeWrapper<Player>;
   DebugArena: ResolverTypeWrapper<DebugArena>;
   PlayerGames: ResolverTypeWrapper<PlayerGames>;
@@ -297,7 +305,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   GamePatch: GamePatch;
   GameCanceled: GameCanceled;
-  LiveGame: ResolversParentTypes['Game'] | ResolversParentTypes['GamePatch'] | ResolversParentTypes['GameCanceled'];
+  PlayerConnection: PlayerConnection;
+  LiveGame: ResolversParentTypes['Game'] | ResolversParentTypes['GamePatch'] | ResolversParentTypes['GameCanceled'] | ResolversParentTypes['PlayerConnection'];
   Player: Player;
   DebugArena: DebugArena;
   PlayerGames: PlayerGames;
@@ -368,13 +377,20 @@ export type GameCanceledResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PlayerConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlayerConnection'] = ResolversParentTypes['PlayerConnection']> = {
+  playerID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LiveGameResolvers<ContextType = any, ParentType extends ResolversParentTypes['LiveGame'] = ResolversParentTypes['LiveGame']> = {
-  __resolveType: TypeResolveFn<'Game' | 'GamePatch' | 'GameCanceled', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Game' | 'GamePatch' | 'GameCanceled' | 'PlayerConnection', ParentType, ContextType>;
 };
 
 export type PlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -431,6 +447,7 @@ export type Resolvers<ContextType = any> = {
   Game?: GameResolvers<ContextType>;
   GamePatch?: GamePatchResolvers<ContextType>;
   GameCanceled?: GameCanceledResolvers<ContextType>;
+  PlayerConnection?: PlayerConnectionResolvers<ContextType>;
   LiveGame?: LiveGameResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
   DebugArena?: DebugArenaResolvers<ContextType>;

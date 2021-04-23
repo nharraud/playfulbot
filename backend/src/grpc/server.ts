@@ -44,21 +44,31 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
       ) => {
         let stopped = false;
         let iterator: ChannelListener<'NEW_PLAYER_GAMES'>;
-        call.on('end', () => {
-          stopped = true;
-          call.end();
-          if (iterator) {
-            iterator.return().catch((err) => {
-              logger.error(err);
-            });
-          }
-        });
 
         const player = Player.getPlayer(call.request.playerId);
         if (player === undefined) {
           call.emit('error', { code: grpc.status.NOT_FOUND });
           return;
         }
+        player.updateConnectionStatus(true);
+        const clean = () => {
+          stopped = true;
+          player.updateConnectionStatus(false);
+          if (iterator) {
+            iterator.return().catch((err) => {
+              logger.error(err);
+            });
+          }
+        };
+
+        call.on('end', () => {
+          stopped = true;
+          call.end();
+        });
+        call.on('error', clean);
+        call.on('close', clean);
+        call.on('cancelled', clean);
+
         iterator = pubsub.listen('NEW_PLAYER_GAMES', player.id);
 
         const versionedIterator = new VersionedAsyncIterator(iterator, async () => {

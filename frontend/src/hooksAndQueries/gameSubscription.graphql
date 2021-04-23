@@ -9,12 +9,16 @@ subscription game($gameID: ID!) {
       canceled
       version
       players {
-        id, token
+        id, token, connected
       }
       gameState
     }
     ... on GameCanceled {
       version
+    }
+    ... on PlayerConnection {
+      playerID
+      connected
     }
   }
 }

@@ -63,7 +63,7 @@ const DebugPlayersTab: React.FunctionComponent<{
                   </CopyToClipboardButton>
                 </TableCell>
                 <TableCell className={classes.not_connected}>
-                  Not connected
+                  {player.connected.toString()}
                 </TableCell>
               </TableRow>
             ))}

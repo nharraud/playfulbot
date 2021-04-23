@@ -9,6 +9,7 @@ import { pubsub } from '~playfulbot/pubsub';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
 import { Player } from '~playfulbot/model/Player';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
+import { CombinedAsyncIterator } from '~playfulbot/pubsub/CombinedAsyncIterator';
 
 export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game'] = {
   // There is no built-in way to confirm that a subscription is done via Graphql.
@@ -20,6 +21,17 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
       throw new GameNotFoundError();
     }
 
+    const playerIterators = game.players.map((player) => {
+      const playerIterator = pubsub.listen('PLAYER_CONNECTION_CHANGED', player.playerID);
+      return new TransformAsyncIterator(playerIterator, (message) => ({
+        game: {
+          __typename: 'PlayerConnection',
+          playerID: player.playerID,
+          connected: message.connected,
+        } as gqlTypes.PlayerConnection,
+      }));
+    });
+
     const iterator = pubsub.listen('GAME_CHANGED', args.gameID);
     const versionedIterator = new VersionedAsyncIterator(iterator, async () => {
       const currentGame = Game.getGame(args.gameID);
@@ -29,7 +41,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
       const players = currentGame.players.map((assignment) => {
         const player = Player.getPlayer(assignment.playerID);
         // FIXME: add the token only when allowed.
-        return { id: player.id, token: player.token };
+        return { id: player.id, token: player.token, connected: player.connected };
       });
       return Promise.resolve({
         id: currentGame.id,
@@ -45,7 +57,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
       game.play(game.players[1].playerID, 'move', { vector: [0, -1] });
     }, 3000);
 
-    return new TransformAsyncIterator(versionedIterator, (message) => {
+    const transformedGameIterator = new TransformAsyncIterator(versionedIterator, (message) => {
       if ('patch' in message) {
         return {
           game: {
@@ -63,6 +75,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
         } as gqlTypes.Game,
       };
     });
+    return new CombinedAsyncIterator([transformedGameIterator, ...playerIterators], true);
   },
 };
 

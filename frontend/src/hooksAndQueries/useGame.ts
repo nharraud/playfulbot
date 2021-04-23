@@ -83,7 +83,29 @@ function useGameSubscription(gameID: string) {
         fragment: gqlTypes.GameFragmentDoc
       });
     }
-  }
+  } else if (data.game.__typename === 'PlayerConnection') {
+    const newPLayer = data.game;
+    game = apolloClient.readFragment<gqlTypes.GameFragment>({
+      id: fullGameID,
+      fragment: gqlTypes.GameFragmentDoc
+    });
+    if (game) {
+      const newPlayers = game.players.map((player) =>
+        player.id === newPLayer.playerID ? { id: player.id, connected: newPLayer.connected, token: player.token } : player
+      );
+      apolloClient.writeFragment({
+        id: fullGameID,
+        fragment: gqlTypes.GamePlayersFragmentDoc,
+        data: {
+          players: newPlayers
+        },
+      });
+      game = apolloClient.readFragment<gqlTypes.GameFragment>({
+        id: fullGameID,
+        fragment: gqlTypes.GameFragmentDoc
+      });
+    }
+  };
   return { game }
 }
 
