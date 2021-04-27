@@ -6,3 +6,5 @@ export interface GameDefinition {
   init: () => GameState;
   actions: GameActionDefinition;
 }
+
+export const gameDefinitions = new Map<string, GameDefinition>();

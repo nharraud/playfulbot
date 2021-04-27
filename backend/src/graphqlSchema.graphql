@@ -1,5 +1,6 @@
 # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
+scalar Date
 scalar JSON
 
 type User {
@@ -10,6 +11,11 @@ type User {
 type Tournament {
   id: ID!
   name: String!
+  started: Boolean
+  startDate: Date
+  endDate: Date
+  roundsNumber: Int
+  minutesBetweenRounds: Int
 }
 
 type Team {
@@ -99,5 +105,11 @@ type Mutation {
   login(username: String!, password: String!): LoginResult
   logout: Boolean
 
-  createTournament(name: String!): Tournament
+  createTournament(
+    name: String!,
+    startDate: Date!,
+    lastRoundDate: Date!,
+    roundsNumber: Int!,
+    minutesBetweenRounds: Int!,
+  ): Tournament
 }

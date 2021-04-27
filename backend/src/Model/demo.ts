@@ -1,25 +1,63 @@
-import { createUser } from './Users';
-import { createTournament } from './Tournaments';
-import db from '~playfulbot/model/db';
+import { DateTime } from 'luxon';
+import { User } from './User';
+import { Tournament } from './Tournaments';
+import { db } from '~playfulbot/model/db';
+import { Team } from './Team';
+import { gameDefinition } from '~playfulbot/games/wallrace';
+import { gameDefinitions } from './GameDefinition';
+
+gameDefinitions.set(gameDefinition.name, gameDefinition);
+
+function numberToHexString(nb: number, length: number) {
+  const strNb = nb.toString(16);
+  if (strNb.length < length) {
+    const prefix = '0'.repeat(length - strNb.length);
+    return `${prefix}${strNb}`;
+  }
+  if (strNb.length === length) {
+    return strNb;
+  }
+  throw new Error('number to big for the given string length');
+}
 
 export async function initDemo(): Promise<void> {
-  // const user11 = await createUser('user11', 'pass11', '00000000-0000-0000-0000-000000000e11');
-  // const user12 = await createUser('user12', 'pass12', '00000000-0000-0000-0000-000000000e12');
-  // const user2 = await createUser('user2', 'pass2', '00000000-0000-0000-0000-000000000e21');
-  const tournament = await createTournament(
-    'Team Building',
-    '00000000-0000-0000-0000-0000000000a1'
-  );
-  // const team = await db.teams.add('team 1', tournament.id, '00000000-0000-0000-0000-000000000ea1');
-  // await db.teams.addMember(user11.id, team.id);
-  // await db.teams.addMember(user12.id, team.id);
+  await db.default.tx(async (tx) => {
+    const tournament = await Tournament.create(
+      'Team Building',
+      DateTime.now(),
+      DateTime.now().plus({ hours: 8 }),
+      5,
+      30,
+      gameDefinition.name,
+      tx,
+      `F00FABE0-0000-0000-0000-000000000001`
+    );
 
-  for (let idx = 0; idx < 100; idx += 1) {
-    let userNB = idx.toString(16);
-    if (userNB.length < 2) {
-      userNB = `0${userNB}`;
+    const teams = [];
+    for (let idx = 0; idx < 10; idx += 1) {
+      const teamNB = numberToHexString(idx, 12);
+      const team = await Team.create(
+        `team ${idx}`,
+        tournament.id,
+        tx,
+        `FEAB0000-0000-0000-0000-${teamNB}`
+      );
+      teams.push(team);
     }
-    // eslint-disable-next-line no-await-in-loop
-    await createUser(`user${idx}`, `pass${idx}`, `00000000-0000-0000-0000-000000000e${userNB}`);
-  }
+
+    for (let idx = 0; idx < 100; idx += 1) {
+      const userNB = numberToHexString(idx, 12);
+      const teamIdx = idx % 10;
+      // eslint-disable-next-line no-await-in-loop
+      const user = await User.create(
+        `user${idx}`,
+        `pass${idx}`,
+        tx,
+        `ACEB0000-0000-0000-0000-${userNB}`
+      );
+      await teams[teamIdx].addMember(user.id, tx);
+    }
+
+    await tournament.start(tx);
+  });
 }

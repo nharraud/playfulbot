@@ -1,22 +1,29 @@
 import sql from '~playfulbot/model/db/sql';
-import db, { createAdminDB } from '~playfulbot/model/db';
+import { db } from '~playfulbot/model/db';
+import { config } from '~playfulbot/model/db/config';
 
 export async function dropDB(): Promise<void> {
-  const adminDB = createAdminDB();
+  await db.disconnectDefault();
   try {
-    await adminDB.none('DROP DATABASE playfulbot');
+    await db.admin.none(`DROP DATABASE IF EXISTS ${config.DATABASE_NAME}`);
   } finally {
-    await adminDB.$pool.end();
+    await db.disconnectAdmin();
   }
 }
 
 export async function createDB(): Promise<void> {
-  const adminDB = createAdminDB();
+  await db.disconnectDefault();
   try {
-    await adminDB.none('CREATE DATABASE playfulbot');
-    await adminDB.none('GRANT ALL PRIVILEGES ON DATABASE playfulbot TO playfulbot_backend;');
-    await db.none(sql.init);
+    await db.admin.none(`CREATE DATABASE ${config.DATABASE_NAME}`);
+    await db.admin.none(
+      `GRANT ALL PRIVILEGES ON DATABASE ${config.DATABASE_NAME} TO ${config.DATABASE_USER};`
+    );
+    try {
+      await db.default.none(sql.init);
+    } finally {
+      await db.disconnectDefault();
+    }
   } finally {
-    await adminDB.$pool.end();
+    await db.disconnectAdmin();
   }
 }

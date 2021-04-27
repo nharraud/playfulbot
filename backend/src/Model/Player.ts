@@ -2,6 +2,7 @@ import { pubsub } from '~playfulbot/pubsub';
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
 import { JWToken } from '~playfulbot/types/token';
 import { GameID } from './Game';
+import { ConflictError } from '~playfulbot/errors';
 
 export type PlayerID = string;
 
@@ -18,7 +19,17 @@ export class Player {
 
   private constructor(readonly id: PlayerID) {}
 
+  static create(id: PlayerID): Player {
+    if (Player.players.has(id)) {
+      throw new ConflictError('Cannot create a two players with the same ID');
+    }
+    const player = new Player(id);
+    Player.players.set(id, player);
+    return player;
+  }
+
   static getPlayer(id: PlayerID, createIfMissing?: true): Player;
+  static getPlayer(id: PlayerID, createIfMissing?: false): Player | undefined;
   static getPlayer(id: PlayerID, createIfMissing?: boolean): Player | undefined {
     let player = Player.players.get(id);
     if (player === undefined && createIfMissing) {

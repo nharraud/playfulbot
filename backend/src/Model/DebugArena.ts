@@ -1,13 +1,12 @@
 /* eslint-disable no-shadow */
 
-import { UserID, TournamentID } from '~playfulbot/types/database';
 import { PlayerAssignment, Game } from './Game';
 import { GameDefinition } from './GameDefinition';
 import { Player } from './Player';
 import { pubsub } from '~playfulbot/pubsub';
 import { ConflictError } from '~playfulbot/errors';
-import db from './db';
-import { gameDefinition } from '~playfulbot/games/wallrace';
+import { TournamentID } from './Tournaments';
+import { UserID } from './User';
 
 type DebugArenaID = string;
 
@@ -47,19 +46,8 @@ export class DebugArena {
     return arena;
   }
 
-  static async getDebugArena(
-    userID: UserID,
-    tournamentID: TournamentID
-  ): Promise<DebugArena | undefined> {
+  static getDebugArena(userID: UserID, tournamentID: TournamentID): DebugArena | undefined {
     const arena = DebugArena.arenas.get(tournamentID)?.get(userID);
-    if (arena === undefined) {
-      const user = await db.users.getByID(userID);
-      const tournament = await db.tournaments.getByID(tournamentID);
-      if (user && tournament) {
-        return this.createDebugArena(userID, tournamentID, gameDefinition);
-      }
-      return undefined;
-    }
     return arena;
   }
 

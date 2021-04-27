@@ -1,38 +1,59 @@
 import pgPromise, { IInitOptions, IDatabase, IMain } from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
-import { IExtensions, TeamsRepository, TournamentsRepository, UsersRepository } from './repos';
+import { config } from './config';
+import { fixTimeParsing } from './fixTimeParsing';
 
-type DB = IDatabase<IExtensions> & IExtensions;
+fixTimeParsing();
 
-// pg-promise initialization options:
-const initOptions: IInitOptions<IExtensions> = {
-  extend(obj: DB, dc: unknown) {
-    /* eslint-disable no-use-before-define */
-    obj.users = new UsersRepository(obj, dbPGP);
-    obj.tournaments = new TournamentsRepository(obj, dbPGP);
-    obj.teams = new TeamsRepository(obj, dbPGP);
-    /* eslint-enable no-use-before-define */
-  },
-};
+type DB = IDatabase<unknown>;
+const dbPGP = pgPromise();
 
-const dbPGP = pgPromise(initOptions);
+class Database {
+  private _db: DB;
+  private _adminDB: DB;
 
-const db: DB = dbPGP({
-  database: 'playfulbot',
-  port: 5432,
-  user: 'playfulbot_backend',
-  password: process.env.DB_PASSWORD,
-});
+  get default() {
+    if (this._db === undefined) {
+      this._db = dbPGP({
+        database: config.DATABASE_NAME,
+        port: 5432,
+        user: config.DATABASE_USER,
+        password: config.DATABASE_PASSWORD,
+      });
+    }
+    return this._db;
+  }
 
-export default db;
+  get admin() {
+    if (this._adminDB === undefined) {
+      if (!config.DATABASE_ADMIN_USER) {
+        throw new Error('DATABASE_ADMIN_USER env variable is not set');
+      }
+      const adminPGP = pgPromise();
 
-export function createAdminDB(): pgPromise.IDatabase<unknown, pg.IClient> {
-  const adminPGP = pgPromise();
+      this._adminDB = adminPGP({
+        database: 'postgres',
+        port: 5432,
+        user: config.DATABASE_ADMIN_USER,
+        password: config.DATABASE_ADMIN_PASSWORD,
+      });
+    }
+    return this._adminDB;
+  }
 
-  return adminPGP({
-    database: 'postgres',
-    port: 5432,
-    user: 'playfulbot_backend',
-    password: process.env.DB_PASSWORD,
-  });
+  async disconnectDefault(): Promise<void> {
+    if (this._db) {
+      await this._db.$pool.end();
+      this._db = undefined;
+    }
+  }
+
+  async disconnectAdmin(): Promise<void> {
+    if (this._adminDB) {
+      await this._adminDB.$pool.end();
+      this._adminDB = undefined;
+    }
+  }
 }
+
+export const db = new Database();

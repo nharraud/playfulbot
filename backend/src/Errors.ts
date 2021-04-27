@@ -1,6 +1,10 @@
 /* eslint-disable max-classes-per-file */
 
-import { ApolloError, ForbiddenError as ApolloForbiddenError } from 'apollo-server-koa';
+import {
+  ApolloError,
+  ForbiddenError as ApolloForbiddenError,
+  UserInputError,
+} from 'apollo-server-koa';
 
 export class UnknownAction extends ApolloError {
   constructor(action: string) {
@@ -83,6 +87,12 @@ export class PlayerNotFoundError extends NotFoundError {
 export class InvalidRequest extends ApolloError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
     super(message, 'INVALID_REQUEST', additionalProperties);
+  }
+}
+
+export class InvalidArgument extends UserInputError {
+  constructor(message: string, additionalProperties?: Record<string, unknown>) {
+    super(message);
   }
 }
 

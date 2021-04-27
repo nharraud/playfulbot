@@ -1,6 +1,6 @@
 import { Context as KoaContext } from 'koa';
 import { PlayerID } from '~playfulbot/model/Player';
-import { UserID } from './database';
+import { UserID } from '~playfulbot/model/User';
 
 export type ApolloUnauthenticatedContext = {
   koaContext: KoaContext;

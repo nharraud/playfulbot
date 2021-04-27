@@ -7,5 +7,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '~playfulbot/(.*)': '<rootDir>/src/$1',
   },
+  setupFiles: ['dotenv-flow/config'],
+  testRunner: 'jest-circus/runner',
 };
 export default config;

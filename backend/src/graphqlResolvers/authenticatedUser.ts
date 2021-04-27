@@ -1,7 +1,8 @@
 import { AuthenticationError, ForbiddenError } from 'apollo-server-koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { getUserByID } from '~playfulbot/model/Users';
+import { User } from '~playfulbot/model/User';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import { db } from '~playfulbot/model/db';
 
 export const authenticatedUserResolver: gqlTypes.QueryResolvers<ApolloContext>['authenticatedUser'] = async (
   parent,
@@ -12,7 +13,7 @@ export const authenticatedUserResolver: gqlTypes.QueryResolvers<ApolloContext>['
     throw new ForbiddenError('Only users are allowed to retrieve the current user');
   }
   if (ctx.userID) {
-    const foundUser = await getUserByID(ctx.userID);
+    const foundUser = await User.getByID(ctx.userID, db.default);
     if (foundUser) {
       return {
         id: foundUser.id,

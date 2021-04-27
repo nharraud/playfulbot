@@ -1,5 +1,5 @@
 import { PlayerID } from '~playfulbot/model/Player';
-import { UserID } from './database';
+import { UserID } from '~playfulbot/model/User';
 
 export type JWToken = string;
 

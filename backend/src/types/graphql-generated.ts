@@ -11,8 +11,10 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
   JSON: any;
 };
+
 
 
 export type User = {
@@ -25,6 +27,11 @@ export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID'];
   name: Scalars['String'];
+  started?: Maybe<Scalars['Boolean']>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  roundsNumber?: Maybe<Scalars['Int']>;
+  minutesBetweenRounds?: Maybe<Scalars['Int']>;
 };
 
 export type Team = {
@@ -183,6 +190,10 @@ export type MutationLoginArgs = {
 
 export type MutationCreateTournamentArgs = {
   name: Scalars['String'];
+  startDate: Scalars['Date'];
+  lastRoundDate: Scalars['Date'];
+  roundsNumber: Scalars['Int'];
+  minutesBetweenRounds: Scalars['Int'];
 };
 
 
@@ -263,18 +274,19 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   User: ResolverTypeWrapper<User>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Tournament: ResolverTypeWrapper<Tournament>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Team: ResolverTypeWrapper<Team>;
   UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
   UserTeamResult: ResolversTypes['Team'] | ResolversTypes['UserNotPartOfAnyTeam'];
   LoginResult: ResolverTypeWrapper<LoginResult>;
   Game: ResolverTypeWrapper<Game>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   GamePatch: ResolverTypeWrapper<GamePatch>;
   GameCanceled: ResolverTypeWrapper<GameCanceled>;
   PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
@@ -291,18 +303,19 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Date: Scalars['Date'];
   JSON: Scalars['JSON'];
   User: User;
   ID: Scalars['ID'];
   String: Scalars['String'];
   Tournament: Tournament;
+  Boolean: Scalars['Boolean'];
+  Int: Scalars['Int'];
   Team: Team;
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
   UserTeamResult: ResolversParentTypes['Team'] | ResolversParentTypes['UserNotPartOfAnyTeam'];
   LoginResult: LoginResult;
   Game: Game;
-  Int: Scalars['Int'];
-  Boolean: Scalars['Boolean'];
   GamePatch: GamePatch;
   GameCanceled: GameCanceled;
   PlayerConnection: PlayerConnection;
@@ -317,6 +330,10 @@ export type ResolversParentTypes = {
   Mutation: {};
 };
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -330,6 +347,11 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  started?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  roundsNumber?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -433,10 +455,11 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   registerUser?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'username' | 'password'>>;
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name'>>;
+  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
 };
 
 export type Resolvers<ContextType = any> = {
+  Date?: GraphQLScalarType;
   JSON?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Tournament?: TournamentResolvers<ContextType>;

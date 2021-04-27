@@ -1,12 +1,21 @@
 /* eslint import/first: "off" */
 
-import dotenv from 'dotenv-flow';
-
-dotenv.config();
-
 import { execute } from '~playfulbot/cli';
+import { gameDefinition } from '~playfulbot/games/wallrace';
+import { gameDefinitions } from '~playfulbot/model/GameDefinition';
+import logger from './logging';
+import { handleRestart } from './model/handleRestart';
 
-execute(process.argv).catch((error: Error) => {
-  console.log(JSON.stringify(error, null, 2));
-  console.log(error.stack);
+async function main() {
+  gameDefinitions.set(gameDefinition.name, gameDefinition);
+
+  await handleRestart();
+  await execute(process.argv);
+}
+
+(async () => {
+  await main();
+})().catch((error: Error) => {
+  logger.error(JSON.stringify(error, null, 2));
+  logger.error(error.stack);
 });

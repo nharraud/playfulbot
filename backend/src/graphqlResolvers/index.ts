@@ -12,6 +12,7 @@ import { createTournamentResolver, tournamentResolver } from './tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 import { playerGamesResolver } from './player';
+import { DateScalar } from './scalars/DateScalar';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -36,6 +37,7 @@ const resolvers: IResolvers = {
     members: teamMembersResolver,
   },
   JSON: GraphQLJSON,
+  Date: DateScalar,
 };
 
 export default resolvers;

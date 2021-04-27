@@ -10,8 +10,7 @@ import { AuthenticationError } from 'apollo-server-koa';
 
 import { Context } from 'koa';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { DbUser } from '~playfulbot/types/database';
-import { getUserByName } from '~playfulbot/model/Users';
+import { User } from '~playfulbot/model/User';
 
 import {
   JWTokenData,
@@ -23,13 +22,14 @@ import {
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { InvalidRequest } from '~playfulbot/errors';
 import { PlayerID } from '~playfulbot/model/Player';
+import { db } from '~playfulbot/model/db';
 
 const randomBytes = promisify(crypto.randomBytes);
 const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
 
 const SECRET_KEY = 'secret!';
 
-export async function authenticate(user: DbUser, koaContext: Context): Promise<JWToken> {
+export async function authenticate(user: User, koaContext: Context): Promise<JWToken> {
   const binFingerprint = await randomBytes(50);
   const strFingerprint = binFingerprint.toString('base64');
 
@@ -50,7 +50,7 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   args,
   ctx
 ) => {
-  const foundUser = await getUserByName(args.username);
+  const foundUser = await User.getByName(args.username, db.default);
 
   if (!foundUser) {
     throw new AuthenticationError(`Could not find account: ${args.username}`);

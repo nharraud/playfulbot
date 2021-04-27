@@ -3,13 +3,18 @@ import { startServer as startGraphqlServer } from '~playfulbot/server';
 import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 
-import db from '~playfulbot/model/db';
+import { db } from '~playfulbot/model/db';
 import { disconnect } from './model/redis';
 import { initDemo } from './model/demo';
 
+import { gameDefinition } from '~playfulbot/games/wallrace';
+import { gameDefinitions } from '~playfulbot/model/GameDefinition';
+
+gameDefinitions.set(gameDefinition.name, gameDefinition);
+
 async function closeConnections() {
   disconnect();
-  await db.$pool.end();
+  await db.disconnectDefault();
 }
 
 async function execute(argv: string[]): Promise<void> {
