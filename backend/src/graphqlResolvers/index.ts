@@ -11,14 +11,16 @@ import { registerUserResolver } from './registration';
 import { createTournamentResolver, tournamentResolver } from './tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
-import { playerGamesResolver } from './player';
+import { playerGamesResolver } from './playerGames';
 import { DateScalar } from './scalars/DateScalar';
+import { teamPlayerResolver } from './teamPlayer';
 
 const resolvers: IResolvers = {
   Subscription: {
     game: gameResolver,
     playerGames: playerGamesResolver,
     debugArena: debugArenaResolver,
+    teamPlayer: teamPlayerResolver,
   } as gqlTypes.SubscriptionResolvers,
   Query: {
     team: teamResolver,

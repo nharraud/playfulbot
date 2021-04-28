@@ -12,8 +12,10 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
   JSON: any;
 };
+
 
 
 export type User = {
@@ -26,6 +28,11 @@ export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID'];
   name: Scalars['String'];
+  started?: Maybe<Scalars['Boolean']>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  roundsNumber?: Maybe<Scalars['Int']>;
+  minutesBetweenRounds?: Maybe<Scalars['Int']>;
 };
 
 export type Team = {
@@ -85,6 +92,8 @@ export type Player = {
   connected?: Maybe<Scalars['Boolean']>;
 };
 
+export type LivePlayer = Player | PlayerConnection;
+
 export type DebugArena = {
   __typename?: 'DebugArena';
   id?: Maybe<Scalars['ID']>;
@@ -109,6 +118,7 @@ export type Subscription = {
   game?: Maybe<LiveGame>;
   debugArena?: Maybe<DebugArena>;
   playerGames?: Maybe<LivePlayerGames>;
+  teamPlayer?: Maybe<LivePlayer>;
 };
 
 
@@ -125,6 +135,11 @@ export type SubscriptionDebugArenaArgs = {
 
 export type SubscriptionPlayerGamesArgs = {
   playerID: Scalars['ID'];
+};
+
+
+export type SubscriptionTeamPlayerArgs = {
+  teamID: Scalars['ID'];
 };
 
 export type Query = {
@@ -184,6 +199,10 @@ export type MutationLoginArgs = {
 
 export type MutationCreateTournamentArgs = {
   name: Scalars['String'];
+  startDate: Scalars['Date'];
+  lastRoundDate: Scalars['Date'];
+  roundsNumber: Scalars['Int'];
+  minutesBetweenRounds: Scalars['Int'];
 };
 
 export type GetAuthenticatedUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -309,6 +328,32 @@ export type PlayMutation = (
   & Pick<Mutation, 'play'>
 );
 
+export type PlayerConnectedFragment = (
+  { __typename?: 'Player' }
+  & Pick<Player, 'connected'>
+);
+
+export type PlayerFragment = (
+  { __typename?: 'Player' }
+  & Pick<Player, 'id' | 'token' | 'connected'>
+);
+
+export type TeamPlayerSubscriptionVariables = Exact<{
+  teamID: Scalars['ID'];
+}>;
+
+
+export type TeamPlayerSubscription = (
+  { __typename?: 'Subscription' }
+  & { teamPlayer?: Maybe<(
+    { __typename?: 'Player' }
+    & Pick<Player, 'id' | 'token' | 'connected'>
+  ) | (
+    { __typename?: 'PlayerConnection' }
+    & Pick<PlayerConnection, 'playerID' | 'connected'>
+  )> }
+);
+
 export const GameCancelFragmentDoc = gql`
     fragment GameCancel on Game {
   version
@@ -341,6 +386,18 @@ export const GamePlayersFragmentDoc = gql`
     token
     connected
   }
+}
+    `;
+export const PlayerConnectedFragmentDoc = gql`
+    fragment PlayerConnected on Player {
+  connected
+}
+    `;
+export const PlayerFragmentDoc = gql`
+    fragment Player on Player {
+  id
+  token
+  connected
 }
     `;
 export const GetAuthenticatedUserDocument = gql`
@@ -574,3 +631,41 @@ export function usePlayMutation(baseOptions?: Apollo.MutationHookOptions<PlayMut
 export type PlayMutationHookResult = ReturnType<typeof usePlayMutation>;
 export type PlayMutationResult = Apollo.MutationResult<PlayMutation>;
 export type PlayMutationOptions = Apollo.BaseMutationOptions<PlayMutation, PlayMutationVariables>;
+export const TeamPlayerDocument = gql`
+    subscription teamPlayer($teamID: ID!) {
+  teamPlayer(teamID: $teamID) {
+    ... on Player {
+      id
+      token
+      connected
+    }
+    ... on PlayerConnection {
+      playerID
+      connected
+    }
+  }
+}
+    `;
+
+/**
+ * __useTeamPlayerSubscription__
+ *
+ * To run a query within a React component, call `useTeamPlayerSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTeamPlayerSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTeamPlayerSubscription({
+ *   variables: {
+ *      teamID: // value for 'teamID'
+ *   },
+ * });
+ */
+export function useTeamPlayerSubscription(baseOptions: Apollo.SubscriptionHookOptions<TeamPlayerSubscription, TeamPlayerSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TeamPlayerSubscription, TeamPlayerSubscriptionVariables>(TeamPlayerDocument, options);
+      }
+export type TeamPlayerSubscriptionHookResult = ReturnType<typeof useTeamPlayerSubscription>;
+export type TeamPlayerSubscriptionResult = Apollo.SubscriptionResult<TeamPlayerSubscription>;

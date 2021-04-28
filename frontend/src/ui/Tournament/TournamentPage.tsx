@@ -26,14 +26,12 @@ import PeopleIcon from '@material-ui/icons/People';
 import Debug from './Debug';
 import Info from './Info';
 import TeamSubPage from './team/TeamSubPage';
-import CodingIcon from '@material-ui/icons/Code';
-import InfoIcon from '@material-ui/icons/Info';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
 import TestIcon from '@material-ui/icons/SlowMotionVideo';
-import BugIcon from '@material-ui/icons/BugReport';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { useTournament } from 'src/hooksAndQueries/getTournament';
-import { CircularProgress } from '@material-ui/core';
 import LoadingWidget from '../Loading';
+import CompetitionSubPage from './competition/CompetitionSubPage';
 
 
 const drawerWidth = 240;
@@ -117,26 +115,18 @@ export default function TournamentPage() {
           <div className={classes.appBarSpacer}></div>
           <List>
             <ListItemLink button key={'Info'} to={`${match.url}/info`}>
-              <ListItemIcon><InfoIcon fontSize="large" /></ListItemIcon>
+              <ListItemIcon><MenuBookIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Info'} />
             </ListItemLink>
             <ListItemLink button key={'Team'} to={`${match.url}/team`}>
               <ListItemIcon><PeopleIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Team'} />
             </ListItemLink>
-            <ListItemLink button key={'Coding'} to={`${match.url}/code`}>
-              <ListItemIcon><CodingIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Coding'} />
-            </ListItemLink>
             <ListItemLink button key={'Debug'} to={`${match.url}/debug`}>
-              <ListItemIcon><BugIcon fontSize="large" /></ListItemIcon>
+              <ListItemIcon><TestIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Debug'} />
             </ListItemLink>
-            <ListItemLink button key={'Test'} to={`${match.url}/test`}>
-              <ListItemIcon><TestIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Test'} />
-            </ListItemLink>
-            <ListItemLink button key={'Competition'} to={`${match.url}/compete`}>
+            <ListItemLink button key={'Competition'} to={`${match.url}/competition`}>
               <ListItemIcon><CompetitionIcon fontSize="large" /></ListItemIcon>
               <ListItemText primary={'Competition'} />
             </ListItemLink>
@@ -154,6 +144,9 @@ export default function TournamentPage() {
             </Route>
             <Route path={`${match.url}/debug`}>
               <Debug tournament={tournament}/>
+            </Route>
+            <Route path={`${match.url}/competition`}>
+              <CompetitionSubPage tournament={tournament}/>
             </Route>
           </Switch>
         </main>

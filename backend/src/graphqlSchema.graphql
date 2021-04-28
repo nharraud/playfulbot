@@ -67,6 +67,8 @@ type Player {
   connected: Boolean
 }
 
+union LivePlayer = Player | PlayerConnection
+
 type DebugArena {
   id: ID
   game: ID
@@ -89,6 +91,7 @@ type Subscription {
   game(gameID: ID!): LiveGame
   debugArena(userID: ID!, tournamentID: ID!): DebugArena
   playerGames(playerID: ID!): LivePlayerGames
+  teamPlayer(teamID: ID!): LivePlayer
 }
 
 type Query {

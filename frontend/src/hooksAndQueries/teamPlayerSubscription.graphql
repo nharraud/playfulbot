@@ -1,0 +1,13 @@
+subscription teamPlayer($teamID: ID!) {
+  teamPlayer(teamID: $teamID) {
+    ... on Player {
+      id
+      token
+      connected
+    }
+    ... on PlayerConnection {
+      playerID
+      connected
+    }
+  }
+}

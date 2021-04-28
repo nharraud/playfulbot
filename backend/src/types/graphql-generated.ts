@@ -91,6 +91,8 @@ export type Player = {
   connected?: Maybe<Scalars['Boolean']>;
 };
 
+export type LivePlayer = Player | PlayerConnection;
+
 export type DebugArena = {
   __typename?: 'DebugArena';
   id?: Maybe<Scalars['ID']>;
@@ -115,6 +117,7 @@ export type Subscription = {
   game?: Maybe<LiveGame>;
   debugArena?: Maybe<DebugArena>;
   playerGames?: Maybe<LivePlayerGames>;
+  teamPlayer?: Maybe<LivePlayer>;
 };
 
 
@@ -131,6 +134,11 @@ export type SubscriptionDebugArenaArgs = {
 
 export type SubscriptionPlayerGamesArgs = {
   playerID: Scalars['ID'];
+};
+
+
+export type SubscriptionTeamPlayerArgs = {
+  teamID: Scalars['ID'];
 };
 
 export type Query = {
@@ -292,6 +300,7 @@ export type ResolversTypes = {
   PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
   LiveGame: ResolversTypes['Game'] | ResolversTypes['GamePatch'] | ResolversTypes['GameCanceled'] | ResolversTypes['PlayerConnection'];
   Player: ResolverTypeWrapper<Player>;
+  LivePlayer: ResolversTypes['Player'] | ResolversTypes['PlayerConnection'];
   DebugArena: ResolverTypeWrapper<DebugArena>;
   PlayerGames: ResolverTypeWrapper<PlayerGames>;
   NewPlayerGames: ResolverTypeWrapper<NewPlayerGames>;
@@ -321,6 +330,7 @@ export type ResolversParentTypes = {
   PlayerConnection: PlayerConnection;
   LiveGame: ResolversParentTypes['Game'] | ResolversParentTypes['GamePatch'] | ResolversParentTypes['GameCanceled'] | ResolversParentTypes['PlayerConnection'];
   Player: Player;
+  LivePlayer: ResolversParentTypes['Player'] | ResolversParentTypes['PlayerConnection'];
   DebugArena: DebugArena;
   PlayerGames: PlayerGames;
   NewPlayerGames: NewPlayerGames;
@@ -416,6 +426,10 @@ export type PlayerResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type LivePlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['LivePlayer'] = ResolversParentTypes['LivePlayer']> = {
+  __resolveType: TypeResolveFn<'Player' | 'PlayerConnection', ParentType, ContextType>;
+};
+
 export type DebugArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['DebugArena'] = ResolversParentTypes['DebugArena']> = {
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   game?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -441,6 +455,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   game?: SubscriptionResolver<Maybe<ResolversTypes['LiveGame']>, "game", ParentType, ContextType, RequireFields<SubscriptionGameArgs, 'gameID'>>;
   debugArena?: SubscriptionResolver<Maybe<ResolversTypes['DebugArena']>, "debugArena", ParentType, ContextType, RequireFields<SubscriptionDebugArenaArgs, 'userID' | 'tournamentID'>>;
   playerGames?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayerGames']>, "playerGames", ParentType, ContextType, RequireFields<SubscriptionPlayerGamesArgs, 'playerID'>>;
+  teamPlayer?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayer']>, "teamPlayer", ParentType, ContextType, RequireFields<SubscriptionTeamPlayerArgs, 'teamID'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -473,6 +488,7 @@ export type Resolvers<ContextType = any> = {
   PlayerConnection?: PlayerConnectionResolvers<ContextType>;
   LiveGame?: LiveGameResolvers<ContextType>;
   Player?: PlayerResolvers<ContextType>;
+  LivePlayer?: LivePlayerResolvers<ContextType>;
   DebugArena?: DebugArenaResolvers<ContextType>;
   PlayerGames?: PlayerGamesResolvers<ContextType>;
   NewPlayerGames?: NewPlayerGamesResolvers<ContextType>;

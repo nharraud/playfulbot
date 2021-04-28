@@ -1,0 +1,5 @@
+fragment Player on Player {
+  id
+  token
+  connected
+}

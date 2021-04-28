@@ -1,5 +1,6 @@
 import { db } from './db';
 import { DebugArena } from './DebugArena';
+import { Player } from './Player';
 import { Tournament } from './Tournaments';
 import { User } from './User';
 
@@ -13,6 +14,7 @@ export async function handleRestart() {
     const tournamentPromises = tournaments.map(async (tournament) => {
       const teams = await tournament.getTeams(tx);
       const teamsPromises = teams.map(async (team) => {
+        Player.create(team.id);
         const members = await team.getMembers(tx);
         const membersPromises = members.map(async (member) => {
           await DebugArena.createDebugArena(

@@ -47,7 +47,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
 
         const player = Player.getPlayer(call.request.playerId);
         if (player === undefined) {
-          call.emit('error', { code: grpc.status.NOT_FOUND });
+          call.emit('error', { code: grpc.status.NOT_FOUND, message: 'Player not found' });
           return;
         }
         player.updateConnectionStatus(true);
