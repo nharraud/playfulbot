@@ -8,8 +8,6 @@ import { handleRestart } from './model/handleRestart';
 
 async function main() {
   gameDefinitions.set(gameDefinition.name, gameDefinition);
-
-  await handleRestart();
   await execute(process.argv);
 }
 

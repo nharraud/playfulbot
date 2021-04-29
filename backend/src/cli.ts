@@ -6,11 +6,7 @@ import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 import { db } from '~playfulbot/model/db';
 import { disconnect } from './model/redis';
 import { initDemo } from './model/demo';
-
-import { gameDefinition } from '~playfulbot/games/wallrace';
-import { gameDefinitions } from '~playfulbot/model/GameDefinition';
-
-gameDefinitions.set(gameDefinition.name, gameDefinition);
+import { handleRestart } from './model/handleRestart';
 
 async function closeConnections() {
   disconnect();
@@ -23,7 +19,8 @@ async function execute(argv: string[]): Promise<void> {
   program
     .command('serve')
     .description('Start the backend server')
-    .action(() => {
+    .action(async () => {
+      await handleRestart();
       startGraphqlServer();
       startGrpcServer();
     });
