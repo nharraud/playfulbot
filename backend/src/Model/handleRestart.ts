@@ -2,12 +2,11 @@ import { db } from './db';
 import { DebugArena } from './DebugArena';
 import { Player } from './Player';
 import { Tournament } from './Tournaments';
-import { User } from './User';
 
 /**
  * Recreate every in-memory resource after a server restart.
  */
-export async function handleRestart() {
+export async function handleRestart(): Promise<void> {
   await db.default.tx(async (tx) => {
     // Create every debug arena
     const tournaments = await Tournament.getAll(tx);
