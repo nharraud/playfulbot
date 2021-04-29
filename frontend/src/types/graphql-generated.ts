@@ -24,13 +24,19 @@ export type User = {
   username: Scalars['String'];
 };
 
+export enum TournamentStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID'];
   name: Scalars['String'];
-  started?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<TournamentStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  endDate?: Maybe<Scalars['Date']>;
+  LastRoundDate?: Maybe<Scalars['Date']>;
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
 };

@@ -5,6 +5,7 @@ import { createDB, dropDB } from './db/db_admin';
 import { gameDefinitions } from './GameDefinition';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
+import * as gqlTypes from '~playfulbot/types/graphql';
 
 describe('Model/Tournament', () => {
   beforeAll(() => {
@@ -28,8 +29,7 @@ describe('Model/Tournament', () => {
   test('should be able to create a Tournament', async () => {
     const input = {
       name: 'Team Building',
-      started: false,
-      ended: false,
+      status: gqlTypes.TournamentStatus.Created,
       startDate: DateTime.now(),
       lastRoundDate: DateTime.now().plus({ hours: 8 }),
       roundsNumber: 5,

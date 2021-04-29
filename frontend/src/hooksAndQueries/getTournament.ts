@@ -4,7 +4,7 @@ import { Tournament } from 'src/types/graphql';
 const TOURNAMENT_QUERY = gql`
     query getTournament($tournamentID: ID!) {
         tournament(tournamentID: $tournamentID) {
-          id, name
+          id, name, status
         }
     }
 `;

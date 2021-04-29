@@ -8,12 +8,12 @@ CREATE TABLE users (
   password BYTEA NOT NULL
 );
 
+CREATE TYPE tournament_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
 
 CREATE TABLE tournaments (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   name VARCHAR(15) NOT NULL UNIQUE,
-  started boolean NOT NULL DEFAULT false,
-  ended boolean NOT NULL DEFAULT false,
+  status tournament_status NOT NULL DEFAULT 'CREATED',
   start_date timestamp NOT NULL,
   last_round_date timestamp NOT NULL,
   rounds_number smallint NOT NULL,
@@ -42,9 +42,11 @@ CREATE TABLE team_memberships (
 );
 
 
+CREATE TYPE round_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
+
 CREATE TABLE rounds (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  started boolean NOT NULL DEFAULT false,
+  status round_status NOT NULL DEFAULT 'CREATED',
   start_date timestamp NOT NULL,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE
 );

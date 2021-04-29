@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 import { DbOrTx, DEFAULT } from './db/helpers';
 import { Tournament, TournamentID } from './Tournaments';
+import * as gqlTypes from '~playfulbot/types/graphql';
 
 const PLAYER_PER_GROUP = 5;
 
@@ -10,7 +11,8 @@ export type RoundID = string;
 /* eslint-disable camelcase */
 interface DbRound {
   id: RoundID;
-  started: boolean;
+  status: gqlTypes.RoundStatus;
+  ended: boolean;
   start_date: DateTime;
   tournament_id: TournamentID;
 }
@@ -18,13 +20,13 @@ interface DbRound {
 
 export class Round {
   readonly id: RoundID;
-  started: boolean;
+  status: gqlTypes.RoundStatus;
   startDate: DateTime;
   readonly tournamentID: TournamentID;
 
   private constructor(data: DbRound) {
     this.id = data.id;
-    this.started = data.started;
+    this.status = data.status;
     this.startDate = data.start_date;
     this.tournamentID = data.tournament_id;
   }

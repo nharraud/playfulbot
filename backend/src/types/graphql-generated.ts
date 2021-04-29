@@ -23,13 +23,19 @@ export type User = {
   username: Scalars['String'];
 };
 
+export enum TournamentStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID'];
   name: Scalars['String'];
-  started?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<TournamentStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  endDate?: Maybe<Scalars['Date']>;
+  LastRoundDate?: Maybe<Scalars['Date']>;
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
 };
@@ -287,14 +293,15 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<User>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  TournamentStatus: TournamentStatus;
   Tournament: ResolverTypeWrapper<Tournament>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Team: ResolverTypeWrapper<Team>;
   UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
   UserTeamResult: ResolversTypes['Team'] | ResolversTypes['UserNotPartOfAnyTeam'];
   LoginResult: ResolverTypeWrapper<LoginResult>;
   Game: ResolverTypeWrapper<Game>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   GamePatch: ResolverTypeWrapper<GamePatch>;
   GameCanceled: ResolverTypeWrapper<GameCanceled>;
   PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
@@ -318,13 +325,13 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   String: Scalars['String'];
   Tournament: Tournament;
-  Boolean: Scalars['Boolean'];
   Int: Scalars['Int'];
   Team: Team;
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
   UserTeamResult: ResolversParentTypes['Team'] | ResolversParentTypes['UserNotPartOfAnyTeam'];
   LoginResult: LoginResult;
   Game: Game;
+  Boolean: Scalars['Boolean'];
   GamePatch: GamePatch;
   GameCanceled: GameCanceled;
   PlayerConnection: PlayerConnection;
@@ -357,9 +364,9 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  started?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  LastRoundDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   roundsNumber?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

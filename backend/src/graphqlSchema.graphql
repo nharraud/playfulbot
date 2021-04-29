@@ -8,12 +8,15 @@ type User {
   username: String!
 }
 
+enum TournamentStatus {
+  CREATED, STARTED, ENDED
+}
 type Tournament {
   id: ID!
   name: String!
-  started: Boolean
+  status: TournamentStatus
   startDate: Date
-  endDate: Date
+  LastRoundDate: Date
   roundsNumber: Int
   minutesBetweenRounds: Int
 }

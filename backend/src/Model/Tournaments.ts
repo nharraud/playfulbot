@@ -5,6 +5,7 @@ import { DbOrTx, DEFAULT } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
 import { Round } from './Round';
 import { Team } from './Team';
+import * as gqlTypes from '~playfulbot/types/graphql';
 
 export type TournamentID = string;
 
@@ -12,8 +13,7 @@ export type TournamentID = string;
 interface DbTournament {
   readonly id: TournamentID;
   name: string;
-  started: boolean;
-  ended: boolean;
+  status: gqlTypes.TournamentStatus;
   start_date: DateTime;
   last_round_date: DateTime;
   rounds_number: number;
@@ -25,8 +25,7 @@ interface DbTournament {
 export class Tournament {
   readonly id: TournamentID;
   name: string;
-  started: boolean;
-  ended: boolean;
+  status: gqlTypes.TournamentStatus;
   startDate: DateTime;
   lastRoundDate: DateTime;
   roundsNumber: number;
@@ -36,8 +35,7 @@ export class Tournament {
   private constructor(data: DbTournament) {
     this.id = data.id;
     this.name = data.name;
-    this.started = data.started;
-    this.ended = data.ended;
+    this.status = data.status;
     this.startDate = data.start_date;
     this.lastRoundDate = data.last_round_date;
     this.roundsNumber = data.rounds_number;
@@ -108,8 +106,8 @@ export class Tournament {
     }
 
     await dbOrTX.tx(async (tx) => {
-      await tx.none('UPDATE tournaments SET started = true WHERE id = $[id]', { id: this.id });
-      this.started = true;
+      await tx.none("UPDATE tournaments SET status = 'STARTED' WHERE id = $[id]", { id: this.id });
+      this.status = gqlTypes.TournamentStatus.Started;
 
       const roundPromises = new Array(this.roundsNumber)
         .fill(0)
