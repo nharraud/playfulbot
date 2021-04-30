@@ -8,7 +8,7 @@ import { config } from './db/config';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
 describe('Model/Tournament', () => {
-  const now = DateTime.fromISO('2021-06-25T12:01:02.345');
+  const now = DateTime.fromISO('2021-01-01T00:00:00.000');
 
   beforeAll(() => {
     gameDefinitions.set(gameDefinition.name, gameDefinition);

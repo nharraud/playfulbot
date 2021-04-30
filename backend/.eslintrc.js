@@ -55,5 +55,6 @@ module.exports = {
     'max-classes-per-file': 'off',
     'no-await-in-loop': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.ts"]}]
   },
 };

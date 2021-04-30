@@ -47,7 +47,7 @@ export class Round {
                    VALUES($[id], $[startDate], $[tournamentID])
                    RETURNING *`;
     const data = await dbOrTx.one<DbRound>(query, {
-      startDate: startDate.toJSDate(),
+      startDate,
       tournamentID,
       id: id || DEFAULT,
     });

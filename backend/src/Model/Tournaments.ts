@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { ConflictError, InvalidArgument } from '~playfulbot/errors';
 
-import { DbOrTx, DEFAULT } from './db/helpers';
+import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team } from './Team';
@@ -21,6 +21,12 @@ interface DbTournament {
   game_name: string;
 }
 /* eslint-enable */
+
+interface GetAllTournamentsFilters {
+  status?: gqlTypes.TournamentStatus;
+  startingAfter?: DateTime;
+  startingBefore?: DateTime;
+}
 
 export class Tournament {
   readonly id: TournamentID;
@@ -95,8 +101,21 @@ export class Tournament {
     });
   }
 
-  static async getAll(dbOrTX: DbOrTx): Promise<Tournament[]> {
-    const rows = await dbOrTX.manyOrNone<DbTournament>('SELECT * FROM tournaments');
+  static async getAll(
+    filters: GetAllTournamentsFilters = {},
+    dbOrTX: DbOrTx
+  ): Promise<Tournament[]> {
+    const queryBuilder = new QueryBuilder('SELECT * FROM tournaments');
+    if (filters.startingAfter) {
+      queryBuilder.where('$[startingAfter] <= start_date');
+    }
+    if (filters.startingBefore) {
+      queryBuilder.where('start_date <= $[startingBefore]');
+    }
+    if (filters.status) {
+      queryBuilder.where('status = $[status]');
+    }
+    const rows = await dbOrTX.manyOrNone<DbTournament>(queryBuilder.query, filters);
     return rows.map((row) => new Tournament(row));
   }
 

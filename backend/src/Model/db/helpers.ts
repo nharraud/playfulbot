@@ -7,3 +7,18 @@ export const DEFAULT = {
 };
 
 export type DbOrTx = IBaseProtocol<unknown>;
+
+export class QueryBuilder {
+  firstFilter = true;
+
+  constructor(public query: string) {}
+
+  where(filter: string): void {
+    if (this.firstFilter) {
+      this.query += ` WHERE ${filter}`;
+      this.firstFilter = false;
+    } else {
+      this.query += ` AND ${filter}`;
+    }
+  }
+}

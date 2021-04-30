@@ -1,5 +1,7 @@
 import { types } from 'pg';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
+
+Settings.defaultZoneName = 'UTC';
 
 // See https://github.com/brianc/node-postgres/issues/429#issuecomment-24870258
 export function fixTimeParsing(): void {
