@@ -11,14 +11,18 @@ type User {
 enum TournamentStatus {
   CREATED, STARTED, ENDED
 }
+
 type Tournament {
   id: ID!
   name: String!
   status: TournamentStatus
   startDate: Date
-  LastRoundDate: Date
+  lastRoundDate: Date
+  firstRoundDate: Date
   roundsNumber: Int
   minutesBetweenRounds: Int
+
+  rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
 }
 
 type Team {
@@ -85,10 +89,20 @@ type PlayerGames {
 type NewPlayerGames {
   games: [ID]
 }
-
 # Note that there won't be any event for removed player's
 # games as querying the games is enought to know their status.
 union LivePlayerGames = PlayerGames | NewPlayerGames
+
+enum RoundStatus {
+  CREATED, STARTED, ENDED
+}
+
+type Round {
+  id: ID
+  status: RoundStatus
+  startDate: Date
+  teamScore: Int
+}
 
 type Subscription {
   game(gameID: ID!): LiveGame

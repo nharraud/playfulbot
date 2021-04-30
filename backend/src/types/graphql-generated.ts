@@ -35,9 +35,18 @@ export type Tournament = {
   name: Scalars['String'];
   status?: Maybe<TournamentStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  LastRoundDate?: Maybe<Scalars['Date']>;
+  lastRoundDate?: Maybe<Scalars['Date']>;
+  firstRoundDate?: Maybe<Scalars['Date']>;
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
+  rounds?: Maybe<Array<Maybe<Round>>>;
+};
+
+
+export type TournamentRoundsArgs = {
+  maxSize?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['Date']>;
+  after?: Maybe<Scalars['Date']>;
 };
 
 export type Team = {
@@ -117,6 +126,20 @@ export type NewPlayerGames = {
 };
 
 export type LivePlayerGames = PlayerGames | NewPlayerGames;
+
+export enum RoundStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
+export type Round = {
+  __typename?: 'Round';
+  id?: Maybe<Scalars['ID']>;
+  status?: Maybe<RoundStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  teamScore?: Maybe<Scalars['Int']>;
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -312,6 +335,8 @@ export type ResolversTypes = {
   PlayerGames: ResolverTypeWrapper<PlayerGames>;
   NewPlayerGames: ResolverTypeWrapper<NewPlayerGames>;
   LivePlayerGames: ResolversTypes['PlayerGames'] | ResolversTypes['NewPlayerGames'];
+  RoundStatus: RoundStatus;
+  Round: ResolverTypeWrapper<Round>;
   Subscription: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -342,6 +367,7 @@ export type ResolversParentTypes = {
   PlayerGames: PlayerGames;
   NewPlayerGames: NewPlayerGames;
   LivePlayerGames: ResolversParentTypes['PlayerGames'] | ResolversParentTypes['NewPlayerGames'];
+  Round: Round;
   Subscription: {};
   Query: {};
   Mutation: {};
@@ -366,9 +392,11 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  LastRoundDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  lastRoundDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  firstRoundDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   roundsNumber?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  rounds?: Resolver<Maybe<Array<Maybe<ResolversTypes['Round']>>>, ParentType, ContextType, RequireFields<TournamentRoundsArgs, 'maxSize'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -458,6 +486,14 @@ export type LivePlayerGamesResolvers<ContextType = any, ParentType extends Resol
   __resolveType: TypeResolveFn<'PlayerGames' | 'NewPlayerGames', ParentType, ContextType>;
 };
 
+export type RoundResolvers<ContextType = any, ParentType extends ResolversParentTypes['Round'] = ResolversParentTypes['Round']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['RoundStatus']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  teamScore?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   game?: SubscriptionResolver<Maybe<ResolversTypes['LiveGame']>, "game", ParentType, ContextType, RequireFields<SubscriptionGameArgs, 'gameID'>>;
   debugArena?: SubscriptionResolver<Maybe<ResolversTypes['DebugArena']>, "debugArena", ParentType, ContextType, RequireFields<SubscriptionDebugArenaArgs, 'userID' | 'tournamentID'>>;
@@ -500,6 +536,7 @@ export type Resolvers<ContextType = any> = {
   PlayerGames?: PlayerGamesResolvers<ContextType>;
   NewPlayerGames?: NewPlayerGamesResolvers<ContextType>;
   LivePlayerGames?: LivePlayerGamesResolvers<ContextType>;
+  Round?: RoundResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

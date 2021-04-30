@@ -1,4 +1,5 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient } from '@apollo/client';
+import { apolloCache } from './apolloCache';
 
 
 import { split, from, HttpLink, ServerError } from '@apollo/client';
@@ -96,5 +97,5 @@ const splitLink = split(
 
 export const client = new ApolloClient({
   link: from([errorLink, authLink, splitLink]),
-  cache: new InMemoryCache()
+  cache: apolloCache
 });

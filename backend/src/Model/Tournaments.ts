@@ -3,7 +3,7 @@ import { ConflictError, InvalidArgument } from '~playfulbot/errors';
 
 import { DbOrTx, DEFAULT } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
-import { Round } from './Round';
+import { Round, RoundsSearchOptions } from './Round';
 import { Team } from './Team';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
@@ -122,8 +122,16 @@ export class Tournament {
     });
   }
 
-  getRounds(dbOrTX: DbOrTx): Promise<Round[]> {
-    return Round.getByTournamentID(this.id, dbOrTX);
+  getRounds(maxSize: number, dbOrTX: DbOrTx, options: RoundsSearchOptions = {}): Promise<Round[]> {
+    if (options.before === undefined && options.after === undefined) {
+      const now = DateTime.now();
+      if (now > this.lastRoundDate) {
+        options.before = this.lastRoundDate.plus({ seconds: 1 });
+      } else {
+        options.before = this.nextRoundDate.plus({ seconds: 1 });
+      }
+    }
+    return Round.getRounds(this.id, maxSize, options, dbOrTX);
   }
 
   getTeams(dbOrTX: DbOrTx): Promise<Team[]> {
@@ -132,5 +140,24 @@ export class Tournament {
 
   getGameDefinition(): GameDefinition {
     return gameDefinitions.get(this.gameName);
+  }
+
+  get firstRoundDate(): DateTime {
+    return this.lastRoundDate.minus({
+      minutes: this.minutesBetweenRounds * (this.roundsNumber - 1),
+    });
+  }
+
+  get nextRoundDate(): DateTime {
+    const now = DateTime.now();
+    if (this.lastRoundDate < now) {
+      return undefined;
+    }
+    if (now < this.firstRoundDate) {
+      return this.firstRoundDate;
+    }
+    const minutesUntilLastRound = this.firstRoundDate.diff(now).as('minutes');
+    const minutesUntilNextRound = minutesUntilLastRound % this.minutesBetweenRounds;
+    return now.plus({ minutes: minutesUntilNextRound });
   }
 }

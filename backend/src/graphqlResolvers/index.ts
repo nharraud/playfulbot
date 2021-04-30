@@ -8,7 +8,11 @@ import { teamMembersResolver, teamResolver } from '~playfulbot/graphqlResolvers/
 import { gameResolver, playResolver } from '~playfulbot/graphqlResolvers/game';
 import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
-import { createTournamentResolver, tournamentResolver } from './tournaments';
+import {
+  createTournamentResolver,
+  tournamentResolver,
+  tournamentRoundsResolver,
+} from './tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 import { playerGamesResolver } from './playerGames';
@@ -37,6 +41,9 @@ const resolvers: IResolvers = {
   } as gqlTypes.MutationResolvers,
   Team: {
     members: teamMembersResolver,
+  },
+  Tournament: {
+    rounds: tournamentRoundsResolver,
   },
   JSON: GraphQLJSON,
   Date: DateScalar,

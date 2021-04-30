@@ -2,6 +2,7 @@ import { ForbiddenError } from 'apollo-server-koa';
 import { TournamentNotFoundError } from '~playfulbot/errors';
 import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from '~playfulbot/model/db';
+import { Round } from '~playfulbot/model/Round';
 import { Tournament } from '~playfulbot/model/Tournaments';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
@@ -36,3 +37,18 @@ export const tournamentResolver: gqlTypes.QueryResolvers<ApolloContext>['tournam
   }
   return tournament;
 };
+
+export async function tournamentRoundsResolver(
+  parent: Tournament,
+  args: gqlTypes.TournamentRoundsArgs,
+  context: ApolloContext
+): Promise<gqlTypes.Round[]> {
+  // FIXME: this should run in the same transaction as the parent query
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  const result = await parent.getRounds(args.maxSize, db.default, {
+    before: args.before,
+    after: args.after,
+  });
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+  return result;
+}

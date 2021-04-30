@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { DbOrTx, DEFAULT } from './db/helpers';
 import { Tournament, TournamentID } from './Tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import { InvalidArgument } from '~playfulbot/errors';
 
 const PLAYER_PER_GROUP = 5;
 
@@ -18,13 +19,18 @@ interface DbRound {
 }
 /* eslint-enable */
 
+export interface RoundsSearchOptions {
+  before?: DateTime;
+  after?: DateTime;
+}
+
 export class Round {
   readonly id: RoundID;
   status: gqlTypes.RoundStatus;
   startDate: DateTime;
   readonly tournamentID: TournamentID;
 
-  private constructor(data: DbRound) {
+  constructor(data: DbRound) {
     this.id = data.id;
     this.status = data.status;
     this.startDate = data.start_date;
@@ -58,12 +64,32 @@ export class Round {
     return null;
   }
 
-  static async getByTournamentID(tournamentID: RoundID, dbOrTX: DbOrTx): Promise<Round[]> {
-    const rows = await dbOrTX.manyOrNone<DbRound>(
-      'SELECT * FROM rounds WHERE tournament_id = $[tournamentID] ORDER BY start_date ASC',
-      { tournamentID }
-    );
-    return rows.map((row) => new Round(row));
+  static async getRounds(
+    tournamentID: RoundID,
+    maxSize: number,
+    options: RoundsSearchOptions,
+    dbOrTX: DbOrTx
+  ): Promise<Round[]> {
+    let query: string;
+    if (options.after) {
+      query = `SELECT * FROM rounds WHERE tournament_id = $[tournamentID]
+               AND start_date > $[date] ORDER BY start_date ASC LIMIT $[maxSize]`;
+    } else if (options.before) {
+      query = `SELECT * FROM rounds WHERE tournament_id = $[tournamentID]
+               AND start_date < $[date] ORDER BY start_date DESC LIMIT $[maxSize]`;
+    } else {
+      throw new InvalidArgument('Either "before" or "after" should be set');
+    }
+    const rows = await dbOrTX.manyOrNone<DbRound>(query, {
+      tournamentID,
+      maxSize,
+      date: options.after || options.before,
+    });
+    const rounds = rows.map((row) => new Round(row));
+    if (options.before) {
+      return rounds.reverse();
+    }
+    return rounds;
   }
 
   // async start(dbOrTX: DbOrTx) {

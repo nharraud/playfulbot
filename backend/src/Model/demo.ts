@@ -24,9 +24,9 @@ export async function initDemo(): Promise<void> {
   await db.default.tx(async (tx) => {
     const tournament = await Tournament.create(
       'Team Building',
-      DateTime.now(),
-      DateTime.now().plus({ hours: 8 }),
-      5,
+      DateTime.now().minus({ hours: 12 }),
+      DateTime.now().plus({ hours: 2 }),
+      20,
       30,
       gameDefinition.name,
       tx,
@@ -45,7 +45,7 @@ export async function initDemo(): Promise<void> {
       teams.push(team);
     }
 
-    for (let idx = 0; idx < 100; idx += 1) {
+    for (let idx = 0; idx < 20; idx += 1) {
       const userNB = numberToHexString(idx, 12);
       const teamIdx = idx % 10;
       // eslint-disable-next-line no-await-in-loop

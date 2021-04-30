@@ -36,9 +36,18 @@ export type Tournament = {
   name: Scalars['String'];
   status?: Maybe<TournamentStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  LastRoundDate?: Maybe<Scalars['Date']>;
+  lastRoundDate?: Maybe<Scalars['Date']>;
+  firstRoundDate?: Maybe<Scalars['Date']>;
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
+  rounds?: Maybe<Array<Maybe<Round>>>;
+};
+
+
+export type TournamentRoundsArgs = {
+  maxSize?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['Date']>;
+  after?: Maybe<Scalars['Date']>;
 };
 
 export type Team = {
@@ -118,6 +127,20 @@ export type NewPlayerGames = {
 };
 
 export type LivePlayerGames = PlayerGames | NewPlayerGames;
+
+export enum RoundStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
+export type Round = {
+  __typename?: 'Round';
+  id?: Maybe<Scalars['ID']>;
+  status?: Maybe<RoundStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  teamScore?: Maybe<Scalars['Int']>;
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -357,6 +380,26 @@ export type TeamPlayerSubscription = (
   ) | (
     { __typename?: 'PlayerConnection' }
     & Pick<PlayerConnection, 'playerID' | 'connected'>
+  )> }
+);
+
+export type TournamentRoundsQueryVariables = Exact<{
+  tournamentID: Scalars['ID'];
+  maxSize: Scalars['Int'];
+  before?: Maybe<Scalars['Date']>;
+  after?: Maybe<Scalars['Date']>;
+}>;
+
+
+export type TournamentRoundsQuery = (
+  { __typename?: 'Query' }
+  & { tournament?: Maybe<(
+    { __typename?: 'Tournament' }
+    & Pick<Tournament, 'id' | 'startDate' | 'lastRoundDate' | 'firstRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>
+    & { rounds?: Maybe<Array<Maybe<(
+      { __typename?: 'Round' }
+      & Pick<Round, 'id' | 'status' | 'startDate'>
+    )>>> }
   )> }
 );
 
@@ -675,3 +718,51 @@ export function useTeamPlayerSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type TeamPlayerSubscriptionHookResult = ReturnType<typeof useTeamPlayerSubscription>;
 export type TeamPlayerSubscriptionResult = Apollo.SubscriptionResult<TeamPlayerSubscription>;
+export const TournamentRoundsDocument = gql`
+    query tournamentRounds($tournamentID: ID!, $maxSize: Int!, $before: Date, $after: Date) {
+  tournament(tournamentID: $tournamentID) {
+    id
+    startDate
+    lastRoundDate
+    firstRoundDate
+    roundsNumber
+    minutesBetweenRounds
+    rounds(maxSize: $maxSize, before: $before, after: $after) {
+      id
+      status
+      startDate
+    }
+  }
+}
+    `;
+
+/**
+ * __useTournamentRoundsQuery__
+ *
+ * To run a query within a React component, call `useTournamentRoundsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTournamentRoundsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTournamentRoundsQuery({
+ *   variables: {
+ *      tournamentID: // value for 'tournamentID'
+ *      maxSize: // value for 'maxSize'
+ *      before: // value for 'before'
+ *      after: // value for 'after'
+ *   },
+ * });
+ */
+export function useTournamentRoundsQuery(baseOptions: Apollo.QueryHookOptions<TournamentRoundsQuery, TournamentRoundsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TournamentRoundsQuery, TournamentRoundsQueryVariables>(TournamentRoundsDocument, options);
+      }
+export function useTournamentRoundsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TournamentRoundsQuery, TournamentRoundsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TournamentRoundsQuery, TournamentRoundsQueryVariables>(TournamentRoundsDocument, options);
+        }
+export type TournamentRoundsQueryHookResult = ReturnType<typeof useTournamentRoundsQuery>;
+export type TournamentRoundsLazyQueryHookResult = ReturnType<typeof useTournamentRoundsLazyQuery>;
+export type TournamentRoundsQueryResult = Apollo.QueryResult<TournamentRoundsQuery, TournamentRoundsQueryVariables>;

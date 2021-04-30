@@ -1,0 +1,15 @@
+query tournamentRounds($tournamentID: ID!, $maxSize: Int!, $before: Date, $after: Date) {
+  tournament(tournamentID: $tournamentID) {
+    id
+    startDate
+    lastRoundDate
+    firstRoundDate
+    roundsNumber
+    minutesBetweenRounds
+    rounds(maxSize: $maxSize, before: $before, after: $after) {
+      id
+      status
+      startDate
+    }
+  }
+}
