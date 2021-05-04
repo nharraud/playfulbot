@@ -101,7 +101,7 @@ type Round {
   id: ID
   status: RoundStatus
   startDate: Date
-  teamScore: Int
+  teamPoints: Int
 }
 
 type Subscription {

@@ -28,15 +28,8 @@ export class Player {
     return player;
   }
 
-  static getPlayer(id: PlayerID, createIfMissing?: true): Player;
-  static getPlayer(id: PlayerID, createIfMissing?: false): Player | undefined;
-  static getPlayer(id: PlayerID, createIfMissing?: boolean): Player | undefined {
-    let player = Player.players.get(id);
-    if (player === undefined && createIfMissing) {
-      player = new Player(id);
-      Player.players.set(id, player);
-    }
-    return player;
+  static getPlayer(id: PlayerID): Player | undefined {
+    return Player.players.get(id);
   }
 
   get token(): JWToken {

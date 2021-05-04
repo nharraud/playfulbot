@@ -32,11 +32,9 @@ export default function init(): GameState {
     players: [
       {
         playing: true,
-        points: 0,
       },
       {
         playing: true,
-        points: 0,
       },
     ],
   };

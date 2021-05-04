@@ -138,7 +138,7 @@ export type Round = {
   id?: Maybe<Scalars['ID']>;
   status?: Maybe<RoundStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  teamScore?: Maybe<Scalars['Int']>;
+  teamPoints?: Maybe<Scalars['Int']>;
 };
 
 export type Subscription = {
@@ -490,7 +490,7 @@ export type RoundResolvers<ContextType = any, ParentType extends ResolversParent
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['RoundStatus']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  teamScore?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  teamPoints?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

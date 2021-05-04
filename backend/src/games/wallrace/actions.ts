@@ -53,6 +53,7 @@ function movePlayer(state: GameState, player: number, vector: Coordinate) {
   const newPosition: [number, number] = [lastPosition[0] + vector[0], lastPosition[1] + vector[1]];
   if (collidesWithWalls(newPosition, state.walls, state.arena.size)) {
     state.end = true;
+    state.winner = player === 0 ? 1 : 0;
     return false;
   }
   const beforeLastPosition = playerPath[playerPath.length - 2];

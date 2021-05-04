@@ -14,15 +14,14 @@ CREATE TABLE tournaments (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   name VARCHAR(15) NOT NULL UNIQUE,
   status tournament_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp NOT NULL,
-  last_round_date timestamp NOT NULL,
-  rounds_number smallint NOT NULL,
+  start_date timestamp with time zone NOT NULL,
+  last_round_date timestamp with time zone NOT NULL,
+  rounds_number smallint NOT NULL CHECK (rounds_number > 1),
   minutes_between_rounds smallint NOT NULL,
   game_name VARCHAR(30) NOT NULL,
 
-  CHECK (
-    rounds_number > 1
-    AND start_date < last_round_date - rounds_number * make_interval(mins := minutes_between_rounds)
+  CONSTRAINT first_round_after_tournament_start CHECK (
+    start_date <= last_round_date - rounds_number * make_interval(mins := minutes_between_rounds)
   )
 );
 
@@ -47,35 +46,25 @@ CREATE TYPE round_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
 CREATE TABLE rounds (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   status round_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp NOT NULL,
+  start_date timestamp with time zone NOT NULL,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE groups (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  round_id uuid REFERENCES rounds (id) ON DELETE CASCADE,
-  level smallint NOT NULL
-);
-
-
-CREATE TABLE group_members (
-  group_id uuid REFERENCES groups (id) ON DELETE CASCADE,
-  team_id uuid REFERENCES teams (id) ON DELETE CASCADE,
-  levelup boolean NOT NULL,
-
-  PRIMARY KEY (group_id, team_id)
-);
-
-
-CREATE TABLE group_games (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  group_id uuid REFERENCES groups (id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE group_game_players (
+CREATE TABLE round_players (
   team_id uuid NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
-  game_id uuid NOT NULL REFERENCES group_games (id) ON DELETE CASCADE,
+  round_id uuid REFERENCES rounds (id) ON DELETE CASCADE,
+  points smallint NOT NULL DEFAULT 0
+);
+
+
+CREATE TABLE game_summaries (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  round_id uuid REFERENCES rounds (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE playing_teams (
+  team_id uuid NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
+  game_id uuid NOT NULL REFERENCES game_summaries (id) ON DELETE CASCADE,
   winner boolean NOT NULL
 );

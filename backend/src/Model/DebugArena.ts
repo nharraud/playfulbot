@@ -51,26 +51,32 @@ export class DebugArena {
     return arena;
   }
 
+  private getOrCreatePlayer(index: number): Player {
+    const playerID = this.generatePlayerID(index);
+    let player = Player.getPlayer(playerID);
+    if (player === undefined) {
+      player = Player.create(playerID);
+    }
+    return player;
+  }
+
   async createNewGame(players?: Player[]): Promise<Game> {
     let finalPlayers;
     if (!players) {
-      finalPlayers = new Array<PlayerAssignment>(2).fill(null).map((_, index) => {
-        const playerID = this.generatePlayerID(index);
-        return Player.getPlayer(playerID, true);
-      });
+      finalPlayers = new Array<PlayerAssignment>(2)
+        .fill(null)
+        .map((_, index) => this.getOrCreatePlayer(index));
     } else {
       // Complete the list of players
       finalPlayers = players.map((player, index) => {
         if (player !== undefined) {
           return player;
         }
-        const playerID = this.generatePlayerID(index);
-        return Player.getPlayer(playerID, true);
+        return this.getOrCreatePlayer(index);
       });
     }
     const assignments: PlayerAssignment[] = finalPlayers.map((player, index) => ({
       playerID: player.id,
-      playerNumber: index,
     }));
     if (this.game) {
       if (this.game.isActive()) {

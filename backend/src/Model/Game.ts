@@ -6,6 +6,7 @@ import { pubsub } from '~playfulbot/pubsub';
 import { GameAction } from '~playfulbot/types/action';
 import { ForbiddenError, PlayingOutOfTurn, PlayingTwice } from '~playfulbot/errors';
 import { PlayerID } from './Player';
+import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
 
 export type GameID = string;
 
@@ -22,13 +23,15 @@ export class Game {
 
   version: number;
 
-  gameDefinition: GameDefinition;
+  readonly gameDefinition: GameDefinition;
 
   gameState: GameState;
 
-  players: PlayerAssignment[];
+  readonly players: PlayerAssignment[];
 
   storedActions = new Map<number, GameAction>();
+
+  readonly gameEndPromise = new DeferredPromise<this>();
 
   constructor(gameDefinition: GameDefinition, players: PlayerAssignment[]) {
     this.id = uuidv4();
@@ -104,6 +107,7 @@ export class Game {
     pubsub.publish('GAME_CHANGED', this.id, { version: this.version, patch });
     if (this.gameState.end) {
       pubsub.complete('GAME_CHANGED', this.id);
+      this.gameEndPromise.resolve(this);
     }
   }
 

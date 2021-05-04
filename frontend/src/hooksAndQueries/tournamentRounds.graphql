@@ -10,6 +10,7 @@ query tournamentRounds($tournamentID: ID!, $maxSize: Int!, $before: Date, $after
       id
       status
       startDate
+      teamPoints
     }
   }
 }

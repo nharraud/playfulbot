@@ -139,7 +139,7 @@ export type Round = {
   id?: Maybe<Scalars['ID']>;
   status?: Maybe<RoundStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  teamScore?: Maybe<Scalars['Int']>;
+  teamPoints?: Maybe<Scalars['Int']>;
 };
 
 export type Subscription = {
@@ -398,7 +398,7 @@ export type TournamentRoundsQuery = (
     & Pick<Tournament, 'id' | 'startDate' | 'lastRoundDate' | 'firstRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>
     & { rounds?: Maybe<Array<Maybe<(
       { __typename?: 'Round' }
-      & Pick<Round, 'id' | 'status' | 'startDate'>
+      & Pick<Round, 'id' | 'status' | 'startDate' | 'teamPoints'>
     )>>> }
   )> }
 );
@@ -731,6 +731,7 @@ export const TournamentRoundsDocument = gql`
       id
       status
       startDate
+      teamPoints
     }
   }
 }

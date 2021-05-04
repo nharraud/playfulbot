@@ -109,6 +109,6 @@ export class Team {
   }
 
   getTournamentPlayer(): Player {
-    return Player.getPlayer(this.id, false);
+    return Player.getPlayer(this.id);
   }
 }

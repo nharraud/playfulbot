@@ -33,6 +33,15 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
   if (tournamentWithRounds === undefined) {
     return <div/>;
   }
+
+  let nextRound;
+  let pastRounds = [];
+  if (tournamentWithRounds) {
+      nextRound = tournamentWithRounds.rounds[tournamentWithRounds.rounds.length - 1];
+      if (tournamentWithRounds.rounds.length > 1) {
+      pastRounds = tournamentWithRounds.rounds.slice(0, tournamentWithRounds?.rounds.length - 1).reverse()
+    }
+  }
   
   return (
     <div className={classes.root}>
@@ -41,7 +50,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         <TimelineItem>
           <TimelineOppositeContent>
             <Typography variant="body2" color="textSecondary">
-              { DateTime.fromISO(tournamentWithRounds.lastRoundDate, { setZone: true }).toLocaleString(DateTime.TIME_SIMPLE) }
+              { DateTime.fromISO(tournamentWithRounds.lastRoundDate).toLocaleString(DateTime.TIME_SIMPLE) }
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>
@@ -75,11 +84,32 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
           </TimelineContent>
         </TimelineItem>
 
-        {tournamentWithRounds.rounds.slice().reverse().map((round, index) =>
+        <TimelineItem>
+          <TimelineOppositeContent>
+            <Typography variant="body2" color="textSecondary">
+              { DateTime.fromISO(nextRound.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
+            </Typography>
+          </TimelineOppositeContent>
+          <TimelineSeparator>
+            <TimelineDot color='grey' variant='outlined'>
+              <MemoryIcon />
+            </TimelineDot>
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <Paper elevation={3} className={classes.paper}>
+              <Typography variant="h6" component="h1">
+                'Next round'
+              </Typography>
+            </Paper>
+          </TimelineContent>
+        </TimelineItem>
+
+        {pastRounds.map((round, index) =>
           <TimelineItem key={round.id}>
             <TimelineOppositeContent>
               <Typography variant="body2" color="textSecondary">
-                { DateTime.fromISO(round.startDate, { setZone: true }).toLocaleString(DateTime.TIME_SIMPLE) }
+                { DateTime.fromISO(round.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
@@ -91,7 +121,10 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
             <TimelineContent>
               <Paper elevation={3} className={classes.paper}>
                 <Typography variant="h6" component="h1">
-                  { index === 0 ? 'Next round' : round.status}
+                  {round.status}
+                </Typography>
+                <Typography variant="h6" component="h1">
+                  {round.teamPoints}
                 </Typography>
               </Paper>
             </TimelineContent>
@@ -120,7 +153,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         <TimelineItem>
           <TimelineOppositeContent>
             <Typography variant="body2" color="textSecondary">
-              { DateTime.fromISO(tournamentWithRounds.startDate, { setZone: true }).toLocaleString(DateTime.TIME_SIMPLE) }
+              { DateTime.fromISO(tournamentWithRounds.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>

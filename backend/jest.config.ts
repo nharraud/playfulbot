@@ -7,6 +7,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '~playfulbot/(.*)': '<rootDir>/src/$1',
   },
+  testPathIgnorePatterns: ['__tests__/helpers/', '__tests__/fixtures/'],
   setupFiles: ['dotenv-flow/config'],
   testRunner: 'jest-circus/runner',
 };

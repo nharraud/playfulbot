@@ -22,11 +22,12 @@ function numberToHexString(nb: number, length: number) {
 
 export async function initDemo(): Promise<void> {
   await db.default.tx(async (tx) => {
+    const now = DateTime.now();
     const tournament = await Tournament.create(
       'Team Building',
-      DateTime.now().minus({ hours: 12 }),
+      DateTime.now().minus({ hours: 3 }),
       DateTime.now().plus({ hours: 2 }),
-      20,
+      7,
       30,
       gameDefinition.name,
       tx,
@@ -59,5 +60,31 @@ export async function initDemo(): Promise<void> {
     }
 
     await tournament.start(tx);
+
+    const rounds = await tournament.getRounds(tournament.roundsNumber, tx, {
+      before: tournament.lastRoundDate,
+    });
+
+    const teamIDs = teams.map((team) => team.id);
+    await rounds[0].setResultsFromData(
+      [
+        { teams: [teamIDs[0], teamIDs[1]], winner: 0 },
+        { teams: [teamIDs[0], teamIDs[2]], winner: 0 },
+        { teams: [teamIDs[1], teamIDs[2]] },
+      ],
+      tx
+    );
+
+    await rounds[1].setResultsFromData(
+      [
+        { teams: [teamIDs[0], teamIDs[1]], winner: 0 },
+        { teams: [teamIDs[0], teamIDs[2]], winner: 1 },
+        { teams: [teamIDs[0], teamIDs[3]], winner: 1 },
+        { teams: [teamIDs[1], teamIDs[2]], winner: 1 },
+        { teams: [teamIDs[1], teamIDs[3]], winner: 0 },
+        { teams: [teamIDs[2], teamIDs[3]], winner: 1 },
+      ],
+      tx
+    );
   });
 }

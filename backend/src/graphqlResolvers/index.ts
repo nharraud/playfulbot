@@ -18,6 +18,7 @@ import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 import { playerGamesResolver } from './playerGames';
 import { DateScalar } from './scalars/DateScalar';
 import { teamPlayerResolver } from './teamPlayer';
+import { roundTeamPointsResolver } from './rounds';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -44,6 +45,9 @@ const resolvers: IResolvers = {
   },
   Tournament: {
     rounds: tournamentRoundsResolver,
+  },
+  Round: {
+    teamPoints: roundTeamPointsResolver,
   },
   JSON: GraphQLJSON,
   Date: DateScalar,

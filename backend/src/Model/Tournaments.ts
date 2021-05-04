@@ -5,15 +5,21 @@ import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team } from './Team';
-import * as gqlTypes from '~playfulbot/types/graphql';
 
 export type TournamentID = string;
+
+// eslint-disable-next-line no-shadow
+export enum TournamentStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED',
+}
 
 /* eslint-disable camelcase */
 interface DbTournament {
   readonly id: TournamentID;
   name: string;
-  status: gqlTypes.TournamentStatus;
+  status: TournamentStatus;
   start_date: DateTime;
   last_round_date: DateTime;
   rounds_number: number;
@@ -23,7 +29,7 @@ interface DbTournament {
 /* eslint-enable */
 
 interface GetAllTournamentsFilters {
-  status?: gqlTypes.TournamentStatus;
+  status?: TournamentStatus;
   startingAfter?: DateTime;
   startingBefore?: DateTime;
 }
@@ -31,7 +37,7 @@ interface GetAllTournamentsFilters {
 export class Tournament {
   readonly id: TournamentID;
   name: string;
-  status: gqlTypes.TournamentStatus;
+  status: TournamentStatus;
   startDate: DateTime;
   lastRoundDate: DateTime;
   roundsNumber: number;
@@ -126,7 +132,7 @@ export class Tournament {
 
     await dbOrTX.tx(async (tx) => {
       await tx.none("UPDATE tournaments SET status = 'STARTED' WHERE id = $[id]", { id: this.id });
-      this.status = gqlTypes.TournamentStatus.Started;
+      this.status = TournamentStatus.Started;
 
       const roundPromises = new Array(this.roundsNumber)
         .fill(0)
@@ -151,6 +157,10 @@ export class Tournament {
       }
     }
     return Round.getRounds(this.id, maxSize, options, dbOrTX);
+  }
+
+  async getNextRound(dbOrTX: DbOrTx): Promise<Round | null> {
+    return Round.getByStartDate(this.id, this.nextRoundDate, dbOrTX);
   }
 
   getTeams(dbOrTX: DbOrTx): Promise<Team[]> {
