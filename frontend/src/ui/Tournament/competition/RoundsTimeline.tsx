@@ -20,7 +20,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(4),
   },
-  paper: {}
+  title: {
+    textAlign: "left",
+    marginLeft: theme.spacing(12),
+    marginBottom: theme.spacing(7),
+    marginTop: theme.spacing(2),
+  },
+  paper: {},
+  oppositeContent: {
+    flex: 0.05
+  }
 }));
 
 interface RoundsTimelineProps {
@@ -45,10 +54,13 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
   
   return (
     <div className={classes.root}>
-      <Timeline>
 
+      <Typography variant="h4" className={classes.title}>
+        Tournament's rounds
+      </Typography>
+      <Timeline>
         <TimelineItem>
-          <TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
               { DateTime.fromISO(tournamentWithRounds.lastRoundDate).toLocaleString(DateTime.TIME_SIMPLE) }
             </Typography>
@@ -69,6 +81,8 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         </TimelineItem>
       
         <TimelineItem>
+          <TimelineOppositeContent className={classes.oppositeContent}>
+          </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot color='grey' variant='outlined'>
               <MoreVertIcon/>
@@ -85,7 +99,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         </TimelineItem>
 
         <TimelineItem>
-          <TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
               { DateTime.fromISO(nextRound.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
             </Typography>
@@ -107,7 +121,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
 
         {pastRounds.map((round, index) =>
           <TimelineItem key={round.id}>
-            <TimelineOppositeContent>
+            <TimelineOppositeContent className={classes.oppositeContent}>
               <Typography variant="body2" color="textSecondary">
                 { DateTime.fromISO(round.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
               </Typography>
@@ -132,6 +146,8 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         )}
 
         <TimelineItem>
+          <TimelineOppositeContent className={classes.oppositeContent}>
+          </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot color='grey' variant='outlined'>
               <MoreVertIcon/>
@@ -151,7 +167,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         </TimelineItem>
 
         <TimelineItem>
-          <TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
               { DateTime.fromISO(tournamentWithRounds.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
             </Typography>
