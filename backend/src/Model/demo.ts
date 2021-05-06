@@ -68,21 +68,21 @@ export async function initDemo(): Promise<void> {
     const teamIDs = teams.map((team) => team.id);
     await rounds[0].setResultsFromData(
       [
-        { teams: [teamIDs[0], teamIDs[1]], winner: 0 },
-        { teams: [teamIDs[0], teamIDs[2]], winner: 0 },
-        { teams: [teamIDs[1], teamIDs[2]] },
+        { winners: [teamIDs[0]], losers: [teamIDs[1]] },
+        { winners: [teamIDs[0]], losers: [teamIDs[2]] },
+        { winners: [], losers: [teamIDs[1], teamIDs[2]] },
       ],
       tx
     );
 
     await rounds[1].setResultsFromData(
       [
-        { teams: [teamIDs[0], teamIDs[1]], winner: 0 },
-        { teams: [teamIDs[0], teamIDs[2]], winner: 1 },
-        { teams: [teamIDs[0], teamIDs[3]], winner: 1 },
-        { teams: [teamIDs[1], teamIDs[2]], winner: 1 },
-        { teams: [teamIDs[1], teamIDs[3]], winner: 0 },
-        { teams: [teamIDs[2], teamIDs[3]], winner: 1 },
+        { winners: [teamIDs[0]], losers: [teamIDs[1]] },
+        { winners: [teamIDs[2]], losers: [teamIDs[0]] },
+        { winners: [teamIDs[3]], losers: [teamIDs[0]] },
+        { winners: [teamIDs[2]], losers: [teamIDs[1]] },
+        { winners: [teamIDs[1]], losers: [teamIDs[3]] },
+        { winners: [teamIDs[3]], losers: [teamIDs[2]] },
       ],
       tx
     );

@@ -36,10 +36,7 @@ const actionHandler: GameActionHandler<TestGameState, TestGameAction> = (
 ) => {
   for (const action of actions) {
     if (action.data.wins) {
-      if (state.winner) {
-        throw new IllegalPlayAction('It is not possible to have two winners.');
-      }
-      state.winner = action.player;
+      state.players[action.player].winner = true;
     }
   }
   state.end = true;

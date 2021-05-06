@@ -116,9 +116,9 @@ describe('model/Round', () => {
     const teamIDs = teams.map((team) => team.id);
     await round.setResultsFromData(
       [
-        { teams: [teamIDs[0], teamIDs[1]], winner: 0 },
-        { teams: [teamIDs[0], teamIDs[2]], winner: 0 },
-        { teams: [teamIDs[1], teamIDs[2]] },
+        { winners: [teamIDs[0]], losers: [teamIDs[1]] },
+        { winners: [teamIDs[0]], losers: [teamIDs[2]] },
+        { winners: [], losers: [teamIDs[1], teamIDs[2]] },
       ],
       db.default
     );
@@ -126,9 +126,9 @@ describe('model/Round', () => {
     const teamPoints = await round.getTeamsPoints(db.default);
     expect(teamPoints).toEqual(
       expect.arrayContaining([
-        { teamID: teams[0].id, points: 2 },
-        { teamID: teams[1].id, points: 0 },
-        { teamID: teams[2].id, points: 0 },
+        { teamID: teamIDs[0], points: 2 },
+        { teamID: teamIDs[1], points: 0 },
+        { teamID: teamIDs[2], points: 0 },
       ])
     );
 

@@ -102,6 +102,13 @@ type Round {
   status: RoundStatus
   startDate: Date
   teamPoints: Int
+  teamGames(teamID: ID): [GameSummary]
+}
+
+type GameSummary {
+  id: ID
+  losers: [Team]
+  winners: [Team]
 }
 
 type Subscription {
@@ -113,6 +120,7 @@ type Subscription {
 
 type Query {
   tournament(tournamentID: ID): Tournament
+  round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
   authenticatedUser: User
 }

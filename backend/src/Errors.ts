@@ -60,6 +60,12 @@ export class GameNotFoundError extends NotFoundError {
   }
 }
 
+export class RoundNotFoundError extends NotFoundError {
+  constructor() {
+    super('Round not found');
+  }
+}
+
 export class TournamentNotFoundError extends NotFoundError {
   constructor() {
     super('Tournament not found');

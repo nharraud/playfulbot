@@ -7,7 +7,7 @@ import { User, UserID } from './User';
 export type TeamID = string;
 
 /* eslint-disable camelcase */
-interface DbTeam {
+export interface DbTeam {
   id: TeamID;
   tournament_id: TournamentID;
   name: string;

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
-import { Tournament } from "src/types/graphql-generated";
+import { Round, Tournament } from "src/types/graphql-generated";
 import useTournamentRounds from 'src/hooksAndQueries/useTournamentRounds';
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
@@ -14,6 +14,10 @@ import TimerIcon from '@material-ui/icons/Timer';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MemoryIcon from '@material-ui/icons/Memory';
 import { DateTime } from 'luxon';
+import {
+  Link,
+  useRouteMatch
+} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +33,10 @@ const useStyles = makeStyles((theme) => ({
   paper: {},
   oppositeContent: {
     flex: 0.05
+  },
+  link: {
+    textDecoration: "inherit",
+    color: "inherit",
   }
 }));
 
@@ -38,13 +46,14 @@ interface RoundsTimelineProps {
 
 export default function RoundsTimeline(props: RoundsTimelineProps) {
   const classes = useStyles();
+  const match = useRouteMatch();
   const { tournament: tournamentWithRounds, fetchPreviousRounds } = useTournamentRounds(props.tournament?.id);
   if (tournamentWithRounds === undefined) {
     return <div/>;
   }
 
-  let nextRound;
-  let pastRounds = [];
+  let nextRound: Round;
+  let pastRounds: Round[] = [];
   if (tournamentWithRounds) {
       nextRound = tournamentWithRounds.rounds[tournamentWithRounds.rounds.length - 1];
       if (tournamentWithRounds.rounds.length > 1) {
@@ -133,14 +142,17 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <Paper elevation={3} className={classes.paper}>
-                <Typography variant="h6" component="h1">
-                  {round.status}
-                </Typography>
-                <Typography variant="h6" component="h1">
-                  {round.teamPoints}
-                </Typography>
-              </Paper>
+              
+              <Link to={`${match.url}/rounds/${round.id}`}>
+                <Paper elevation={3} className={classes.paper}>
+                  <Typography variant="h6" component="h1">
+                    {round.status}
+                  </Typography>
+                  <Typography variant="h6" component="h1">
+                    {round.teamPoints}
+                  </Typography>
+                </Paper>
+              </Link>
             </TimelineContent>
           </TimelineItem>
         )}

@@ -139,6 +139,19 @@ export type Round = {
   status?: Maybe<RoundStatus>;
   startDate?: Maybe<Scalars['Date']>;
   teamPoints?: Maybe<Scalars['Int']>;
+  teamGames?: Maybe<Array<Maybe<GameSummary>>>;
+};
+
+
+export type RoundTeamGamesArgs = {
+  teamID?: Maybe<Scalars['ID']>;
+};
+
+export type GameSummary = {
+  __typename?: 'GameSummary';
+  id?: Maybe<Scalars['ID']>;
+  losers?: Maybe<Array<Maybe<Team>>>;
+  winners?: Maybe<Array<Maybe<Team>>>;
 };
 
 export type Subscription = {
@@ -173,6 +186,7 @@ export type SubscriptionTeamPlayerArgs = {
 export type Query = {
   __typename?: 'Query';
   tournament?: Maybe<Tournament>;
+  round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
   authenticatedUser?: Maybe<User>;
 };
@@ -180,6 +194,11 @@ export type Query = {
 
 export type QueryTournamentArgs = {
   tournamentID?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryRoundArgs = {
+  roundID?: Maybe<Scalars['ID']>;
 };
 
 
@@ -337,6 +356,7 @@ export type ResolversTypes = {
   LivePlayerGames: ResolversTypes['PlayerGames'] | ResolversTypes['NewPlayerGames'];
   RoundStatus: RoundStatus;
   Round: ResolverTypeWrapper<Round>;
+  GameSummary: ResolverTypeWrapper<GameSummary>;
   Subscription: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -368,6 +388,7 @@ export type ResolversParentTypes = {
   NewPlayerGames: NewPlayerGames;
   LivePlayerGames: ResolversParentTypes['PlayerGames'] | ResolversParentTypes['NewPlayerGames'];
   Round: Round;
+  GameSummary: GameSummary;
   Subscription: {};
   Query: {};
   Mutation: {};
@@ -491,6 +512,14 @@ export type RoundResolvers<ContextType = any, ParentType extends ResolversParent
   status?: Resolver<Maybe<ResolversTypes['RoundStatus']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   teamPoints?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  teamGames?: Resolver<Maybe<Array<Maybe<ResolversTypes['GameSummary']>>>, ParentType, ContextType, RequireFields<RoundTeamGamesArgs, never>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GameSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameSummary'] = ResolversParentTypes['GameSummary']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  losers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -503,6 +532,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, never>>;
+  round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
@@ -537,6 +567,7 @@ export type Resolvers<ContextType = any> = {
   NewPlayerGames?: NewPlayerGamesResolvers<ContextType>;
   LivePlayerGames?: LivePlayerGamesResolvers<ContextType>;
   Round?: RoundResolvers<ContextType>;
+  GameSummary?: GameSummaryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

@@ -44,8 +44,8 @@ export interface TeamPoints {
 
 export interface GameData {
   gameID?: GameID;
-  teams: TeamID[];
-  winner?: number;
+  winners: TeamID[];
+  losers: TeamID[];
 }
 
 export class Round {
@@ -190,15 +190,16 @@ export class Round {
       // count points for each team
       const teamPoints = new Map<TeamID, number>();
       games.forEach((game) => {
-        game.players.forEach((assignment) => {
-          if (!teamPoints.has(assignment.playerID)) {
+        game.players.forEach((assignment, playerNumber) => {
+          let points = teamPoints.get(assignment.playerID);
+          if (points === undefined) {
             teamPoints.set(assignment.playerID, 0);
+            points = 0;
+          }
+          if (game.gameState.players[playerNumber].winner) {
+            teamPoints.set(assignment.playerID, points + 1);
           }
         });
-        if (game.gameState.winner !== undefined) {
-          const winningTeamID = game.players[game.gameState.winner].playerID;
-          teamPoints.set(winningTeamID, teamPoints.get(winningTeamID) + 1);
-        }
       });
       await this.setTeamPoints(teamPoints, tx);
 
@@ -232,8 +233,8 @@ export class Round {
           GameSummary.createFromData(
             this.id,
             gameData.gameID || uuidv4(),
-            gameData.teams,
-            gameData.winner,
+            gameData.winners,
+            gameData.losers,
             tx
           )
         )
@@ -241,15 +242,14 @@ export class Round {
 
       const teamPoints = new Map<TeamID, number>();
       games.forEach((gameData) => {
-        gameData.teams.forEach((teamID) => {
+        gameData.losers.forEach((teamID) => {
           if (!teamPoints.has(teamID)) {
             teamPoints.set(teamID, 0);
           }
         });
-        if (gameData.winner !== undefined) {
-          const winningTeamID = gameData.teams[gameData.winner];
-          teamPoints.set(winningTeamID, teamPoints.get(winningTeamID) + 1);
-        }
+        gameData.winners.forEach((teamID) => {
+          teamPoints.set(teamID, (teamPoints.get(teamID) || 0) + 1);
+        });
       });
 
       await this.setTeamPoints(teamPoints, tx);
@@ -279,5 +279,9 @@ export class Round {
       teamID,
     });
     return response?.points;
+  }
+
+  async getGamesFromParticipatingTeam(teamID: TeamID, dbOrTx: DbOrTx): Promise<GameSummary[]> {
+    return GameSummary.getGamesFromParticipatingTeam(this.id, teamID, dbOrTx);
   }
 }

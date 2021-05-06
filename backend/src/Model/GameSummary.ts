@@ -3,45 +3,42 @@ import { DbOrTx } from './db/helpers';
 import { Game, GameID } from './Game';
 import { Player, PlayerID } from './Player';
 import { RoundID } from './Round';
-import { Team, TeamID } from './Team';
+import { Team, TeamID, DbTeam } from './Team';
+import { TournamentID } from './Tournaments';
 
 /* eslint-disable camelcase */
 interface DbGameSummary {
   id: GameID;
   round_id: RoundID;
 }
+
 interface DbPlayingTeam {
-  game_id: GameID;
   team_id: TeamID;
   winner: boolean;
 }
-/* eslint-enable */
 
-export class PlayingTeam {
-  readonly teamID: TeamID;
-  readonly gameID: TeamID;
-  readonly winner: boolean;
-
-  constructor(data: DbPlayingTeam) {
-    this.teamID = data.team_id;
-    this.gameID = data.game_id;
-    this.winner = data.winner;
-  }
-
-  getTeam(dbOrTx: DbOrTx): Promise<Team> {
-    return Team.getByID(this.teamID, dbOrTx);
-  }
+interface DbLoadedPlayingTeam extends DbTeam {
+  winner: boolean;
 }
+
+interface DbGameSummaryWithTeams extends DbGameSummary, DbPlayingTeam {
+  tournament_id: TournamentID;
+  team_name: string;
+}
+/* eslint-enable */
 
 export class GameSummary {
   readonly id: GameID;
   readonly roundID: RoundID;
-  private _playingTeamsCache?: PlayingTeam[];
+  // private readonly playingTeams: PlayingTeam[];
+  private _winners: Team[];
+  private _losers: Team[];
 
-  private constructor(data: DbGameSummary, playingTeams?: PlayingTeam[]) {
+  private constructor(data: DbGameSummary, winners?: Team[], losers?: Team[]) {
     this.id = data.id;
     this.roundID = data.round_id;
-    this._playingTeamsCache = playingTeams;
+    this._winners = winners;
+    this._losers = losers;
   }
 
   static async createFromGame(game: Game, roundID: RoundID, dbOrTx: DbOrTx): Promise<GameSummary> {
@@ -49,9 +46,14 @@ export class GameSummary {
       throw new InvalidArgument('Cannot save an ongoing game.');
     }
 
-    // The team ID is used as its player ID.
-    const teams = game.players.map((assignment) => assignment.playerID);
-    return GameSummary.createFromData(roundID, game.id, teams, game.gameState.winner, dbOrTx);
+    // Note that the team ID is used as its player ID.
+    const winners = game.players
+      .filter((_, playerNumber) => game.gameState.players[playerNumber].winner)
+      .map((assignment) => assignment.playerID);
+    const losers = game.players
+      .filter((_, playerNumber) => !game.gameState.players[playerNumber].winner)
+      .map((assignment) => assignment.playerID);
+    return GameSummary.createFromData(roundID, game.id, winners, losers, dbOrTx);
   }
 
   /**
@@ -61,8 +63,8 @@ export class GameSummary {
   static async createFromData(
     roundID: RoundID,
     gameID: GameID,
-    teams: TeamID[],
-    winner: number | undefined,
+    winners: TeamID[],
+    losers: TeamID[],
     dbOrTx: DbOrTx
   ): Promise<GameSummary> {
     return dbOrTx.txIf(async (tx) => {
@@ -73,20 +75,93 @@ export class GameSummary {
         id: gameID,
         roundID,
       });
-      const playingTeams = await Promise.all(
-        teams.map(async (teamID, playerNumber) => {
-          const createPlayerQuery = `INSERT INTO playing_teams(game_id, team_id, winner)
-        VALUES($[gameID], $[teamID], $[winner])
-        RETURNING *`;
-          const playerData = await tx.one<DbPlayingTeam>(createPlayerQuery, {
+
+      const createPlayerQuery = `INSERT INTO playing_teams(game_id, team_id, winner)
+                                 VALUES($[gameID], $[teamID], $[winner])`;
+      await Promise.all(
+        winners.map((teamID) =>
+          tx.none(createPlayerQuery, {
             gameID,
             teamID,
-            winner: winner === playerNumber,
-          });
-          return new PlayingTeam(playerData);
-        })
+            winner: true,
+          })
+        )
       );
-      return new GameSummary(summaryData, playingTeams);
+      await Promise.all(
+        losers.map((teamID) =>
+          tx.none(createPlayerQuery, {
+            gameID,
+            teamID,
+            winner: false,
+          })
+        )
+      );
+      return new GameSummary(summaryData);
     });
+  }
+
+  async getWinners(dbOrTx: DbOrTx): Promise<Team[]> {
+    if (this._winners === undefined) {
+      await this.loadTeams(dbOrTx);
+    }
+    return this._winners;
+  }
+
+  async getLosers(dbOrTx: DbOrTx): Promise<Team[]> {
+    if (this._losers === undefined) {
+      await this.loadTeams(dbOrTx);
+    }
+    return this._losers;
+  }
+
+  private async loadTeams(dbOrTx: DbOrTx): Promise<void> {
+    const query = `SELECT team.*, 
+                  FROM game_summaries
+                  INNER JOIN playing_teams
+                  INNER JOIN team
+                  WHERE game_id = $[gameID]`;
+    const rows = await dbOrTx.many<DbLoadedPlayingTeam>(query, { gameID: this.id });
+    this._winners = rows.filter((row) => row.winner).map((row) => new Team(row));
+    this._losers = rows.filter((row) => !row.winner).map((row) => new Team(row));
+  }
+
+  static async getGamesFromParticipatingTeam(
+    roundID: RoundID,
+    teamID: TeamID,
+    dbOrTx: DbOrTx
+  ): Promise<GameSummary[]> {
+    const query = `SELECT game_summaries.*, playing_teams.*, teams.name AS team_name, teams.tournament_id
+                   FROM game_summaries
+                   INNER JOIN playing_teams AS filtering_playing_teams ON game_summaries.id = filtering_playing_teams.game_id
+                   INNER JOIN teams AS filtering_teams ON filtering_teams.id = filtering_playing_teams.team_id
+                   
+                   INNER JOIN playing_teams ON game_summaries.id = playing_teams.game_id
+                   INNER JOIN teams ON teams.id = playing_teams.team_id
+                   WHERE round_id = $[roundID] AND filtering_teams.id = $[teamID]`;
+    const response = await dbOrTx.manyOrNone<DbGameSummaryWithTeams>(query, {
+      roundID,
+      teamID,
+    });
+
+    // In most cases we want to have information about teams so we load them in advance
+    const summaries = response.reduce((currentSummaries, row) => {
+      let summary = currentSummaries.get(row.id);
+      if (summary === undefined) {
+        summary = new GameSummary(row, [], []);
+        currentSummaries.set(row.id, summary);
+      }
+      const team = new Team({
+        id: row.team_id,
+        name: row.team_name,
+        tournament_id: row.tournament_id,
+      });
+      if (row.winner) {
+        summary._winners.push(team);
+      } else {
+        summary._losers.push(team);
+      }
+      return currentSummaries;
+    }, new Map<GameID, GameSummary>());
+    return [...summaries.values()];
   }
 }

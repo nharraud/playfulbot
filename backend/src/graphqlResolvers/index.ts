@@ -18,7 +18,8 @@ import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 import { playerGamesResolver } from './playerGames';
 import { DateScalar } from './scalars/DateScalar';
 import { teamPlayerResolver } from './teamPlayer';
-import { roundTeamPointsResolver } from './rounds';
+import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
+import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -31,6 +32,7 @@ const resolvers: IResolvers = {
     team: teamResolver,
     authenticatedUser: authenticatedUserResolver,
     tournament: tournamentResolver,
+    round: roundResolver,
   } as gqlTypes.QueryResolvers,
   Mutation: {
     play: playResolver,
@@ -48,6 +50,11 @@ const resolvers: IResolvers = {
   },
   Round: {
     teamPoints: roundTeamPointsResolver,
+    teamGames: roundTeamGamesResolver,
+  },
+  GameSummary: {
+    winners: gameSummaryWinnersResolver,
+    losers: gameSummaryLosersResolver,
   },
   JSON: GraphQLJSON,
   Date: DateScalar,

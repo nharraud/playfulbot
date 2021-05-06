@@ -140,6 +140,19 @@ export type Round = {
   status?: Maybe<RoundStatus>;
   startDate?: Maybe<Scalars['Date']>;
   teamPoints?: Maybe<Scalars['Int']>;
+  teamGames?: Maybe<Array<Maybe<GameSummary>>>;
+};
+
+
+export type RoundTeamGamesArgs = {
+  teamID?: Maybe<Scalars['ID']>;
+};
+
+export type GameSummary = {
+  __typename?: 'GameSummary';
+  id?: Maybe<Scalars['ID']>;
+  losers?: Maybe<Array<Maybe<Team>>>;
+  winners?: Maybe<Array<Maybe<Team>>>;
 };
 
 export type Subscription = {
@@ -174,6 +187,7 @@ export type SubscriptionTeamPlayerArgs = {
 export type Query = {
   __typename?: 'Query';
   tournament?: Maybe<Tournament>;
+  round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
   authenticatedUser?: Maybe<User>;
 };
@@ -181,6 +195,11 @@ export type Query = {
 
 export type QueryTournamentArgs = {
   tournamentID?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryRoundArgs = {
+  roundID?: Maybe<Scalars['ID']>;
 };
 
 
@@ -365,6 +384,31 @@ export type PlayerConnectedFragment = (
 export type PlayerFragment = (
   { __typename?: 'Player' }
   & Pick<Player, 'id' | 'token' | 'connected'>
+);
+
+export type RoundSummaryQueryVariables = Exact<{
+  roundID: Scalars['ID'];
+  teamID: Scalars['ID'];
+}>;
+
+
+export type RoundSummaryQuery = (
+  { __typename?: 'Query' }
+  & { round?: Maybe<(
+    { __typename?: 'Round' }
+    & Pick<Round, 'id' | 'status' | 'startDate' | 'teamPoints'>
+    & { teamGames?: Maybe<Array<Maybe<(
+      { __typename?: 'GameSummary' }
+      & Pick<GameSummary, 'id'>
+      & { losers?: Maybe<Array<Maybe<(
+        { __typename?: 'Team' }
+        & Pick<Team, 'id' | 'name'>
+      )>>>, winners?: Maybe<Array<Maybe<(
+        { __typename?: 'Team' }
+        & Pick<Team, 'id' | 'name'>
+      )>>> }
+    )>>> }
+  )> }
 );
 
 export type TeamPlayerSubscriptionVariables = Exact<{
@@ -680,6 +724,56 @@ export function usePlayMutation(baseOptions?: Apollo.MutationHookOptions<PlayMut
 export type PlayMutationHookResult = ReturnType<typeof usePlayMutation>;
 export type PlayMutationResult = Apollo.MutationResult<PlayMutation>;
 export type PlayMutationOptions = Apollo.BaseMutationOptions<PlayMutation, PlayMutationVariables>;
+export const RoundSummaryDocument = gql`
+    query RoundSummary($roundID: ID!, $teamID: ID!) {
+  round(roundID: $roundID) {
+    id
+    status
+    startDate
+    teamPoints
+    teamGames(teamID: $teamID) {
+      id
+      losers {
+        id
+        name
+      }
+      winners {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useRoundSummaryQuery__
+ *
+ * To run a query within a React component, call `useRoundSummaryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRoundSummaryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoundSummaryQuery({
+ *   variables: {
+ *      roundID: // value for 'roundID'
+ *      teamID: // value for 'teamID'
+ *   },
+ * });
+ */
+export function useRoundSummaryQuery(baseOptions: Apollo.QueryHookOptions<RoundSummaryQuery, RoundSummaryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RoundSummaryQuery, RoundSummaryQueryVariables>(RoundSummaryDocument, options);
+      }
+export function useRoundSummaryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RoundSummaryQuery, RoundSummaryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RoundSummaryQuery, RoundSummaryQueryVariables>(RoundSummaryDocument, options);
+        }
+export type RoundSummaryQueryHookResult = ReturnType<typeof useRoundSummaryQuery>;
+export type RoundSummaryLazyQueryHookResult = ReturnType<typeof useRoundSummaryLazyQuery>;
+export type RoundSummaryQueryResult = Apollo.QueryResult<RoundSummaryQuery, RoundSummaryQueryVariables>;
 export const TeamPlayerDocument = gql`
     subscription teamPlayer($teamID: ID!) {
   teamPlayer(teamID: $teamID) {

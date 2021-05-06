@@ -29,7 +29,7 @@ import TeamSubPage from './team/TeamSubPage';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
 import TestIcon from '@material-ui/icons/SlowMotionVideo';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
-import { useTournament } from 'src/hooksAndQueries/getTournament';
+import { useTournament } from 'src/hooksAndQueries/useTournament';
 import LoadingWidget from '../Loading';
 import CompetitionSubPage from './competition/CompetitionSubPage';
 

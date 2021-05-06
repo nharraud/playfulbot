@@ -4,6 +4,8 @@ export * from './graphql-generated'
 
 export type UserID = string;
 export type TournamentID = string;
+export type RoundID = string;
+export type GameSummaryID = string;
 export type PlayerID = string;
 export type TeamID = string;
 export type GameID = string;

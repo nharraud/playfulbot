@@ -1,0 +1,19 @@
+query RoundSummary($roundID: ID!, $teamID: ID!) {
+  round(roundID: $roundID) {
+      id
+      status
+      startDate
+      teamPoints
+      teamGames(teamID: $teamID) {
+        id
+        losers {
+          id
+          name
+        }
+        winners {
+          id
+          name
+        }
+      }
+  }
+}
