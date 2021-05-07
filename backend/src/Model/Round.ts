@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import { v4 as uuidv4 } from 'uuid';
 import { ITask } from 'pg-promise';
-import { DbOrTx, DEFAULT } from './db/helpers';
+import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { Tournament, TournamentID } from './Tournaments';
 import { ConflictError, InvalidArgument } from '~playfulbot/errors';
 import { Game, GameID } from './Game';
@@ -33,8 +33,11 @@ interface DbRound {
 /* eslint-enable */
 
 export interface RoundsSearchOptions {
-  before?: DateTime;
-  after?: DateTime;
+  startingBefore?: DateTime;
+  startingAfter?: DateTime;
+  status?: RoundStatus;
+  tournamentID?: TournamentID;
+  maxSize?: number;
 }
 
 export interface TeamPoints {
@@ -107,47 +110,54 @@ export class Round {
     return null;
   }
 
-  static async getRounds(
-    tournamentID: RoundID,
-    maxSize: number,
-    options: RoundsSearchOptions,
-    dbOrTX: DbOrTx
-  ): Promise<Round[]> {
-    let query: string;
-    if (options.after) {
-      query = `SELECT * FROM rounds WHERE tournament_id = $[tournamentID]
-               AND start_date > $[date] ORDER BY start_date ASC LIMIT $[maxSize]`;
-    } else if (options.before) {
-      query = `SELECT * FROM rounds WHERE tournament_id = $[tournamentID]
-               AND start_date < $[date] ORDER BY start_date DESC LIMIT $[maxSize]`;
-    } else {
-      throw new InvalidArgument('Either "before" or "after" should be set');
+  static async getAll(filters: RoundsSearchOptions, dbOrTX: DbOrTx): Promise<Round[]> {
+    const queryBuilder = new QueryBuilder('SELECT * FROM rounds');
+    if (filters.startingAfter) {
+      queryBuilder.where('$[startingAfter] <= start_date');
     }
-    const rows = await dbOrTX.manyOrNone<DbRound>(query, {
-      tournamentID,
-      maxSize,
-      date: options.after || options.before,
-    });
-    const rounds = rows.map((row) => new Round(row));
-    if (options.before) {
-      return rounds.reverse();
+    if (filters.startingBefore) {
+      queryBuilder.where('start_date <= $[startingBefore]');
     }
-    return rounds;
+    if (filters.status) {
+      queryBuilder.where('status = $[status]');
+    }
+    if (filters.tournamentID) {
+      queryBuilder.where('tournament_id = $[tournamentID]');
+    }
+    if (filters.maxSize !== undefined) {
+      if (filters.startingAfter) {
+        queryBuilder.orderBy('start_date', 'ASC');
+      } else {
+        queryBuilder.orderBy('start_date', 'DESC');
+      }
+      queryBuilder.limit('maxSize');
+    }
+
+    const rows = await dbOrTX.manyOrNone<DbRound>(queryBuilder.query, filters);
+    const result = rows.map((row) => new Round(row));
+    if (filters.startingBefore) {
+      return result.reverse();
+    }
+    return result;
   }
 
-  get roundEndPromise(): Promise<void> {
-    const promise = Round.roundEndPromises.get(this.id);
-    if (promise === undefined) {
-      throw new ConflictError('Game is not started');
-    }
-    return promise;
+  get roundEndPromise(): Promise<void> | undefined {
+    return Round.roundEndPromises.get(this.id);
   }
 
   async start(dbOrTX: DbOrTx): Promise<void> {
     let tournament: Tournament;
     let teams: Team[];
+    const updatedRow = await dbOrTX.oneOrNone<{ id: string }>(
+      "UPDATE rounds SET status = 'STARTED' WHERE id = $[id] AND status = 'CREATED' RETURNING id",
+      { id: this.id }
+    );
+    if (updatedRow === null) {
+      logger.debug(`Round ${this.id} is already started or has been deleted.`);
+      return;
+    }
+    logger.info(`Starting Round ${this.id} with startDate ${this.startDate.toISO()}`);
     await dbOrTX.txIf(async (tx) => {
-      await tx.none("UPDATE rounds SET status = 'STARTED' WHERE id = $[id]", { id: this.id });
       this.status = RoundStatus.Started;
 
       tournament = await this.getTournament(tx);
@@ -180,10 +190,12 @@ export class Round {
       throw error;
     });
     Round.roundEndPromises.set(this.id, roundEndPromise);
+    logger.info(`Started Round ${this.id} with startDate ${this.startDate.toISO()}`);
   }
 
   private handleRoundEnd = async (games: Game[]): Promise<void> => {
     await db.default.txIf(async (tx) => {
+      logger.info(`Ending Round ${this.id} with startDate ${this.startDate.toISO()}`);
       // create Game summaries
       await Promise.all(games.map(async (game) => GameSummary.createFromGame(game, this.id, tx)));
 
@@ -203,8 +215,11 @@ export class Round {
       });
       await this.setTeamPoints(teamPoints, tx);
 
-      await tx.none("UPDATE rounds SET status = 'ENDED' WHERE id = $[id]", { id: this.id });
+      await tx.one("UPDATE rounds SET status = 'ENDED' WHERE id = $[id] RETURNING *", {
+        id: this.id,
+      });
       this.status = RoundStatus.Ended;
+      logger.info(`Ended Round ${this.id} with startDate ${this.startDate.toISO()}`);
     });
   };
 
@@ -254,7 +269,9 @@ export class Round {
 
       await this.setTeamPoints(teamPoints, tx);
 
-      await tx.none("UPDATE rounds SET status = 'ENDED' WHERE id = $[id]", { id: this.id });
+      await tx.none("UPDATE rounds SET status = 'ENDED' WHERE id = $[id] AND status = 'STARTED'", {
+        id: this.id,
+      });
       this.status = RoundStatus.Ended;
     });
   }

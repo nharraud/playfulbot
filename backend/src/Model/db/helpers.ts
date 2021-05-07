@@ -13,12 +13,23 @@ export class QueryBuilder {
 
   constructor(public query: string) {}
 
-  where(filter: string): void {
+  where(filter: string): this {
     if (this.firstFilter) {
       this.query += ` WHERE ${filter}`;
       this.firstFilter = false;
     } else {
       this.query += ` AND ${filter}`;
     }
+    return this;
+  }
+
+  orderBy(column: string, direction: 'ASC' | 'DESC' = 'ASC'): this {
+    this.query += ` ORDER BY ${column} ${direction}`;
+    return this;
+  }
+
+  limit(key: string): this {
+    this.query += ` LIMIT $[${key}]`;
+    return this;
   }
 }

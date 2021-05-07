@@ -45,10 +45,14 @@ export async function tournamentRoundsResolver(
 ): Promise<gqlTypes.Round[]> {
   // FIXME: this should run in the same transaction as the parent query
   /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  const result = await parent.getRounds(args.maxSize, db.default, {
-    before: args.before,
-    after: args.after,
-  });
+  const result = await parent.getRounds(
+    {
+      startingBefore: args.before,
+      startingAfter: args.after,
+      maxSize: args.maxSize,
+    },
+    db.default
+  );
   /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   return result;
 }

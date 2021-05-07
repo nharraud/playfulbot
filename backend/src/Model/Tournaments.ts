@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { ConflictError, InvalidArgument } from '~playfulbot/errors';
+import logger from '~playfulbot/logging';
 
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
@@ -131,7 +132,15 @@ export class Tournament {
     }
 
     await dbOrTX.tx(async (tx) => {
-      await tx.none("UPDATE tournaments SET status = 'STARTED' WHERE id = $[id]", { id: this.id });
+      const updatedTournament = await tx.oneOrNone<{ id: string }>(
+        "UPDATE tournaments SET status = 'STARTED' WHERE id = $[id] AND status = 'CREATED' RETURNING id",
+        { id: this.id }
+      );
+      if (updatedTournament === null) {
+        logger.debug(`Tournament ${this.id} is already started or has been deleted.`);
+        return;
+      }
+      logger.info(`Starting Tournament ${this.id} with startDate ${this.startDate.toISO()}`);
       this.status = TournamentStatus.Started;
 
       const roundPromises = new Array(this.roundsNumber)
@@ -147,16 +156,16 @@ export class Tournament {
     });
   }
 
-  getRounds(maxSize: number, dbOrTX: DbOrTx, options: RoundsSearchOptions = {}): Promise<Round[]> {
-    if (options.before === undefined && options.after === undefined) {
+  getRounds(filters: RoundsSearchOptions = {}, dbOrTX: DbOrTx): Promise<Round[]> {
+    if (filters.startingBefore === undefined && filters.startingAfter === undefined) {
       const now = DateTime.now();
       if (now > this.lastRoundDate) {
-        options.before = this.lastRoundDate.plus({ seconds: 1 });
+        filters.startingBefore = this.lastRoundDate.plus({ seconds: 1 });
       } else {
-        options.before = this.nextRoundDate.plus({ seconds: 1 });
+        filters.startingBefore = this.nextRoundDate.plus({ seconds: 1 });
       }
     }
-    return Round.getRounds(this.id, maxSize, options, dbOrTX);
+    return Round.getAll({ tournamentID: this.id, ...filters }, dbOrTX);
   }
 
   async getNextRound(dbOrTX: DbOrTx): Promise<Round | null> {

@@ -7,6 +7,7 @@ import { db } from '~playfulbot/model/db';
 import { disconnect } from './model/redis';
 import { initDemo } from './model/demo';
 import { handleRestart } from './model/handleRestart';
+import { scheduler } from './scheduling/Scheduler';
 
 async function closeConnections() {
   disconnect();
@@ -23,6 +24,7 @@ async function execute(argv: string[]): Promise<void> {
       await handleRestart();
       startGraphqlServer();
       startGrpcServer();
+      await scheduler.start();
     });
 
   program

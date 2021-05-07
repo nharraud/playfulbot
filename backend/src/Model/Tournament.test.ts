@@ -98,9 +98,13 @@ describe('Model/Tournament', () => {
       'f00fabe0-0000-0000-0000-000000000001'
     );
     await tournament.start(db.default);
-    const rounds = await tournament.getRounds(tournament.roundsNumber, db.default, {
-      before: tournament.lastRoundDate.plus({ seconds: 1 }),
-    });
+    const rounds = await tournament.getRounds(
+      {
+        startingBefore: tournament.lastRoundDate.plus({ seconds: 1 }),
+        maxSize: tournament.roundsNumber,
+      },
+      db.default
+    );
     expect(rounds.length).toEqual(5);
     expect(rounds[rounds.length - 1].startDate).toEqual(tournament.lastRoundDate);
     expect(rounds[0].startDate).toEqual(end.minus({ minutes: 4 * 30 }));
@@ -123,7 +127,10 @@ describe('Model/Tournament', () => {
 
     // test after
     const queryDate = end.minus({ minutes: 40 });
-    const roundsAfter = await tournament.getRounds(3, db.default, { after: queryDate });
+    const roundsAfter = await tournament.getRounds(
+      { startingAfter: queryDate, maxSize: 3 },
+      db.default
+    );
     expect(roundsAfter.length).toEqual(2);
     const datesAfter = roundsAfter.map((round) => round.startDate);
     expect(datesAfter).toEqual([
@@ -132,7 +139,10 @@ describe('Model/Tournament', () => {
     ]);
 
     // test before
-    const roundsBefore = await tournament.getRounds(3, db.default, { before: queryDate });
+    const roundsBefore = await tournament.getRounds(
+      { startingBefore: queryDate, maxSize: 3 },
+      db.default
+    );
     expect(roundsBefore.length).toEqual(3);
     const datesBefore = roundsBefore.map((round) => round.startDate);
     expect(datesBefore).toEqual([
@@ -142,13 +152,13 @@ describe('Model/Tournament', () => {
     ]);
 
     // test without before or after
-    const withoutDate = await tournament.getRounds(3, db.default);
+    const withoutDate = await tournament.getRounds({ maxSize: 3 }, db.default);
     expect(withoutDate.length).toEqual(1);
     expect(withoutDate[0].startDate).toEqual(tournament.nextRoundDate);
 
     Settings.now = () => tournament.lastRoundDate.minus({ minutes: 40 }).valueOf();
 
-    const withoutDate2 = await tournament.getRounds(3, db.default);
+    const withoutDate2 = await tournament.getRounds({ maxSize: 3 }, db.default);
     const datesBefore2 = withoutDate2.map((round) => round.startDate);
     expect(datesBefore2).toEqual([
       tournament.lastRoundDate.minus({ minutes: 120 }),

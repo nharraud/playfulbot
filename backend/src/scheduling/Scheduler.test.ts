@@ -5,9 +5,9 @@ import { db } from '~playfulbot/model/db';
 import { config } from '~playfulbot/model/db/config';
 import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 import { gameDefinitions } from '~playfulbot/model/GameDefinition';
-import { Tournament } from '~playfulbot/model/Tournaments';
-import { scheduler } from './Scheduler';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import { Tournament, TournamentStatus } from '~playfulbot/model/Tournaments';
+import { Scheduler } from './Scheduler';
+import { Round, RoundStatus } from '~playfulbot/model/Round';
 
 describe('Scheduler', () => {
   // const now = DateTime.fromISO('2021-01-01T00:00:00.000');
@@ -50,24 +50,48 @@ describe('Scheduler', () => {
       db.default,
       `F00FABE0-0000-0000-0000-000000000001`
     );
+
+    const scheduler = new Scheduler();
     await scheduler.start();
-    expect(tournament.status).toEqual(gqlTypes.TournamentStatus.Created);
+    expect(tournament.status).toEqual(TournamentStatus.Created);
     await clock.tickAsync(Duration.fromObject({ hours: 3, minutes: 1 }).toMillis());
     await scheduler.stop();
 
     const updatedTournament = await Tournament.getByID(tournament.id, db.default);
-    expect(updatedTournament.status).toEqual(gqlTypes.TournamentStatus.Started);
+    expect(updatedTournament.status).toEqual(TournamentStatus.Started);
   });
 
-  // async function createTournament(tournamentName: string, start: DateTime, end: DateTime) {
-  //   const tournament = await Tournament.create(
-  //     tournamentName,
-  //     start,
-  //     end,
-  //     5,
-  //     30,
-  //     gameDefinition.name,
-  //     db.default
-  //   );
-  // }
+  test('scheduler should start missed and future rounds', async () => {
+    const now = DateTime.now();
+    const tournament = await Tournament.create(
+      'Team Building 2',
+      now,
+      now.plus({ hours: 1 }),
+      4,
+      15,
+      gameDefinition.name,
+      db.default,
+      `F00FABE0-0000-0000-0000-000000000001`
+    );
+    await tournament.start(db.default);
+
+    const scheduler = new Scheduler();
+    await scheduler.start();
+    const filters = {
+      startingAfter: now,
+      startingBefore: now.plus({ minutes: 35 }),
+    };
+    const rounds = await tournament.getRounds(filters, db.default);
+    expect(rounds).toHaveLength(2);
+    for (const round of rounds) {
+      expect(round.status).toEqual(RoundStatus.Created);
+    }
+    await clock.tickAsync(Duration.fromObject({ minutes: 35 }).toMillis());
+    await scheduler.stop();
+
+    const updatedRounds = await tournament.getRounds(filters, db.default);
+    for (const round of updatedRounds) {
+      expect(round.status).toEqual(RoundStatus.Ended);
+    }
+  });
 });

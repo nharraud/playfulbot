@@ -25,8 +25,8 @@ export async function initDemo(): Promise<void> {
     const now = DateTime.now();
     const tournament = await Tournament.create(
       'Team Building',
-      DateTime.now().minus({ hours: 3 }),
-      DateTime.now().plus({ hours: 2 }),
+      now.minus({ hours: 2, minutes: 58 }),
+      now.plus({ hours: 2, minutes: 2 }),
       7,
       30,
       gameDefinition.name,
@@ -61,9 +61,12 @@ export async function initDemo(): Promise<void> {
 
     await tournament.start(tx);
 
-    const rounds = await tournament.getRounds(tournament.roundsNumber, tx, {
-      before: tournament.lastRoundDate,
-    });
+    const rounds = await tournament.getRounds(
+      {
+        startingBefore: tournament.lastRoundDate,
+      },
+      tx
+    );
 
     const teamIDs = teams.map((team) => team.id);
     await rounds[0].setResultsFromData(
