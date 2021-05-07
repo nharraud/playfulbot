@@ -25,8 +25,8 @@ function patchStateToVersion(
     startVersion = 0;
     startState = game.initialState;
   }
-  for (let version = startVersion + 1; version <= finalVersion; ++version) {
-    startState = applyPatch(startState, game.patches[version], false, false).newDocument;
+  for (let patch = startVersion; patch < finalVersion; ++patch) {
+    startState = applyPatch(startState, game.patches[patch], false, false).newDocument;
   }
   return { id: game.id, gameState: startState, version: finalVersion };
 }
