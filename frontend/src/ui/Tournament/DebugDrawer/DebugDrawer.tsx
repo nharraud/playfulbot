@@ -71,20 +71,20 @@ export default function DebugDrawer(props: DebugDrawerProps) {
     <div className={classes.root}>
       <AppBar position="static" color='default'>
         <Tabs value={value} onChange={handleChange} aria-label="Game tabs">
-          <Tab label="Players" {...a11yProps(0)} />
           <Tab label="Game" {...a11yProps(0)} />
+          <Tab label="Players" {...a11yProps(0)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-          <DebugPlayersTab game={props.game} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
           <DebugGameTab
             createDebugGame={props.createDebugGame}
             setGameVersion={props.setGameVersion}
             controlledGame={props.controlledGame}
             game={props.game}
           />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+          <DebugPlayersTab game={props.game} />
       </TabPanel>
     </div>
   );
