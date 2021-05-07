@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { applyPatch } from 'fast-json-patch';
 import { useMutation, useSubscription } from '@apollo/client';
 import { useAuthenticatedUser } from './authenticatedUser';
 import { Tournament } from '../types/graphql-generated';
@@ -57,7 +56,6 @@ function useGameSubscription(gameID: string) {
     });
   } else if (data.game.__typename === 'GamePatch') {
     const version = data.game.version;
-    const patch = data.game.patch;
     game = apolloClient.readFragment<gqlTypes.GameFragment>({
       id: fullGameID,
       fragment: gqlTypes.GameFragmentDoc
@@ -68,13 +66,12 @@ function useGameSubscription(gameID: string) {
         throw new Error('Missing game version');
       }
 
-      const newGameState = applyPatch(game.gameState, patch, false, false).newDocument;
-
       apolloClient.writeFragment({
         id: fullGameID,
         fragment: gqlTypes.GamePatchFragmentDoc,
         data: {
-          gameState: newGameState,
+          patches: game.patches.concat([data.game.patch]),
+          initialState: game.initialState,
           version: version
         },
       });

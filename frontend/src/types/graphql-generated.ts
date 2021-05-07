@@ -76,7 +76,8 @@ export type Game = {
   version?: Maybe<Scalars['Int']>;
   canceled?: Maybe<Scalars['Boolean']>;
   players?: Maybe<Array<Maybe<Player>>>;
-  gameState: Scalars['JSON'];
+  initialState?: Maybe<Scalars['JSON']>;
+  patches?: Maybe<Scalars['JSON']>;
 };
 
 export type GamePatch = {
@@ -296,7 +297,7 @@ export type GameCancelFragment = (
 
 export type GameFragment = (
   { __typename?: 'Game' }
-  & Pick<Game, 'id' | 'version' | 'canceled' | 'gameState'>
+  & Pick<Game, 'id' | 'version' | 'canceled' | 'initialState' | 'patches'>
   & { players?: Maybe<Array<Maybe<(
     { __typename?: 'Player' }
     & Pick<Player, 'id' | 'token' | 'connected'>
@@ -305,7 +306,7 @@ export type GameFragment = (
 
 export type GamePatchFragment = (
   { __typename?: 'Game' }
-  & Pick<Game, 'version' | 'gameState'>
+  & Pick<Game, 'version' | 'initialState' | 'patches'>
 );
 
 export type GamePlayersFragment = (
@@ -325,7 +326,7 @@ export type GameSubscription = (
   { __typename?: 'Subscription' }
   & { game?: Maybe<(
     { __typename?: 'Game' }
-    & Pick<Game, 'id' | 'canceled' | 'version' | 'gameState'>
+    & Pick<Game, 'id' | 'canceled' | 'version' | 'initialState' | 'patches'>
     & { players?: Maybe<Array<Maybe<(
       { __typename?: 'Player' }
       & Pick<Player, 'id' | 'token' | 'connected'>
@@ -463,13 +464,15 @@ export const GameFragmentDoc = gql`
     token
     connected
   }
-  gameState
+  initialState
+  patches
 }
     `;
 export const GamePatchFragmentDoc = gql`
     fragment GamePatch on Game {
   version
-  gameState
+  initialState
+  patches
 }
     `;
 export const GamePlayersFragmentDoc = gql`
@@ -609,7 +612,8 @@ export const GameDocument = gql`
         token
         connected
       }
-      gameState
+      initialState
+      patches
     }
     ... on GameCanceled {
       version

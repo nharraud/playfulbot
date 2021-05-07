@@ -7,6 +7,7 @@ import { GameAction } from '~playfulbot/types/action';
 import { ForbiddenError, PlayingOutOfTurn, PlayingTwice } from '~playfulbot/errors';
 import { PlayerID } from './Player';
 import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
+import { cloneDeep } from '~playfulbot/utils/clone';
 
 export type GameID = string;
 
@@ -27,6 +28,9 @@ export class Game {
 
   gameState: GameState;
 
+  readonly initialState: GameState;
+  readonly patches = new Array<unknown>();
+
   readonly players: PlayerAssignment[];
 
   storedActions = new Map<number, GameAction>();
@@ -38,6 +42,7 @@ export class Game {
     this.version = 0;
     this.gameDefinition = gameDefinition;
     this.gameState = gameDefinition.init();
+    this.initialState = cloneDeep(this.gameState);
     this.players = players;
     Game.games.set(this.id, this);
   }
@@ -99,6 +104,7 @@ export class Game {
 
     const patch = jsonpatch.generate(observer);
     jsonpatch.unobserve(this.gameState, observer);
+    this.patches.push(patch);
 
     if (patch.length === 0) {
       return;

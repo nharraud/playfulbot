@@ -11,7 +11,8 @@ subscription game($gameID: ID!) {
       players {
         id, token, connected
       }
-      gameState
+      initialState
+      patches
     }
     ... on GameCanceled {
       version

@@ -75,7 +75,8 @@ export type Game = {
   version?: Maybe<Scalars['Int']>;
   canceled?: Maybe<Scalars['Boolean']>;
   players?: Maybe<Array<Maybe<Player>>>;
-  gameState: Scalars['JSON'];
+  initialState?: Maybe<Scalars['JSON']>;
+  patches?: Maybe<Scalars['JSON']>;
 };
 
 export type GamePatch = {
@@ -448,7 +449,8 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   canceled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
-  gameState?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  initialState?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  patches?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -48,14 +48,10 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
         canceled: currentGame.canceled,
         version: currentGame.version,
         players,
-        gameState: currentGame.gameState,
+        initialState: currentGame.initialState,
+        patches: currentGame.patches,
       });
     });
-
-    setTimeout(() => {
-      game.play(game.players[0].playerID, 'move', { vector: [0, -1] });
-      game.play(game.players[1].playerID, 'move', { vector: [0, -1] });
-    }, 3000);
 
     const transformedGameIterator = new TransformAsyncIterator(versionedIterator, (message) => {
       if ('patch' in message) {

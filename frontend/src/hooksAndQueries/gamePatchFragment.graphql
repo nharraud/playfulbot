@@ -1,4 +1,5 @@
 fragment GamePatch on Game {
   version
-  gameState
+  initialState
+  patches
 }

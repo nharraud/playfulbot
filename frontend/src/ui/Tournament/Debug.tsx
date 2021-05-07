@@ -12,6 +12,7 @@ import useDebugGame from '../../hooksAndQueries/useGame';
 import { Tournament } from 'src/types/graphql';
 
 import Button from '@material-ui/core/Button';
+import { useGameController } from 'src/hooksAndQueries/useGameController';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,13 +32,14 @@ export default function Debug(props: DebugProps) {
   const classes = useStyles();
 
   const { game, createDebugGame } = useDebugGame(props.tournament);
+  const { controlledGame, setGameVersion } = useGameController(game);
   const ref = React.createRef();
   let content = null;
   if (game) {
     content = (
       <>
-        <GameCanvas playAction={undefined} game={game}  />
-        <DebugBottomDrawer game={game} createDebugGame={createDebugGame} />
+        <GameCanvas playAction={undefined} game={controlledGame} />
+        <DebugBottomDrawer game={game} controlledGame={controlledGame} setGameVersion={setGameVersion} createDebugGame={createDebugGame} />
       </>
     )
   }

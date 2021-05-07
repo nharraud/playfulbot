@@ -14,6 +14,10 @@ export default function GameCanvas(props) {
   const apolloContext = getApolloContext()
   const aplloContextValue = useContext(getApolloContext())
 
+  let game;
+  if (props?.game !== undefined) {
+    game = (<Game {...props} />)
+  }
   return (
   <Canvas
   orthographic
@@ -29,7 +33,7 @@ export default function GameCanvas(props) {
     <ambientLight/>
     <apolloContext.Provider value={aplloContextValue}>
       {/* <TicTacToe {...props} /> */}
-      <Game {...props} />
+      { game }
     </apolloContext.Provider>
   </Canvas>
   );

@@ -9,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import DebugPlayersTab from './DebugPlayersTab';
 import DebugGameTab from './DebugGameTab';
 import { Game } from 'src/types/graphql-generated';
+import { SetGameVersion, ControlledGame } from 'src/hooksAndQueries/useGameController';
 
 
 interface TabPanelProps {
@@ -53,6 +54,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface DebugDrawerProps {
   game: Game,
+  controlledGame: ControlledGame,
+  setGameVersion: SetGameVersion,
   createDebugGame: () => void,
 }
 
@@ -76,7 +79,12 @@ export default function DebugDrawer(props: DebugDrawerProps) {
           <DebugPlayersTab game={props.game} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <DebugGameTab createDebugGame={props.createDebugGame}/>
+          <DebugGameTab
+            createDebugGame={props.createDebugGame}
+            setGameVersion={props.setGameVersion}
+            controlledGame={props.controlledGame}
+            game={props.game}
+          />
       </TabPanel>
     </div>
   );

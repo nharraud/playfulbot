@@ -47,7 +47,8 @@ type Game {
   version: Int
   canceled: Boolean
   players: [Player]
-  gameState: JSON!
+  initialState: JSON
+  patches: JSON
 }
 
 type GamePatch {
