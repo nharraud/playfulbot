@@ -9,6 +9,8 @@ const useStyles = makeStyles((theme) => ({
   root: {},
   version: {
     paddingBottom: theme.spacing(3),
+    paddingRight: theme.spacing(10),
+    paddingLeft: theme.spacing(10),
   },
   versionSlider: {},
   waitMessage: {
@@ -42,13 +44,24 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
     }
   }, [controlledGame, slidingVersion, setSlidingVersion])
 
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+    {
+      value: game?.version || 0,
+      label: (game?.version || 0).toString(),
+    },
+  ];
+
   let slider;
   let waitMessage;
   if (game !== undefined && game.version !== 0) {
     slider = (
       <div className={classes.version} >
         <Typography id='game-version-slider-title' variant="h6" gutterBottom>
-          Game Versions
+          Game Turns
         </Typography>
         <Slider className={classes.versionSlider}
           value={slidingVersion === undefined ? 0 : slidingVersion}
@@ -56,7 +69,7 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
           onChange={onSlidingVersionChange}
           aria-labelledby="game-version-slider-title"
           step={1}
-          marks
+          marks={marks}
           min={0}
           max={game.version || 0}
           color="secondary"
