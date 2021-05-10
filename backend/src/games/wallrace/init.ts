@@ -1,6 +1,6 @@
 import GameState from './GameState';
 
-const ARENA_SIZE = 10;
+const ARENA_SIZE = 20;
 
 export default function init(): GameState {
   return {
@@ -10,8 +10,8 @@ export default function init(): GameState {
     },
     walls: [
       [
-        [0, ARENA_SIZE - 1],
-        [0, ARENA_SIZE - 1],
+        [0, 0],
+        [0, 0],
         // [0, 0],
         // [0, 0],
         // [0, 1],
