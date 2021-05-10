@@ -1,8 +1,6 @@
 import React from 'react';
-import { useContext } from 'react';
 
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Link,
@@ -10,17 +8,9 @@ import {
   useParams
 } from 'react-router-dom';
 
-
-import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import { makeStyles } from '@material-ui/core/styles';
 import MenuBar from '../MenuBar';
 
-import List from '@material-ui/core/List';
-// import ListItemLink from '@material-ui/core/ListItem';
-import ListItemLink from '../../utils/ListItemLink';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import PeopleIcon from '@material-ui/icons/People';
 
 import Debug from './Debug';
@@ -33,47 +23,37 @@ import { useTournament } from 'src/hooksAndQueries/useTournament';
 import LoadingWidget from '../Loading';
 import CompetitionSubPage from './competition/CompetitionSubPage';
 
-
-const drawerWidth = 240;
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    flex: '1 1 auto'
+    flexDirection: 'column',
+    height: '100vh'
+  },
+  content: {
+    flex: '1 1 auto',
+    display: 'flex',
+    flexDirection: 'row',
+    minHeight: 0,
   },
   hide: {
     display: 'none',
   },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: theme.spacing(7) + 1,
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9) + 1,
+  tournamentMenu: {
+    flex: '0 0 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    '& > a': {
+      padding: theme.spacing(2),
     },
   },
-  content: {
-    display: 'flex',
-    flex: "1 1 auto",
-    flexGrow: 1,
+  menuIcon: {
+    fontSize: '3em',
+    color: 'white'
   },
-  appBarSpacer: theme.mixins.toolbar,
+  main: {
+    flex: "1 1 auto",
+    display: 'flex',
+  },
 }));
 
 
@@ -85,55 +65,27 @@ export default function TournamentPage() {
   const { loading, error, tournament } = useTournament(tournamentID);
 
   const classes = useStyles();
-  const theme = useTheme();
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-  const [open, setOpen] = React.useState(false);
 
   let content = undefined;
   if (tournament) {
     content = (
-      <div className={classes.root}>
-        <Drawer
-          variant="permanent"
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          })}
-          classes={{
-            paper: clsx({
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open,
-            }),
-          }}
-        >
-          <div className={classes.appBarSpacer}></div>
-          <List>
-            <ListItemLink button key={'Info'} to={`${match.url}/info`}>
-              <ListItemIcon><MenuBookIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Info'} />
-            </ListItemLink>
-            <ListItemLink button key={'Team'} to={`${match.url}/team`}>
-              <ListItemIcon><PeopleIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Team'} />
-            </ListItemLink>
-            <ListItemLink button key={'Debug'} to={`${match.url}/debug`}>
-              <ListItemIcon><TestIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Debug'} />
-            </ListItemLink>
-            <ListItemLink button key={'Competition'} to={`${match.url}/competition`}>
-              <ListItemIcon><CompetitionIcon fontSize="large" /></ListItemIcon>
-              <ListItemText primary={'Competition'} />
-            </ListItemLink>
-          </List>
-        </Drawer>
+      <>
+        <div className={classes.tournamentMenu}>
+          <Link to={`${match.url}/info`}>
+            <MenuBookIcon className={classes.menuIcon}/>
+            </Link>
+          <Link to={`${match.url}/team`}>
+            <PeopleIcon className={classes.menuIcon}/>
+            </Link>
+          <Link to={`${match.url}/debug`}>
+            <TestIcon className={classes.menuIcon}/>
+            </Link>
+          <Link to={`${match.url}/competition`}>
+            <CompetitionIcon className={classes.menuIcon}/>
+            </Link>
+        </div>
         <main
-          className={classes.content}
+          className={classes.main}
         >
           <Switch>
             <Route path={`${match.url}/info`}>
@@ -150,7 +102,7 @@ export default function TournamentPage() {
             </Route>
           </Switch>
         </main>
-      </div>
+      </>
     )
   } else if (loading) {
     content = <LoadingWidget/>
@@ -161,9 +113,11 @@ export default function TournamentPage() {
   }
 
   return (
-    <>
+    <div className={classes.root}>
       <MenuBar location={tournament ? `${tournament.name} tournament` : undefined} />
+      <div className={classes.content}>
       {content}
-    </>
+      </div>
+    </div>
   )
 }

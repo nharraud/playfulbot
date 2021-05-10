@@ -24,6 +24,7 @@ import { client } from './apolloConfig';
 import MenuBar from './ui/MenuBar';
 import TournamentPage from './ui/Tournament/TournamentPage';
 import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
+import { LandingPage } from './ui/LandingPage/LandingPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -36,10 +37,13 @@ function App() {
     <ApolloProvider client={client}>
     <MuiThemeProvider theme={theme}>
     <CssBaseline />
-    <div className="App" style={{height:"100%",width:"100%"}}>
+    <div className="App">
       <Router>
 
       <Switch>
+      <Route exact path="/">
+          <LandingPage/>
+        </Route>
         <Route path="/tournament/:tournamentID">
           <TournamentPage/>
         </Route>
