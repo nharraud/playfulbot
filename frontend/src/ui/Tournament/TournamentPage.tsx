@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     flex: '0 0 auto',
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: theme.palette.grey[900],
     '& > a': {
       padding: theme.spacing(2),
     },
