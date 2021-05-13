@@ -3,8 +3,6 @@ import { useContext } from 'react';
 
 import { Canvas } from 'react-three-fiber';
 
-import TicTacToe from '../../games/TicTacToe';
-
 import { getApolloContext } from '@apollo/client/react/context/ApolloContext';
 import Game from 'src/games/WallRace';
 
