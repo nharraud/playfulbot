@@ -1,0 +1,21 @@
+**/node_modules
+**/.vscode
+
+# only .env should be kept. Dev environment should be discarded.
+**/.env.*
+
+# generated files
+backend/*.html
+
+# flamegraph files (benchmarking)
+**/*.0x
+
+# any temporary directory. By convention they are named 'tmp'.
+**/tmp
+
+# SSL files used for development
+**/*.crt
+**/*.csr
+**/*.key
+**/*.pem
+**/*.srl

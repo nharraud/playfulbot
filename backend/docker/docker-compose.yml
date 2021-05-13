@@ -1,5 +1,0 @@
-services:
-  db:
-    build: ./db
-  redis:
-    image: redis

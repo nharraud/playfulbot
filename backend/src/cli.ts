@@ -4,13 +4,11 @@ import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 
 import { db } from '~playfulbot/model/db';
-import { disconnect } from './model/redis';
 import { initDemo } from './model/demo';
 import { handleRestart } from './model/handleRestart';
 import { scheduler } from './scheduling/Scheduler';
 
 async function closeConnections() {
-  disconnect();
   await db.disconnectDefault();
 }
 

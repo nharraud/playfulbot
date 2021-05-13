@@ -16,7 +16,8 @@ class Database {
     if (this._db === undefined) {
       this._db = dbPGP({
         database: config.DATABASE_NAME,
-        port: 5432,
+        host: config.DATABASE_HOST,
+        port: config.DATABASE_PORT,
         user: config.DATABASE_USER,
         password: config.DATABASE_PASSWORD,
       });
@@ -33,7 +34,8 @@ class Database {
 
       this._adminDB = adminPGP({
         database: 'postgres',
-        port: 5432,
+        host: config.DATABASE_HOST,
+        port: config.DATABASE_PORT,
         user: config.DATABASE_ADMIN_USER,
         password: config.DATABASE_ADMIN_PASSWORD,
       });

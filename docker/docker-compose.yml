@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:13
+    ports:
+      - "5432"
+  playfulbot-backend:
+    build:
+      context: ..
+      dockerfile: ./docker/backend/Dockerfile
+    links:
+      - "db:database"
+    environment:
+      DATABASE_HOST: 'database'
+      DATABASE_PORT: '5432'
+    ports:
+      - "5000:5000"
+      - "4000"
+  playfulbot-frontend:
+    build:
+      context: ..
+      dockerfile: ./docker/frontend/Dockerfile
+    links:
+      - "playfulbot-backend:backend"
+    ports:
+      - "443:443"

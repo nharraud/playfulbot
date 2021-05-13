@@ -12,7 +12,6 @@ import { PlayGameRequest } from './proto/types/playfulbot/v0/PlayGameRequest';
 import { PlayGameResponse } from './proto/types/playfulbot/v0/PlayGameResponse';
 import { FollowGameRequest } from './proto/types/playfulbot/v0/FollowGameRequest';
 import { FollowGameResponse } from './proto/types/playfulbot/v0/FollowGameResponse';
-import { GamePatchMessage, GameScheduleChangeMessage } from '~playfulbot/types/pubsub';
 import { BotJWTokenData, JWTokenData } from '~playfulbot/types/token';
 import {
   CallAndCallbackRequireAuthentication,
@@ -32,6 +31,7 @@ import { asyncCall, asyncCallAndCallback, asyncCallHandler } from './asyncGrpc';
 import { Game } from '~playfulbot/model/Game';
 import { isGameStateChanged } from '~playfulbot/pubsub/messages';
 import { ChannelListener } from '~playfulbot/pubsub/ChannelListener';
+import { sslConfig } from './sslConfig';
 
 const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot', 'v0', 'playfulbot_v0.proto');
 
@@ -224,7 +224,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
 
 function getServer(): grpc.Server {
   const packageDefinition = protoLoader.loadSync(PROTO_PATH);
-  const proto = (grpc.loadPackageDefinition(packageDefinition) as unknown) as ProtoGrpcType;
+  const proto = grpc.loadPackageDefinition(packageDefinition) as unknown as ProtoGrpcType;
   const server = new grpc.Server({
     'grpc.max_concurrent_streams': 120,
   });
@@ -245,9 +245,9 @@ export function startServer(): void {
   const server = getServer();
   const url = `localhost:${grpcPort}`;
 
-  const sslCa = fs.readFileSync(`${__dirname}/../../ssl/RootCA.pem`);
-  const sslCert = fs.readFileSync(`${__dirname}/../../ssl/localhost.crt`);
-  const sslKey = fs.readFileSync(`${__dirname}/../../ssl/localhost.key`);
+  const sslCa = fs.readFileSync(sslConfig.SSL_CA);
+  const sslCert = fs.readFileSync(sslConfig.SSL_CERT);
+  const sslKey = fs.readFileSync(sslConfig.SSL_KEY);
   const keyCertPairs = [{ private_key: sslKey, cert_chain: sslCert }];
 
   const serverCred = grpc.ServerCredentials.createSsl(sslCa, keyCertPairs, false);

@@ -1,1 +1,8 @@
 .vscode
+
+# SSL files used for development
+**/*.crt
+**/*.csr
+**/*.key
+**/*.pem
+**/*.srl

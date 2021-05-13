@@ -7,7 +7,6 @@
     "test": "jest",
     "backend": "nodemon --inspect --require dotenv-flow/config src/index.ts serve",
     "cli": "node --require dotenv-flow/config --require ts-node/register/transpile-only --require tsconfig-paths/register src/index.ts",
-    "build": "tsc --outDir build",
     "lint": "eslint src",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
     "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
@@ -27,10 +26,8 @@
     "dotenv-flow": "^3.2.0",
     "fast-json-patch": "^3.0.0-1",
     "graphql": "^15.4.0",
-    "graphql-redis-subscriptions": "^2.3.1",
     "graphql-subscriptions": "^1.2.0",
     "graphql-type-json": "^0.3.2",
-    "ioredis": "^4.23.0",
     "iterall": "^1.3.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
@@ -42,6 +39,9 @@
     "pino": "^6.11.0",
     "pino-pretty": "^4.7.1",
     "subscriptions-transport-ws": "^0.9.18",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.2.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -52,7 +52,6 @@
     "@graphql-codegen/typescript-resolvers": "1.19.0",
     "@sinonjs/fake-timers": "^6.0.1",
     "@types/dotenv-flow": "^3.1.0",
-    "@types/ioredis": "^4.22.0",
     "@types/jest": "^26.0.22",
     "@types/koa": "^2.11.6",
     "@types/luxon": "^1.26.4",
@@ -76,9 +75,6 @@
     "jest-circus": "^26.6.3",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
-    "sinon": "^10.0.0",
-    "ts-node": "^9.0.0",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.2.4"
+    "sinon": "^10.0.0"
   }
 }
