@@ -75,9 +75,6 @@ export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout']
   args,
   ctx
 ) => {
-  if (!isUserContext(ctx)) {
-    throw new InvalidRequest('Only authenticated users can logout');
-  }
   if (ctx.koaContext === undefined) {
     throw new InvalidRequest('Logout needs to be done via an HTTPS request, not via a websocket.');
   }

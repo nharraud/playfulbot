@@ -21,10 +21,10 @@ import Registration from './ui/Registration';
 import { ApolloProvider } from '@apollo/client';
 import { client } from './apolloConfig';
 
-import MenuBar from './ui/MenuBar';
 import TournamentPage from './ui/Tournament/TournamentPage';
 import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
+import { UserContextProvider } from './UserContext';
 
 const theme = createMuiTheme({
   palette: {
@@ -38,28 +38,30 @@ function App() {
     <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <div className="App">
-      <Router>
+      <UserContextProvider>
+        <Router>
 
-      <Switch>
-      <Route exact path="/">
-          <LandingPage/>
-        </Route>
-        <Route path="/tournament/:tournamentID">
-          <TournamentPage/>
-        </Route>
-        <Route path="/create_tournament">
-          <TournamentCreationPage/>
-        </Route>
-        <Route path="/login">
-          <Login/>
-        </Route>
-        <Route path="/register">
-          <Registration/>
-        </Route>
-      </Switch>
+        <Switch>
+        <Route exact path="/">
+            <LandingPage/>
+          </Route>
+          <Route path="/tournament/:tournamentID">
+            <TournamentPage/>
+          </Route>
+          <Route path="/create_tournament">
+            <TournamentCreationPage/>
+          </Route>
+          <Route path="/login">
+            <Login/>
+          </Route>
+          <Route path="/register">
+            <Registration/>
+          </Route>
+        </Switch>
 
-      
-      </Router>
+        
+        </Router>
+      </UserContextProvider>
     </div>
     </MuiThemeProvider>
     </ApolloProvider>

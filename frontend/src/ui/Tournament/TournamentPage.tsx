@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import MenuBar from '../MenuBar';
+import MenuBar from '../MenuBar/MenuBar';
 
 import PeopleIcon from '@material-ui/icons/People';
 

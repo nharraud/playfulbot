@@ -1,6 +1,6 @@
 import { makeStyles, createStyles, Theme } from '@material-ui/core';
 import React from 'react';
-import MenuBar from '../MenuBar';
+import MenuBar from '../MenuBar/MenuBar';
 import { Pitch } from './Pitch';
 import { Target } from './Target';
 

@@ -9,6 +9,7 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
 import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { triggerUserContextUpdate } from './UserContext';
 
 
 const httpLink = new HttpLink({
@@ -28,19 +29,33 @@ const authLink = setContext((_, { headers }) => {
   }
 });
 
-function isServerError(networkError): networkError is ServerError {
-  return (networkError as ServerError).statusCode !== undefined;
+function isServerError(error): error is ServerError {
+  return (error as ServerError).statusCode !== undefined;
+}
+
+function resetAuthentication() {
+  localStorage.removeItem('token');
+  triggerUserContextUpdate();
+  client.resetStore();
 }
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError && isServerError(networkError)) {
     for (const error of networkError.result.errors) {
-      if (error.extensions.code == 'UNAUTHENTICATED') {
-        client.resetStore();
-        localStorage.removeItem('token');
+      if (error.extensions.code === 'UNAUTHENTICATED') {
+        resetAuthentication();
       }
     }
   }
+
+  if (graphQLErrors) {
+    for (const error of graphQLErrors) {
+      if (error?.extensions.code === 'UNAUTHENTICATED') {
+        resetAuthentication();
+      }
+    }
+  }
+
 });
 
 

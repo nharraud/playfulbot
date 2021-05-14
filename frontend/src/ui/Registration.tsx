@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import MenuBar from './MenuBar';
+import MenuBar from './MenuBar/MenuBar';
 import { useRegisterUser } from 'src/hooksAndQueries/authenticatedUser';
 
 

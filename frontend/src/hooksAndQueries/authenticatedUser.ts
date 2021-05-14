@@ -1,11 +1,24 @@
-import { useQuery, useMutation, gql, ApolloCache } from '@apollo/client';
-import { useCallback } from 'react';
+import { useQuery, ApolloCache } from '@apollo/client';
+import { useCallback, useContext } from 'react';
 import { client } from '../apolloConfig';
+import { useHistory } from "react-router-dom";
 
 import * as gqlTypes from '../types/graphql';
+import { UserContext } from 'src/UserContext';
+
 
 export function useAuthenticatedUser() {
-    const { loading, error, data } = useQuery<gqlTypes.GetAuthenticatedUserQuery>(gqlTypes.GetAuthenticatedUserDocument);
+    const { authenticated } = useContext(UserContext);
+    const history = useHistory();
+
+    const { error, data } = useQuery<gqlTypes.GetAuthenticatedUserQuery>(gqlTypes.GetAuthenticatedUserDocument, {
+        skip: localStorage.getItem('token') === null
+    });
+
+    if (!authenticated) {
+        history.push('/login');
+    }
+
     return { authenticatedUser: data ? data.authenticatedUser: null };
 };
 
@@ -15,25 +28,15 @@ function updateAuthentication(cache: ApolloCache<any>, loginResult: any) {
         query: gqlTypes.GetAuthenticatedUserDocument,
         data: { authenticatedUser: loginResult.user }
     });
-    localStorage.setItem('token', loginResult.token);
 }
 
 
-const REGISTER_USER_MUTATION = gql`
-  mutation registerUser($username: String!, $password: String!) {
-      registerUser(username: $username, password: $password) {
-          user {
-              id, username
-          }
-          token
-      }
-  }
-`;
-
 export function useRegisterUser() {
-    const [register, result] = useMutation(REGISTER_USER_MUTATION, {
+    const { setToken } = useContext(UserContext);
+    const [register, result] = gqlTypes.useRegisterUserMutation({
         update(cache, { data: { registerUser } }) {
             updateAuthentication(cache, registerUser);
+            setToken(registerUser.token);
         }
     });
 
@@ -46,23 +49,14 @@ export function useRegisterUser() {
 };
 
 
-const LOGIN_MUTATION = gql`
-    mutation login($username: String!, $password: String!) {
-        login(username: $username, password: $password) {
-            user {
-                id, username
-            }
-            token
-        }
-    }
-`;
-
 export function useLogin() {
-  const [login, result] = useMutation(LOGIN_MUTATION, {
-      update(cache, { data: { login } }) {
-        updateAuthentication(cache, login);
-      }
-  });
+    const { setToken } = useContext(UserContext);
+    const [login, result] = gqlTypes.useLoginMutation({
+        update(cache, { data: { login } }) {
+            updateAuthentication(cache, login);
+            setToken(login.token);
+        }
+    });
 
   const loginCallback = useCallback(
       (username, password) => login({ variables: { username, password } }),
@@ -72,19 +66,27 @@ export function useLogin() {
   return {login: loginCallback, result}
 };
 
-const LOGOUT_MUTATION = gql`
-    mutation logout {
-        logout
-    }
-`;
 
 export function useLogout() {
-    const [logout, result] = useMutation(LOGOUT_MUTATION, {
+    const { authenticated, deleteToken } = useContext(UserContext);
+    const history = useHistory();
+    const [logoutMutation, result] = gqlTypes.useLogoutMutation({
         onCompleted() {
-            localStorage.removeItem('token');
-            client.resetStore();
+            deleteToken();
+            client.clearStore().then(() => {
+                history.push('/login');
+            });
         }
     });
+    
+    const logout = useCallback(() => {
+        localStorage.removeItem('token');
+        logoutMutation();
+    }, [logoutMutation]);
+
+    if (!authenticated) {
+        history.push('/login');
+    }
   
     return {logout}
   };

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import MenuBar from './MenuBar';
+import MenuBar from './MenuBar/MenuBar';
 import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/authenticatedUser';
+import { UserContext } from 'src/UserContext';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,6 +38,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+function UserName() {
+  const { authenticatedUser } = useAuthenticatedUser();
+  return (
+    <div>{authenticatedUser?.username}</div>
+  )
+}
+
 export default function Login(props) {
   const classes = useStyles();
 
@@ -44,7 +52,7 @@ export default function Login(props) {
   const [password, setPassword] = useState('')
 
   const { login, result } = useLogin();
-  const { authenticatedUser } = useAuthenticatedUser();
+  const { authenticated } = useContext(UserContext);
 
   const submitLogin = event => {
     event.preventDefault();
@@ -56,7 +64,7 @@ export default function Login(props) {
     <>
     <MenuBar />
     <div className={classes.root}>
-      {authenticatedUser ? authenticatedUser.username: "LOGGED OUT"}
+      { authenticated ? (<UserName/>) : "LOGGED OUT" }
       { result.error ? JSON.stringify(result.error): null}
       <Grid container xs={12} spacing={3} direction="row" justify="center">
         <Grid item xs={4}>
