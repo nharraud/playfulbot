@@ -38,12 +38,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function UserName() {
-  const { authenticatedUser } = useAuthenticatedUser();
-  return (
-    <div>{authenticatedUser?.username}</div>
-  )
-}
 
 export default function Login(props) {
   const classes = useStyles();
@@ -59,12 +53,10 @@ export default function Login(props) {
     login(username, password);
   }
 
-
   return (
     <>
     <MenuBar />
     <div className={classes.root}>
-      { authenticated ? (<UserName/>) : "LOGGED OUT" }
       { result.error ? JSON.stringify(result.error): null}
       <Grid container xs={12} spacing={3} direction="row" justify="center">
         <Grid item xs={4}>

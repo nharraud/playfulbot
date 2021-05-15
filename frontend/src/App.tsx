@@ -25,6 +25,8 @@ import TournamentPage from './ui/Tournament/TournamentPage';
 import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
 import { UserContextProvider } from './UserContext';
+import { UserHomePage } from './ui/UserHomePage/UserHomePage';
+import { AuthenticationRequired } from './AuthenticationRequired';
 
 const theme = createMuiTheme({
   palette: {
@@ -42,23 +44,29 @@ function App() {
         <Router>
 
         <Switch>
-        <Route exact path="/">
+          <Route exact path="/">
             <LandingPage/>
-          </Route>
-          <Route path="/tournament/:tournamentID">
-            <TournamentPage/>
-          </Route>
-          <Route path="/create_tournament">
-            <TournamentCreationPage/>
           </Route>
           <Route path="/login">
             <Login/>
           </Route>
-          <Route path="/register">
-            <Registration/>
-          </Route>
-        </Switch>
 
+          <AuthenticationRequired>
+            <Route exact path="/home">
+              <UserHomePage/>
+            </Route>
+            <Route path="/tournament/:tournamentID">
+              <TournamentPage/>
+            </Route>
+            <Route path="/create_tournament">
+              <TournamentCreationPage/>
+            </Route>
+            <Route path="/register">
+              <Registration/>
+            </Route>
+          </AuthenticationRequired>
+
+        </Switch>
         
         </Router>
       </UserContextProvider>

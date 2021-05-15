@@ -9,15 +9,10 @@ import { UserContext } from 'src/UserContext';
 
 export function useAuthenticatedUser() {
     const { authenticated } = useContext(UserContext);
-    const history = useHistory();
 
     const { error, data } = useQuery<gqlTypes.GetAuthenticatedUserQuery>(gqlTypes.GetAuthenticatedUserDocument, {
         skip: localStorage.getItem('token') === null
     });
-
-    if (!authenticated) {
-        history.push('/login');
-    }
 
     return { authenticatedUser: data ? data.authenticatedUser: null };
 };
@@ -51,10 +46,12 @@ export function useRegisterUser() {
 
 export function useLogin() {
     const { setToken } = useContext(UserContext);
+    const history = useHistory();
     const [login, result] = gqlTypes.useLoginMutation({
         update(cache, { data: { login } }) {
             updateAuthentication(cache, login);
             setToken(login.token);
+            history.push('/home');
         }
     });
 
@@ -69,13 +66,10 @@ export function useLogin() {
 
 export function useLogout() {
     const { authenticated, deleteToken } = useContext(UserContext);
-    const history = useHistory();
     const [logoutMutation, result] = gqlTypes.useLogoutMutation({
         onCompleted() {
             deleteToken();
-            client.clearStore().then(() => {
-                history.push('/login');
-            });
+            client.clearStore();
         }
     });
     
@@ -83,10 +77,6 @@ export function useLogout() {
         localStorage.removeItem('token');
         logoutMutation();
     }, [logoutMutation]);
-
-    if (!authenticated) {
-        history.push('/login');
-    }
   
     return {logout}
   };
