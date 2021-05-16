@@ -2,6 +2,8 @@ import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
 import React from 'react';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import MenuBar from '../MenuBar/MenuBar';
+import { useAuthenticatedUserTournamentsQuery } from '../../types/graphql';
+import { JoinedTournamentsList } from './JoinedTournamentsList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,7 +31,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       flexDirection: 'row',
       justifyContent: 'space-evenly',
-      alignItems: 'center'
+      alignItems: 'flex-start',
+      marginTop: theme.spacing(25),
     }
   }),
 );
@@ -37,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export function UserHomePage() {
   const classes = useStyles();
   const { authenticatedUser } = useAuthenticatedUser();
+  const { error, data: userTournaments } = useAuthenticatedUserTournamentsQuery();
 
   return (
   <div className={classes.root}>
@@ -47,7 +51,7 @@ export function UserHomePage() {
     <div className={classes.mainRow}>
 
       <div className={classes.column}>
-        col1
+        <JoinedTournamentsList teams={userTournaments?.authenticatedUser?.teams}/>
       </div>
       <div className={classes.column}>
         col2

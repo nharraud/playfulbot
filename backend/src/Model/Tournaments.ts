@@ -5,7 +5,7 @@ import logger from '~playfulbot/logging';
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
 import { Round, RoundsSearchOptions } from './Round';
-import { Team } from './Team';
+import { Team, TeamID } from './Team';
 
 export type TournamentID = string;
 
@@ -94,6 +94,19 @@ export class Tournament {
       'SELECT * FROM tournaments WHERE id = $[id]',
       {
         id,
+      }
+    );
+    if (data !== null) {
+      return new Tournament(data);
+    }
+    return null;
+  }
+
+  static async getByTeam(teamID: TeamID, dbOrTX: DbOrTx): Promise<Tournament | null> {
+    const data = await dbOrTX.oneOrNone<DbTournament>(
+      'SELECT tournaments.* FROM tournaments JOIN teams ON teams.tournament_id = tournaments.id WHERE teams.id = $[teamID]',
+      {
+        teamID,
       }
     );
     if (data !== null) {

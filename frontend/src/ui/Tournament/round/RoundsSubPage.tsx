@@ -29,7 +29,7 @@ interface RoundSubPageProps {
 
 export default function RoundSubPage(props: RoundSubPageProps) {
   const classes = useStyles();
-  const match = useRouteMatch({
+  const match = useRouteMatch<{tournamentID: string, roundID: string}>({
     path: "/tournament/:tournamentID/competition/rounds/:roundID",
     strict: true,
     sensitive: true

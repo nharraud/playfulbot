@@ -65,6 +65,8 @@
     "@graphql-codegen/typescript": "1.21.1",
     "@graphql-codegen/typescript-operations": "1.17.15",
     "@graphql-codegen/typescript-react-apollo": "2.2.2",
+    "@types/luxon": "^1.26.5",
+    "@types/react-router-dom": "^5.1.7",
     "prettier": "^2.2.1"
   }
 }

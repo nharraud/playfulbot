@@ -1,7 +1,7 @@
-import { DbOrTx, DEFAULT } from './db/helpers';
+import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { DebugArena } from './DebugArena';
 import { Player } from './Player';
-import { Tournament, TournamentID } from './Tournaments';
+import { Tournament, TournamentID, TournamentStatus } from './Tournaments';
 import { User, UserID } from './User';
 
 export type TeamID = string;
@@ -13,6 +13,11 @@ export interface DbTeam {
   name: string;
 }
 /* eslint-enable */
+
+export interface TeamsSearchOptions {
+  tournamentStatus?: TournamentStatus;
+  memberID?: UserID;
+}
 
 export class Team {
   id: TeamID;
@@ -88,6 +93,24 @@ export class Team {
       return null;
     }
     return new Team(data);
+  }
+
+  static async getAll(filters: TeamsSearchOptions, dbOrTX: DbOrTx): Promise<Team[]> {
+    const queryBuilder = new QueryBuilder(
+      'SELECT teams.* FROM teams JOIN tournaments ON teams.tournament_id = tournaments.id'
+    );
+    queryBuilder.orderBy('tournaments.start_date', 'DESC');
+
+    if (filters.memberID) {
+      queryBuilder.join('JOIN team_memberships ON teams.id = team_memberships.team_id');
+      queryBuilder.where('team_memberships.user_id = $[memberID]');
+    }
+    if (filters.tournamentStatus) {
+      queryBuilder.where('tournaments.status = $[tournamentStatus]');
+    }
+
+    const rows = await dbOrTX.manyOrNone<DbTeam>(queryBuilder.query, filters);
+    return rows.map((row) => new Team(row));
   }
 
   async addMember(userID: UserID, dbOrTX: DbOrTx): Promise<void> {

@@ -5,6 +5,7 @@ import { db } from '~playfulbot/model/db';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { Team, TeamID } from '~playfulbot/model/Team';
 import { User } from '~playfulbot/model/User';
+import { Tournament } from '~playfulbot/model/Tournaments';
 
 export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = async (
   parent,
@@ -42,4 +43,13 @@ export async function teamMembersResolver(
     id: user.id,
     username: user.username,
   }));
+}
+
+export async function teamTournamentResolver(
+  parent: Team,
+  args: undefined,
+  context: ApolloContext
+): Promise<gqlTypes.Tournament> {
+  // FIXME: this should run in the same transaction as the parent query
+  return Tournament.getByTeam(parent.id, db.default);
 }

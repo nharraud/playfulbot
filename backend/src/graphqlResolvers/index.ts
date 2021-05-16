@@ -4,7 +4,11 @@ import { IResolvers } from 'apollo-server-koa';
 import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
-import { teamMembersResolver, teamResolver } from '~playfulbot/graphqlResolvers/team';
+import {
+  teamMembersResolver,
+  teamResolver,
+  teamTournamentResolver,
+} from '~playfulbot/graphqlResolvers/team';
 import { gameResolver, playResolver } from '~playfulbot/graphqlResolvers/game';
 import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
@@ -20,6 +24,7 @@ import { DateScalar } from './scalars/DateScalar';
 import { teamPlayerResolver } from './teamPlayer';
 import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
+import { userTeamsResolver } from './user';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -42,8 +47,12 @@ const resolvers: IResolvers = {
     logout: logoutResolver,
     createTournament: createTournamentResolver,
   } as gqlTypes.MutationResolvers,
+  User: {
+    teams: userTeamsResolver,
+  },
   Team: {
     members: teamMembersResolver,
+    tournament: teamTournamentResolver,
   },
   Tournament: {
     rounds: tournamentRoundsResolver,

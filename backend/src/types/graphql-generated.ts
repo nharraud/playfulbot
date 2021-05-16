@@ -16,57 +16,10 @@ export type Scalars = {
 };
 
 
-
-export type User = {
-  __typename?: 'User';
-  id: Scalars['ID'];
-  username: Scalars['String'];
-};
-
-export enum TournamentStatus {
-  Created = 'CREATED',
-  Started = 'STARTED',
-  Ended = 'ENDED'
-}
-
-export type Tournament = {
-  __typename?: 'Tournament';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  status?: Maybe<TournamentStatus>;
-  startDate?: Maybe<Scalars['Date']>;
-  lastRoundDate?: Maybe<Scalars['Date']>;
-  firstRoundDate?: Maybe<Scalars['Date']>;
-  roundsNumber?: Maybe<Scalars['Int']>;
-  minutesBetweenRounds?: Maybe<Scalars['Int']>;
-  rounds?: Maybe<Array<Maybe<Round>>>;
-};
-
-
-export type TournamentRoundsArgs = {
-  maxSize?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['Date']>;
-  after?: Maybe<Scalars['Date']>;
-};
-
-export type Team = {
-  __typename?: 'Team';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  members?: Maybe<Array<Maybe<User>>>;
-};
-
-export type UserNotPartOfAnyTeam = {
-  __typename?: 'UserNotPartOfAnyTeam';
-  message: Scalars['String'];
-};
-
-export type UserTeamResult = Team | UserNotPartOfAnyTeam;
-
-export type LoginResult = {
-  __typename?: 'LoginResult';
-  user: User;
-  token: Scalars['String'];
+export type DebugArena = {
+  __typename?: 'DebugArena';
+  id?: Maybe<Scalars['ID']>;
+  game?: Maybe<Scalars['ID']>;
 };
 
 export type Game = {
@@ -79,73 +32,17 @@ export type Game = {
   patches?: Maybe<Scalars['JSON']>;
 };
 
-export type GamePatch = {
-  __typename?: 'GamePatch';
-  patch?: Maybe<Scalars['JSON']>;
-  gameID?: Maybe<Scalars['ID']>;
-  version?: Maybe<Scalars['Int']>;
-};
-
 export type GameCanceled = {
   __typename?: 'GameCanceled';
   gameID?: Maybe<Scalars['ID']>;
   version?: Maybe<Scalars['Int']>;
 };
 
-export type PlayerConnection = {
-  __typename?: 'PlayerConnection';
-  playerID?: Maybe<Scalars['ID']>;
-  connected?: Maybe<Scalars['Boolean']>;
-};
-
-export type LiveGame = Game | GamePatch | GameCanceled | PlayerConnection;
-
-export type Player = {
-  __typename?: 'Player';
-  id?: Maybe<Scalars['ID']>;
-  token?: Maybe<Scalars['String']>;
-  connected?: Maybe<Scalars['Boolean']>;
-};
-
-export type LivePlayer = Player | PlayerConnection;
-
-export type DebugArena = {
-  __typename?: 'DebugArena';
-  id?: Maybe<Scalars['ID']>;
-  game?: Maybe<Scalars['ID']>;
-};
-
-export type PlayerGames = {
-  __typename?: 'PlayerGames';
-  playerID?: Maybe<Scalars['ID']>;
-  games?: Maybe<Array<Maybe<Scalars['ID']>>>;
-};
-
-export type NewPlayerGames = {
-  __typename?: 'NewPlayerGames';
-  games?: Maybe<Array<Maybe<Scalars['ID']>>>;
-};
-
-export type LivePlayerGames = PlayerGames | NewPlayerGames;
-
-export enum RoundStatus {
-  Created = 'CREATED',
-  Started = 'STARTED',
-  Ended = 'ENDED'
-}
-
-export type Round = {
-  __typename?: 'Round';
-  id?: Maybe<Scalars['ID']>;
-  status?: Maybe<RoundStatus>;
-  startDate?: Maybe<Scalars['Date']>;
-  teamPoints?: Maybe<Scalars['Int']>;
-  teamGames?: Maybe<Array<Maybe<GameSummary>>>;
-};
-
-
-export type RoundTeamGamesArgs = {
-  teamID?: Maybe<Scalars['ID']>;
+export type GamePatch = {
+  __typename?: 'GamePatch';
+  patch?: Maybe<Scalars['JSON']>;
+  gameID?: Maybe<Scalars['ID']>;
+  version?: Maybe<Scalars['Int']>;
 };
 
 export type GameSummary = {
@@ -155,57 +52,17 @@ export type GameSummary = {
   winners?: Maybe<Array<Maybe<Team>>>;
 };
 
-export type Subscription = {
-  __typename?: 'Subscription';
-  game?: Maybe<LiveGame>;
-  debugArena?: Maybe<DebugArena>;
-  playerGames?: Maybe<LivePlayerGames>;
-  teamPlayer?: Maybe<LivePlayer>;
-};
 
+export type LiveGame = Game | GamePatch | GameCanceled | PlayerConnection;
 
-export type SubscriptionGameArgs = {
-  gameID: Scalars['ID'];
-};
+export type LivePlayer = Player | PlayerConnection;
 
+export type LivePlayerGames = PlayerGames | NewPlayerGames;
 
-export type SubscriptionDebugArenaArgs = {
-  userID: Scalars['ID'];
-  tournamentID: Scalars['ID'];
-};
-
-
-export type SubscriptionPlayerGamesArgs = {
-  playerID: Scalars['ID'];
-};
-
-
-export type SubscriptionTeamPlayerArgs = {
-  teamID: Scalars['ID'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  tournament?: Maybe<Tournament>;
-  round?: Maybe<Round>;
-  team?: Maybe<UserTeamResult>;
-  authenticatedUser?: Maybe<User>;
-};
-
-
-export type QueryTournamentArgs = {
-  tournamentID?: Maybe<Scalars['ID']>;
-};
-
-
-export type QueryRoundArgs = {
-  roundID?: Maybe<Scalars['ID']>;
-};
-
-
-export type QueryTeamArgs = {
-  userID: Scalars['ID'];
-  tournamentID: Scalars['ID'];
+export type LoginResult = {
+  __typename?: 'LoginResult';
+  user: User;
+  token: Scalars['String'];
 };
 
 export type Mutation = {
@@ -252,6 +109,151 @@ export type MutationCreateTournamentArgs = {
   roundsNumber: Scalars['Int'];
   minutesBetweenRounds: Scalars['Int'];
 };
+
+export type NewPlayerGames = {
+  __typename?: 'NewPlayerGames';
+  games?: Maybe<Array<Maybe<Scalars['ID']>>>;
+};
+
+export type Player = {
+  __typename?: 'Player';
+  id?: Maybe<Scalars['ID']>;
+  token?: Maybe<Scalars['String']>;
+  connected?: Maybe<Scalars['Boolean']>;
+};
+
+export type PlayerConnection = {
+  __typename?: 'PlayerConnection';
+  playerID?: Maybe<Scalars['ID']>;
+  connected?: Maybe<Scalars['Boolean']>;
+};
+
+export type PlayerGames = {
+  __typename?: 'PlayerGames';
+  playerID?: Maybe<Scalars['ID']>;
+  games?: Maybe<Array<Maybe<Scalars['ID']>>>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  tournament?: Maybe<Tournament>;
+  round?: Maybe<Round>;
+  team?: Maybe<UserTeamResult>;
+  authenticatedUser?: Maybe<User>;
+};
+
+
+export type QueryTournamentArgs = {
+  tournamentID?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryRoundArgs = {
+  roundID?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryTeamArgs = {
+  userID: Scalars['ID'];
+  tournamentID: Scalars['ID'];
+};
+
+export type Round = {
+  __typename?: 'Round';
+  id?: Maybe<Scalars['ID']>;
+  status?: Maybe<RoundStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  teamPoints?: Maybe<Scalars['Int']>;
+  teamGames?: Maybe<Array<Maybe<GameSummary>>>;
+};
+
+
+export type RoundTeamGamesArgs = {
+  teamID?: Maybe<Scalars['ID']>;
+};
+
+export enum RoundStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  game?: Maybe<LiveGame>;
+  debugArena?: Maybe<DebugArena>;
+  playerGames?: Maybe<LivePlayerGames>;
+  teamPlayer?: Maybe<LivePlayer>;
+};
+
+
+export type SubscriptionGameArgs = {
+  gameID: Scalars['ID'];
+};
+
+
+export type SubscriptionDebugArenaArgs = {
+  userID: Scalars['ID'];
+  tournamentID: Scalars['ID'];
+};
+
+
+export type SubscriptionPlayerGamesArgs = {
+  playerID: Scalars['ID'];
+};
+
+
+export type SubscriptionTeamPlayerArgs = {
+  teamID: Scalars['ID'];
+};
+
+export type Team = {
+  __typename?: 'Team';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  members?: Maybe<Array<Maybe<User>>>;
+  tournament?: Maybe<Tournament>;
+};
+
+export type Tournament = {
+  __typename?: 'Tournament';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  status?: Maybe<TournamentStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  lastRoundDate?: Maybe<Scalars['Date']>;
+  firstRoundDate?: Maybe<Scalars['Date']>;
+  roundsNumber?: Maybe<Scalars['Int']>;
+  minutesBetweenRounds?: Maybe<Scalars['Int']>;
+  rounds?: Maybe<Array<Maybe<Round>>>;
+};
+
+
+export type TournamentRoundsArgs = {
+  maxSize?: Maybe<Scalars['Int']>;
+  before?: Maybe<Scalars['Date']>;
+  after?: Maybe<Scalars['Date']>;
+};
+
+export enum TournamentStatus {
+  Created = 'CREATED',
+  Started = 'STARTED',
+  Ended = 'ENDED'
+}
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  username: Scalars['String'];
+  teams?: Maybe<Array<Maybe<Team>>>;
+};
+
+export type UserNotPartOfAnyTeam = {
+  __typename?: 'UserNotPartOfAnyTeam';
+  message: Scalars['String'];
+};
+
+export type UserTeamResult = Team | UserNotPartOfAnyTeam;
 
 
 
@@ -332,80 +334,192 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  JSON: ResolverTypeWrapper<Scalars['JSON']>;
-  User: ResolverTypeWrapper<User>;
+  DebugArena: ResolverTypeWrapper<DebugArena>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  TournamentStatus: TournamentStatus;
-  Tournament: ResolverTypeWrapper<Tournament>;
+  Game: ResolverTypeWrapper<Game>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  GameCanceled: ResolverTypeWrapper<GameCanceled>;
+  GamePatch: ResolverTypeWrapper<GamePatch>;
+  GameSummary: ResolverTypeWrapper<GameSummary>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']>;
+  LiveGame: ResolversTypes['Game'] | ResolversTypes['GamePatch'] | ResolversTypes['GameCanceled'] | ResolversTypes['PlayerConnection'];
+  LivePlayer: ResolversTypes['Player'] | ResolversTypes['PlayerConnection'];
+  LivePlayerGames: ResolversTypes['PlayerGames'] | ResolversTypes['NewPlayerGames'];
+  LoginResult: ResolverTypeWrapper<LoginResult>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Mutation: ResolverTypeWrapper<{}>;
+  NewPlayerGames: ResolverTypeWrapper<NewPlayerGames>;
+  Player: ResolverTypeWrapper<Player>;
+  PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
+  PlayerGames: ResolverTypeWrapper<PlayerGames>;
+  Query: ResolverTypeWrapper<{}>;
+  Round: ResolverTypeWrapper<Round>;
+  RoundStatus: RoundStatus;
+  Subscription: ResolverTypeWrapper<{}>;
   Team: ResolverTypeWrapper<Team>;
+  Tournament: ResolverTypeWrapper<Tournament>;
+  TournamentStatus: TournamentStatus;
+  User: ResolverTypeWrapper<User>;
   UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
   UserTeamResult: ResolversTypes['Team'] | ResolversTypes['UserNotPartOfAnyTeam'];
-  LoginResult: ResolverTypeWrapper<LoginResult>;
-  Game: ResolverTypeWrapper<Game>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  GamePatch: ResolverTypeWrapper<GamePatch>;
-  GameCanceled: ResolverTypeWrapper<GameCanceled>;
-  PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
-  LiveGame: ResolversTypes['Game'] | ResolversTypes['GamePatch'] | ResolversTypes['GameCanceled'] | ResolversTypes['PlayerConnection'];
-  Player: ResolverTypeWrapper<Player>;
-  LivePlayer: ResolversTypes['Player'] | ResolversTypes['PlayerConnection'];
-  DebugArena: ResolverTypeWrapper<DebugArena>;
-  PlayerGames: ResolverTypeWrapper<PlayerGames>;
-  NewPlayerGames: ResolverTypeWrapper<NewPlayerGames>;
-  LivePlayerGames: ResolversTypes['PlayerGames'] | ResolversTypes['NewPlayerGames'];
-  RoundStatus: RoundStatus;
-  Round: ResolverTypeWrapper<Round>;
-  GameSummary: ResolverTypeWrapper<GameSummary>;
-  Subscription: ResolverTypeWrapper<{}>;
-  Query: ResolverTypeWrapper<{}>;
-  Mutation: ResolverTypeWrapper<{}>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Date: Scalars['Date'];
-  JSON: Scalars['JSON'];
-  User: User;
+  DebugArena: DebugArena;
   ID: Scalars['ID'];
-  String: Scalars['String'];
-  Tournament: Tournament;
+  Game: Game;
   Int: Scalars['Int'];
+  Boolean: Scalars['Boolean'];
+  GameCanceled: GameCanceled;
+  GamePatch: GamePatch;
+  GameSummary: GameSummary;
+  JSON: Scalars['JSON'];
+  LiveGame: ResolversParentTypes['Game'] | ResolversParentTypes['GamePatch'] | ResolversParentTypes['GameCanceled'] | ResolversParentTypes['PlayerConnection'];
+  LivePlayer: ResolversParentTypes['Player'] | ResolversParentTypes['PlayerConnection'];
+  LivePlayerGames: ResolversParentTypes['PlayerGames'] | ResolversParentTypes['NewPlayerGames'];
+  LoginResult: LoginResult;
+  String: Scalars['String'];
+  Mutation: {};
+  NewPlayerGames: NewPlayerGames;
+  Player: Player;
+  PlayerConnection: PlayerConnection;
+  PlayerGames: PlayerGames;
+  Query: {};
+  Round: Round;
+  Subscription: {};
   Team: Team;
+  Tournament: Tournament;
+  User: User;
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
   UserTeamResult: ResolversParentTypes['Team'] | ResolversParentTypes['UserNotPartOfAnyTeam'];
-  LoginResult: LoginResult;
-  Game: Game;
-  Boolean: Scalars['Boolean'];
-  GamePatch: GamePatch;
-  GameCanceled: GameCanceled;
-  PlayerConnection: PlayerConnection;
-  LiveGame: ResolversParentTypes['Game'] | ResolversParentTypes['GamePatch'] | ResolversParentTypes['GameCanceled'] | ResolversParentTypes['PlayerConnection'];
-  Player: Player;
-  LivePlayer: ResolversParentTypes['Player'] | ResolversParentTypes['PlayerConnection'];
-  DebugArena: DebugArena;
-  PlayerGames: PlayerGames;
-  NewPlayerGames: NewPlayerGames;
-  LivePlayerGames: ResolversParentTypes['PlayerGames'] | ResolversParentTypes['NewPlayerGames'];
-  Round: Round;
-  GameSummary: GameSummary;
-  Subscription: {};
-  Query: {};
-  Mutation: {};
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
 
+export type DebugArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['DebugArena'] = ResolversParentTypes['DebugArena']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  game?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GameResolvers<ContextType = any, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  canceled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
+  initialState?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  patches?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GameCanceledResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameCanceled'] = ResolversParentTypes['GameCanceled']> = {
+  gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GamePatchResolvers<ContextType = any, ParentType extends ResolversParentTypes['GamePatch'] = ResolversParentTypes['GamePatch']> = {
+  patch?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GameSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameSummary'] = ResolversParentTypes['GameSummary']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  losers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type LiveGameResolvers<ContextType = any, ParentType extends ResolversParentTypes['LiveGame'] = ResolversParentTypes['LiveGame']> = {
+  __resolveType: TypeResolveFn<'Game' | 'GamePatch' | 'GameCanceled' | 'PlayerConnection', ParentType, ContextType>;
+};
+
+export type LivePlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['LivePlayer'] = ResolversParentTypes['LivePlayer']> = {
+  __resolveType: TypeResolveFn<'Player' | 'PlayerConnection', ParentType, ContextType>;
+};
+
+export type LivePlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['LivePlayerGames'] = ResolversParentTypes['LivePlayerGames']> = {
+  __resolveType: TypeResolveFn<'PlayerGames' | 'NewPlayerGames', ParentType, ContextType>;
+};
+
+export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = {
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  play?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPlayArgs, 'gameID' | 'playerID' | 'action' | 'data'>>;
+  createNewDebugGame?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCreateNewDebugGameArgs, 'tournamentID' | 'userID'>>;
+  registerUser?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'username' | 'password'>>;
+  login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
+  logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
+};
+
+export type NewPlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewPlayerGames'] = ResolversParentTypes['NewPlayerGames']> = {
+  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['ID']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlayerConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlayerConnection'] = ResolversParentTypes['PlayerConnection']> = {
+  playerID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlayerGames'] = ResolversParentTypes['PlayerGames']> = {
+  playerID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['ID']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, never>>;
+  round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
+  team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
+  authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type RoundResolvers<ContextType = any, ParentType extends ResolversParentTypes['Round'] = ResolversParentTypes['Round']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['RoundStatus']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  teamPoints?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  teamGames?: Resolver<Maybe<Array<Maybe<ResolversTypes['GameSummary']>>>, ParentType, ContextType, RequireFields<RoundTeamGamesArgs, never>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  game?: SubscriptionResolver<Maybe<ResolversTypes['LiveGame']>, "game", ParentType, ContextType, RequireFields<SubscriptionGameArgs, 'gameID'>>;
+  debugArena?: SubscriptionResolver<Maybe<ResolversTypes['DebugArena']>, "debugArena", ParentType, ContextType, RequireFields<SubscriptionDebugArenaArgs, 'userID' | 'tournamentID'>>;
+  playerGames?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayerGames']>, "playerGames", ParentType, ContextType, RequireFields<SubscriptionPlayerGamesArgs, 'playerID'>>;
+  teamPlayer?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayer']>, "teamPlayer", ParentType, ContextType, RequireFields<SubscriptionTeamPlayerArgs, 'teamID'>>;
+};
+
+export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -422,10 +536,10 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -438,141 +552,31 @@ export type UserTeamResultResolvers<ContextType = any, ParentType extends Resolv
   __resolveType: TypeResolveFn<'Team' | 'UserNotPartOfAnyTeam', ParentType, ContextType>;
 };
 
-export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = {
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type GameResolvers<ContextType = any, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  canceled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
-  initialState?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  patches?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type GamePatchResolvers<ContextType = any, ParentType extends ResolversParentTypes['GamePatch'] = ResolversParentTypes['GamePatch']> = {
-  patch?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type GameCanceledResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameCanceled'] = ResolversParentTypes['GameCanceled']> = {
-  gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type PlayerConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlayerConnection'] = ResolversParentTypes['PlayerConnection']> = {
-  playerID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type LiveGameResolvers<ContextType = any, ParentType extends ResolversParentTypes['LiveGame'] = ResolversParentTypes['LiveGame']> = {
-  __resolveType: TypeResolveFn<'Game' | 'GamePatch' | 'GameCanceled' | 'PlayerConnection', ParentType, ContextType>;
-};
-
-export type PlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type LivePlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['LivePlayer'] = ResolversParentTypes['LivePlayer']> = {
-  __resolveType: TypeResolveFn<'Player' | 'PlayerConnection', ParentType, ContextType>;
-};
-
-export type DebugArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['DebugArena'] = ResolversParentTypes['DebugArena']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  game?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type PlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlayerGames'] = ResolversParentTypes['PlayerGames']> = {
-  playerID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['ID']>>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type NewPlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewPlayerGames'] = ResolversParentTypes['NewPlayerGames']> = {
-  games?: Resolver<Maybe<Array<Maybe<ResolversTypes['ID']>>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type LivePlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['LivePlayerGames'] = ResolversParentTypes['LivePlayerGames']> = {
-  __resolveType: TypeResolveFn<'PlayerGames' | 'NewPlayerGames', ParentType, ContextType>;
-};
-
-export type RoundResolvers<ContextType = any, ParentType extends ResolversParentTypes['Round'] = ResolversParentTypes['Round']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['RoundStatus']>, ParentType, ContextType>;
-  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  teamPoints?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  teamGames?: Resolver<Maybe<Array<Maybe<ResolversTypes['GameSummary']>>>, ParentType, ContextType, RequireFields<RoundTeamGamesArgs, never>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type GameSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameSummary'] = ResolversParentTypes['GameSummary']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  losers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
-  winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  game?: SubscriptionResolver<Maybe<ResolversTypes['LiveGame']>, "game", ParentType, ContextType, RequireFields<SubscriptionGameArgs, 'gameID'>>;
-  debugArena?: SubscriptionResolver<Maybe<ResolversTypes['DebugArena']>, "debugArena", ParentType, ContextType, RequireFields<SubscriptionDebugArenaArgs, 'userID' | 'tournamentID'>>;
-  playerGames?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayerGames']>, "playerGames", ParentType, ContextType, RequireFields<SubscriptionPlayerGamesArgs, 'playerID'>>;
-  teamPlayer?: SubscriptionResolver<Maybe<ResolversTypes['LivePlayer']>, "teamPlayer", ParentType, ContextType, RequireFields<SubscriptionTeamPlayerArgs, 'teamID'>>;
-};
-
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, never>>;
-  round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
-  team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
-  authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-};
-
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  play?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationPlayArgs, 'gameID' | 'playerID' | 'action' | 'data'>>;
-  createNewDebugGame?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCreateNewDebugGameArgs, 'tournamentID' | 'userID'>>;
-  registerUser?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'username' | 'password'>>;
-  login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
-  logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
-};
-
 export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType;
+  DebugArena?: DebugArenaResolvers<ContextType>;
+  Game?: GameResolvers<ContextType>;
+  GameCanceled?: GameCanceledResolvers<ContextType>;
+  GamePatch?: GamePatchResolvers<ContextType>;
+  GameSummary?: GameSummaryResolvers<ContextType>;
   JSON?: GraphQLScalarType;
-  User?: UserResolvers<ContextType>;
-  Tournament?: TournamentResolvers<ContextType>;
+  LiveGame?: LiveGameResolvers<ContextType>;
+  LivePlayer?: LivePlayerResolvers<ContextType>;
+  LivePlayerGames?: LivePlayerGamesResolvers<ContextType>;
+  LoginResult?: LoginResultResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  NewPlayerGames?: NewPlayerGamesResolvers<ContextType>;
+  Player?: PlayerResolvers<ContextType>;
+  PlayerConnection?: PlayerConnectionResolvers<ContextType>;
+  PlayerGames?: PlayerGamesResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  Round?: RoundResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
+  Tournament?: TournamentResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
   UserNotPartOfAnyTeam?: UserNotPartOfAnyTeamResolvers<ContextType>;
   UserTeamResult?: UserTeamResultResolvers<ContextType>;
-  LoginResult?: LoginResultResolvers<ContextType>;
-  Game?: GameResolvers<ContextType>;
-  GamePatch?: GamePatchResolvers<ContextType>;
-  GameCanceled?: GameCanceledResolvers<ContextType>;
-  PlayerConnection?: PlayerConnectionResolvers<ContextType>;
-  LiveGame?: LiveGameResolvers<ContextType>;
-  Player?: PlayerResolvers<ContextType>;
-  LivePlayer?: LivePlayerResolvers<ContextType>;
-  DebugArena?: DebugArenaResolvers<ContextType>;
-  PlayerGames?: PlayerGamesResolvers<ContextType>;
-  NewPlayerGames?: NewPlayerGamesResolvers<ContextType>;
-  LivePlayerGames?: LivePlayerGamesResolvers<ContextType>;
-  Round?: RoundResolvers<ContextType>;
-  GameSummary?: GameSummaryResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
-  Query?: QueryResolvers<ContextType>;
-  Mutation?: MutationResolvers<ContextType>;
 };
 
 

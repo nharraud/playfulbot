@@ -22,6 +22,7 @@ export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
   username: Scalars['String'];
+  teams?: Maybe<Array<Maybe<Team>>>;
 };
 
 export enum TournamentStatus {
@@ -55,6 +56,7 @@ export type Team = {
   id: Scalars['ID'];
   name: Scalars['String'];
   members?: Maybe<Array<Maybe<User>>>;
+  tournament?: Maybe<Tournament>;
 };
 
 export type UserNotPartOfAnyTeam = {
@@ -262,6 +264,25 @@ export type GetAuthenticatedUserQuery = (
   & { authenticatedUser?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
+  )> }
+);
+
+export type AuthenticatedUserTournamentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AuthenticatedUserTournamentsQuery = (
+  { __typename?: 'Query' }
+  & { authenticatedUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+    & { teams?: Maybe<Array<Maybe<(
+      { __typename?: 'Team' }
+      & Pick<Team, 'id' | 'name'>
+      & { tournament?: Maybe<(
+        { __typename?: 'Tournament' }
+        & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
+      )> }
+    )>>> }
   )> }
 );
 
@@ -575,6 +596,51 @@ export function useGetAuthenticatedUserLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type GetAuthenticatedUserQueryHookResult = ReturnType<typeof useGetAuthenticatedUserQuery>;
 export type GetAuthenticatedUserLazyQueryHookResult = ReturnType<typeof useGetAuthenticatedUserLazyQuery>;
 export type GetAuthenticatedUserQueryResult = Apollo.QueryResult<GetAuthenticatedUserQuery, GetAuthenticatedUserQueryVariables>;
+export const AuthenticatedUserTournamentsDocument = gql`
+    query authenticatedUserTournaments {
+  authenticatedUser {
+    id
+    username
+    teams {
+      id
+      name
+      tournament {
+        id
+        name
+        lastRoundDate
+        status
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useAuthenticatedUserTournamentsQuery__
+ *
+ * To run a query within a React component, call `useAuthenticatedUserTournamentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAuthenticatedUserTournamentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAuthenticatedUserTournamentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAuthenticatedUserTournamentsQuery(baseOptions?: Apollo.QueryHookOptions<AuthenticatedUserTournamentsQuery, AuthenticatedUserTournamentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AuthenticatedUserTournamentsQuery, AuthenticatedUserTournamentsQueryVariables>(AuthenticatedUserTournamentsDocument, options);
+      }
+export function useAuthenticatedUserTournamentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AuthenticatedUserTournamentsQuery, AuthenticatedUserTournamentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AuthenticatedUserTournamentsQuery, AuthenticatedUserTournamentsQueryVariables>(AuthenticatedUserTournamentsDocument, options);
+        }
+export type AuthenticatedUserTournamentsQueryHookResult = ReturnType<typeof useAuthenticatedUserTournamentsQuery>;
+export type AuthenticatedUserTournamentsLazyQueryHookResult = ReturnType<typeof useAuthenticatedUserTournamentsLazyQuery>;
+export type AuthenticatedUserTournamentsQueryResult = Apollo.QueryResult<AuthenticatedUserTournamentsQuery, AuthenticatedUserTournamentsQueryVariables>;
 export const CreateNewDebugGameDocument = gql`
     mutation CreateNewDebugGame($userID: ID!, $tournamentID: ID!) {
   createNewDebugGame(userID: $userID, tournamentID: $tournamentID)

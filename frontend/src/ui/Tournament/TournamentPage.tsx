@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 export default function TournamentPage() {
   let match = useRouteMatch();
 
-  const { tournamentID } = useParams();
+  const { tournamentID } = useParams<{tournamentID: string}>();
 
   const { loading, error, tournament } = useTournament(tournamentID);
 

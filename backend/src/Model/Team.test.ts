@@ -14,22 +14,37 @@ describe('Model/Team', () => {
   });
 
   let oldDatabaseName: string;
-  let tournament: Tournament;
+  let tournaments: Tournament[];
 
   beforeEach(async () => {
     oldDatabaseName = config.DATABASE_NAME;
     config.DATABASE_NAME = `${config.DATABASE_NAME}_model_team`;
     await dropDB();
     await createDB();
-    tournament = await Tournament.create(
-      'Team Building 2',
-      DateTime.now(),
-      DateTime.now().plus({ hours: 8 }),
-      5,
-      30,
-      gameDefinition.name,
-      db.default,
-      `F00FABE0-0000-0000-0000-000000000001`
+    tournaments = [];
+    tournaments.push(
+      await Tournament.create(
+        'Team Building 1',
+        DateTime.now(),
+        DateTime.now().plus({ hours: 8 }),
+        5,
+        30,
+        gameDefinition.name,
+        db.default,
+        `F00FABE0-0000-0000-0000-000000000001`
+      )
+    );
+    tournaments.push(
+      await Tournament.create(
+        'Team Building 2',
+        DateTime.now().plus({ hours: 1 }),
+        DateTime.now().plus({ hours: 9 }),
+        5,
+        30,
+        gameDefinition.name,
+        db.default,
+        `F00FABE0-0000-0000-0000-000000000002`
+      )
     );
   });
 
@@ -39,21 +54,35 @@ describe('Model/Team', () => {
   });
 
   test('should be able to create a Team', async () => {
-    const team = await Team.create('a team', tournament.id, db.default);
+    const team = await Team.create('a team', tournaments[0].id, db.default);
     expect(team).toMatchObject({
       name: 'a team',
-      tournamentID: tournament.id,
+      tournamentID: tournaments[0].id,
     });
   });
 
   test('should be able to add members', async () => {
     await db.default.tx(async (tx) => {
-      const team = await Team.create('a team', tournament.id, tx);
+      const team = await Team.create('a team', tournaments[0].id, tx);
       const user = await User.create('Alice', 'a password', tx);
       await team.addMember(user.id, tx);
       const members = await team.getMembers(tx);
       expect(members).toHaveLength(1);
       expect(members[0].id).toEqual(user.id);
+    });
+  });
+
+  test('should be able to get teams of a given user', async () => {
+    await db.default.tx(async (tx) => {
+      const user = await User.create('Alice', 'a password', tx);
+      for (const [idx, tournament] of tournaments.entries()) {
+        const team = await Team.create(`team${idx}`, tournaments[idx].id, tx);
+        await team.addMember(user.id, tx);
+      }
+      const teams = await Team.getAll({ memberID: user.id }, tx);
+      expect(teams).toHaveLength(2);
+      const teamNames = teams.map((team) => team.name);
+      expect(teamNames).toEqual(['team1', 'team0']);
     });
   });
 });
