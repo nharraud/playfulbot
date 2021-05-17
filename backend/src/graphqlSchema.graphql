@@ -13,6 +13,10 @@ enum TournamentStatus {
   CREATED, STARTED, ENDED
 }
 
+enum TournamentRoleName {
+  ADMIN
+}
+
 type Tournament {
   id: ID!
   name: String!
@@ -24,6 +28,10 @@ type Tournament {
   minutesBetweenRounds: Int
 
   rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
+
+  myRole: TournamentRoleName
+
+  mainInvitationID: String
 }
 
 type Team {

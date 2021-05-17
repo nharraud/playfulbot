@@ -3,6 +3,7 @@
 import {
   ApolloError,
   ForbiddenError as ApolloForbiddenError,
+  AuthenticationError as ApolloAuthenticationError,
   UserInputError,
 } from 'apollo-server-koa';
 
@@ -109,6 +110,18 @@ export class InvalidArgument extends UserInputError {
 }
 
 export class ForbiddenError extends ApolloForbiddenError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+export class BotsForbiddenError extends ForbiddenError {
+  constructor() {
+    super('Bots are not allowed to perform this action');
+  }
+}
+
+export class AuthenticationError extends ApolloAuthenticationError {
   constructor(message: string) {
     super(message);
   }

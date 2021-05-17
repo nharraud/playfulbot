@@ -226,6 +226,8 @@ export type Tournament = {
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
   rounds?: Maybe<Array<Maybe<Round>>>;
+  myRole?: Maybe<TournamentRoleName>;
+  mainInvitationID?: Maybe<Scalars['String']>;
 };
 
 
@@ -234,6 +236,10 @@ export type TournamentRoundsArgs = {
   before?: Maybe<Scalars['Date']>;
   after?: Maybe<Scalars['Date']>;
 };
+
+export enum TournamentRoleName {
+  Admin = 'ADMIN'
+}
 
 export enum TournamentStatus {
   Created = 'CREATED',
@@ -359,6 +365,7 @@ export type ResolversTypes = {
   Subscription: ResolverTypeWrapper<{}>;
   Team: ResolverTypeWrapper<Team>;
   Tournament: ResolverTypeWrapper<Tournament>;
+  TournamentRoleName: TournamentRoleName;
   TournamentStatus: TournamentStatus;
   User: ResolverTypeWrapper<User>;
   UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
@@ -533,6 +540,8 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   roundsNumber?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rounds?: Resolver<Maybe<Array<Maybe<ResolversTypes['Round']>>>, ParentType, ContextType, RequireFields<TournamentRoundsArgs, 'maxSize'>>;
+  myRole?: Resolver<Maybe<ResolversTypes['TournamentRoleName']>, ParentType, ContextType>;
+  mainInvitationID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

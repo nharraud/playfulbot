@@ -4,23 +4,19 @@ import cors from '@koa/cors';
 import apolloServer from '~playfulbot/graphqlServer';
 
 import logger from '~playfulbot/logging';
+import { serverConfig } from './serverConfig';
 
 export function startServer() {
   const app = new koa();
 
-  const allowedCorsOrigin = process.env.ALLOWED_CORS_ORIGIN || 'http://localhost:3000';
-
-  app.use(cors({ origin: allowedCorsOrigin, credentials: true }));
+  app.use(cors({ origin: serverConfig.FRONTEND_URL, credentials: true }));
 
   apolloServer.applyMiddleware({ app });
 
-  let graphqlPort = 4000;
-  if (process.env.GRAPHQL_PORT) {
-    graphqlPort = parseInt(process.env.GRAPHQL_PORT, 10);
-  }
-
-  const httpServer = app.listen({ port: graphqlPort }, () =>
-    logger.info(`🚀 Server ready at http://localhost:${graphqlPort}${apolloServer.graphqlPath}`)
+  const httpServer = app.listen({ port: serverConfig.GRAPHQL_PORT }, () =>
+    logger.info(
+      `🚀 Server ready at http://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}${apolloServer.graphqlPath}`
+    )
   );
 
   apolloServer.installSubscriptionHandlers(httpServer);

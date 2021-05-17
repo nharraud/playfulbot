@@ -90,7 +90,7 @@ export default function TournamentPage() {
         >
           <Switch>
             <Route path={`${match.url}/info`}>
-              <Info />
+              <Info tournament={tournament} />
             </Route>
             <Route path={`${match.url}/team`}>
               <TeamSubPage tournament={tournament} />

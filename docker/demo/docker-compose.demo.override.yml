@@ -9,7 +9,7 @@ services:
       SSL_CA: '/playfulbot/ssl/ca.pem'
       SSL_CERT: '/playfulbot/ssl/ssl.crt'
       SSL_KEY: '/playfulbot/ssl/ssl.key'
-      ALLOWED_CORS_ORIGIN: 'http://localhost'
+      FRONTEND_URL: 'http://localhost'
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 

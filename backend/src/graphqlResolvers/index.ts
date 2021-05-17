@@ -14,6 +14,8 @@ import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,
+  tournamentMainInvitationIDResolver,
+  tournamentMyRolesResolver,
   tournamentResolver,
   tournamentRoundsResolver,
 } from './tournaments';
@@ -56,6 +58,8 @@ const resolvers: IResolvers = {
   },
   Tournament: {
     rounds: tournamentRoundsResolver,
+    mainInvitationID: tournamentMainInvitationIDResolver,
+    myRole: tournamentMyRolesResolver,
   },
   Round: {
     teamPoints: roundTeamPointsResolver,

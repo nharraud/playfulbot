@@ -22,6 +22,8 @@ function numberToHexString(nb: number, length: number) {
 
 export async function initDemo(): Promise<void> {
   await db.default.tx(async (tx) => {
+    const admin = await User.create(`zeus`, `password`, tx, `ACEE0000-0000-0000-0000-000000000000`);
+
     const now = DateTime.now();
     const tournament = await Tournament.create(
       'Team Building',
@@ -30,6 +32,7 @@ export async function initDemo(): Promise<void> {
       7,
       30,
       gameDefinition.name,
+      admin.id,
       tx,
       `F00FABE0-0000-0000-0000-000000000001`
     );
@@ -45,7 +48,7 @@ export async function initDemo(): Promise<void> {
       );
       teams.push(team);
     }
-
+    const users = new Array<User>();
     for (let idx = 0; idx < 20; idx += 1) {
       const userNB = numberToHexString(idx, 12);
       const teamIdx = idx % 10;
@@ -56,6 +59,7 @@ export async function initDemo(): Promise<void> {
         tx,
         `ACEB0000-0000-0000-0000-${userNB}`
       );
+      users.push(user);
       await teams[teamIdx].addMember(user.id, tx);
     }
 

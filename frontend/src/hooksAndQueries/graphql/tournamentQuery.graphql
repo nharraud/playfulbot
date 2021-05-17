@@ -1,0 +1,5 @@
+query tournament($tournamentID: ID!) {
+    tournament(tournamentID: $tournamentID) {
+      id, name, status, myRole, mainInvitationID
+    }
+}

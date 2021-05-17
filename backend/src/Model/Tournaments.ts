@@ -4,8 +4,11 @@ import logger from '~playfulbot/logging';
 
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
+import { TournamentInvitationLink } from './TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team, TeamID } from './Team';
+import { TournamentRoleName } from './TournamentRole';
+import { UserID } from './User';
 
 export type TournamentID = string;
 
@@ -63,6 +66,7 @@ export class Tournament {
     roundsNumber: number,
     minutesBetweenRounds: number,
     gameName: string,
+    admin: UserID,
     dbOrTX: DbOrTx,
     id?: TournamentID
   ): Promise<Tournament> {
@@ -74,19 +78,26 @@ export class Tournament {
       throw new InvalidArgument('Invalid game name');
     }
 
-    const query = `INSERT INTO tournaments(id, name, start_date, last_round_date, rounds_number, minutes_between_rounds, game_name)
-    VALUES($[id], $[name], $[startDate], $[lastRoundDate], $[roundsNumber], $[minutesBetweenRounds], $[gameName])
-    RETURNING *`;
-    const data = await dbOrTX.one<DbTournament>(query, {
-      name,
-      startDate,
-      lastRoundDate,
-      roundsNumber,
-      minutesBetweenRounds,
-      gameName,
-      id: id || DEFAULT,
+    return dbOrTX.txIf(async (tx) => {
+      const query = `INSERT INTO tournaments(id, name, start_date, last_round_date, rounds_number, minutes_between_rounds, game_name)
+      VALUES($[id], $[name], $[startDate], $[lastRoundDate], $[roundsNumber], $[minutesBetweenRounds], $[gameName])
+      RETURNING *`;
+      const data = await dbOrTX.one<DbTournament>(query, {
+        name,
+        startDate,
+        lastRoundDate,
+        roundsNumber,
+        minutesBetweenRounds,
+        gameName,
+        id: id || DEFAULT,
+      });
+      const tournament = new Tournament(data);
+
+      await TournamentInvitationLink.create(tournament.id, tx);
+      await tournament.addRole(admin, TournamentRoleName.Admin, tx);
+
+      return tournament;
     });
-    return new Tournament(data);
   }
 
   static async getByID(id: TournamentID, dbOrTX: DbOrTx): Promise<Tournament | null> {
@@ -210,5 +221,35 @@ export class Tournament {
     const minutesUntilLastRound = this.firstRoundDate.diff(now).as('minutes');
     const minutesUntilNextRound = minutesUntilLastRound % this.minutesBetweenRounds;
     return now.plus({ minutes: minutesUntilNextRound });
+  }
+
+  async getMainInvitationLink(dbOrTX: DbOrTx): Promise<TournamentInvitationLink> {
+    const links = await TournamentInvitationLink.getAll(this.id, dbOrTX);
+    // For now there is only one link created ber tournament and no way to delete it via API.
+    return links[0];
+  }
+
+  async addRole(userID: UserID, role: TournamentRoleName, dbOrTX: DbOrTx): Promise<void> {
+    await dbOrTX.one<boolean>(
+      `INSERT INTO tournament_roles(tournament_id, user_id, role)
+       VALUES($[tournamentID], $[userID], $[role])
+       RETURNING true`,
+      {
+        tournamentID: this.id,
+        userID,
+        role,
+      }
+    );
+  }
+
+  async getUserRole(userID: UserID, dbOrTX: DbOrTx): Promise<TournamentRoleName | null> {
+    const result = await dbOrTX.oneOrNone<{ role: TournamentRoleName }>(
+      'SELECT role FROM tournament_roles WHERE tournament_id = $[id] AND user_id = $[userID]',
+      {
+        id: this.id,
+        userID,
+      }
+    );
+    return result?.role || null;
   }
 }

@@ -1,9 +1,11 @@
 import React from 'react';
+import { TournamentQuery } from 'src/types/graphql-generated';
 
-import GameCanvas from './GameCanvas';
+interface TournamentInfoProps {
+  tournament?: TournamentQuery['tournament'];
+};
 
-
-export default function Info() {
+export default function Info(props: TournamentInfoProps) {
 
   return (
     <>

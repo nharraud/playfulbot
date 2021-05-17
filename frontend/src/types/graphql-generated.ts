@@ -31,6 +31,10 @@ export enum TournamentStatus {
   Ended = 'ENDED'
 }
 
+export enum TournamentRoleName {
+  Admin = 'ADMIN'
+}
+
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID'];
@@ -42,6 +46,8 @@ export type Tournament = {
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
   rounds?: Maybe<Array<Maybe<Round>>>;
+  myRole?: Maybe<TournamentRoleName>;
+  mainInvitationID?: Maybe<Scalars['String']>;
 };
 
 
@@ -490,6 +496,19 @@ export type TeamPlayerSubscription = (
   ) | (
     { __typename?: 'PlayerConnection' }
     & Pick<PlayerConnection, 'playerID' | 'connected'>
+  )> }
+);
+
+export type TournamentQueryVariables = Exact<{
+  tournamentID: Scalars['ID'];
+}>;
+
+
+export type TournamentQuery = (
+  { __typename?: 'Query' }
+  & { tournament?: Maybe<(
+    { __typename?: 'Tournament' }
+    & Pick<Tournament, 'id' | 'name' | 'status' | 'myRole' | 'mainInvitationID'>
   )> }
 );
 
@@ -1032,6 +1051,45 @@ export function useTeamPlayerSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type TeamPlayerSubscriptionHookResult = ReturnType<typeof useTeamPlayerSubscription>;
 export type TeamPlayerSubscriptionResult = Apollo.SubscriptionResult<TeamPlayerSubscription>;
+export const TournamentDocument = gql`
+    query tournament($tournamentID: ID!) {
+  tournament(tournamentID: $tournamentID) {
+    id
+    name
+    status
+    myRole
+    mainInvitationID
+  }
+}
+    `;
+
+/**
+ * __useTournamentQuery__
+ *
+ * To run a query within a React component, call `useTournamentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTournamentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTournamentQuery({
+ *   variables: {
+ *      tournamentID: // value for 'tournamentID'
+ *   },
+ * });
+ */
+export function useTournamentQuery(baseOptions: Apollo.QueryHookOptions<TournamentQuery, TournamentQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TournamentQuery, TournamentQueryVariables>(TournamentDocument, options);
+      }
+export function useTournamentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TournamentQuery, TournamentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TournamentQuery, TournamentQueryVariables>(TournamentDocument, options);
+        }
+export type TournamentQueryHookResult = ReturnType<typeof useTournamentQuery>;
+export type TournamentLazyQueryHookResult = ReturnType<typeof useTournamentLazyQuery>;
+export type TournamentQueryResult = Apollo.QueryResult<TournamentQuery, TournamentQueryVariables>;
 export const TournamentRoundsDocument = gql`
     query tournamentRounds($tournamentID: ID!, $maxSize: Int!, $before: Date, $after: Date) {
   tournament(tournamentID: $tournamentID) {

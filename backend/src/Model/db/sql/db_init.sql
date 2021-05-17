@@ -68,3 +68,26 @@ CREATE TABLE playing_teams (
   game_id uuid NOT NULL REFERENCES game_summaries (id) ON DELETE CASCADE,
   winner boolean NOT NULL
 );
+
+
+CREATE TYPE tournament_role_name AS ENUM ('ADMIN');
+
+CREATE TABLE tournament_roles (
+  tournament_id uuid REFERENCES tournaments (id) ON DELETE CASCADE,
+  user_id uuid REFERENCES users (id) ON DELETE CASCADE,
+  role tournament_role_name NOT NULL,
+  PRIMARY KEY (tournament_id, user_id)
+);
+
+
+CREATE TABLE tournament_invitation_links (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE tournament_invitations (
+  tournament_id uuid REFERENCES tournaments (id) ON DELETE CASCADE,
+  user_id uuid REFERENCES users (id) ON DELETE CASCADE,
+  PRIMARY KEY (tournament_id, user_id)
+);

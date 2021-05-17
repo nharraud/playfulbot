@@ -6,6 +6,11 @@ import { gameDefinitions } from './GameDefinition';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import {
+  resetTournamentFixture,
+  tournamentAdminFixture,
+} from './__tests__/fixtures/tournamentFixtures';
+import { User } from './User';
 
 describe('Model/Tournament', () => {
   const now = DateTime.fromISO('2021-01-01T00:00:00.000');
@@ -15,6 +20,7 @@ describe('Model/Tournament', () => {
   });
 
   let oldDatabaseName: string;
+  let admin: User;
 
   beforeEach(async () => {
     Settings.now = () => now.valueOf();
@@ -22,10 +28,12 @@ describe('Model/Tournament', () => {
     config.DATABASE_NAME = `${config.DATABASE_NAME}_model_tournament`;
     await dropDB();
     await createDB();
+    admin = await tournamentAdminFixture();
   });
 
   afterEach(async () => {
     await dropDB();
+    resetTournamentFixture();
     config.DATABASE_NAME = oldDatabaseName;
   });
 
@@ -46,6 +54,7 @@ describe('Model/Tournament', () => {
       input.roundsNumber,
       input.minutesBetweenRounds,
       gameDefinition.name,
+      admin.id,
       db.default,
       input.id
     );
@@ -62,6 +71,7 @@ describe('Model/Tournament', () => {
         5,
         30,
         gameDefinition.name,
+        admin.id,
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
       )
@@ -78,6 +88,7 @@ describe('Model/Tournament', () => {
         5,
         30,
         'InvalidGameName',
+        admin.id,
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
       )
@@ -94,6 +105,7 @@ describe('Model/Tournament', () => {
       5,
       30,
       gameDefinition.name,
+      admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );
@@ -120,6 +132,7 @@ describe('Model/Tournament', () => {
       5,
       30,
       gameDefinition.name,
+      admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );
@@ -177,6 +190,7 @@ describe('Model/Tournament', () => {
       5,
       30,
       gameDefinition.name,
+      admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );
@@ -194,6 +208,7 @@ describe('Model/Tournament', () => {
       5,
       30,
       gameDefinition.name,
+      admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );
@@ -211,6 +226,7 @@ describe('Model/Tournament', () => {
       5,
       30,
       gameDefinition.name,
+      admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );

@@ -7,6 +7,10 @@ import { Team } from './Team';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
 import { User } from './User';
+import {
+  resetTournamentFixture,
+  tournamentAdminFixture,
+} from './__tests__/fixtures/tournamentFixtures';
 
 describe('Model/Team', () => {
   beforeAll(() => {
@@ -21,6 +25,7 @@ describe('Model/Team', () => {
     config.DATABASE_NAME = `${config.DATABASE_NAME}_model_team`;
     await dropDB();
     await createDB();
+    const admin = await tournamentAdminFixture();
     tournaments = [];
     tournaments.push(
       await Tournament.create(
@@ -30,6 +35,7 @@ describe('Model/Team', () => {
         5,
         30,
         gameDefinition.name,
+        admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000001`
       )
@@ -42,6 +48,7 @@ describe('Model/Team', () => {
         5,
         30,
         gameDefinition.name,
+        admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000002`
       )
@@ -50,6 +57,7 @@ describe('Model/Team', () => {
 
   afterEach(async () => {
     await dropDB();
+    resetTournamentFixture();
     config.DATABASE_NAME = oldDatabaseName;
   });
 
