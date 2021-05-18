@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { UserContext } from '../../UserContext';
-import { useTournamentByInvitationQuery } from '../../types/graphql-generated';
+import { useTournamentByInvitationLinkQuery } from '../../types/graphql-generated';
 import MenuBar from '../MenuBar/MenuBar';
 
 import {
@@ -22,11 +22,11 @@ export function TournamentInvitationPage() {
   const classes = useStyles();
 
   const history = useHistory();
-  const { tournamentInvitationID } = useParams<{tournamentInvitationID: TournamentInvitationID}>();
+  const { tournamentInvitationLinkID } = useParams<{tournamentInvitationLinkID: TournamentInvitationID}>();
   const { authenticated } = useContext(UserContext);
-  const { error: tournamentError, data: tournamentResult } = useTournamentByInvitationQuery({
+  const { error: tournamentError, data: tournamentResult } = useTournamentByInvitationLinkQuery({
     variables: {
-      tournamentInvitationID: tournamentInvitationID
+      tournamentInvitationLinkID: tournamentInvitationLinkID
     }
   });
 
@@ -40,7 +40,7 @@ export function TournamentInvitationPage() {
   }
 
   if (tournamentResult && !authenticated) {
-    history.push(`/login?tournament_invitation=${tournamentInvitationID}`)
+    history.push(`/login?tournament_invitation=${tournamentInvitationLinkID}`)
   }
   
   return (

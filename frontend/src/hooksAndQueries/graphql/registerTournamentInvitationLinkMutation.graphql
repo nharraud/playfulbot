@@ -1,0 +1,11 @@
+mutation registerTournamentInvitationLink($tournamentInvitationLinkID: ID!) {
+  registerTournamentInvitationLink(tournamentInvitationLinkID: $tournamentInvitationLinkID) {
+    id,
+    tournament {
+      id,
+      name,
+      lastRoundDate,
+      status,
+    }
+  }
+}

@@ -1,0 +1,5 @@
+query tournamentByInvitationLink($tournamentInvitationLinkID: ID!) {
+    tournamentByInvitationLink(tournamentInvitationLinkID: $tournamentInvitationLinkID) {
+      id, name
+    }
+}

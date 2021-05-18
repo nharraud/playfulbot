@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import MenuBar from '../MenuBar/MenuBar';
-import { useAuthenticatedUserTournamentsQuery, useRegisterTournamentInvitationMutation } from '../../types/graphql';
+import { useAuthenticatedUserTournamentsQuery, useRegisterTournamentInvitationLinkMutation } from '../../types/graphql';
 import { InvitedTournamentsList } from './InvitedTournamentsList';
 import { JoinedTournamentsList } from './JoinedTournamentsList';
 import { useURIQuery } from 'src/utils/router/useURIQuery';
@@ -46,20 +46,20 @@ export function UserHomePage() {
   const { error, data: userTournaments, refetch: refetchUserTournaments } = useAuthenticatedUserTournamentsQuery();
 
   const history = useHistory()
-  const [ registerTournamentInvitation, tournamentInvitationResult ] = useRegisterTournamentInvitationMutation();
+  const [ registerTournamentInvitation, tournamentInvitationResult ] = useRegisterTournamentInvitationLinkMutation();
   const query = useURIQuery();
-  const tournamentInvitationID = query.get('tournament_invitation');
+  const tournamentInvitationLinkID = query.get('tournament_invitation');
   useEffect(() => {
-    if (tournamentInvitationID) {
+    if (tournamentInvitationLinkID) {
       query.delete('tournament_invitation')
       history.replace({
         search: query.toString(),
       })
       registerTournamentInvitation({
-        variables: { tournamentInvitationID }
+        variables: { tournamentInvitationLinkID }
       });
     }
-  }, [tournamentInvitationID, query, history, registerTournamentInvitation, refetchUserTournaments]);
+  }, [tournamentInvitationLinkID, query, history, registerTournamentInvitation, refetchUserTournaments]);
 
   const [ invitationProcessed, setInvitationProcessed ] = useState(false);
   useEffect(() => {

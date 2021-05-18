@@ -73,7 +73,7 @@ export type Mutation = {
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
-  registerTournamentInvitation?: Maybe<TournamentInvitation>;
+  registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
 };
 
 
@@ -112,8 +112,8 @@ export type MutationCreateTournamentArgs = {
 };
 
 
-export type MutationRegisterTournamentInvitationArgs = {
-  tournamentInvitationID: Scalars['ID'];
+export type MutationRegisterTournamentInvitationLinkArgs = {
+  tournamentInvitationLinkID: Scalars['ID'];
 };
 
 export type NewPlayerGames = {
@@ -143,7 +143,7 @@ export type PlayerGames = {
 export type Query = {
   __typename?: 'Query';
   tournament?: Maybe<Tournament>;
-  tournamentByInvitation?: Maybe<Tournament>;
+  tournamentByInvitationLink?: Maybe<Tournament>;
   round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
   authenticatedUser?: Maybe<User>;
@@ -155,8 +155,8 @@ export type QueryTournamentArgs = {
 };
 
 
-export type QueryTournamentByInvitationArgs = {
-  tournamentInvitationID: Scalars['ID'];
+export type QueryTournamentByInvitationLinkArgs = {
+  tournamentInvitationLinkID: Scalars['ID'];
 };
 
 
@@ -239,7 +239,7 @@ export type Tournament = {
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
   rounds?: Maybe<Array<Maybe<Round>>>;
   myRole?: Maybe<TournamentRoleName>;
-  mainInvitationID?: Maybe<Scalars['ID']>;
+  invitationLinkID?: Maybe<Scalars['ID']>;
 };
 
 
@@ -495,7 +495,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
-  registerTournamentInvitation?: Resolver<Maybe<ResolversTypes['TournamentInvitation']>, ParentType, ContextType, RequireFields<MutationRegisterTournamentInvitationArgs, 'tournamentInvitationID'>>;
+  registerTournamentInvitationLink?: Resolver<Maybe<ResolversTypes['TournamentInvitation']>, ParentType, ContextType, RequireFields<MutationRegisterTournamentInvitationLinkArgs, 'tournamentInvitationLinkID'>>;
 };
 
 export type NewPlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewPlayerGames'] = ResolversParentTypes['NewPlayerGames']> = {
@@ -524,7 +524,7 @@ export type PlayerGamesResolvers<ContextType = any, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, never>>;
-  tournamentByInvitation?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentByInvitationArgs, 'tournamentInvitationID'>>;
+  tournamentByInvitationLink?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentByInvitationLinkArgs, 'tournamentInvitationLinkID'>>;
   round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -565,7 +565,7 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rounds?: Resolver<Maybe<Array<Maybe<ResolversTypes['Round']>>>, ParentType, ContextType, RequireFields<TournamentRoundsArgs, 'maxSize'>>;
   myRole?: Resolver<Maybe<ResolversTypes['TournamentRoleName']>, ParentType, ContextType>;
-  mainInvitationID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  invitationLinkID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

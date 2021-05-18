@@ -1,5 +1,5 @@
 query tournament($tournamentID: ID!) {
     tournament(tournamentID: $tournamentID) {
-      id, name, status, myRole, mainInvitationID
+      id, name, status, myRole, invitationLinkID
     }
 }

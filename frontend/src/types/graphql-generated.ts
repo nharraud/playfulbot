@@ -48,7 +48,7 @@ export type Tournament = {
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
   rounds?: Maybe<Array<Maybe<Round>>>;
   myRole?: Maybe<TournamentRoleName>;
-  mainInvitationID?: Maybe<Scalars['ID']>;
+  invitationLinkID?: Maybe<Scalars['ID']>;
 };
 
 
@@ -204,7 +204,7 @@ export type SubscriptionTeamPlayerArgs = {
 export type Query = {
   __typename?: 'Query';
   tournament?: Maybe<Tournament>;
-  tournamentByInvitation?: Maybe<Tournament>;
+  tournamentByInvitationLink?: Maybe<Tournament>;
   round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
   authenticatedUser?: Maybe<User>;
@@ -216,8 +216,8 @@ export type QueryTournamentArgs = {
 };
 
 
-export type QueryTournamentByInvitationArgs = {
-  tournamentInvitationID: Scalars['ID'];
+export type QueryTournamentByInvitationLinkArgs = {
+  tournamentInvitationLinkID: Scalars['ID'];
 };
 
 
@@ -239,7 +239,7 @@ export type Mutation = {
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
-  registerTournamentInvitation?: Maybe<TournamentInvitation>;
+  registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
 };
 
 
@@ -278,8 +278,8 @@ export type MutationCreateTournamentArgs = {
 };
 
 
-export type MutationRegisterTournamentInvitationArgs = {
-  tournamentInvitationID: Scalars['ID'];
+export type MutationRegisterTournamentInvitationLinkArgs = {
+  tournamentInvitationLinkID: Scalars['ID'];
 };
 
 export type GetAuthenticatedUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -467,14 +467,14 @@ export type PlayerFragment = (
   & Pick<Player, 'id' | 'token' | 'connected'>
 );
 
-export type RegisterTournamentInvitationMutationVariables = Exact<{
-  tournamentInvitationID: Scalars['ID'];
+export type RegisterTournamentInvitationLinkMutationVariables = Exact<{
+  tournamentInvitationLinkID: Scalars['ID'];
 }>;
 
 
-export type RegisterTournamentInvitationMutation = (
+export type RegisterTournamentInvitationLinkMutation = (
   { __typename?: 'Mutation' }
-  & { registerTournamentInvitation?: Maybe<(
+  & { registerTournamentInvitationLink?: Maybe<(
     { __typename?: 'TournamentInvitation' }
     & Pick<TournamentInvitation, 'id'>
     & { tournament?: Maybe<(
@@ -543,14 +543,14 @@ export type TeamPlayerSubscription = (
   )> }
 );
 
-export type TournamentByInvitationQueryVariables = Exact<{
-  tournamentInvitationID: Scalars['ID'];
+export type TournamentByInvitationLinkQueryVariables = Exact<{
+  tournamentInvitationLinkID: Scalars['ID'];
 }>;
 
 
-export type TournamentByInvitationQuery = (
+export type TournamentByInvitationLinkQuery = (
   { __typename?: 'Query' }
-  & { tournamentByInvitation?: Maybe<(
+  & { tournamentByInvitationLink?: Maybe<(
     { __typename?: 'Tournament' }
     & Pick<Tournament, 'id' | 'name'>
   )> }
@@ -565,7 +565,7 @@ export type TournamentQuery = (
   { __typename?: 'Query' }
   & { tournament?: Maybe<(
     { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'name' | 'status' | 'myRole' | 'mainInvitationID'>
+    & Pick<Tournament, 'id' | 'name' | 'status' | 'myRole' | 'invitationLinkID'>
   )> }
 );
 
@@ -991,9 +991,11 @@ export function usePlayMutation(baseOptions?: Apollo.MutationHookOptions<PlayMut
 export type PlayMutationHookResult = ReturnType<typeof usePlayMutation>;
 export type PlayMutationResult = Apollo.MutationResult<PlayMutation>;
 export type PlayMutationOptions = Apollo.BaseMutationOptions<PlayMutation, PlayMutationVariables>;
-export const RegisterTournamentInvitationDocument = gql`
-    mutation registerTournamentInvitation($tournamentInvitationID: ID!) {
-  registerTournamentInvitation(tournamentInvitationID: $tournamentInvitationID) {
+export const RegisterTournamentInvitationLinkDocument = gql`
+    mutation registerTournamentInvitationLink($tournamentInvitationLinkID: ID!) {
+  registerTournamentInvitationLink(
+    tournamentInvitationLinkID: $tournamentInvitationLinkID
+  ) {
     id
     tournament {
       id
@@ -1004,32 +1006,32 @@ export const RegisterTournamentInvitationDocument = gql`
   }
 }
     `;
-export type RegisterTournamentInvitationMutationFn = Apollo.MutationFunction<RegisterTournamentInvitationMutation, RegisterTournamentInvitationMutationVariables>;
+export type RegisterTournamentInvitationLinkMutationFn = Apollo.MutationFunction<RegisterTournamentInvitationLinkMutation, RegisterTournamentInvitationLinkMutationVariables>;
 
 /**
- * __useRegisterTournamentInvitationMutation__
+ * __useRegisterTournamentInvitationLinkMutation__
  *
- * To run a mutation, you first call `useRegisterTournamentInvitationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRegisterTournamentInvitationMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useRegisterTournamentInvitationLinkMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterTournamentInvitationLinkMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [registerTournamentInvitationMutation, { data, loading, error }] = useRegisterTournamentInvitationMutation({
+ * const [registerTournamentInvitationLinkMutation, { data, loading, error }] = useRegisterTournamentInvitationLinkMutation({
  *   variables: {
- *      tournamentInvitationID: // value for 'tournamentInvitationID'
+ *      tournamentInvitationLinkID: // value for 'tournamentInvitationLinkID'
  *   },
  * });
  */
-export function useRegisterTournamentInvitationMutation(baseOptions?: Apollo.MutationHookOptions<RegisterTournamentInvitationMutation, RegisterTournamentInvitationMutationVariables>) {
+export function useRegisterTournamentInvitationLinkMutation(baseOptions?: Apollo.MutationHookOptions<RegisterTournamentInvitationLinkMutation, RegisterTournamentInvitationLinkMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RegisterTournamentInvitationMutation, RegisterTournamentInvitationMutationVariables>(RegisterTournamentInvitationDocument, options);
+        return Apollo.useMutation<RegisterTournamentInvitationLinkMutation, RegisterTournamentInvitationLinkMutationVariables>(RegisterTournamentInvitationLinkDocument, options);
       }
-export type RegisterTournamentInvitationMutationHookResult = ReturnType<typeof useRegisterTournamentInvitationMutation>;
-export type RegisterTournamentInvitationMutationResult = Apollo.MutationResult<RegisterTournamentInvitationMutation>;
-export type RegisterTournamentInvitationMutationOptions = Apollo.BaseMutationOptions<RegisterTournamentInvitationMutation, RegisterTournamentInvitationMutationVariables>;
+export type RegisterTournamentInvitationLinkMutationHookResult = ReturnType<typeof useRegisterTournamentInvitationLinkMutation>;
+export type RegisterTournamentInvitationLinkMutationResult = Apollo.MutationResult<RegisterTournamentInvitationLinkMutation>;
+export type RegisterTournamentInvitationLinkMutationOptions = Apollo.BaseMutationOptions<RegisterTournamentInvitationLinkMutation, RegisterTournamentInvitationLinkMutationVariables>;
 export const RegisterUserDocument = gql`
     mutation registerUser($username: String!, $password: String!) {
   registerUser(username: $username, password: $password) {
@@ -1156,9 +1158,11 @@ export function useTeamPlayerSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type TeamPlayerSubscriptionHookResult = ReturnType<typeof useTeamPlayerSubscription>;
 export type TeamPlayerSubscriptionResult = Apollo.SubscriptionResult<TeamPlayerSubscription>;
-export const TournamentByInvitationDocument = gql`
-    query tournamentByInvitation($tournamentInvitationID: ID!) {
-  tournamentByInvitation(tournamentInvitationID: $tournamentInvitationID) {
+export const TournamentByInvitationLinkDocument = gql`
+    query tournamentByInvitationLink($tournamentInvitationLinkID: ID!) {
+  tournamentByInvitationLink(
+    tournamentInvitationLinkID: $tournamentInvitationLinkID
+  ) {
     id
     name
   }
@@ -1166,32 +1170,32 @@ export const TournamentByInvitationDocument = gql`
     `;
 
 /**
- * __useTournamentByInvitationQuery__
+ * __useTournamentByInvitationLinkQuery__
  *
- * To run a query within a React component, call `useTournamentByInvitationQuery` and pass it any options that fit your needs.
- * When your component renders, `useTournamentByInvitationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTournamentByInvitationLinkQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTournamentByInvitationLinkQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTournamentByInvitationQuery({
+ * const { data, loading, error } = useTournamentByInvitationLinkQuery({
  *   variables: {
- *      tournamentInvitationID: // value for 'tournamentInvitationID'
+ *      tournamentInvitationLinkID: // value for 'tournamentInvitationLinkID'
  *   },
  * });
  */
-export function useTournamentByInvitationQuery(baseOptions: Apollo.QueryHookOptions<TournamentByInvitationQuery, TournamentByInvitationQueryVariables>) {
+export function useTournamentByInvitationLinkQuery(baseOptions: Apollo.QueryHookOptions<TournamentByInvitationLinkQuery, TournamentByInvitationLinkQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TournamentByInvitationQuery, TournamentByInvitationQueryVariables>(TournamentByInvitationDocument, options);
+        return Apollo.useQuery<TournamentByInvitationLinkQuery, TournamentByInvitationLinkQueryVariables>(TournamentByInvitationLinkDocument, options);
       }
-export function useTournamentByInvitationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TournamentByInvitationQuery, TournamentByInvitationQueryVariables>) {
+export function useTournamentByInvitationLinkLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TournamentByInvitationLinkQuery, TournamentByInvitationLinkQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TournamentByInvitationQuery, TournamentByInvitationQueryVariables>(TournamentByInvitationDocument, options);
+          return Apollo.useLazyQuery<TournamentByInvitationLinkQuery, TournamentByInvitationLinkQueryVariables>(TournamentByInvitationLinkDocument, options);
         }
-export type TournamentByInvitationQueryHookResult = ReturnType<typeof useTournamentByInvitationQuery>;
-export type TournamentByInvitationLazyQueryHookResult = ReturnType<typeof useTournamentByInvitationLazyQuery>;
-export type TournamentByInvitationQueryResult = Apollo.QueryResult<TournamentByInvitationQuery, TournamentByInvitationQueryVariables>;
+export type TournamentByInvitationLinkQueryHookResult = ReturnType<typeof useTournamentByInvitationLinkQuery>;
+export type TournamentByInvitationLinkLazyQueryHookResult = ReturnType<typeof useTournamentByInvitationLinkLazyQuery>;
+export type TournamentByInvitationLinkQueryResult = Apollo.QueryResult<TournamentByInvitationLinkQuery, TournamentByInvitationLinkQueryVariables>;
 export const TournamentDocument = gql`
     query tournament($tournamentID: ID!) {
   tournament(tournamentID: $tournamentID) {
@@ -1199,7 +1203,7 @@ export const TournamentDocument = gql`
     name
     status
     myRole
-    mainInvitationID
+    invitationLinkID
   }
 }
     `;

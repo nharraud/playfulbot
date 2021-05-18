@@ -12,6 +12,7 @@ export type GameID = string;
 export type GameScheduleID = string;
 export type JWToken = string;
 export type TournamentInvitationID = string;
+export type TournamentInvitationLinkID = string;
 
 export function isTeam(userTeamResult: gqlTypes.UserTeamResult): userTeamResult is gqlTypes.Team {
   return (userTeamResult as gqlTypes.Team).__typename === 'Team';

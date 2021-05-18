@@ -41,7 +41,7 @@ export default function TeamSubPage(props: TeamSubPageProps) {
 
   return (
     <div className={classes.root}>
-      <TeamHeader currentSection={currentSection} setSection={setSection} isAdmin={isAdmin} invitationID={props.tournament.mainInvitationID} />
+      <TeamHeader currentSection={currentSection} setSection={setSection} isAdmin={isAdmin} invitationLinkID={props.tournament.invitationLinkID} />
       <TabPanel value={currentSection} index={TeamSections.YOUR_TEAM}>
         <ul>
         {team?.members?.map((member) =>

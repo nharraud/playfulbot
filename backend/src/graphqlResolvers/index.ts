@@ -14,7 +14,7 @@ import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,
-  tournamentMainInvitationIDResolver,
+  tournamentInvitationIDResolver,
   tournamentMyRolesResolver,
   tournamentResolver,
   tournamentRoundsResolver,
@@ -28,8 +28,8 @@ import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from '
 import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
 import { userTeamsResolver, userTournamentInvitationsResolver } from './user';
 import {
-  registerTournamentInvitationResolver,
-  tournamentByInvitationResolver,
+  registerTournamentInvitationLinkResolver,
+  tournamentByInvitationLinkResolver,
 } from './tournamentInvitationLink';
 import {
   tournamentInvitationTournamentResolver,
@@ -48,7 +48,7 @@ const resolvers: IResolvers = {
     authenticatedUser: authenticatedUserResolver,
     tournament: tournamentResolver,
     round: roundResolver,
-    tournamentByInvitation: tournamentByInvitationResolver,
+    tournamentByInvitationLink: tournamentByInvitationLinkResolver,
   } as gqlTypes.QueryResolvers,
   Mutation: {
     play: playResolver,
@@ -57,7 +57,7 @@ const resolvers: IResolvers = {
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
-    registerTournamentInvitation: registerTournamentInvitationResolver,
+    registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
   } as gqlTypes.MutationResolvers,
   User: {
     teams: userTeamsResolver,
@@ -69,7 +69,7 @@ const resolvers: IResolvers = {
   },
   Tournament: {
     rounds: tournamentRoundsResolver,
-    mainInvitationID: tournamentMainInvitationIDResolver,
+    invitationLinkID: tournamentInvitationIDResolver,
     myRole: tournamentMyRolesResolver,
   },
   Round: {

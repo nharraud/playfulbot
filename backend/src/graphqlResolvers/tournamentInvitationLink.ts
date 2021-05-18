@@ -9,10 +9,10 @@ import {
 } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
-export const tournamentByInvitationResolver: gqlTypes.QueryResolvers<ApolloContext>['tournamentByInvitation'] =
+export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<ApolloContext>['tournamentByInvitationLink'] =
   async (parent, args, ctx) => {
     const tournament = await Tournament.getByInvitationLink(
-      args.tournamentInvitationID,
+      args.tournamentInvitationLinkID,
       db.default
     );
     if (!tournament) {
@@ -27,7 +27,7 @@ export const tournamentByInvitationResolver: gqlTypes.QueryResolvers<ApolloConte
     return tournament;
   };
 
-export const registerTournamentInvitationResolver: gqlTypes.MutationResolvers<ApolloContext>['registerTournamentInvitation'] =
+export const registerTournamentInvitationLinkResolver: gqlTypes.MutationResolvers<ApolloContext>['registerTournamentInvitationLink'] =
   async (parent, args, ctx) => {
     if (!isUserContext(ctx)) {
       throw new AuthenticationError(
@@ -37,7 +37,7 @@ export const registerTournamentInvitationResolver: gqlTypes.MutationResolvers<Ap
 
     return db.default.tx(async (tx) => {
       const invitationLink = await TournamentInvitationLink.getByID(
-        args.tournamentInvitationID,
+        args.tournamentInvitationLinkID,
         tx
       );
       const invitation = await invitationLink.registerInvitationForUser(ctx.userID, tx);

@@ -60,7 +60,7 @@ export async function tournamentRoundsResolver(
   return result;
 }
 
-export function tournamentMainInvitationIDResolver(
+export function tournamentInvitationIDResolver(
   parent: Tournament,
   args: undefined,
   ctx: ApolloContext
@@ -77,7 +77,7 @@ export function tournamentMainInvitationIDResolver(
     if (role !== TournamentRoleName.Admin) {
       return null;
     }
-    const result = await parent.getMainInvitationLink(db.default);
+    const result = await parent.getInvitationLink(db.default);
     return result.id;
   });
 }

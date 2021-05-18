@@ -255,7 +255,7 @@ export class Tournament {
     return now.plus({ minutes: minutesUntilNextRound });
   }
 
-  async getMainInvitationLink(dbOrTX: DbOrTx): Promise<TournamentInvitationLink> {
+  async getInvitationLink(dbOrTX: DbOrTx): Promise<TournamentInvitationLink> {
     const links = await TournamentInvitationLink.getAll(this.id, dbOrTX);
     // For now there is only one link created ber tournament and no way to delete it via API.
     return links[0];

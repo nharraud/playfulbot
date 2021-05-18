@@ -19,7 +19,7 @@ function tournamentInvitationIDToURL(invitationID: TournamentInvitationID) {
 interface TeamInviteModalProps {
   open: boolean
   handleClose: () => void,
-  invitationID: TournamentInvitationID,
+  invitationLinkID: TournamentInvitationID,
 };
 
 export function TeamInviteDialog(props: TeamInviteModalProps) {
@@ -31,7 +31,7 @@ export function TeamInviteDialog(props: TeamInviteModalProps) {
         <p id="team-invite-modal-description" className={classes.description}>
           Send the following link to people you want to invite. Once registered they will be able to create or join a team.
         </p>
-        <TextFieldToCopy text={tournamentInvitationIDToURL(props.invitationID)}/>
+        <TextFieldToCopy text={tournamentInvitationIDToURL(props.invitationLinkID)}/>
       </DialogContent>
     </Dialog>
   );

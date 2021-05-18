@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
-import { TournamentInvitationID } from 'src/types/graphql';
+import { TournamentInvitationLinkID } from 'src/types/graphql';
 import { TeamSections } from './TeamSections';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { TeamInviteDialog } from './TeamInviteDialog';
@@ -43,7 +43,7 @@ interface TeamHeaderProps {
   currentSection: TeamSections
   setSection: (section: TeamSections) => void
   isAdmin: boolean,
-  invitationID: TournamentInvitationID | null,
+  invitationLinkID: TournamentInvitationLinkID | null,
 }
 
 export default function TeamHeader(props: TeamHeaderProps) {
@@ -67,7 +67,7 @@ export default function TeamHeader(props: TeamHeaderProps) {
         >
           Invite Players
         </Button>
-        <TeamInviteDialog open={inviteModalOpen} handleClose={closeInviteModal} invitationID={props.invitationID}/>
+        <TeamInviteDialog open={inviteModalOpen} handleClose={closeInviteModal} invitationLinkID={props.invitationLinkID}/>
       </>
     )
   }

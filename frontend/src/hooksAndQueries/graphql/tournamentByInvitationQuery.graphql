@@ -1,5 +1,0 @@
-query tournamentByInvitation($tournamentInvitationID: ID!) {
-    tournamentByInvitation(tournamentInvitationID: $tournamentInvitationID) {
-      id, name
-    }
-}

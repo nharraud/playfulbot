@@ -32,7 +32,7 @@ type Tournament {
 
   myRole: TournamentRoleName
 
-  mainInvitationID: ID
+  invitationLinkID: ID
 }
 
 type TournamentInvitation {
@@ -138,7 +138,7 @@ type Subscription {
 
 type Query {
   tournament(tournamentID: ID): Tournament
-  tournamentByInvitation(tournamentInvitationID: ID!): Tournament
+  tournamentByInvitationLink(tournamentInvitationLinkID: ID!): Tournament
   round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
   authenticatedUser: User
@@ -160,5 +160,5 @@ type Mutation {
     minutesBetweenRounds: Int!,
   ): Tournament
 
-  registerTournamentInvitation(tournamentInvitationID: ID!): TournamentInvitation
+  registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): TournamentInvitation
 }
