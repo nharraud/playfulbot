@@ -63,7 +63,7 @@ export class TournamentInvitationLink {
     return rows.map((row) => new TournamentInvitationLink(row));
   }
 
-  async useInvitationForUser(userID: UserID, dbOrTX: DbOrTx): Promise<TournamentInvitation> {
+  async registerInvitationForUser(userID: UserID, dbOrTX: DbOrTx): Promise<TournamentInvitation> {
     // This method will be especially useful later when we make single-use links.
     return TournamentInvitation.create(this.tournamentID, userID, dbOrTX);
   }

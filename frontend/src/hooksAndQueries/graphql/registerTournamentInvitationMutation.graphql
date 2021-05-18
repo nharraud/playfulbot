@@ -1,0 +1,11 @@
+mutation registerTournamentInvitation($tournamentInvitationID: ID!) {
+  registerTournamentInvitation(tournamentInvitationID: $tournamentInvitationID) {
+    id,
+    tournament {
+      id,
+      name,
+      lastRoundDate,
+      status,
+    }
+  }
+}

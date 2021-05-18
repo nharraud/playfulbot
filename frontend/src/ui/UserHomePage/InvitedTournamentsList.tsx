@@ -1,6 +1,6 @@
 import { makeStyles, createStyles, Theme, Typography, ListItem, ListItemText, List } from '@material-ui/core';
 import React from 'react';
-import { Team } from '../../types/graphql';
+import { TournamentInvitation } from '../../types/graphql';
 import { tournamentStatusToText } from 'src/modelHelpers/tournament';
 import { Link } from 'react-router-dom';
 import { NoTournamentFound } from './NoTournamentFound';
@@ -22,21 +22,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export interface JoinedTournamentsListProps {
-  teams?: Team[];
+export interface InvitedTournamentsListProps {
+  invitations?: TournamentInvitation[];
 };
 
-export function JoinedTournamentsList(props: JoinedTournamentsListProps) {
+export function InvitedTournamentsList(props: InvitedTournamentsListProps) {
   const classes = useStyles();
 
-  const tournamentListItems = props?.teams?.map((team) => {
+  const tournamentListItems = props?.invitations?.map((invitation) => {
     return (
-      <ListItem className={classes.tournamentListItem} key={team.tournament.id}
-        component={Link} to={`/tournament/${team.tournament.id}/info`}
+      <ListItem className={classes.tournamentListItem} key={invitation.tournament.id}
+        component={Link} to={`/tournament/${invitation.tournament.id}/info`}
       >
         <ListItemText
-          primary={team.tournament.name}
-          secondary={tournamentStatusToText(team.tournament)}
+          primary={invitation.tournament.name}
+          secondary={tournamentStatusToText(invitation.tournament)}
         />
       </ListItem>
     )
@@ -53,7 +53,7 @@ export function JoinedTournamentsList(props: JoinedTournamentsListProps) {
   return (
   <div className={classes.root}>
     <Typography variant="h6" className={classes.title}>
-      Tournaments you joined
+      Tournaments you are invited to
     </Typography>
     {content}
   </div>

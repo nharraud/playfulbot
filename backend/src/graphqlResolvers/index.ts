@@ -26,7 +26,15 @@ import { DateScalar } from './scalars/DateScalar';
 import { teamPlayerResolver } from './teamPlayer';
 import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
-import { userTeamsResolver } from './user';
+import { userTeamsResolver, userTournamentInvitationsResolver } from './user';
+import {
+  registerTournamentInvitationResolver,
+  tournamentByInvitationResolver,
+} from './tournamentInvitationLink';
+import {
+  tournamentInvitationTournamentResolver,
+  tournamentInvitationInviteeResolver,
+} from './tournamentInvitation';
 
 const resolvers: IResolvers = {
   Subscription: {
@@ -40,6 +48,7 @@ const resolvers: IResolvers = {
     authenticatedUser: authenticatedUserResolver,
     tournament: tournamentResolver,
     round: roundResolver,
+    tournamentByInvitation: tournamentByInvitationResolver,
   } as gqlTypes.QueryResolvers,
   Mutation: {
     play: playResolver,
@@ -48,9 +57,11 @@ const resolvers: IResolvers = {
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
+    registerTournamentInvitation: registerTournamentInvitationResolver,
   } as gqlTypes.MutationResolvers,
   User: {
     teams: userTeamsResolver,
+    tournamentInvitations: userTournamentInvitationsResolver,
   },
   Team: {
     members: teamMembersResolver,
@@ -68,6 +79,10 @@ const resolvers: IResolvers = {
   GameSummary: {
     winners: gameSummaryWinnersResolver,
     losers: gameSummaryLosersResolver,
+  },
+  TournamentInvitation: {
+    tournament: tournamentInvitationTournamentResolver,
+    invitee: tournamentInvitationInviteeResolver,
   },
   JSON: GraphQLJSON,
   Date: DateScalar,

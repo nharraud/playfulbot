@@ -1,6 +1,6 @@
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
-import { TournamentID } from './Tournaments';
-import { UserID } from './User';
+import { Tournament, TournamentID, DbTournament } from './Tournaments';
+import { User, UserID } from './User';
 
 export type TournamentInvitationID = string;
 
@@ -12,17 +12,20 @@ interface DbTournamentInvitation {
 /* eslint-enable */
 
 export interface TournamentInvivationsSearchOptions {
-  tournamentID: TournamentID;
-  userID: UserID;
+  tournamentID?: TournamentID;
+  userID?: UserID;
 }
 
 export class TournamentInvitation {
   tournamentID: TournamentID;
   userID: UserID;
+  _tournament: Tournament;
+  _user: User;
 
-  constructor(data: DbTournamentInvitation) {
+  constructor(data: DbTournamentInvitation, tournament?: Tournament) {
     this.tournamentID = data.tournament_id;
     this.userID = data.user_id;
+    this._tournament = tournament;
   }
 
   static async create(
@@ -62,7 +65,7 @@ export class TournamentInvitation {
     dbOrTX: DbOrTx
   ): Promise<TournamentInvitation[]> {
     const queryBuilder = new QueryBuilder(
-      'SELECT * FROM tournament_invitations JOIN tournaments ON teams.tournament_id = tournaments.id'
+      'SELECT tournament_invitations.*, tournaments.* FROM tournament_invitations JOIN tournaments ON tournament_invitations.tournament_id = tournaments.id'
     );
     queryBuilder.orderBy('tournaments.start_date', 'DESC');
 
@@ -73,7 +76,29 @@ export class TournamentInvitation {
       queryBuilder.where('tournament_invitations.user_id = $[userID]');
     }
 
-    const rows = await dbOrTX.manyOrNone<DbTournamentInvitation>(queryBuilder.query, filters);
-    return rows.map((row) => new TournamentInvitation(row));
+    const rows = await dbOrTX.manyOrNone<DbTournamentInvitation & DbTournament>(
+      queryBuilder.query,
+      filters
+    );
+    return rows.map((row) => new TournamentInvitation(row, new Tournament(row)));
+  }
+
+  async getTournament(dbOrTX: DbOrTx): Promise<Tournament> {
+    if (!this._tournament) {
+      this._tournament = await Tournament.getByID(this.tournamentID, dbOrTX);
+    }
+    return this._tournament;
+  }
+
+  async getUser(dbOrTX: DbOrTx): Promise<User> {
+    if (!this._user) {
+      this._user = await User.getByID(this.userID, dbOrTX);
+    }
+    return this._user;
+  }
+
+  get id(): TournamentInvitationID {
+    // FIXME: could be more efficient if we used base64url
+    return `${this.tournamentID}:${this.userID}`;
   }
 }

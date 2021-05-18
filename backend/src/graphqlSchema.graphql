@@ -7,6 +7,7 @@ type User {
   id: ID!
   username: String!
   teams: [Team]
+  tournamentInvitations: [TournamentInvitation!]
 }
 
 enum TournamentStatus {
@@ -31,7 +32,13 @@ type Tournament {
 
   myRole: TournamentRoleName
 
-  mainInvitationID: String
+  mainInvitationID: ID
+}
+
+type TournamentInvitation {
+  id: ID
+  tournament: Tournament
+  invitee: User
 }
 
 type Team {
@@ -131,6 +138,7 @@ type Subscription {
 
 type Query {
   tournament(tournamentID: ID): Tournament
+  tournamentByInvitation(tournamentInvitationID: ID!): Tournament
   round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
   authenticatedUser: User
@@ -151,4 +159,6 @@ type Mutation {
     roundsNumber: Int!,
     minutesBetweenRounds: Int!,
   ): Tournament
+
+  registerTournamentInvitation(tournamentInvitationID: ID!): TournamentInvitation
 }

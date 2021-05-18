@@ -97,6 +97,12 @@ export class TeamNotFoundError extends NotFoundError {
   }
 }
 
+export class TournamentInvitationNotFound extends NotFoundError {
+  constructor() {
+    super('Invitation not found');
+  }
+}
+
 export class InvalidRequest extends ApolloError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
     super(message, 'INVALID_REQUEST', additionalProperties);

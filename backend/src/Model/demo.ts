@@ -5,6 +5,7 @@ import { db } from '~playfulbot/model/db';
 import { Team } from './Team';
 import { gameDefinition } from '~playfulbot/games/wallrace';
 import { gameDefinitions } from './GameDefinition';
+import { TournamentInvitation } from './TournamentInvitation';
 
 gameDefinitions.set(gameDefinition.name, gameDefinition);
 
@@ -62,6 +63,15 @@ export async function initDemo(): Promise<void> {
       users.push(user);
       await teams[teamIdx].addMember(user.id, tx);
     }
+
+    const invitedUser = await User.create(
+      `userInvited`,
+      `password`,
+      tx,
+      `ACEB0001-0000-0000-0000-000000000000`
+    );
+
+    await TournamentInvitation.create(tournament.id, invitedUser.id, tx);
 
     await tournament.start(tx);
 

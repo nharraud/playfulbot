@@ -4,7 +4,7 @@ import logger from '~playfulbot/logging';
 
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { GameDefinition, gameDefinitions } from './GameDefinition';
-import { TournamentInvitationLink } from './TournamentInvitationLink';
+import { TournamentInvitationLink, TournamentInvitationLinkID } from './TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team, TeamID } from './Team';
 import { TournamentRoleName } from './TournamentRole';
@@ -20,7 +20,7 @@ export enum TournamentStatus {
 }
 
 /* eslint-disable camelcase */
-interface DbTournament {
+export interface DbTournament {
   readonly id: TournamentID;
   name: string;
   status: TournamentStatus;
@@ -36,6 +36,7 @@ interface GetAllTournamentsFilters {
   status?: TournamentStatus;
   startingAfter?: DateTime;
   startingBefore?: DateTime;
+  invitedUserID?: UserID;
 }
 
 export class Tournament {
@@ -48,7 +49,7 @@ export class Tournament {
   minutesBetweenRounds: number;
   gameName: string;
 
-  private constructor(data: DbTournament) {
+  constructor(data: DbTournament) {
     this.id = data.id;
     this.name = data.name;
     this.status = data.status;
@@ -126,6 +127,33 @@ export class Tournament {
     return null;
   }
 
+  static async getByInvitationLink(
+    tournamentInvitationLinkID: TournamentInvitationLinkID,
+    dbOrTX: DbOrTx
+  ): Promise<Tournament | null> {
+    try {
+      const data = await dbOrTX.oneOrNone<DbTournament>(
+        `SELECT tournaments.* FROM tournaments
+         JOIN tournament_invitation_links ON tournaments.id = tournament_invitation_links.tournament_id
+         WHERE tournament_invitation_links.id = $[tournamentInvitationLinkID]`,
+        {
+          tournamentInvitationLinkID,
+        }
+      );
+      if (data !== null) {
+        return new Tournament(data);
+      }
+      return null;
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.routine === 'string_to_uuid') {
+        return null;
+      }
+      throw error;
+    }
+    return null;
+  }
+
   static async exists(id: TournamentID, dbOrTX: DbOrTx): Promise<boolean> {
     return dbOrTX.oneOrNone<boolean>('SELECT EXISTS(SELECT 1 FROM tournaments WHERE id = $[id])', {
       id,
@@ -136,7 +164,7 @@ export class Tournament {
     filters: GetAllTournamentsFilters = {},
     dbOrTX: DbOrTx
   ): Promise<Tournament[]> {
-    const queryBuilder = new QueryBuilder('SELECT * FROM tournaments');
+    const queryBuilder = new QueryBuilder('SELECT tournaments.* FROM tournaments');
     if (filters.startingAfter) {
       queryBuilder.where('$[startingAfter] <= start_date');
     }
@@ -145,6 +173,10 @@ export class Tournament {
     }
     if (filters.status) {
       queryBuilder.where('status = $[status]');
+    }
+    if (filters.invitedUserID) {
+      queryBuilder.join('JOIN tournament_invitations ON teams.tournament_id = tournaments.id');
+      queryBuilder.where('tournament_invitations.user_id = $[invitedUserID]');
     }
     const rows = await dbOrTX.manyOrNone<DbTournament>(queryBuilder.query, filters);
     return rows.map((row) => new Tournament(row));

@@ -73,6 +73,7 @@ export type Mutation = {
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
+  registerTournamentInvitation?: Maybe<TournamentInvitation>;
 };
 
 
@@ -110,6 +111,11 @@ export type MutationCreateTournamentArgs = {
   minutesBetweenRounds: Scalars['Int'];
 };
 
+
+export type MutationRegisterTournamentInvitationArgs = {
+  tournamentInvitationID: Scalars['ID'];
+};
+
 export type NewPlayerGames = {
   __typename?: 'NewPlayerGames';
   games?: Maybe<Array<Maybe<Scalars['ID']>>>;
@@ -137,6 +143,7 @@ export type PlayerGames = {
 export type Query = {
   __typename?: 'Query';
   tournament?: Maybe<Tournament>;
+  tournamentByInvitation?: Maybe<Tournament>;
   round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
   authenticatedUser?: Maybe<User>;
@@ -145,6 +152,11 @@ export type Query = {
 
 export type QueryTournamentArgs = {
   tournamentID?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryTournamentByInvitationArgs = {
+  tournamentInvitationID: Scalars['ID'];
 };
 
 
@@ -227,7 +239,7 @@ export type Tournament = {
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
   rounds?: Maybe<Array<Maybe<Round>>>;
   myRole?: Maybe<TournamentRoleName>;
-  mainInvitationID?: Maybe<Scalars['String']>;
+  mainInvitationID?: Maybe<Scalars['ID']>;
 };
 
 
@@ -235,6 +247,13 @@ export type TournamentRoundsArgs = {
   maxSize?: Maybe<Scalars['Int']>;
   before?: Maybe<Scalars['Date']>;
   after?: Maybe<Scalars['Date']>;
+};
+
+export type TournamentInvitation = {
+  __typename?: 'TournamentInvitation';
+  id?: Maybe<Scalars['ID']>;
+  tournament?: Maybe<Tournament>;
+  invitee?: Maybe<User>;
 };
 
 export enum TournamentRoleName {
@@ -252,6 +271,7 @@ export type User = {
   id: Scalars['ID'];
   username: Scalars['String'];
   teams?: Maybe<Array<Maybe<Team>>>;
+  tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
 };
 
 export type UserNotPartOfAnyTeam = {
@@ -365,6 +385,7 @@ export type ResolversTypes = {
   Subscription: ResolverTypeWrapper<{}>;
   Team: ResolverTypeWrapper<Team>;
   Tournament: ResolverTypeWrapper<Tournament>;
+  TournamentInvitation: ResolverTypeWrapper<TournamentInvitation>;
   TournamentRoleName: TournamentRoleName;
   TournamentStatus: TournamentStatus;
   User: ResolverTypeWrapper<User>;
@@ -399,6 +420,7 @@ export type ResolversParentTypes = {
   Subscription: {};
   Team: Team;
   Tournament: Tournament;
+  TournamentInvitation: TournamentInvitation;
   User: User;
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
   UserTeamResult: ResolversParentTypes['Team'] | ResolversParentTypes['UserNotPartOfAnyTeam'];
@@ -473,6 +495,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
+  registerTournamentInvitation?: Resolver<Maybe<ResolversTypes['TournamentInvitation']>, ParentType, ContextType, RequireFields<MutationRegisterTournamentInvitationArgs, 'tournamentInvitationID'>>;
 };
 
 export type NewPlayerGamesResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewPlayerGames'] = ResolversParentTypes['NewPlayerGames']> = {
@@ -501,6 +524,7 @@ export type PlayerGamesResolvers<ContextType = any, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, never>>;
+  tournamentByInvitation?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentByInvitationArgs, 'tournamentInvitationID'>>;
   round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -541,7 +565,14 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   minutesBetweenRounds?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rounds?: Resolver<Maybe<Array<Maybe<ResolversTypes['Round']>>>, ParentType, ContextType, RequireFields<TournamentRoundsArgs, 'maxSize'>>;
   myRole?: Resolver<Maybe<ResolversTypes['TournamentRoleName']>, ParentType, ContextType>;
-  mainInvitationID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  mainInvitationID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TournamentInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TournamentInvitation'] = ResolversParentTypes['TournamentInvitation']> = {
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType>;
+  invitee?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -549,6 +580,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  tournamentInvitations?: Resolver<Maybe<Array<ResolversTypes['TournamentInvitation']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -583,6 +615,7 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   Tournament?: TournamentResolvers<ContextType>;
+  TournamentInvitation?: TournamentInvitationResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserNotPartOfAnyTeam?: UserNotPartOfAnyTeamResolvers<ContextType>;
   UserTeamResult?: UserTeamResultResolvers<ContextType>;

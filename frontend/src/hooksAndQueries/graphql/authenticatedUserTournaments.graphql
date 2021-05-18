@@ -12,5 +12,14 @@ query authenticatedUserTournaments {
         status,
       }
     }
+    tournamentInvitations {
+      id
+      tournament {
+        id,
+        name,
+        lastRoundDate,
+        status,
+      }
+    }
   }
 }

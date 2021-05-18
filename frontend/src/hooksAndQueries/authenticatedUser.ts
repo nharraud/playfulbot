@@ -1,10 +1,11 @@
 import { useQuery, ApolloCache } from '@apollo/client';
 import { useCallback, useContext } from 'react';
 import { client } from '../apolloConfig';
-import { useHistory } from "react-router-dom";
 
 import * as gqlTypes from '../types/graphql';
 import { UserContext } from 'src/UserContext';
+import { useHistory } from 'react-router';
+import { useURIQuery } from 'src/utils/router/useURIQuery';
 
 
 export function useAuthenticatedUser() {
@@ -25,13 +26,28 @@ function updateAuthentication(cache: ApolloCache<any>, loginResult: any) {
     });
 }
 
+export function useRedirectionAfterAuthentication() {
+    const history = useHistory();
+    const query = useURIQuery();
+    const tournamentInvitationID = query.get('tournament_invitation');
+  
+    return useCallback(() => {
+      if (tournamentInvitationID) {
+        history.replace(`/home?tournament_invitation=${tournamentInvitationID}`)
+      } else {
+        history.replace('/home')
+      }
+    }, [tournamentInvitationID, history])
+}
 
 export function useRegisterUser() {
     const { setToken } = useContext(UserContext);
+    const redirect = useRedirectionAfterAuthentication();
     const [register, result] = gqlTypes.useRegisterUserMutation({
         update(cache, { data: { registerUser } }) {
             updateAuthentication(cache, registerUser);
             setToken(registerUser.token);
+            redirect();
         }
     });
 
@@ -43,15 +59,14 @@ export function useRegisterUser() {
     return {registerUser: registerCallback, result}
 };
 
-
 export function useLogin() {
     const { setToken } = useContext(UserContext);
-    const history = useHistory();
+    const redirect = useRedirectionAfterAuthentication();
     const [login, result] = gqlTypes.useLoginMutation({
         update(cache, { data: { login } }) {
             updateAuthentication(cache, login);
             setToken(login.token);
-            history.push('/home');
+            redirect();
         }
     });
 

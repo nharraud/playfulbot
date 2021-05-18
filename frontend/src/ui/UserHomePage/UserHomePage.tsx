@@ -1,9 +1,12 @@
+import React, { useEffect, useState } from 'react';
 import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
-import React from 'react';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import MenuBar from '../MenuBar/MenuBar';
-import { useAuthenticatedUserTournamentsQuery } from '../../types/graphql';
+import { useAuthenticatedUserTournamentsQuery, useRegisterTournamentInvitationMutation } from '../../types/graphql';
+import { InvitedTournamentsList } from './InvitedTournamentsList';
 import { JoinedTournamentsList } from './JoinedTournamentsList';
+import { useURIQuery } from 'src/utils/router/useURIQuery';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,7 +43,31 @@ const useStyles = makeStyles((theme: Theme) =>
 export function UserHomePage() {
   const classes = useStyles();
   const { authenticatedUser } = useAuthenticatedUser();
-  const { error, data: userTournaments } = useAuthenticatedUserTournamentsQuery();
+  const { error, data: userTournaments, refetch: refetchUserTournaments } = useAuthenticatedUserTournamentsQuery();
+
+  const history = useHistory()
+  const [ registerTournamentInvitation, tournamentInvitationResult ] = useRegisterTournamentInvitationMutation();
+  const query = useURIQuery();
+  const tournamentInvitationID = query.get('tournament_invitation');
+  useEffect(() => {
+    if (tournamentInvitationID) {
+      query.delete('tournament_invitation')
+      history.replace({
+        search: query.toString(),
+      })
+      registerTournamentInvitation({
+        variables: { tournamentInvitationID }
+      });
+    }
+  }, [tournamentInvitationID, query, history, registerTournamentInvitation, refetchUserTournaments]);
+
+  const [ invitationProcessed, setInvitationProcessed ] = useState(false);
+  useEffect(() => {
+    if (tournamentInvitationResult.data && !invitationProcessed) {
+      setInvitationProcessed(true);
+      refetchUserTournaments();
+    }
+  }, [tournamentInvitationResult.data, invitationProcessed, setInvitationProcessed, refetchUserTournaments]);
 
   return (
   <div className={classes.root}>
@@ -49,12 +76,11 @@ export function UserHomePage() {
       Welcome { authenticatedUser?.username }!
     </Typography>
     <div className={classes.mainRow}>
-
       <div className={classes.column}>
         <JoinedTournamentsList teams={userTournaments?.authenticatedUser?.teams}/>
       </div>
       <div className={classes.column}>
-        col2
+        <InvitedTournamentsList invitations={userTournaments?.authenticatedUser?.tournamentInvitations}/>
       </div>
     </div>
   </div>
