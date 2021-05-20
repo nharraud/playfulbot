@@ -46,6 +46,7 @@ export type Tournament = {
   firstRoundDate?: Maybe<Scalars['Date']>;
   roundsNumber?: Maybe<Scalars['Int']>;
   minutesBetweenRounds?: Maybe<Scalars['Int']>;
+  teams?: Maybe<Array<Maybe<Team>>>;
   rounds?: Maybe<Array<Maybe<Round>>>;
   myRole?: Maybe<TournamentRoleName>;
   invitationLinkID?: Maybe<Scalars['ID']>;
@@ -85,6 +86,39 @@ export type LoginResult = {
   user: User;
   token: Scalars['String'];
 };
+
+export type Error = {
+  message: Scalars['String'];
+};
+
+export type DeletedTeam = {
+  __typename?: 'DeletedTeam';
+  teamID?: Maybe<Scalars['ID']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type TeamOrDeletedTeam = Team | DeletedTeam;
+
+export type JoinTeamSuccess = {
+  __typename?: 'JoinTeamSuccess';
+  oldTeam?: Maybe<TeamOrDeletedTeam>;
+  newTeam?: Maybe<Team>;
+};
+
+export type JoinTeamFailure = {
+  __typename?: 'JoinTeamFailure';
+  errors: Array<JoinTeamError>;
+};
+
+export type TeamNotFoundError = Error & {
+  __typename?: 'TeamNotFoundError';
+  message: Scalars['String'];
+  teamID?: Maybe<Scalars['ID']>;
+};
+
+export type JoinTeamError = TeamNotFoundError;
+
+export type JoinTeamResult = JoinTeamSuccess | JoinTeamFailure;
 
 export type Game = {
   __typename?: 'Game';
@@ -240,6 +274,7 @@ export type Mutation = {
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
   registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
+  joinTeam?: Maybe<JoinTeamResult>;
 };
 
 
@@ -280,6 +315,11 @@ export type MutationCreateTournamentArgs = {
 
 export type MutationRegisterTournamentInvitationLinkArgs = {
   tournamentInvitationLinkID: Scalars['ID'];
+};
+
+
+export type MutationJoinTeamArgs = {
+  teamID: Scalars['ID'];
 };
 
 export type GetAuthenticatedUserQueryVariables = Exact<{ [key: string]: never; }>;
@@ -415,6 +455,28 @@ export type GetTeamQuery = (
   ) | (
     { __typename?: 'UserNotPartOfAnyTeam' }
     & Pick<UserNotPartOfAnyTeam, 'message'>
+  )> }
+);
+
+export type JoinTeamMutationVariables = Exact<{
+  teamID: Scalars['ID'];
+}>;
+
+
+export type JoinTeamMutation = (
+  { __typename?: 'Mutation' }
+  & { joinTeam?: Maybe<(
+    { __typename?: 'JoinTeamSuccess' }
+    & { newTeam?: Maybe<(
+      { __typename?: 'Team' }
+      & Pick<Team, 'id'>
+    )> }
+  ) | (
+    { __typename?: 'JoinTeamFailure' }
+    & { errors: Array<(
+      { __typename?: 'TeamNotFoundError' }
+      & Pick<TeamNotFoundError, 'teamID' | 'message'>
+    )> }
   )> }
 );
 
@@ -585,6 +647,27 @@ export type TournamentRoundsQuery = (
     & { rounds?: Maybe<Array<Maybe<(
       { __typename?: 'Round' }
       & Pick<Round, 'id' | 'status' | 'startDate' | 'teamPoints'>
+    )>>> }
+  )> }
+);
+
+export type TournamentTeamsQueryVariables = Exact<{
+  tournamentID: Scalars['ID'];
+}>;
+
+
+export type TournamentTeamsQuery = (
+  { __typename?: 'Query' }
+  & { tournament?: Maybe<(
+    { __typename?: 'Tournament' }
+    & Pick<Tournament, 'id'>
+    & { teams?: Maybe<Array<Maybe<(
+      { __typename?: 'Team' }
+      & Pick<Team, 'id' | 'name'>
+      & { members?: Maybe<Array<Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      )>>> }
     )>>> }
   )> }
 );
@@ -889,6 +972,54 @@ export function useGetTeamLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetTeamQueryHookResult = ReturnType<typeof useGetTeamQuery>;
 export type GetTeamLazyQueryHookResult = ReturnType<typeof useGetTeamLazyQuery>;
 export type GetTeamQueryResult = Apollo.QueryResult<GetTeamQuery, GetTeamQueryVariables>;
+export const JoinTeamDocument = gql`
+    mutation joinTeam($teamID: ID!) {
+  joinTeam(teamID: $teamID) {
+    ... on JoinTeamSuccess {
+      newTeam {
+        id
+      }
+    }
+    ... on JoinTeamFailure {
+      errors {
+        ... on TeamNotFoundError {
+          teamID
+          message
+        }
+        ... on Error {
+          message
+        }
+      }
+    }
+  }
+}
+    `;
+export type JoinTeamMutationFn = Apollo.MutationFunction<JoinTeamMutation, JoinTeamMutationVariables>;
+
+/**
+ * __useJoinTeamMutation__
+ *
+ * To run a mutation, you first call `useJoinTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinTeamMutation, { data, loading, error }] = useJoinTeamMutation({
+ *   variables: {
+ *      teamID: // value for 'teamID'
+ *   },
+ * });
+ */
+export function useJoinTeamMutation(baseOptions?: Apollo.MutationHookOptions<JoinTeamMutation, JoinTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<JoinTeamMutation, JoinTeamMutationVariables>(JoinTeamDocument, options);
+      }
+export type JoinTeamMutationHookResult = ReturnType<typeof useJoinTeamMutation>;
+export type JoinTeamMutationResult = Apollo.MutationResult<JoinTeamMutation>;
+export type JoinTeamMutationOptions = Apollo.BaseMutationOptions<JoinTeamMutation, JoinTeamMutationVariables>;
 export const LoginDocument = gql`
     mutation login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
@@ -1284,3 +1415,46 @@ export function useTournamentRoundsLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type TournamentRoundsQueryHookResult = ReturnType<typeof useTournamentRoundsQuery>;
 export type TournamentRoundsLazyQueryHookResult = ReturnType<typeof useTournamentRoundsLazyQuery>;
 export type TournamentRoundsQueryResult = Apollo.QueryResult<TournamentRoundsQuery, TournamentRoundsQueryVariables>;
+export const TournamentTeamsDocument = gql`
+    query tournamentTeams($tournamentID: ID!) {
+  tournament(tournamentID: $tournamentID) {
+    id
+    teams {
+      id
+      name
+      members {
+        id
+        username
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useTournamentTeamsQuery__
+ *
+ * To run a query within a React component, call `useTournamentTeamsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTournamentTeamsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTournamentTeamsQuery({
+ *   variables: {
+ *      tournamentID: // value for 'tournamentID'
+ *   },
+ * });
+ */
+export function useTournamentTeamsQuery(baseOptions: Apollo.QueryHookOptions<TournamentTeamsQuery, TournamentTeamsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TournamentTeamsQuery, TournamentTeamsQueryVariables>(TournamentTeamsDocument, options);
+      }
+export function useTournamentTeamsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TournamentTeamsQuery, TournamentTeamsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TournamentTeamsQuery, TournamentTeamsQueryVariables>(TournamentTeamsDocument, options);
+        }
+export type TournamentTeamsQueryHookResult = ReturnType<typeof useTournamentTeamsQuery>;
+export type TournamentTeamsLazyQueryHookResult = ReturnType<typeof useTournamentTeamsLazyQuery>;
+export type TournamentTeamsQueryResult = Apollo.QueryResult<TournamentTeamsQuery, TournamentTeamsQueryVariables>;

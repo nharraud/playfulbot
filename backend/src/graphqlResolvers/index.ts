@@ -5,6 +5,7 @@ import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/auth
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';
 import {
+  joinTeamResolver,
   teamMembersResolver,
   teamResolver,
   teamTournamentResolver,
@@ -18,6 +19,7 @@ import {
   tournamentMyRolesResolver,
   tournamentResolver,
   tournamentRoundsResolver,
+  tournamentTeamsResolver,
 } from './tournaments';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
@@ -58,6 +60,7 @@ const resolvers: IResolvers = {
     logout: logoutResolver,
     createTournament: createTournamentResolver,
     registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
+    joinTeam: joinTeamResolver,
   } as gqlTypes.MutationResolvers,
   User: {
     teams: userTeamsResolver,
@@ -71,6 +74,7 @@ const resolvers: IResolvers = {
     rounds: tournamentRoundsResolver,
     invitationLinkID: tournamentInvitationIDResolver,
     myRole: tournamentMyRolesResolver,
+    teams: tournamentTeamsResolver,
   },
   Round: {
     teamPoints: roundTeamPointsResolver,

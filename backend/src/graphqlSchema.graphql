@@ -27,6 +27,7 @@ type Tournament {
   firstRoundDate: Date
   roundsNumber: Int
   minutesBetweenRounds: Int
+  teams: [Team]
 
   rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
 
@@ -58,6 +59,38 @@ type LoginResult {
   user: User!
   token: String!
 }
+
+
+interface Error {
+  message: String!
+}
+
+type DeletedTeam {
+  teamID: ID
+  name: String
+}
+
+union TeamOrDeletedTeam = Team | DeletedTeam
+
+type JoinTeamSuccess {
+  oldTeam: TeamOrDeletedTeam
+  newTeam: Team
+}
+
+type JoinTeamFailure {
+  errors: [JoinTeamError!]!
+}
+
+type TeamNotFoundError implements Error {
+  message: String!
+  teamID: ID
+}
+
+union JoinTeamError = TeamNotFoundError
+
+union JoinTeamResult = JoinTeamSuccess | JoinTeamFailure
+
+
 
 type Game {
   id: ID
@@ -161,4 +194,6 @@ type Mutation {
   ): Tournament
 
   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): TournamentInvitation
+
+  joinTeam(teamID: ID!): JoinTeamResult
 }

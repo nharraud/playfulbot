@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { TournamentQuery } from 'src/types/graphql';
 import useTeam from 'src/hooksAndQueries/useTeam';
@@ -6,7 +6,8 @@ import LoadingWidget from '../../Loading';
 import TeamHeader from './TeamHeader';
 import { TeamSections } from './TeamSections';
 import { TabPanel } from 'src/utils/TabPanel';
-import * as gqlTypes from '../../../types/graphql';
+import { TournamentRoleName } from '../../../types/graphql';
+import AllTeamsTab from './AllTeamsTab';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,10 +23,15 @@ interface TeamSubPageProps {
 export default function TeamSubPage(props: TeamSubPageProps) {
   const classes = useStyles();
 
-  const { team, userNotPartOfAnyTeam, loading, error } = useTeam(props.tournament.id);
+  const { team, userNotPartOfAnyTeam, loading, error, refetch } = useTeam(props.tournament.id);
 
   const [ currentSection, setSection ] = useState(TeamSections.YOUR_TEAM);
-  const isAdmin = props.tournament.myRole === gqlTypes.TournamentRoleName.Admin;
+  const isAdmin = props.tournament.myRole === TournamentRoleName.Admin;
+
+  const handleJoinSuccess = useCallback(() => {
+    refetch();
+    setSection(TeamSections.YOUR_TEAM);
+  }, [setSection, refetch]);
 
   if (loading) {
     return <LoadingWidget/>
@@ -45,12 +51,12 @@ export default function TeamSubPage(props: TeamSubPageProps) {
       <TabPanel value={currentSection} index={TeamSections.YOUR_TEAM}>
         <ul>
         {team?.members?.map((member) =>
-          <li>{member.username}</li>
+          <li key={member.id}>{member.username}</li>
         )}
       </ul>
       </TabPanel>
       <TabPanel value={currentSection} index={TeamSections.ALL_TEAMS}>
-        Item One
+        <AllTeamsTab tournamentID={props.tournament.id} onJoinSuccess={handleJoinSuccess}/>
       </TabPanel>
     </div>
   )

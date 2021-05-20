@@ -45,7 +45,7 @@ export class TournamentInvitation {
     const query = `DELETE FROM tournament_invitations
                    WHERE tournament_id = $[tournamentID] AND user_id = $[userID]
                    RETURNING true`;
-    await dbOrTX.one<boolean>(query, { tournamentID, userID });
+    await dbOrTX.oneOrNone<{ bool: boolean }>(query, { tournamentID, userID });
   }
 
   static async getByID(

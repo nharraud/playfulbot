@@ -1,0 +1,13 @@
+query tournamentTeams($tournamentID: ID!) {
+  tournament(tournamentID: $tournamentID) {
+    id
+    teams {
+      id
+      name
+      members {
+        id
+        username
+      }
+    }
+  }
+}

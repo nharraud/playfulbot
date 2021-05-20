@@ -46,6 +46,10 @@ export class DebugArena {
     return arena;
   }
 
+  static deleteDebugArena(userID: UserID, tournamentID: TournamentID): boolean {
+    return DebugArena.arenas?.get(tournamentID)?.delete(userID) || false;
+  }
+
   static getDebugArena(userID: UserID, tournamentID: TournamentID): DebugArena | undefined {
     const arena = DebugArena.arenas.get(tournamentID)?.get(userID);
     return arena;

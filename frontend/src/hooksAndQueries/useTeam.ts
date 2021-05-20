@@ -6,7 +6,7 @@ import * as gqlTypes from '../types/graphql';
 export default function useTeam(tournamentID: TournamentID) {
   const { authenticatedUser } = useAuthenticatedUser();
 
-  const { loading, error, data } = useQuery<gqlTypes.GetTeamQuery>(gqlTypes.GetTeamDocument, {
+  const { loading, error, data, refetch } = useQuery<gqlTypes.GetTeamQuery>(gqlTypes.GetTeamDocument, {
     variables: {
       userID: authenticatedUser ? authenticatedUser.id : null,
       tournamentID,
@@ -23,5 +23,5 @@ export default function useTeam(tournamentID: TournamentID) {
     userNotPartOfAnyTeam = true
   }
 
-  return { team, userNotPartOfAnyTeam, loading, error };
+  return { team, userNotPartOfAnyTeam, loading, error, refetch };
 }

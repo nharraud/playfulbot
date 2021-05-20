@@ -1,0 +1,20 @@
+mutation joinTeam($teamID: ID!) {
+    joinTeam(teamID: $teamID) {
+        ... on JoinTeamSuccess {
+          newTeam {
+            id
+          }
+        }
+        ... on JoinTeamFailure {
+          errors {
+            ... on TeamNotFoundError {
+              teamID
+              message
+            }
+            ... on Error {
+              message
+            }
+          }
+        }
+    }
+}

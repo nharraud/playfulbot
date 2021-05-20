@@ -229,7 +229,8 @@ export class Tournament {
   }
 
   getTeams(dbOrTX: DbOrTx): Promise<Team[]> {
-    return Team.getByTournamentID(this.id, dbOrTX);
+    // return Team.getByTournamentID(this.id, dbOrTX);
+    return Team.getAll({ tournamentID: this.id }, dbOrTX);
   }
 
   getGameDefinition(): GameDefinition {
@@ -262,7 +263,7 @@ export class Tournament {
   }
 
   async addRole(userID: UserID, role: TournamentRoleName, dbOrTX: DbOrTx): Promise<void> {
-    await dbOrTX.one<boolean>(
+    await dbOrTX.one<{ bool: boolean }>(
       `INSERT INTO tournament_roles(tournament_id, user_id, role)
        VALUES($[tournamentID], $[userID], $[role])
        RETURNING true`,

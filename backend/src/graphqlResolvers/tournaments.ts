@@ -60,6 +60,15 @@ export async function tournamentRoundsResolver(
   return result;
 }
 
+export function tournamentTeamsResolver(
+  parent: Tournament,
+  args: undefined,
+  context: ApolloContext
+): Promise<gqlTypes.Round[]> {
+  // FIXME: this should run in the same transaction as the parent query
+  return parent.getTeams(db.default);
+}
+
 export function tournamentInvitationIDResolver(
   parent: Tournament,
   args: undefined,
