@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     paddingTop: theme.spacing(3),
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.menu.main,
+    color: theme.palette.getContrastText(theme.palette.menu.main),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',

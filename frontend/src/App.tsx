@@ -29,9 +29,28 @@ import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { AuthenticationRequired } from './AuthenticationRequired';
 import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
+declare module "@material-ui/core/styles/createPalette" {
+  interface Palette {
+    menu: Palette['primary'];
+  }
+  interface PaletteOptions {
+    menu: PaletteOptions['primary'];
+  }
+}
+
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
+    primary: {
+      main: '#90caf9'
+    },
+    secondary: {
+      main: '#ef5350',
+    },
+    menu: {
+      main: '#3f51b5',
+      dark: '#303f9f',
+    }
   },
 });
 

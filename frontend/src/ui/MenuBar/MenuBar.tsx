@@ -13,6 +13,8 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {},
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
+      backgroundColor: theme.palette.menu.dark,
+      color: theme.palette.getContrastText(theme.palette.menu.dark),
     },
   }),
 );
