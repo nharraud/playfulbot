@@ -9,10 +9,8 @@ import { Tournament, TournamentStatus } from '~playfulbot/model/Tournaments';
 import { Scheduler } from './Scheduler';
 import { Round, RoundStatus } from '~playfulbot/model/Round';
 import { User } from '~playfulbot/model/User';
-import {
-  resetTournamentFixture,
-  tournamentAdminFixture,
-} from '~playfulbot/model/__tests__/fixtures/tournamentFixtures';
+import { tournamentAdminFixture } from '~playfulbot/model/__tests__/fixtures/tournamentFixtures';
+import { resetFixtures } from '~playfulbot/model/__tests__/fixtures/reset';
 
 describe('Scheduler', () => {
   // const now = DateTime.fromISO('2021-01-01T00:00:00.000');
@@ -41,7 +39,7 @@ describe('Scheduler', () => {
 
   afterEach(async () => {
     await dropDB();
-    resetTournamentFixture();
+    resetFixtures();
     config.DATABASE_NAME = oldDatabaseName;
     clock.uninstall();
     clock = undefined;

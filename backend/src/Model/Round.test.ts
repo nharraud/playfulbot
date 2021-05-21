@@ -6,11 +6,9 @@ import { db } from './db';
 import { config } from './db/config';
 import { createDB, dropDB } from './db/db_admin';
 import { Round, RoundStatus } from './Round';
+import { resetFixtures } from './__tests__/fixtures/reset';
 import { teamsFixture } from './__tests__/fixtures/teamFixtures';
-import {
-  resetTournamentFixture,
-  startedTournamentFixture,
-} from './__tests__/fixtures/tournamentFixtures';
+import { startedTournamentFixture } from './__tests__/fixtures/tournamentFixtures';
 import { getGamesBetweenPlayers } from './__tests__/helpers/gameHelpers';
 
 describe('model/Round', () => {
@@ -25,7 +23,7 @@ describe('model/Round', () => {
 
   afterEach(async () => {
     await dropDB();
-    resetTournamentFixture();
+    resetFixtures();
     config.DATABASE_NAME = oldDatabaseName;
   });
 

@@ -8,9 +8,12 @@ import { Tournament } from './Tournaments';
 import { config } from './db/config';
 import { User } from './User';
 import {
-  resetTournamentFixture,
+  createdTournamentFixture,
   tournamentAdminFixture,
 } from './__tests__/fixtures/tournamentFixtures';
+import { resetFixtures } from './__tests__/fixtures/reset';
+import { newUserFixture } from './__tests__/fixtures/user';
+import { teamFixture, teamMemberFixture, teamsFixture } from './__tests__/fixtures/teamFixtures';
 
 describe('Model/Team', () => {
   beforeAll(() => {
@@ -57,7 +60,7 @@ describe('Model/Team', () => {
 
   afterEach(async () => {
     await dropDB();
-    resetTournamentFixture();
+    resetFixtures();
     config.DATABASE_NAME = oldDatabaseName;
   });
 
@@ -106,14 +109,33 @@ describe('Model/Team', () => {
   test('should be able to check if a user is a member with "isMember"', async () => {
     await db.default.tx(async (tx) => {
       const alice = await User.create('Alice', 'a password', tx);
-      const bob = await User.create('Bob', 'a password', tx);
       const aliceTeam = (await Team.create(`aliceTeam`, tournaments[0].id, tx)) as Team;
       await aliceTeam.addMember(alice.id, tx);
+      const bob = await User.create('Bob', 'a password', tx);
       const bobTeam = (await Team.create(`bobTeam`, tournaments[0].id, tx)) as Team;
+      await aliceTeam.addMember(bob.id, tx);
       const aliceIsMemberOfAliceTeam = await Team.isMember(aliceTeam.id, alice.id, tx);
       const aliceIsMemberOfBobTeam = await Team.isMember(bobTeam.id, alice.id, tx);
       expect(aliceIsMemberOfAliceTeam).toBeTruthy();
       expect(aliceIsMemberOfBobTeam).toBeFalsy();
+    });
+  });
+
+  test('should know non-team-members with "hasTeam"', async () => {
+    await db.default.tx(async (tx) => {
+      const newUser = await newUserFixture();
+      const tournament = await createdTournamentFixture();
+      const hasTeam = await Team.hasTeam(newUser.id, tournament.id, db.default);
+      expect(hasTeam).toBeFalsy();
+    });
+  });
+
+  test('should know team-members with "hasTeam"', async () => {
+    await db.default.tx(async (tx) => {
+      const tournament = await createdTournamentFixture();
+      const teamMember = await teamMemberFixture();
+      const hasTeam = await Team.hasTeam(teamMember.id, tournament.id, db.default);
+      expect(hasTeam).toBeTruthy();
     });
   });
 });

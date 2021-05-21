@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 import { TeamID, TournamentID, useJoinTeamMutation } from 'src/types/graphql';
 import { useTournamentTeamsQuery } from '../../../types/graphql';
 import TeamCard from './TeamCard';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
+import CreateTeamCard from './CreateTeamCard';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,19 +30,15 @@ export default function AllTeamsTab(props: AllTeamsTabProps) {
 
   let content;
 
-  const [joinTeam, result ] = useJoinTeamMutation();
+  const [joinTeam, joinResult ] = useJoinTeamMutation({
+    onCompleted: () => props.onJoinSuccess(),
+  });
 
   const handleJoin = useCallback((teamID: TeamID) => {
-    if (!result.loading) {
+    if (!joinResult.loading) {
       joinTeam({ variables: { teamID } });
     }
-  }, [joinTeam, result]);
-
-  useEffect(() => {
-    if (result.data && result.data.joinTeam.__typename === 'JoinTeamSuccess') {
-      props.onJoinSuccess()
-    }
-  }, [result, props])
+  }, [joinTeam, joinResult]);
 
   if (tournamentTeams && authenticatedUser) {
     const userTeam = tournamentTeams.tournament.teams.find((team) =>
@@ -64,6 +61,9 @@ export default function AllTeamsTab(props: AllTeamsTabProps) {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
+        <Grid item xs={6} md={3} lg={2}>
+          <CreateTeamCard onCreate={props.onJoinSuccess} tournamentID={props.tournamentID}/>
+        </Grid>
         {content}
       </Grid>
     </div>

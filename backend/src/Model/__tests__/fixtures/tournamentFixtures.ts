@@ -3,6 +3,7 @@ import { Tournament, TournamentStatus } from '~playfulbot/model/Tournaments';
 import { registerTestGame, gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
 import { db } from '~playfulbot/model/db';
 import { User } from '~playfulbot/model/User';
+import { onResetFixtures } from './reset';
 
 let _testTournamentAdmin: Promise<User>;
 export function tournamentAdminFixture(): Promise<User> {
@@ -14,6 +15,9 @@ export function tournamentAdminFixture(): Promise<User> {
       `ACEE0000-0000-0000-0000-000000000000`
     );
   }
+  onResetFixtures(() => {
+    _testTournamentAdmin = undefined;
+  });
   return _testTournamentAdmin;
 }
 
@@ -34,6 +38,9 @@ export async function createdTournamentFixture(): Promise<Tournament> {
       db.default
     );
   }
+  onResetFixtures(() => {
+    _testTournament = undefined;
+  });
   return _testTournament;
 }
 
@@ -43,9 +50,4 @@ export async function startedTournamentFixture(): Promise<Tournament> {
     await tournament.start(db.default);
   }
   return tournament;
-}
-
-export function resetTournamentFixture(): void {
-  _testTournament = undefined;
-  _testTournamentAdmin = undefined;
 }

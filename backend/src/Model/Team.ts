@@ -129,6 +129,19 @@ export class Team {
     return new Team(data);
   }
 
+  static async hasTeam(
+    userID: UserID,
+    tournamentID: TournamentID,
+    dbOrTX: DbOrTx
+  ): Promise<boolean> {
+    const query = `SELECT EXISTS (SELECT 1 FROM teams
+                   JOIN team_memberships ON teams.id = team_memberships.team_id
+                   WHERE team_memberships.user_id = $[userID]
+                   AND teams.tournament_id = $[tournamentID])`;
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(query, { userID, tournamentID });
+    return result.exists || false;
+  }
+
   static async getByMember(
     userID: UserID,
     tournamentID: TournamentID,

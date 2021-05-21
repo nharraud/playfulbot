@@ -6,11 +6,9 @@ import { gameDefinitions } from './GameDefinition';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
 import * as gqlTypes from '~playfulbot/types/graphql';
-import {
-  resetTournamentFixture,
-  tournamentAdminFixture,
-} from './__tests__/fixtures/tournamentFixtures';
+import { tournamentAdminFixture } from './__tests__/fixtures/tournamentFixtures';
 import { User } from './User';
+import { resetFixtures } from './__tests__/fixtures/reset';
 
 describe('Model/Tournament', () => {
   const now = DateTime.fromISO('2021-01-01T00:00:00.000');
@@ -33,7 +31,7 @@ describe('Model/Tournament', () => {
 
   afterEach(async () => {
     await dropDB();
-    resetTournamentFixture();
+    resetFixtures();
     config.DATABASE_NAME = oldDatabaseName;
   });
 

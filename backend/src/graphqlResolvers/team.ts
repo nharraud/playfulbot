@@ -8,13 +8,65 @@ import { Tournament } from '~playfulbot/model/Tournaments';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { isValidationError, validationErrorsToGraphQL } from '~playfulbot/model/validate';
 
+export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
+  parent,
+  args,
+  ctx
+) => {
+  if (!isUserContext(ctx)) {
+    throw new AuthenticationError(`Only authenticated users are allowed to create teams.`);
+  }
+  if (args.join !== true) {
+    return {
+      __typename: 'CreateTeamFailure',
+      errors: [
+        {
+          __typename: 'ValidationError',
+          message: 'Empty teams are not yet supported. "join" must be "true"',
+        },
+      ],
+    };
+  }
+
+  return db.default.tx(async (tx): Promise<gqlTypes.CreateTeamResult> => {
+    const isInvited = await TournamentInvitation.isInvited(args.tournamentID, ctx.userID, tx);
+    const hasTeam = await Team.hasTeam(ctx.userID, args.tournamentID, tx);
+    if (!isInvited && !hasTeam) {
+      return {
+        __typename: 'CreateTeamFailure',
+        errors: [
+          {
+            __typename: 'ForbiddenError',
+            message: 'Only tournament invitees or team members can create new teams.',
+          },
+        ],
+      };
+    }
+
+    const teamOrError = await Team.create(args.input.name, args.tournamentID, tx);
+    if (isValidationError(teamOrError)) {
+      return {
+        __typename: 'CreateTeamFailure',
+        errors: validationErrorsToGraphQL(teamOrError),
+      };
+    }
+    if (args.join) {
+      await teamOrError.addMember(ctx.userID, tx);
+    }
+    return {
+      __typename: 'CreateTeamSuccess',
+      team: teamOrError,
+    };
+  });
+};
+
 export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
   parent,
   args,
   ctx
 ) => {
   if (!isUserContext(ctx)) {
-    throw new AuthenticationError(`Only authenticated users are allowed to create tournaments.`);
+    throw new AuthenticationError(`Only authenticated users are allowed to update teams.`);
   }
   return db.default.tx(async (tx): Promise<gqlTypes.UpdateTeamResult> => {
     if (args.input.name === undefined) {
@@ -22,7 +74,7 @@ export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['upda
         __typename: 'UpdateTeamFailure',
         errors: [
           {
-            __typename: 'InvalidTeamDataError',
+            __typename: 'ValidationError',
             message: 'Update should modify at least one field.',
           },
         ],

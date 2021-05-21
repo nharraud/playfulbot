@@ -48,6 +48,23 @@ export class TournamentInvitation {
     await dbOrTX.oneOrNone<{ bool: boolean }>(query, { tournamentID, userID });
   }
 
+  static async isInvited(
+    tournamentID: TournamentID,
+    userID: UserID,
+    dbOrTX: DbOrTx
+  ): Promise<boolean> {
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
+      `SELECT EXISTS(
+        SELECT 1 FROM tournament_invitations WHERE tournament_id = $[tournamentID] AND user_id = $[userID]
+       )`,
+      {
+        tournamentID,
+        userID,
+      }
+    );
+    return result.exists || false;
+  }
+
   static async getByID(
     tournamentID: TournamentID,
     userID: UserID,

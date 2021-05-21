@@ -1,11 +1,9 @@
 import { db } from './db';
 import { config } from './db/config';
 import { createDB, dropDB } from './db/db_admin';
+import { resetFixtures } from './__tests__/fixtures/reset';
 import { teamsFixture } from './__tests__/fixtures/teamFixtures';
-import {
-  resetTournamentFixture,
-  startedTournamentFixture,
-} from './__tests__/fixtures/tournamentFixtures';
+import { startedTournamentFixture } from './__tests__/fixtures/tournamentFixtures';
 
 describe('model/GameSummary', () => {
   let oldDatabaseName: string;
@@ -19,7 +17,7 @@ describe('model/GameSummary', () => {
 
   afterEach(async () => {
     await dropDB();
-    resetTournamentFixture();
+    resetFixtures();
     config.DATABASE_NAME = oldDatabaseName;
   });
 

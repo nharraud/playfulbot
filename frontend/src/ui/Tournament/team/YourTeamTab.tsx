@@ -3,7 +3,7 @@ import { List, ListItem, ListItemText, makeStyles, Paper, Typography } from '@ma
 import { TournamentID } from 'src/types/graphql';
 import useTeam from 'src/hooksAndQueries/useTeam';
 import EditIcon from '@material-ui/icons/Edit';
-import TeamEditDialog from './TeamEditDialog';
+import { TeamEditDialog } from './TeamEditDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -91,7 +91,7 @@ export default function YourTeamTab({ tournamentID }: YourTeamTabProps) {
           {members}
         </List>
       </Paper>
-      <TeamEditDialog open={editOpen} handleClose={handleClose} team={team} action='update'/>
+      <TeamEditDialog open={editOpen} handleClose={handleClose} team={team}/>
     </div>
   )
 }

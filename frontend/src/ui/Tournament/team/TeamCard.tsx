@@ -5,10 +5,14 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
   },
   content: {
     textAlign: 'center',
     paddingBottom: theme.spacing(1),
+    flex: '1 1 auto',
   },
   title: {
   },
@@ -16,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   actions: {
+    flex: '0 0 auto',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -55,7 +60,7 @@ export default function TeamCard({ team, onJoin }: TeamCardProps) {
     onJoin(team.id);
   }, [team.id, onJoin]);
   return (
-    <Card>
+    <Card className={classes.root}>
       <CardContent className={classes.content}>
         <Typography className={classes.title} variant='h5' gutterBottom>
           { team.name }

@@ -1,0 +1,35 @@
+mutation createTeam($tournamentID: ID!, $input: TeamInput!) {
+  createTeam(tournamentID: $tournamentID, input: $input) {
+    ... on CreateTeamSuccess {
+      team {
+        id
+        name
+      }
+    }
+    ... on CreateTeamFailure {
+      errors {
+        ... on Error {
+          message
+        }
+      }
+    }
+  }
+}
+
+mutation updateTeam($teamID: ID!, $input: TeamInput!) {
+  updateTeam(teamID: $teamID, input: $input) {
+    ... on UpdateTeamSuccess {
+      team {
+        id
+        name
+      }
+    }
+    ... on UpdateTeamFailure {
+      errors {
+        ... on Error {
+          message
+        }
+      }
+    }
+  }
+}

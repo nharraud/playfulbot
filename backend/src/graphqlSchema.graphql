@@ -3,6 +3,24 @@
 scalar Date
 scalar JSON
 
+#
+# Generic Error types
+#
+interface Error {
+  message: String!
+}
+
+type ForbiddenError implements Error {
+  message: String!
+}
+
+type ValidationError implements Error {
+  message: String!
+}
+
+#
+# Main types
+#
 type User {
   id: ID!
   username: String!
@@ -61,13 +79,6 @@ type LoginResult {
 }
 
 
-interface Error {
-  message: String!
-}
-
-type ValidationError implements Error {
-  message: String!
-}
 
 type DeletedTeam {
   teamID: ID
@@ -95,8 +106,11 @@ union JoinTeamError = TeamNotFoundError
 union JoinTeamResult = JoinTeamSuccess | JoinTeamFailure
 
 
+#
+# Update Team Input/Output
+#
 
-input MessageInput {
+input TeamInput {
   name: String
 }
 
@@ -108,18 +122,25 @@ type UpdateTeamFailure {
   errors: [UpdateTeamError!]!
 }
 
-type InvalidTeamDataError implements Error {
-  message: String!
-  path: String
-}
-
-type ForbiddenError implements Error {
-  message: String!
-}
-
-union UpdateTeamError = InvalidTeamDataError | ForbiddenError | ValidationError
+union UpdateTeamError = ForbiddenError | ValidationError
 
 union UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure
+
+
+#
+# Create Team Input/Output
+#
+type CreateTeamSuccess {
+  team: Team
+}
+
+type CreateTeamFailure {
+  errors: [CreateTeamError!]!
+}
+
+union CreateTeamError = ForbiddenError | ValidationError
+
+union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 
 
 
@@ -226,6 +247,7 @@ type Mutation {
 
   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): TournamentInvitation
 
-  updateTeam(teamID: ID!, input: MessageInput): UpdateTeamResult
+  createTeam(tournamentID: ID!, input: TeamInput!, join: Boolean! = true): CreateTeamResult
+  updateTeam(teamID: ID!, input: TeamInput!): UpdateTeamResult
   joinTeam(teamID: ID!): JoinTeamResult
 }
