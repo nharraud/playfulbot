@@ -26,7 +26,7 @@ export default function TeamSubPage(props: TeamSubPageProps) {
 
   const { team, userNotPartOfAnyTeam, loading, error, refetch } = useTeam(props.tournament.id);
 
-  const [ currentSection, setSection ] = useState(TeamSections.YOUR_TEAM);
+  const [ currentSection, setSection ] = useState(TeamSections.OTHER_TEAMS);
   const isAdmin = props.tournament.myRole === TournamentRoleName.Admin;
 
   const handleJoinSuccess = useCallback(() => {
@@ -40,19 +40,19 @@ export default function TeamSubPage(props: TeamSubPageProps) {
     return <p>{ error.message }</p>;
   }
 
-  // if (userNotPartOfAnyTeam) {
-  //   return (
-  //     <Button>Join team</Button>
-  //   );
-  // }
-
   return (
     <div className={classes.root}>
-      <TeamHeader currentSection={currentSection} setSection={setSection} isAdmin={isAdmin} invitationLinkID={props.tournament.invitationLinkID} />
+      <TeamHeader 
+        currentSection={currentSection} setSection={setSection}
+        isAdmin={isAdmin}
+        invitationLinkID={props.tournament.invitationLinkID}
+        loading={loading}
+        hasTeam={team !== undefined}
+        />
       <TabPanel value={currentSection} index={TeamSections.YOUR_TEAM}>
         <YourTeamTab tournamentID={props.tournament.id}/>
       </TabPanel>
-      <TabPanel value={currentSection} index={TeamSections.ALL_TEAMS}>
+      <TabPanel value={currentSection} index={TeamSections.OTHER_TEAMS}>
         <AllTeamsTab tournamentID={props.tournament.id} onJoinSuccess={handleJoinSuccess}/>
       </TabPanel>
     </div>

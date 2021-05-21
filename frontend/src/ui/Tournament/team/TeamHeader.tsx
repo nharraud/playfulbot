@@ -41,8 +41,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface TeamHeaderProps {
-  currentSection: TeamSections
-  setSection: (section: TeamSections) => void
+  hasTeam: boolean,
+  loading: boolean,
+  currentSection: TeamSections,
+  setSection: (section: TeamSections) => void,
   isAdmin: boolean,
   invitationLinkID: TournamentInvitationLinkID | null,
 }
@@ -73,6 +75,21 @@ export default function TeamHeader(props: TeamHeaderProps) {
     )
   }
 
+  let yourTeamTab;
+  let otherTeamTab;
+  if (!props.loading) {
+    if (props.hasTeam) {
+      yourTeamTab = <Tab label="Your Team" value={TeamSections.YOUR_TEAM}/>;
+      otherTeamTab = <Tab label="Other Teams" value={TeamSections.OTHER_TEAMS}/>;
+    } else {
+      yourTeamTab = undefined;
+      otherTeamTab = <Tab label="All Teams" value={TeamSections.OTHER_TEAMS}/>;
+    }
+  } else {
+    yourTeamTab = undefined;
+    otherTeamTab = undefined;
+  }
+
   return (
     <Box boxShadow={3} className={classes.root}>
       <div className={classes.mainRow}>
@@ -84,8 +101,8 @@ export default function TeamHeader(props: TeamHeaderProps) {
         {inviteComp}
       </div>
       <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label="Team sections" className={classes.tabs}>
-          <Tab label="All Teams" value={TeamSections.ALL_TEAMS}/>
-          <Tab label="Your Team" value={TeamSections.YOUR_TEAM}/>
+        {otherTeamTab}
+        {yourTeamTab}
       </Tabs>
     </Box>
   )

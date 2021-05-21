@@ -5,13 +5,13 @@ import * as gqlTypes from '../types/graphql';
 
 export default function useTeam(tournamentID: TournamentID) {
   const { authenticatedUser } = useAuthenticatedUser();
-
+  const skip = !authenticatedUser || !authenticatedUser.id || !tournamentID;
   const { loading, error, data, refetch } = useQuery<gqlTypes.GetTeamQuery>(gqlTypes.GetTeamDocument, {
     variables: {
       userID: authenticatedUser ? authenticatedUser.id : null,
       tournamentID,
     },
-    skip: !authenticatedUser || !authenticatedUser.id || !tournamentID
+    skip
   });
 
   let userNotPartOfAnyTeam = undefined;
@@ -23,5 +23,5 @@ export default function useTeam(tournamentID: TournamentID) {
     userNotPartOfAnyTeam = true
   }
 
-  return { team, userNotPartOfAnyTeam, loading, error, refetch };
+  return { team, userNotPartOfAnyTeam, loading: loading || skip, error, refetch };
 }

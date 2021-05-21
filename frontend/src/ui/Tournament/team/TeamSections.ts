@@ -1,4 +1,4 @@
 export enum TeamSections {
-  ALL_TEAMS,
+  OTHER_TEAMS,
   YOUR_TEAM,
 };
