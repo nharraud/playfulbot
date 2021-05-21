@@ -4,7 +4,7 @@ SET timezone='UTC';
 
 CREATE TABLE users (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR(15) NOT NULL UNIQUE,
+  username VARCHAR(15) NOT NULL UNIQUE CHECK (length(username) >= 3),
   password BYTEA NOT NULL
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE tournaments (
 CREATE TABLE teams (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE,
-  name VARCHAR(15) NOT NULL UNIQUE
+  name VARCHAR(15) NOT NULL UNIQUE CHECK (length(name) >= 3)
 );
 
 

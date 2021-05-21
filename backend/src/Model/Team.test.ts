@@ -69,9 +69,18 @@ describe('Model/Team', () => {
     });
   });
 
+  test('should be able to update a Team', async () => {
+    const team = (await Team.create('old team name', tournaments[0].id, db.default)) as Team;
+    const updatedTeam = await Team.update(team.id, { name: 'new team name' }, db.default);
+    expect(updatedTeam).toMatchObject({
+      name: 'new team name',
+      tournamentID: tournaments[0].id,
+    });
+  });
+
   test('should be able to add members', async () => {
     await db.default.tx(async (tx) => {
-      const team = await Team.create('a team', tournaments[0].id, tx);
+      const team = (await Team.create('a team', tournaments[0].id, tx)) as Team;
       const user = await User.create('Alice', 'a password', tx);
       await team.addMember(user.id, tx);
       const members = await team.getMembers(tx);
@@ -84,13 +93,27 @@ describe('Model/Team', () => {
     await db.default.tx(async (tx) => {
       const user = await User.create('Alice', 'a password', tx);
       for (const [idx, tournament] of tournaments.entries()) {
-        const team = await Team.create(`team${idx}`, tournaments[idx].id, tx);
+        const team = (await Team.create(`team${idx}`, tournaments[idx].id, tx)) as Team;
         await team.addMember(user.id, tx);
       }
       const teams = await Team.getAll({ memberID: user.id }, tx);
       expect(teams).toHaveLength(2);
       const teamNames = teams.map((team) => team.name);
       expect(teamNames).toEqual(['team1', 'team0']);
+    });
+  });
+
+  test('should be able to check if a user is a member with "isMember"', async () => {
+    await db.default.tx(async (tx) => {
+      const alice = await User.create('Alice', 'a password', tx);
+      const bob = await User.create('Bob', 'a password', tx);
+      const aliceTeam = (await Team.create(`aliceTeam`, tournaments[0].id, tx)) as Team;
+      await aliceTeam.addMember(alice.id, tx);
+      const bobTeam = (await Team.create(`bobTeam`, tournaments[0].id, tx)) as Team;
+      const aliceIsMemberOfAliceTeam = await Team.isMember(aliceTeam.id, alice.id, tx);
+      const aliceIsMemberOfBobTeam = await Team.isMember(bobTeam.id, alice.id, tx);
+      expect(aliceIsMemberOfAliceTeam).toBeTruthy();
+      expect(aliceIsMemberOfBobTeam).toBeFalsy();
     });
   });
 });

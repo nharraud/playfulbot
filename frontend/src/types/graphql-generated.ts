@@ -120,6 +120,35 @@ export type JoinTeamError = TeamNotFoundError;
 
 export type JoinTeamResult = JoinTeamSuccess | JoinTeamFailure;
 
+export type MessageInput = {
+  name?: Maybe<Scalars['String']>;
+};
+
+export type UpdateTeamSuccess = {
+  __typename?: 'UpdateTeamSuccess';
+  team?: Maybe<Team>;
+};
+
+export type UpdateTeamFailure = {
+  __typename?: 'UpdateTeamFailure';
+  errors: Array<UpdateTeamError>;
+};
+
+export type InvalidTeamDataError = Error & {
+  __typename?: 'InvalidTeamDataError';
+  message: Scalars['String'];
+  path?: Maybe<Scalars['String']>;
+};
+
+export type ForbiddenError = Error & {
+  __typename?: 'ForbiddenError';
+  message: Scalars['String'];
+};
+
+export type UpdateTeamError = InvalidTeamDataError | ForbiddenError;
+
+export type UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure;
+
 export type Game = {
   __typename?: 'Game';
   id?: Maybe<Scalars['ID']>;
@@ -274,6 +303,7 @@ export type Mutation = {
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
   registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
+  updateTeam?: Maybe<UpdateTeamResult>;
   joinTeam?: Maybe<JoinTeamResult>;
 };
 
@@ -315,6 +345,12 @@ export type MutationCreateTournamentArgs = {
 
 export type MutationRegisterTournamentInvitationLinkArgs = {
   tournamentInvitationLinkID: Scalars['ID'];
+};
+
+
+export type MutationUpdateTeamArgs = {
+  teamID: Scalars['ID'];
+  input?: Maybe<MessageInput>;
 };
 
 
@@ -669,6 +705,32 @@ export type TournamentTeamsQuery = (
         & Pick<User, 'id' | 'username'>
       )>>> }
     )>>> }
+  )> }
+);
+
+export type UpdateTeamMutationVariables = Exact<{
+  teamID: Scalars['ID'];
+  input: MessageInput;
+}>;
+
+
+export type UpdateTeamMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTeam?: Maybe<(
+    { __typename?: 'UpdateTeamSuccess' }
+    & { team?: Maybe<(
+      { __typename?: 'Team' }
+      & Pick<Team, 'id' | 'name'>
+    )> }
+  ) | (
+    { __typename?: 'UpdateTeamFailure' }
+    & { errors: Array<(
+      { __typename?: 'InvalidTeamDataError' }
+      & Pick<InvalidTeamDataError, 'message'>
+    ) | (
+      { __typename?: 'ForbiddenError' }
+      & Pick<ForbiddenError, 'message'>
+    )> }
   )> }
 );
 
@@ -1458,3 +1520,49 @@ export function useTournamentTeamsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type TournamentTeamsQueryHookResult = ReturnType<typeof useTournamentTeamsQuery>;
 export type TournamentTeamsLazyQueryHookResult = ReturnType<typeof useTournamentTeamsLazyQuery>;
 export type TournamentTeamsQueryResult = Apollo.QueryResult<TournamentTeamsQuery, TournamentTeamsQueryVariables>;
+export const UpdateTeamDocument = gql`
+    mutation updateTeam($teamID: ID!, $input: MessageInput!) {
+  updateTeam(teamID: $teamID, input: $input) {
+    ... on UpdateTeamSuccess {
+      team {
+        id
+        name
+      }
+    }
+    ... on UpdateTeamFailure {
+      errors {
+        ... on Error {
+          message
+        }
+      }
+    }
+  }
+}
+    `;
+export type UpdateTeamMutationFn = Apollo.MutationFunction<UpdateTeamMutation, UpdateTeamMutationVariables>;
+
+/**
+ * __useUpdateTeamMutation__
+ *
+ * To run a mutation, you first call `useUpdateTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTeamMutation, { data, loading, error }] = useUpdateTeamMutation({
+ *   variables: {
+ *      teamID: // value for 'teamID'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTeamMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTeamMutation, UpdateTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, options);
+      }
+export type UpdateTeamMutationHookResult = ReturnType<typeof useUpdateTeamMutation>;
+export type UpdateTeamMutationResult = Apollo.MutationResult<UpdateTeamMutation>;
+export type UpdateTeamMutationOptions = Apollo.BaseMutationOptions<UpdateTeamMutation, UpdateTeamMutationVariables>;

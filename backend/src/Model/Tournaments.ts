@@ -155,9 +155,13 @@ export class Tournament {
   }
 
   static async exists(id: TournamentID, dbOrTX: DbOrTx): Promise<boolean> {
-    return dbOrTX.oneOrNone<boolean>('SELECT EXISTS(SELECT 1 FROM tournaments WHERE id = $[id])', {
-      id,
-    });
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
+      'SELECT EXISTS(SELECT 1 FROM tournaments WHERE id = $[id])',
+      {
+        id,
+      }
+    );
+    return result.exists || false;
   }
 
   static async getAll(

@@ -9,6 +9,7 @@ import {
   teamMembersResolver,
   teamResolver,
   teamTournamentResolver,
+  updateTeamResolver,
 } from '~playfulbot/graphqlResolvers/team';
 import { gameResolver, playResolver } from '~playfulbot/graphqlResolvers/game';
 import { GameState } from '~playfulbot/types/gameState';
@@ -61,6 +62,7 @@ const resolvers: IResolvers = {
     createTournament: createTournamentResolver,
     registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
     joinTeam: joinTeamResolver,
+    updateTeam: updateTeamResolver,
   } as gqlTypes.MutationResolvers,
   User: {
     teams: userTeamsResolver,

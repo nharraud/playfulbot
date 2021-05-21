@@ -56,13 +56,17 @@ export class User {
   }
 
   static async exists(id: UserID, dbOrTX: DbOrTx): Promise<boolean> {
-    return dbOrTX.oneOrNone<boolean>('SELECT EXISTS(SELECT 1 FROM users WHERE id = $[id])', { id });
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
+      'SELECT EXISTS(SELECT 1 FROM users WHERE id = $[id])',
+      { id }
+    );
+    return result.exists || false;
   }
 
   static async getByTeam(teamID: TeamID, dbOrTX: DbOrTx): Promise<User[]> {
     const query = `SELECT users.* FROM team_memberships
                     JOIN users ON users.id = team_memberships.user_id
-                    WHERE team_memberships.team_id = $[teamID]`;
+                    WHERE team_memberships.team_id = $[teamID] ORDER BY users.username`;
     const rows = await dbOrTX.manyOrNone(query, { teamID });
     return rows.map((row) => new User(row));
   }

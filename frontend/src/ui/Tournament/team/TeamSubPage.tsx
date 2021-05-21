@@ -8,6 +8,7 @@ import { TeamSections } from './TeamSections';
 import { TabPanel } from 'src/utils/TabPanel';
 import { TournamentRoleName } from '../../../types/graphql';
 import AllTeamsTab from './AllTeamsTab';
+import YourTeamTab from './YourTeamTab';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,11 +50,7 @@ export default function TeamSubPage(props: TeamSubPageProps) {
     <div className={classes.root}>
       <TeamHeader currentSection={currentSection} setSection={setSection} isAdmin={isAdmin} invitationLinkID={props.tournament.invitationLinkID} />
       <TabPanel value={currentSection} index={TeamSections.YOUR_TEAM}>
-        <ul>
-        {team?.members?.map((member) =>
-          <li key={member.id}>{member.username}</li>
-        )}
-      </ul>
+        <YourTeamTab tournamentID={props.tournament.id}/>
       </TabPanel>
       <TabPanel value={currentSection} index={TeamSections.ALL_TEAMS}>
         <AllTeamsTab tournamentID={props.tournament.id} onJoinSuccess={handleJoinSuccess}/>

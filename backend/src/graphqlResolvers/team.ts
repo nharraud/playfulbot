@@ -6,6 +6,56 @@ import { Team, TeamID } from '~playfulbot/model/Team';
 import { User } from '~playfulbot/model/User';
 import { Tournament } from '~playfulbot/model/Tournaments';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
+import { isValidationError, validationErrorsToGraphQL } from '~playfulbot/model/validate';
+
+export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
+  parent,
+  args,
+  ctx
+) => {
+  if (!isUserContext(ctx)) {
+    throw new AuthenticationError(`Only authenticated users are allowed to create tournaments.`);
+  }
+  return db.default.tx(async (tx): Promise<gqlTypes.UpdateTeamResult> => {
+    if (args.input.name === undefined) {
+      return {
+        __typename: 'UpdateTeamFailure',
+        errors: [
+          {
+            __typename: 'InvalidTeamDataError',
+            message: 'Update should modify at least one field.',
+          },
+        ],
+      };
+    }
+
+    const isMember = await Team.isMember(args.teamID, ctx.userID, tx);
+    if (!isMember) {
+      return {
+        __typename: 'UpdateTeamFailure',
+        errors: [
+          {
+            __typename: 'ForbiddenError',
+            message: 'You are not a member of this team. Only team members can modify it.',
+          },
+        ],
+      };
+    }
+
+    const teamOrError = await Team.update(args.teamID, args.input, tx);
+    if (isValidationError(teamOrError)) {
+      return {
+        __typename: 'UpdateTeamFailure',
+        errors: validationErrorsToGraphQL(teamOrError),
+      };
+    }
+
+    return {
+      __typename: 'UpdateTeamSuccess',
+      team: teamOrError,
+    };
+  });
+};
 
 export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = async (
   parent,

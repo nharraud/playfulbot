@@ -1,9 +1,11 @@
+import * as yup from 'yup';
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { DebugArena } from './DebugArena';
 import { Player } from './Player';
 import { TournamentInvitation } from './TournamentInvitation';
 import { Tournament, TournamentID, TournamentStatus } from './Tournaments';
 import { User, UserID } from './User';
+import { validateSchema, ValidationError } from './validate';
 
 export type TeamID = string;
 
@@ -14,6 +16,10 @@ export interface DbTeam {
   name: string;
 }
 /* eslint-enable */
+
+export interface TeamPatch {
+  name?: string;
+}
 
 export interface TeamsSearchOptions {
   tournamentStatus?: TournamentStatus;
@@ -32,6 +38,10 @@ export interface AddTeamMemberResult {
   oldTeamDeleted: boolean;
 }
 
+const teamSchema = yup.object().shape({
+  name: yup.string().max(15).min(3).required(),
+});
+
 export class Team {
   readonly id: TeamID;
   readonly tournamentID: TournamentID;
@@ -48,7 +58,12 @@ export class Team {
     tournamentID: string,
     dbOrTX: DbOrTx,
     id?: TeamID
-  ): Promise<Team> {
+  ): Promise<Team | ValidationError> {
+    const validationError = await validateSchema(teamSchema, { name });
+    if (validationError) {
+      return validationError;
+    }
+
     const query = `INSERT INTO teams(id, tournament_id, name)
                    VALUES($[id], $[tournamentID], $[name])
                    RETURNING *`;
@@ -59,6 +74,38 @@ export class Team {
     });
     const team = new Team(data);
     Player.create(team.id);
+    return team;
+  }
+
+  static async update(
+    teamID: TeamID,
+    patch: TeamPatch,
+    dbOrTX: DbOrTx
+  ): Promise<Team | ValidationError> {
+    const validationError = await validateSchema(teamSchema, patch);
+    if (validationError) {
+      return validationError;
+    }
+
+    // FIXME: validate the patch
+    const query = `
+      UPDATE teams
+      SET name = $[name]
+      WHERE id = $[teamID]
+      RETURNING *
+    `;
+
+    let data: DbTeam;
+    try {
+      data = await dbOrTX.oneOrNone<DbTeam>(query, {
+        name: patch.name,
+        teamID,
+      });
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+    const team = new Team(data);
     return team;
   }
 
@@ -192,6 +239,19 @@ export class Team {
 
   async getMembers(dbOrTX: DbOrTx): Promise<User[]> {
     return User.getByTeam(this.id, dbOrTX);
+  }
+
+  static async isMember(teamID: TeamID, userID: UserID, dbOrTX: DbOrTx): Promise<boolean> {
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
+      `SELECT EXISTS(
+        SELECT 1 FROM team_memberships WHERE team_id = $[teamID] AND user_id = $[userID]
+       )`,
+      {
+        teamID,
+        userID,
+      }
+    );
+    return result.exists || false;
   }
 
   getTournament(dbOrTX: DbOrTx): Promise<Tournament> {

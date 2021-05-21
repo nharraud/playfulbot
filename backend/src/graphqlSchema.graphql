@@ -65,6 +65,10 @@ interface Error {
   message: String!
 }
 
+type ValidationError implements Error {
+  message: String!
+}
+
 type DeletedTeam {
   teamID: ID
   name: String
@@ -89,6 +93,33 @@ type TeamNotFoundError implements Error {
 union JoinTeamError = TeamNotFoundError
 
 union JoinTeamResult = JoinTeamSuccess | JoinTeamFailure
+
+
+
+input MessageInput {
+  name: String
+}
+
+type UpdateTeamSuccess {
+  team: Team
+}
+
+type UpdateTeamFailure {
+  errors: [UpdateTeamError!]!
+}
+
+type InvalidTeamDataError implements Error {
+  message: String!
+  path: String
+}
+
+type ForbiddenError implements Error {
+  message: String!
+}
+
+union UpdateTeamError = InvalidTeamDataError | ForbiddenError | ValidationError
+
+union UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure
 
 
 
@@ -195,5 +226,6 @@ type Mutation {
 
   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): TournamentInvitation
 
+  updateTeam(teamID: ID!, input: MessageInput): UpdateTeamResult
   joinTeam(teamID: ID!): JoinTeamResult
 }

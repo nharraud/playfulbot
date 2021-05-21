@@ -38,7 +38,7 @@ export async function initDemo(): Promise<void> {
       `F00FABE0-0000-0000-0000-000000000001`
     );
 
-    const teams = [];
+    const teams = new Array<Team>();
     for (let idx = 0; idx < 10; idx += 1) {
       const teamNB = numberToHexString(idx, 12);
       const team = await Team.create(
@@ -47,7 +47,7 @@ export async function initDemo(): Promise<void> {
         tx,
         `FEAB0000-0000-0000-0000-${teamNB}`
       );
-      teams.push(team);
+      teams.push(team as Team);
     }
     const users = new Array<User>();
     for (let idx = 0; idx < 20; idx += 1) {

@@ -1,0 +1,17 @@
+mutation updateTeam($teamID: ID!, $input: MessageInput!) {
+  updateTeam(teamID: $teamID, input: $input) {
+    ... on UpdateTeamSuccess {
+      team {
+        id
+        name
+      }
+    }
+    ... on UpdateTeamFailure {
+      errors {
+        ... on Error {
+          message
+        }
+      }
+    }
+  }
+}
