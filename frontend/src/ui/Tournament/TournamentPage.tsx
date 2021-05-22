@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import {
   Switch,
@@ -44,22 +44,37 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     backgroundColor: theme.palette.grey[900],
     '& > a': {
-      padding: theme.spacing(2),
+      margin: '0.5rem',
+      padding: '0.5rem',
     },
   },
   menuIcon: {
     fontSize: '3em',
-    color: 'white'
+    verticalAlign: 'middle',
   },
   main: {
     flex: "1 1 auto",
     display: 'flex',
   },
+  menuLink: {
+    color: 'white',
+
+  },
+  activeMenuLink: {
+    backgroundColor: theme.palette.grey[100],
+    color: theme.palette.getContrastText(theme.palette.grey[100]),
+    borderRadius: '100px',
+  },
 }));
 
+export interface MatchParams {
+  tournamentID: string;
+  page: string,
+}
 
 export default function TournamentPage() {
-  let match = useRouteMatch();
+  let match = useRouteMatch<MatchParams>('/tournament/:tournamentID/:page');
+  const baseURL = `/tournament/${match.params.tournamentID}`
 
   const { tournamentID } = useParams<{tournamentID: string}>();
 
@@ -67,21 +82,28 @@ export default function TournamentPage() {
 
   const classes = useStyles();
 
+  const className = useCallback((page: string) => {
+    if (match.params?.page === page) {
+      return classes.activeMenuLink;
+    }
+    return classes.menuLink;;
+  }, [match.params, classes])
+
   let content = undefined;
   if (tournament) {
     content = (
       <>
         <div className={classes.tournamentMenu}>
-          <Link to={`${match.url}/info`}>
+          <Link to={`${baseURL}/info`} className={className('info')}>
             <MenuBookIcon className={classes.menuIcon}/>
             </Link>
-          <Link to={`${match.url}/team`}>
+          <Link to={`${baseURL}/team`} className={className('team')}>
             <PeopleIcon className={classes.menuIcon}/>
             </Link>
-          <Link to={`${match.url}/debug`}>
+          <Link to={`${baseURL}/debug`} className={className('debug')}>
             <TestIcon className={classes.menuIcon}/>
             </Link>
-          <Link to={`${match.url}/competition`}>
+          <Link to={`${baseURL}/competition`} className={className('competition')}>
             <CompetitionIcon className={classes.menuIcon}/>
             </Link>
         </div>
@@ -89,16 +111,16 @@ export default function TournamentPage() {
           className={classes.main}
         >
           <Switch>
-            <Route path={`${match.url}/info`}>
+            <Route path={`${baseURL}/info`}>
               <InfoSubPage tournament={tournament} />
             </Route>
-            <Route path={`${match.url}/team`}>
+            <Route path={`${baseURL}/team`}>
               <TeamSubPage tournament={tournament} />
             </Route>
-            <Route path={`${match.url}/debug`}>
+            <Route path={`${baseURL}/debug`}>
               <Debug tournament={tournament}/>
             </Route>
-            <Route path={`${match.url}/competition`}>
+            <Route path={`${baseURL}/competition`}>
               <CompetitionSubPage tournament={tournament}/>
             </Route>
           </Switch>
