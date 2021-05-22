@@ -50,8 +50,20 @@ const theme = createMuiTheme({
     menu: {
       main: '#3f51b5',
       dark: '#303f9f',
+    },
+    background: {
+      default: '#212121',
+      paper: '#353535',
     }
   },
+  typography: {
+    h1: {
+      fontSize: '2.3rem'
+    },
+    h2: {
+      fontSize: '2.0rem'
+    }
+  }
 });
 
 function App() {

@@ -14,7 +14,7 @@ import MenuBar from '../MenuBar/MenuBar';
 import PeopleIcon from '@material-ui/icons/People';
 
 import Debug from './Debug';
-import Info from './Info';
+import InfoSubPage from './info/InfoSubPage';
 import TeamSubPage from './team/TeamSubPage';
 import CompetitionIcon from '@material-ui/icons/EmojiEvents';
 import TestIcon from '@material-ui/icons/SlowMotionVideo';
@@ -90,7 +90,7 @@ export default function TournamentPage() {
         >
           <Switch>
             <Route path={`${match.url}/info`}>
-              <Info tournament={tournament} />
+              <InfoSubPage tournament={tournament} />
             </Route>
             <Route path={`${match.url}/team`}>
               <TeamSubPage tournament={tournament} />

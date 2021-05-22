@@ -94,7 +94,7 @@ export default function TeamHeader(props: TeamHeaderProps) {
     <Box boxShadow={3} className={classes.root}>
       <div className={classes.mainRow}>
         <div className={classes.titleCell}>
-          <Typography variant="h4">
+          <Typography variant="h1">
             Teams
           </Typography>
         </div>
