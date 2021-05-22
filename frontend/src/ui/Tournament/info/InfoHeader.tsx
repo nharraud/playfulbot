@@ -47,12 +47,14 @@ export function InfoHeader(props: InfoHeaderProps) {
       <div className={classes.mainRow}>
         <div className={classes.titleCell}>
           <Typography variant="h1">
-            Tournament Information
+            Information {'\u0026'} Rules
           </Typography>
         </div>
       </div>
-      <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label="Team sections" className={classes.tabs}>
-      <Tab label="Introduction" value={InfoSections.INTRO}/>;
+      <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label="Information sections" className={classes.tabs}>
+      <Tab label="Tournament" value={InfoSections.TOURNAMENT}/>;
+      <Tab label="Game rules" value={InfoSections.GAME_RULES}/>;
+      <Tab label="Coding a bot" value={InfoSections.CODING_BOT}/>;
       </Tabs>
     </Box>
   )

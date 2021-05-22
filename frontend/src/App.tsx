@@ -58,10 +58,16 @@ const theme = createMuiTheme({
   },
   typography: {
     h1: {
-      fontSize: '2.3rem'
+      fontSize: '2.3rem',
+      fontWeight: 400,
     },
     h2: {
-      fontSize: '2.0rem'
+      fontSize: '2.0rem',
+      fontWeight: 400,
+    },
+    h3: {
+      fontSize: '1.5rem',
+      fontWeight: 400,
     }
   }
 });

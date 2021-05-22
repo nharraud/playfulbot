@@ -1,3 +1,5 @@
 export enum InfoSections {
-  INTRO,
+  TOURNAMENT,
+  GAME_RULES,
+  CODING_BOT,
 };

@@ -4,7 +4,7 @@ import { TournamentQuery } from 'src/types/graphql-generated';
 import { TabPanel } from 'src/utils/TabPanel';
 import { InfoHeader } from './InfoHeader';
 import { InfoSections} from './InfoSections';
-import IntroTab from './IntroTab';
+import IntroTab from './TournamentInfoTab';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,13 +21,17 @@ interface TournamentInfoProps {
 export default function InfoSubPage(props: TournamentInfoProps) {
   const classes = useStyles();
 
-  const [ currentSection, setSection ] = useState(InfoSections.INTRO);
+  const [ currentSection, setSection ] = useState(InfoSections.TOURNAMENT);
 
   return (
     <div className={classes.root}>
       <InfoHeader currentSection={currentSection} setSection={setSection}/>
-      <TabPanel value={currentSection} index={InfoSections.INTRO}>
-        <IntroTab tournamentID={props.tournament.id}/>
+      <TabPanel value={currentSection} index={InfoSections.TOURNAMENT}>
+        <IntroTab tournamentName={props.tournament.name}/>
+      </TabPanel>
+      <TabPanel value={currentSection} index={InfoSections.GAME_RULES}>
+      </TabPanel>
+      <TabPanel value={currentSection} index={InfoSections.CODING_BOT}>
       </TabPanel>
     </div>
   )
