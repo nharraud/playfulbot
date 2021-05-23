@@ -8,6 +8,8 @@ import Button from '@material-ui/core/Button';
 import MenuBar from './MenuBar/MenuBar';
 import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/authenticatedUser';
 import { UserContext } from 'src/UserContext';
+import Divider from '@material-ui/core/Divider';
+import { Link } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     form: {
       padding: theme.spacing(5),
+      paddingBottom: theme.spacing(3),
       textAlign: 'left'
     },
     formGrid: {
@@ -33,7 +36,17 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'center'
     },
     formButtons: {
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(1)
+    },
+    loginButton: {
+      width: '100%',
+    },
+    registerButton: {
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.getContrastText(theme.palette.success.main),
+    },
+    registerButtonContainer: {
+      padding: theme.spacing(3),
     }
   }),
 );
@@ -76,12 +89,18 @@ export default function Login(props) {
                     onChange={event => setPassword(event.target.value)} />
                 </Grid>
                 <Grid item container xs={12} className={classes.formButtons} justify="center">
-                  <Button variant="contained" color="primary" type="submit">
+                  <Button variant="contained" color="primary" type="submit" className={classes.loginButton}>
                     login
                   </Button>
                 </Grid>
               </Grid>
             </form>
+            <Divider variant="middle" />
+            <div className={classes.registerButtonContainer}>
+              <Button component={Link} to='/register' variant='contained' className={classes.registerButton}>
+                Create New Account
+              </Button>
+            </div>
           </Paper>
         </Grid>
       </Grid>

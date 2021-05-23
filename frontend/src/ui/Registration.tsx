@@ -10,6 +10,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import MenuBar from './MenuBar/MenuBar';
 import { useRegisterUser } from 'src/hooksAndQueries/authenticatedUser';
+import { Divider, Link } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -25,6 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     form: {
       padding: theme.spacing(5),
+      paddingBottom: theme.spacing(3),
       textAlign: 'left'
     },
     formGrid: {
@@ -34,8 +38,17 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingBottom: theme.spacing(3),
       textAlign: 'center'
     },
-    formButtons: {
-      marginTop: theme.spacing(2)
+    registerButtonContainer: {
+      width: '100%',
+      marginTop: theme.spacing(1),
+    },
+    registerButton: {
+      width: '100%',
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.getContrastText(theme.palette.success.main),
+    },
+    loginLinkContainer: {
+      padding: theme.spacing(3),
     }
   }),
 );
@@ -92,20 +105,19 @@ export default function Registration(props) {
                     error={errors.confirmPassword !== undefined} helperText={errors.confirmPassword?.message}
                   />
                 </Grid>
-                <Grid item container xs={12} className={classes.formButtons}>
-                  <Grid item container xs={6} justify="center">
-                  <Button variant="contained" color="primary" type="submit">
+                <Grid item xs={12} className={classes.registerButtonContainer}>
+                  <Button variant="contained" color="primary" type="submit" className={classes.registerButton}>
                     Register
                   </Button>
-                  </Grid>
-                  <Grid item container xs={6} justify="center">
-                  <Button variant="contained" color="secondary">
-                    Cancel
-                  </Button>
-                  </Grid>
                 </Grid>
               </Grid>
             </form>
+            <Divider variant="middle" />
+            <div className={classes.loginLinkContainer}>
+              <Typography variant='body1'>
+                You already have an account: <Link component={RouterLink} to='/login'>Login</Link>
+              </Typography>
+            </div>
           </Paper>
         </Grid>
       </Grid>
