@@ -7,6 +7,8 @@ import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounde
 
 import { UserContext } from 'src/UserContext';
 import { UserMenu } from './UserMenu';
+import { Link } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,11 +18,30 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.menu.dark,
       color: theme.palette.getContrastText(theme.palette.menu.dark),
     },
+    logoLink: {
+      color: theme.palette.getContrastText(theme.palette.menu.dark),
+      fontWeight: theme.typography.fontWeightBold,
+      '&:hover': {
+        textDecoration: 'none',
+      },
+    },
+    loginLink: {
+      marginLeft: 'auto',
+      color: theme.palette.getContrastText(theme.palette.menu.dark),
+      fontWeight: theme.typography.fontWeightBold,
+      '&:hover': {
+        textDecoration: 'none',
+      },
+    }
   }),
 );
 
+interface MenuAppBarProps {
+  location?: string,
+  showLogin?: boolean,
+};
 
-export default function MenuAppBar(props: { location?: string}) {
+export default function MenuAppBar(props: MenuAppBarProps) {
   const classes = useStyles();
   const { authenticated } = useContext(UserContext);
 
@@ -40,11 +61,17 @@ export default function MenuAppBar(props: { location?: string}) {
     <div className={classes.root}>
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
         <Toolbar variant="dense">
-          <Typography variant="h6">
-            Playful Bot
-          </Typography>
+          <Link component={RouterLink} to={authenticated ? '/home' : '/'} className={classes.logoLink}>
+            <Typography variant="h6">
+              Playful Bot
+            </Typography>
+          </Link>
           {locationWidget}
-          {authenticated && (<UserMenu/>)}
+          { authenticated && (<UserMenu/>) }
+          {
+            !authenticated && props.showLogin &&
+            (<Link component={RouterLink} to='/login' className={classes.loginLink}>Login</Link>)
+          }
         </Toolbar>
       </AppBar>
     </div>

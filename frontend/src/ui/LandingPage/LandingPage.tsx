@@ -28,7 +28,7 @@ export function LandingPage() {
   return (
   <div className={classes.root}>
     <div className={classes.introRow}>
-      <MenuBar />
+      <MenuBar showLogin={true}/>
       <Pitch/>
     </div>
     <Target/>
