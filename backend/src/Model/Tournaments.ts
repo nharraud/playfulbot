@@ -37,6 +37,7 @@ interface GetAllTournamentsFilters {
   startingAfter?: DateTime;
   startingBefore?: DateTime;
   invitedUserID?: UserID;
+  organizingUserID?: UserID;
 }
 
 export class Tournament {
@@ -181,6 +182,10 @@ export class Tournament {
     if (filters.invitedUserID) {
       queryBuilder.join('JOIN tournament_invitations ON teams.tournament_id = tournaments.id');
       queryBuilder.where('tournament_invitations.user_id = $[invitedUserID]');
+    }
+    if (filters.organizingUserID) {
+      queryBuilder.join('JOIN tournament_roles ON tournament_roles.tournament_id = tournaments.id');
+      queryBuilder.where('tournament_roles.user_id = $[organizingUserID]');
     }
     const rows = await dbOrTX.manyOrNone<DbTournament>(queryBuilder.query, filters);
     return rows.map((row) => new Tournament(row));

@@ -26,6 +26,7 @@ type User {
   username: String!
   teams: [Team]
   tournamentInvitations: [TournamentInvitation!]
+  organizedTournaments: [Tournament!]
 }
 
 enum TournamentStatus {

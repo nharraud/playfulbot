@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: theme.typography.fontWeightBold,
       '&:hover': {
         textDecoration: 'none',
+        color: theme.palette.success.light,
       },
     },
     sequenceLink: {
@@ -76,7 +77,9 @@ export default function MenuAppBar(props: MenuAppBarProps) {
           <div className={classes.pushRight}/>
           {
             authenticated && props.showTournaments &&
-            <Link component={RouterLink} to='/home' className={`${classes.link} ${classes.sequenceLink}`}>Tournaments</Link>
+            <Link component={RouterLink} to='/home' className={`${classes.link} ${classes.sequenceLink}`}>
+              Your Tournaments
+            </Link>
           }
           { authenticated && (<UserMenu/>) }
           {

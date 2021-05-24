@@ -38,6 +38,7 @@ export type User = {
   username: Scalars['String'];
   teams?: Maybe<Array<Maybe<Team>>>;
   tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
+  organizedTournaments?: Maybe<Array<Tournament>>;
 };
 
 export enum TournamentStatus {
@@ -464,6 +465,9 @@ export type AuthenticatedUserTournamentsQuery = (
         { __typename?: 'Tournament' }
         & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
       )> }
+    )>>, organizedTournaments?: Maybe<Array<(
+      { __typename?: 'Tournament' }
+      & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
     )>> }
   )> }
 );
@@ -979,6 +983,12 @@ export const AuthenticatedUserTournamentsDocument = gql`
         lastRoundDate
         status
       }
+    }
+    organizedTournaments {
+      id
+      name
+      lastRoundDate
+      status
     }
   }
 }

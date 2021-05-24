@@ -1,6 +1,6 @@
 import { makeStyles, createStyles, Theme, Typography, ListItem, ListItemText, List } from '@material-ui/core';
 import React from 'react';
-import { Team } from '../../types/graphql';
+import { Tournament } from '../../types/graphql';
 import { tournamentStatusToText } from 'src/modelHelpers/tournament';
 import { Link } from 'react-router-dom';
 import { NoTournamentFound } from './NoTournamentFound';
@@ -9,9 +9,10 @@ import { NoTournamentFound } from './NoTournamentFound';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      minWidth: '20rem',
     },
     title: {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(5),
     },
     list: {
       backgroundColor: theme.palette.background.paper,
@@ -22,21 +23,22 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export interface JoinedTournamentsListProps {
-  teams?: Team[];
+export interface TournamentsListProps {
+  title: string,
+  tournaments?: Tournament[];
 };
 
-export function JoinedTournamentsList(props: JoinedTournamentsListProps) {
+export function TournamentsList(props: TournamentsListProps) {
   const classes = useStyles();
 
-  const tournamentListItems = props?.teams?.map((team) => {
+  const tournamentListItems = props?.tournaments?.map((tournament) => {
     return (
-      <ListItem className={classes.tournamentListItem} key={team.tournament.id}
-        component={Link} to={`/tournament/${team.tournament.id}/info`}
+      <ListItem className={classes.tournamentListItem} key={tournament.id}
+        component={Link} to={`/tournament/${tournament.id}/info`}
       >
         <ListItemText
-          primary={team.tournament.name}
-          secondary={tournamentStatusToText(team.tournament)}
+          primary={tournament.name}
+          secondary={tournamentStatusToText(tournament)}
         />
       </ListItem>
     )
@@ -53,7 +55,7 @@ export function JoinedTournamentsList(props: JoinedTournamentsListProps) {
   return (
   <div className={classes.root}>
     <Typography variant="h6" className={classes.title}>
-      Tournaments you joined
+      {props.title}
     </Typography>
     {content}
   </div>

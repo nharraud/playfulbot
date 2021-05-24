@@ -365,6 +365,7 @@ export type User = {
   username: Scalars['String'];
   teams?: Maybe<Array<Maybe<Team>>>;
   tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
+  organizedTournaments?: Maybe<Array<Tournament>>;
 };
 
 export type UserNotPartOfAnyTeam = {
@@ -802,6 +803,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   tournamentInvitations?: Resolver<Maybe<Array<ResolversTypes['TournamentInvitation']>>, ParentType, ContextType>;
+  organizedTournaments?: Resolver<Maybe<Array<ResolversTypes['Tournament']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

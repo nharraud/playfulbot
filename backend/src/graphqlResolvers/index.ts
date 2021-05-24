@@ -30,7 +30,11 @@ import { DateScalar } from './scalars/DateScalar';
 import { teamPlayerResolver } from './teamPlayer';
 import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
-import { userTeamsResolver, userTournamentInvitationsResolver } from './user';
+import {
+  userOrganizedTournamentsResolver,
+  userTeamsResolver,
+  userTournamentInvitationsResolver,
+} from './user';
 import {
   registerTournamentInvitationLinkResolver,
   tournamentByInvitationLinkResolver,
@@ -69,6 +73,7 @@ const resolvers: IResolvers = {
   User: {
     teams: userTeamsResolver,
     tournamentInvitations: userTournamentInvitationsResolver,
+    organizedTournaments: userOrganizedTournamentsResolver,
   },
   Team: {
     members: teamMembersResolver,

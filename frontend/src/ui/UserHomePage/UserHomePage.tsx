@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
+import { makeStyles, createStyles, Theme, Typography, Button } from '@material-ui/core';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import MenuBar from '../MenuBar/MenuBar';
 import { useAuthenticatedUserTournamentsQuery, useRegisterTournamentInvitationLinkMutation } from '../../types/graphql';
-import { InvitedTournamentsList } from './InvitedTournamentsList';
-import { JoinedTournamentsList } from './JoinedTournamentsList';
 import { useURIQuery } from 'src/utils/router/useURIQuery';
 import { useHistory } from 'react-router';
+import { TournamentsList } from './TournamentsList';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,22 +20,23 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '0 0 auto',
       marginTop: theme.spacing(5),
     },
-    mainRow: {
+    createTournamentRow: {
+      marginTop: theme.spacing(10),
+    },
+    createTournamentButton: {
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.getContrastText(theme.palette.success.main),
+    },
+    tournamentListsRow: {
+      marginTop: theme.spacing(10),
       flex: '1 1 auto',
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-evenly',
-      alignItems: 'center'
+      alignItems: 'flex-start'
 
     },
     column: {
-      flex: '1 1 auto',
-      display: 'flex',
-      height: '100%',
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-      alignItems: 'flex-start',
-      marginTop: theme.spacing(25),
     }
   }),
 );
@@ -69,18 +70,43 @@ export function UserHomePage() {
     }
   }, [tournamentInvitationResult.data, invitationProcessed, setInvitationProcessed, refetchUserTournaments]);
 
+  const jointedTournaments = userTournaments?.authenticatedUser?.teams?.map(
+    (team) => team.tournament
+  );
+  const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
+    (invitation) => invitation.tournament
+  );
+  const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
+
   return (
   <div className={classes.root}>
     <MenuBar />
     <Typography variant='h3' className={classes.welcomeTitle}>
-      Welcome { authenticatedUser?.username }!
+      Welcome { authenticatedUser?.username }! Here are your tournaments.
     </Typography>
-    <div className={classes.mainRow}>
+    <div className={classes.createTournamentRow}>
+      <Button variant='contained' component={Link} to='/create_tournament' className={classes.createTournamentButton}>
+        Create a new Tournament
+      </Button>
+    </div>
+    <div className={classes.tournamentListsRow}>
       <div className={classes.column}>
-        <JoinedTournamentsList teams={userTournaments?.authenticatedUser?.teams}/>
+        <TournamentsList
+          title='Tournaments you are invited to'
+          tournaments={invitedTournaments}
+        />
       </div>
       <div className={classes.column}>
-        <InvitedTournamentsList invitations={userTournaments?.authenticatedUser?.tournamentInvitations}/>
+        <TournamentsList
+          title='Tournaments you joined'
+          tournaments={jointedTournaments}
+        />
+      </div>
+      <div className={classes.column}>
+        <TournamentsList
+          title='Tournaments you organize'
+          tournaments={organizedTournaments}
+        />
       </div>
     </div>
   </div>

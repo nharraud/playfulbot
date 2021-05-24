@@ -71,7 +71,7 @@ export default function TournamentCreationPage(props) {
 
   return (
     <>
-    <MenuBar />
+    <MenuBar showTournaments={true} />
     <div className={classes.root}>
       <Grid container xs={12} spacing={3} direction="row" justify="center">
         <Grid item xs={4}>
