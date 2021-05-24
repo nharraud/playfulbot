@@ -38,7 +38,7 @@ export default function Game(props: GamePropsInterface) {
       </group>
 
       <EffectComposer>
-        <SelectiveBloom luminanceThreshold={0} luminanceSmoothing={0.8} height={300} selectionLayer={1} />
+        <SelectiveBloom luminanceThreshold={0.1} luminanceSmoothing={0.8} height={300} selectionLayer={1} />
       </EffectComposer>
     </group>
   );
