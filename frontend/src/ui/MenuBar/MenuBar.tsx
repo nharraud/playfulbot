@@ -18,27 +18,33 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.menu.dark,
       color: theme.palette.getContrastText(theme.palette.menu.dark),
     },
-    logoLink: {
+    logo: {
       color: theme.palette.getContrastText(theme.palette.menu.dark),
       fontWeight: theme.typography.fontWeightBold,
       '&:hover': {
         textDecoration: 'none',
       },
     },
-    loginLink: {
+    pushRight: {
       marginLeft: 'auto',
+    },
+    link: {
       color: theme.palette.getContrastText(theme.palette.menu.dark),
       fontWeight: theme.typography.fontWeightBold,
       '&:hover': {
         textDecoration: 'none',
       },
-    }
+    },
+    sequenceLink: {
+      marginRight: theme.spacing(2),
+    },
   }),
 );
 
 interface MenuAppBarProps {
   location?: string,
   showLogin?: boolean,
+  showTournaments?: boolean,
 };
 
 export default function MenuAppBar(props: MenuAppBarProps) {
@@ -61,16 +67,21 @@ export default function MenuAppBar(props: MenuAppBarProps) {
     <div className={classes.root}>
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
         <Toolbar variant="dense">
-          <Link component={RouterLink} to={authenticated ? '/home' : '/'} className={classes.logoLink}>
+          <Link component={RouterLink} to={authenticated ? '/home' : '/'} className={classes.logo}>
             <Typography variant="h6">
               Playful Bot
             </Typography>
           </Link>
           {locationWidget}
+          <div className={classes.pushRight}/>
+          {
+            authenticated && props.showTournaments &&
+            <Link component={RouterLink} to='/home' className={`${classes.link} ${classes.sequenceLink}`}>Tournaments</Link>
+          }
           { authenticated && (<UserMenu/>) }
           {
             !authenticated && props.showLogin &&
-            (<Link component={RouterLink} to='/login' className={classes.loginLink}>Login</Link>)
+            (<Link component={RouterLink} to='/login' className={classes.link}>Login</Link>)
           }
         </Toolbar>
       </AppBar>

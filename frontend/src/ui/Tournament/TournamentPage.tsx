@@ -137,7 +137,7 @@ export default function TournamentPage() {
 
   return (
     <div className={classes.root}>
-      <MenuBar location={tournament ? `${tournament.name} tournament` : undefined} />
+      <MenuBar location={tournament ? `${tournament.name} tournament` : undefined} showTournaments={true} />
       <div className={classes.content}>
       {content}
       </div>
