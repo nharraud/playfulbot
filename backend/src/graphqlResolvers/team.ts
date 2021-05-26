@@ -31,13 +31,15 @@ export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['crea
   return db.default.tx(async (tx): Promise<gqlTypes.CreateTeamResult> => {
     const isInvited = await TournamentInvitation.isInvited(args.tournamentID, ctx.userID, tx);
     const hasTeam = await Team.hasTeam(ctx.userID, args.tournamentID, tx);
-    if (!isInvited && !hasTeam) {
+    const isOrganizer = await Tournament.isOrganizer(args.tournamentID, ctx.userID, tx);
+    if (!isInvited && !hasTeam && !isOrganizer) {
       return {
         __typename: 'CreateTeamFailure',
         errors: [
           {
             __typename: 'ForbiddenError',
-            message: 'Only tournament invitees or team members can create new teams.',
+            message:
+              'Only tournament invitees, team members and tournament organizers can create new teams.',
           },
         ],
       };

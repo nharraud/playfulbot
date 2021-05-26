@@ -191,6 +191,21 @@ export class Tournament {
     return rows.map((row) => new Tournament(row));
   }
 
+  static async isOrganizer(
+    tournamentID: TournamentID,
+    userID: UserID,
+    dbOrTX: DbOrTx
+  ): Promise<boolean> {
+    const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
+      `SELECT EXISTS (
+        SELECT 1 FROM tournaments JOIN tournament_roles ON tournament_roles.tournament_id = tournaments.id
+        WHERE tournament_roles.user_id = $[userID] AND tournaments.id = $[tournamentID]
+      )`,
+      { userID, tournamentID }
+    );
+    return result.exists || false;
+  }
+
   async start(dbOrTX: DbOrTx): Promise<void> {
     if (DateTime.now() < this.startDate) {
       throw new ConflictError('Tournament cannot be started before its startDate date');
