@@ -9,6 +9,7 @@ import { Round, RoundsSearchOptions } from './Round';
 import { Team, TeamID } from './Team';
 import { TournamentRoleName } from './TournamentRole';
 import { UserID } from './User';
+import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';
 
 export type TournamentID = string;
 
@@ -80,7 +81,7 @@ export class Tournament {
       throw new InvalidArgument('Invalid game name');
     }
 
-    return dbOrTX.txIf(async (tx) => {
+    const newTournament = await dbOrTX.txIf(async (tx) => {
       const query = `INSERT INTO tournaments(id, name, start_date, last_round_date, rounds_number, minutes_between_rounds, game_name)
       VALUES($[id], $[name], $[startDate], $[lastRoundDate], $[roundsNumber], $[minutesBetweenRounds], $[gameName])
       RETURNING *`;
@@ -97,9 +98,10 @@ export class Tournament {
 
       await TournamentInvitationLink.create(tournament.id, tx);
       await tournament.addRole(admin, TournamentRoleName.Admin, tx);
-
       return tournament;
     });
+    scheduler.scheduleTournament(newTournament);
+    return newTournament;
   }
 
   static async getByID(id: TournamentID, dbOrTX: DbOrTx): Promise<Tournament | null> {
@@ -207,7 +209,8 @@ export class Tournament {
   }
 
   async start(dbOrTX: DbOrTx): Promise<void> {
-    if (DateTime.now() < this.startDate) {
+    // Allow to start up to 1 minute before the start date.
+    if (DateTime.now() <= this.startDate.minus({ minutes: 1 })) {
       throw new ConflictError('Tournament cannot be started before its startDate date');
     }
 
