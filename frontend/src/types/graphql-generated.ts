@@ -757,7 +757,7 @@ export type TournamentQuery = (
   { __typename?: 'Query' }
   & { tournament?: Maybe<(
     { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'name' | 'status' | 'myRole' | 'invitationLinkID'>
+    & Pick<Tournament, 'id' | 'name' | 'status' | 'startDate' | 'firstRoundDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds' | 'myRole' | 'invitationLinkID'>
   )> }
 );
 
@@ -1605,6 +1605,11 @@ export const TournamentDocument = gql`
     id
     name
     status
+    startDate
+    firstRoundDate
+    lastRoundDate
+    roundsNumber
+    minutesBetweenRounds
     myRole
     invitationLinkID
   }

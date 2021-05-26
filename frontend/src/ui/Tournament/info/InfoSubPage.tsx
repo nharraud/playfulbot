@@ -27,7 +27,7 @@ export default function InfoSubPage(props: TournamentInfoProps) {
     <div className={classes.root}>
       <InfoHeader currentSection={currentSection} setSection={setSection}/>
       <TabPanel value={currentSection} index={InfoSections.TOURNAMENT}>
-        <IntroTab tournamentName={props.tournament.name}/>
+        <IntroTab tournament={props.tournament}/>
       </TabPanel>
       <TabPanel value={currentSection} index={InfoSections.GAME_RULES}>
       </TabPanel>
