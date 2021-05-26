@@ -29,6 +29,9 @@ import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { AuthenticationRequired } from './AuthenticationRequired';
 import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
+import LuxonUtils from '@date-io/luxon';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
 declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
     menu: Palette['primary'];
@@ -76,6 +79,7 @@ function App() {
   return (
     <ApolloProvider client={client}>
     <MuiThemeProvider theme={theme}>
+    <MuiPickersUtilsProvider utils={LuxonUtils}>
     <CssBaseline />
     <div className="App">
       <UserContextProvider>
@@ -113,6 +117,7 @@ function App() {
         </Router>
       </UserContextProvider>
     </div>
+    </MuiPickersUtilsProvider>
     </MuiThemeProvider>
     </ApolloProvider>
   );

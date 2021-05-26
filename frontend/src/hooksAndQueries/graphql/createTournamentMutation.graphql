@@ -1,0 +1,18 @@
+mutation createTournament(
+    $name: String!,
+    $startDate: Date!,
+    $lastRoundDate: Date!,
+    $roundsNumber: Int!,
+    $minutesBetweenRounds: Int!,
+  ) {
+    createTournament(
+      name: $name
+      startDate: $startDate,
+      lastRoundDate: $lastRoundDate,
+      roundsNumber: $roundsNumber,
+      minutesBetweenRounds: $minutesBetweenRounds,
+    ) {
+      id
+      name
+    }
+}

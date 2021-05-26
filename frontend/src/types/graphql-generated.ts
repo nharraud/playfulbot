@@ -483,6 +483,23 @@ export type CreateNewDebugGameMutation = (
   & Pick<Mutation, 'createNewDebugGame'>
 );
 
+export type CreateTournamentMutationVariables = Exact<{
+  name: Scalars['String'];
+  startDate: Scalars['Date'];
+  lastRoundDate: Scalars['Date'];
+  roundsNumber: Scalars['Int'];
+  minutesBetweenRounds: Scalars['Int'];
+}>;
+
+
+export type CreateTournamentMutation = (
+  { __typename?: 'Mutation' }
+  & { createTournament?: Maybe<(
+    { __typename?: 'Tournament' }
+    & Pick<Tournament, 'id' | 'name'>
+  )> }
+);
+
 export type DebugArenaSubscriptionVariables = Exact<{
   userID: Scalars['ID'];
   tournamentID: Scalars['ID'];
@@ -1052,6 +1069,50 @@ export function useCreateNewDebugGameMutation(baseOptions?: Apollo.MutationHookO
 export type CreateNewDebugGameMutationHookResult = ReturnType<typeof useCreateNewDebugGameMutation>;
 export type CreateNewDebugGameMutationResult = Apollo.MutationResult<CreateNewDebugGameMutation>;
 export type CreateNewDebugGameMutationOptions = Apollo.BaseMutationOptions<CreateNewDebugGameMutation, CreateNewDebugGameMutationVariables>;
+export const CreateTournamentDocument = gql`
+    mutation createTournament($name: String!, $startDate: Date!, $lastRoundDate: Date!, $roundsNumber: Int!, $minutesBetweenRounds: Int!) {
+  createTournament(
+    name: $name
+    startDate: $startDate
+    lastRoundDate: $lastRoundDate
+    roundsNumber: $roundsNumber
+    minutesBetweenRounds: $minutesBetweenRounds
+  ) {
+    id
+    name
+  }
+}
+    `;
+export type CreateTournamentMutationFn = Apollo.MutationFunction<CreateTournamentMutation, CreateTournamentMutationVariables>;
+
+/**
+ * __useCreateTournamentMutation__
+ *
+ * To run a mutation, you first call `useCreateTournamentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTournamentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTournamentMutation, { data, loading, error }] = useCreateTournamentMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      startDate: // value for 'startDate'
+ *      lastRoundDate: // value for 'lastRoundDate'
+ *      roundsNumber: // value for 'roundsNumber'
+ *      minutesBetweenRounds: // value for 'minutesBetweenRounds'
+ *   },
+ * });
+ */
+export function useCreateTournamentMutation(baseOptions?: Apollo.MutationHookOptions<CreateTournamentMutation, CreateTournamentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTournamentMutation, CreateTournamentMutationVariables>(CreateTournamentDocument, options);
+      }
+export type CreateTournamentMutationHookResult = ReturnType<typeof useCreateTournamentMutation>;
+export type CreateTournamentMutationResult = Apollo.MutationResult<CreateTournamentMutation>;
+export type CreateTournamentMutationOptions = Apollo.BaseMutationOptions<CreateTournamentMutation, CreateTournamentMutationVariables>;
 export const DebugArenaDocument = gql`
     subscription debugArena($userID: ID!, $tournamentID: ID!) {
   debugArena(userID: $userID, tournamentID: $tournamentID) {
