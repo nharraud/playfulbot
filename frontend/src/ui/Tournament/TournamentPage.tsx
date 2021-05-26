@@ -22,6 +22,8 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { useTournament } from 'src/hooksAndQueries/useTournament';
 import LoadingWidget from '../Loading';
 import CompetitionSubPage from './competition/CompetitionSubPage';
+import { TournamentStatus } from 'src/types/graphql-generated';
+import useTeam from 'src/hooksAndQueries/useTeam';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -79,6 +81,7 @@ export default function TournamentPage() {
   const { tournamentID } = useParams<{tournamentID: string}>();
 
   const { loading, error, tournament } = useTournament(tournamentID);
+  const { team } = useTeam(tournamentID);
 
   const classes = useStyles();
 
@@ -100,12 +103,14 @@ export default function TournamentPage() {
           <Link to={`${baseURL}/team`} className={className('team')}>
             <PeopleIcon className={classes.menuIcon}/>
             </Link>
-          <Link to={`${baseURL}/debug`} className={className('debug')}>
-            <TestIcon className={classes.menuIcon}/>
+          {tournament.status === TournamentStatus.Started && team && (
+            <Link to={`${baseURL}/debug`} className={className('debug')}>
+              <TestIcon className={classes.menuIcon}/>
             </Link>
+          )}
           <Link to={`${baseURL}/competition`} className={className('competition')}>
             <CompetitionIcon className={classes.menuIcon}/>
-            </Link>
+          </Link>
         </div>
         <main
           className={classes.main}
