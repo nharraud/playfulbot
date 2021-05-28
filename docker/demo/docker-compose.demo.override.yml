@@ -9,6 +9,7 @@ services:
       SSL_CERT: '/playfulbot/ssl/ssl.crt'
       SSL_KEY: '/playfulbot/ssl/ssl.key'
       FRONTEND_URL: 'http://playfulbot.com'
+      GRPC_HOST: '0.0.0.0'
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 

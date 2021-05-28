@@ -241,9 +241,13 @@ export function startServer(): void {
   if (process.env.GRPC_PORT) {
     grpcPort = parseInt(process.env.GRPC_PORT, 10);
   }
+  let grpcHost = 'localhost';
+  if (process.env.GRPC_HOST) {
+    grpcHost = process.env.GRPC_HOST;
+  }
 
   const server = getServer();
-  const url = `localhost:${grpcPort}`;
+  const url = `${grpcHost}:${grpcPort}`;
 
   const sslCa = sslConfig.SSL_CA ? fs.readFileSync(sslConfig.SSL_CA) : null;
   const sslCert = fs.readFileSync(sslConfig.SSL_CERT);
