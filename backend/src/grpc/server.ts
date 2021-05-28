@@ -245,7 +245,7 @@ export function startServer(): void {
   const server = getServer();
   const url = `localhost:${grpcPort}`;
 
-  const sslCa = fs.readFileSync(sslConfig.SSL_CA);
+  const sslCa = sslConfig.SSL_CA ? fs.readFileSync(sslConfig.SSL_CA) : null;
   const sslCert = fs.readFileSync(sslConfig.SSL_CERT);
   const sslKey = fs.readFileSync(sslConfig.SSL_KEY);
   const keyCertPairs = [{ private_key: sslKey, cert_chain: sslCert }];

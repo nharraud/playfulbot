@@ -6,17 +6,18 @@ services:
       DATABASE_PASSWORD: 'dev-password'
       DATABASE_ADMIN_USER: 'playfulbot_backend'
       DATABASE_ADMIN_PASSWORD: 'dev-password'
+      SSL_CA: '/playfulbot/ssl/ca.pem'
       SSL_CERT: '/playfulbot/ssl/ssl.crt'
       SSL_KEY: '/playfulbot/ssl/ssl.key'
-      FRONTEND_URL: 'http://playfulbot.com'
+      FRONTEND_URL: 'http://localhost'
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 
   playfulbot-frontend:
     build:
       args:
-        - REACT_APP_API_HTTP_URL=https://playfulbot.com
-        - REACT_APP_API_WEBSOCKET_URL=wss://playfulbot.com
+        - REACT_APP_API_HTTP_URL=https://localhost
+        - REACT_APP_API_WEBSOCKET_URL=wss://localhost
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 
