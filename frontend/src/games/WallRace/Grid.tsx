@@ -21,7 +21,7 @@ export default function Grid(props: GridPropsInterface) {
     return (
     // @ts-ignore
     <a.line key={index} geometry={lineGeometry}>
-      <a.lineBasicMaterial color={trail[index].color} linewidth={100}/>
+      <a.lineBasicMaterial color={trail[index].color} linewidth={1}/>
     </a.line>
     )
   }), [props.size, trail]);
@@ -33,7 +33,7 @@ export default function Grid(props: GridPropsInterface) {
     return (
     // @ts-ignore
     <a.line key={index} geometry={lineGeometry}>
-      <a.lineBasicMaterial color={trail[index].color} linewidth={100}/>
+      <a.lineBasicMaterial color={trail[index].color} linewidth={1}/>
     </a.line>
     )
   }), [props.size, trail]);
