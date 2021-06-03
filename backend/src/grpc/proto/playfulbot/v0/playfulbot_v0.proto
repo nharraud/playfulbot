@@ -8,23 +8,17 @@ service PlayfulBot {
   rpc PlayGame (stream PlayGameRequest) returns (PlayGameResponse) {}
 }
 
-message Player {
-  string id = 1;
-}
-
-message FollowPlayerGamesRequest {
-  string player_id = 1;
-}
+message FollowPlayerGamesRequest {}
 
 message FollowPlayerGamesResponse {
-  repeated string games = 1;
+  repeated string games = 2;
 }
 
 message Game {
   string id = 1;
   bool canceled = 2;
   int32 version = 3;
-  repeated Player players = 4;
+  int32 player = 4;
   string game_state = 5;
 }
 
@@ -41,9 +35,8 @@ message GameCanceled {
 
 message PlayGameRequest {
   string game_id = 1;
-  string player_id = 2;
-  string action = 3;
-  string data = 4;
+  string action = 2;
+  string data = 3;
 }
 message PlayGameResponse {}
 

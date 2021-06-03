@@ -4,7 +4,12 @@ import { GameState } from '~playfulbot/types/gameState';
 import { GameDefinition } from '~playfulbot/model/GameDefinition';
 import { pubsub } from '~playfulbot/pubsub';
 import { GameAction } from '~playfulbot/types/action';
-import { ForbiddenError, PlayingOutOfTurn, PlayingTwice } from '~playfulbot/errors';
+import {
+  ForbiddenError,
+  InvalidArgument,
+  PlayingOutOfTurn,
+  PlayingTwice,
+} from '~playfulbot/errors';
 import { PlayerID } from './Player';
 import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
 import { cloneDeep } from '~playfulbot/utils/clone';
@@ -70,10 +75,26 @@ export class Game {
     return !(this.canceled || this.gameState.end);
   }
 
-  play(playerID: PlayerID, actionName: string, actionData: Record<string, any>): void {
-    const playerNumber = this.players.findIndex((assignment) => assignment.playerID === playerID);
-    if (playerNumber === -1) {
-      throw new ForbiddenError(`Game does not have such player.`);
+  play(playerNumber: number, actionName: string, actionData: Record<string, any>): void;
+  play(playerID: PlayerID, actionName: string, actionData: Record<string, any>): void;
+  play(
+    playerIDOrNumber: number | PlayerID,
+    actionName: string,
+    actionData: Record<string, any>
+  ): void {
+    let playerNumber: number;
+    if (typeof playerIDOrNumber === 'number') {
+      playerNumber = playerIDOrNumber;
+      if (playerNumber < 0 || playerNumber >= this.players.length) {
+        throw new InvalidArgument(`Game does not have such player.`);
+      }
+    } else {
+      playerNumber = this.players.findIndex(
+        (assignment) => assignment.playerID === playerIDOrNumber
+      );
+      if (playerNumber === -1) {
+        throw new ForbiddenError(`Game does not have such player.`);
+      }
     }
     const playerState = this.gameState.players[playerNumber];
     const action = {

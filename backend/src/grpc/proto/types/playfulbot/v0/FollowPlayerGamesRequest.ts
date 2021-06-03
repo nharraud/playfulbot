@@ -2,9 +2,7 @@
 
 
 export interface FollowPlayerGamesRequest {
-  'playerId'?: (string);
 }
 
 export interface FollowPlayerGamesRequest__Output {
-  'playerId': (string);
 }

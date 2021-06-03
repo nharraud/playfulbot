@@ -39,8 +39,8 @@ describe('Model/Tournament', () => {
     const input = {
       name: 'Team Building',
       status: gqlTypes.TournamentStatus.Created,
-      startDate: DateTime.now(),
-      lastRoundDate: DateTime.now().plus({ hours: 8 }),
+      startDate: DateTime.now().plus({ days: 3 }),
+      lastRoundDate: DateTime.now().plus({ days: 3, hours: 3 }),
       roundsNumber: 5,
       minutesBetweenRounds: 30,
       id: 'f00fabe0-0000-0000-0000-000000000001',

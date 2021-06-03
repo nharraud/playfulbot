@@ -4,7 +4,7 @@ import * as protoLoader from '@grpc/proto-loader';
 import * as path from 'path';
 import logger from '~playfulbot/logging';
 
-import { ProtoGrpcType, ServiceHandlers } from './proto/types/playfulbot_v0';
+import { ProtoGrpcType } from './proto/types/playfulbot_v0';
 import { FollowPlayerGamesRequest } from './proto/types/playfulbot/v0/FollowPlayerGamesRequest';
 import { FollowPlayerGamesResponse } from './proto/types/playfulbot/v0/FollowPlayerGamesResponse';
 import { GameState } from '~playfulbot/types/gameState';
@@ -32,11 +32,14 @@ import { Game } from '~playfulbot/model/Game';
 import { isGameStateChanged } from '~playfulbot/pubsub/messages';
 import { ChannelListener } from '~playfulbot/pubsub/ChannelListener';
 import { sslConfig } from './sslConfig';
+import { PlayfulBotHandlers } from './proto/types/playfulbot/v0/PlayfulBot';
 
 const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot', 'v0', 'playfulbot_v0.proto');
 
-const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
-  FollowPlayerGames: CallRequireAuthentication(
+const playfulBotServer = new (class implements PlayfulBotHandlers {
+  [_: string]: grpc.UntypedHandleCall;
+
+  FollowPlayerGames = CallRequireAuthentication(
     asyncCall(
       async (
         call: grpc.ServerWritableStream<FollowPlayerGamesRequest, FollowPlayerGamesResponse>,
@@ -44,8 +47,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
       ) => {
         let stopped = false;
         let iterator: ChannelListener<'NEW_PLAYER_GAMES'>;
-
-        const player = Player.getPlayer(call.request.playerId);
+        const player = Player.getPlayer(token.playerID);
         if (player === undefined) {
           call.emit('error', { code: grpc.status.NOT_FOUND, message: 'Player not found' });
           return;
@@ -72,7 +74,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
         iterator = pubsub.listen('NEW_PLAYER_GAMES', player.id);
 
         const versionedIterator = new VersionedAsyncIterator(iterator, async () => {
-          const currentPlayer = Player.getPlayer(call.request.playerId);
+          const currentPlayer = Player.getPlayer(token.playerID);
           if (currentPlayer === undefined) {
             call.emit('error', { code: grpc.status.NOT_FOUND });
             throw new PlayerNotFoundError();
@@ -90,9 +92,9 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
         }
       }
     )
-  ),
+  );
 
-  FollowGame: CallRequireAuthentication(
+  FollowGame = CallRequireAuthentication(
     (
       call: grpc.ServerDuplexStream<FollowGameRequest, FollowGameResponse>,
       token: BotJWTokenData
@@ -122,13 +124,17 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
             });
             return;
           }
+          const playerNumber = game.players.findIndex(
+            (assignment) => assignment.playerID === token.playerID
+          );
           if (game.canceled) {
             call.write({
               game: {
                 id: game.id,
                 canceled: true,
                 version: game.version,
-                players: game.players.map((assignment) => ({ id: assignment.playerID })),
+                player: playerNumber,
+                // players: game.players.map((assignment) => ({ id: assignment.playerID })),
                 gameState: JSON.stringify(game.gameState),
               },
             });
@@ -154,7 +160,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
               id: currentGame.id,
               canceled: true,
               version: currentGame.version,
-              players: currentGame.players.map((assignment) => ({ id: assignment.playerID })),
+              player: playerNumber,
               gameState: JSON.stringify(currentGame.gameState),
             },
           });
@@ -187,9 +193,9 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
         })
       );
     }
-  ),
+  );
 
-  PlayGame: CallAndCallbackRequireAuthentication(
+  PlayGame = CallAndCallbackRequireAuthentication(
     (
       call: grpc.ServerReadableStream<PlayGameRequest, PlayGameResponse>,
       callback: grpc.sendUnaryData<PlayGameResponse>,
@@ -207,7 +213,7 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
           callback({ code: grpc.status.NOT_FOUND, message: 'Game not found.' });
         }
         try {
-          game.play(request.playerId, request.action, JSON.parse(request.data));
+          game.play(token.playerID, request.action, JSON.parse(request.data));
         } catch (err) {
           if (err instanceof ForbiddenError) {
             callback({ code: grpc.status.PERMISSION_DENIED, message: err.message });
@@ -219,8 +225,8 @@ const playfulBotServer: ServiceHandlers.playfulbot.v0.PlayfulBot = {
         }
       });
     }
-  ),
-};
+  );
+})();
 
 function getServer(): grpc.Server {
   const packageDefinition = protoLoader.loadSync(PROTO_PATH);

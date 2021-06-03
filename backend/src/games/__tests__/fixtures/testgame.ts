@@ -53,15 +53,16 @@ export function registerTestGame(): void {
 }
 
 export function playGameSoThatGivenPlayerWins(game: Game, winnerID: PlayerID): void {
-  for (const assignment of game.players) {
+  for (const [playerNumber, assignment] of game.players.entries()) {
     if (assignment.playerID !== winnerID) {
-      game.play(assignment.playerID, 'whatever', { wins: false } as TestActionData);
+      game.play(playerNumber, 'whatever', { wins: false } as TestActionData);
     }
   }
-  game.play(winnerID, 'whatever', { wins: true } as TestActionData);
+  const winnerNumber = game.players.findIndex((assignment) => assignment.playerID === winnerID);
+  game.play(winnerNumber, 'whatever', { wins: true } as TestActionData);
 }
 
 export function playGameAndGetADraw(game: Game): void {
-  game.play(game.players[0].playerID, 'whatever', { wins: false } as TestActionData);
-  game.play(game.players[1].playerID, 'whatever', { wins: false } as TestActionData);
+  game.play(0, 'whatever', { wins: false } as TestActionData);
+  game.play(1, 'whatever', { wins: false } as TestActionData);
 }
