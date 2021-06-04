@@ -5,6 +5,7 @@ import { Tournament } from '../types/graphql-generated';
 import { client as apolloClient } from '../apolloConfig';
 
 import * as gqlTypes from '../types/graphql';
+import { useFragment } from './useFragment';
 
 export default function useDebugGame(tournament: Tournament) {
   const { authenticatedUser } = useAuthenticatedUser();
@@ -83,10 +84,11 @@ function useGameSubscription(gameID: string) {
     }
   }
 
-  const result = apolloClient.readFragment<gqlTypes.GameFragment>({
+  const result = useFragment<gqlTypes.GameFragment>({
     id: fullGameID(gameID),
-    fragment: gqlTypes.GameFragmentDoc
+    fragment: gqlTypes.GameFragmentDoc,
   });
+
   return { game: result || undefined }
 }
 
