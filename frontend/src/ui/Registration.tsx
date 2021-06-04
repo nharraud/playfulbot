@@ -96,12 +96,14 @@ export default function Registration(props) {
                   />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <TextField inputRef={register} label="password" name="password" variant="outlined" fullWidth
+                  <TextField type="password" inputRef={register} label="password" name="password"
+                    variant="outlined" fullWidth inputProps={{autocomplete: "new-password"}}
                     error={errors.password !== undefined} helperText={errors.password?.message}
                   />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <TextField inputRef={register} label="confirm password" name="confirmPassword" variant="outlined" fullWidth
+                  <TextField type="password" inputRef={register} label="confirm password" name="confirmPassword"
+                    variant="outlined" fullWidth inputProps={{autocomplete: "new-password"}}
                     error={errors.confirmPassword !== undefined} helperText={errors.confirmPassword?.message}
                   />
                 </Grid>

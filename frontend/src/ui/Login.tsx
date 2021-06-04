@@ -85,7 +85,8 @@ export default function Login(props) {
                     onChange={event => setUsername(event.target.value)} />
                 </Grid>
                 <Grid item xs={12} lg={12}>
-                  <TextField label="password" variant="outlined" fullWidth 
+                  <TextField type="password" label="password" variant="outlined" fullWidth 
+                    inputProps={{autocomplete: "current-password"}}
                     onChange={event => setPassword(event.target.value)} />
                 </Grid>
                 <Grid item container xs={12} className={classes.formButtons} justify="center">
