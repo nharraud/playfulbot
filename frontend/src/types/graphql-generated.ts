@@ -560,7 +560,7 @@ export type GameSubscription = (
     & Pick<GamePatch, 'gameID' | 'version' | 'patch'>
   ) | (
     { __typename?: 'GameCanceled' }
-    & Pick<GameCanceled, 'version'>
+    & Pick<GameCanceled, 'gameID' | 'version'>
   ) | (
     { __typename?: 'PlayerConnection' }
     & Pick<PlayerConnection, 'playerID' | 'connected'>
@@ -1166,6 +1166,7 @@ export const GameDocument = gql`
       patches
     }
     ... on GameCanceled {
+      gameID
       version
     }
     ... on PlayerConnection {

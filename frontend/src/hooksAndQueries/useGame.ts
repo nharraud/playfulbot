@@ -25,85 +25,69 @@ function useDebugArenaSubscription(userID: string, tournamentID: string) {
   return { arena: data?.debugArena };
 }
 
+function fullGameID(gameID) {
+  return `Game:${gameID}`;
+}
+
+function fullPlayerID(playerID) {
+  return `Player:${playerID}`;
+}
 
 function useGameSubscription(gameID: string) {
-  const fullGameID = `Game:${gameID}`;
-
-  const {data, loading, error} = useSubscription<gqlTypes.GameSubscription>(gqlTypes.GameDocument, {
+  const {data, loading, error } = gqlTypes.useGameSubscription({
     variables: { gameID: gameID },
     skip: !gameID,
-    shouldResubscribe: true,
+    shouldResubscribe: true
   });
 
-  let game: gqlTypes.GameFragment = undefined;
+  if (data) {
+    if (data.game.__typename === 'GameCanceled') {
+      apolloClient.writeFragment({
+        id: fullGameID(data.game.gameID),
+        fragment: gqlTypes.GameCancelFragmentDoc,
+        data: {
+          canceled: true,
+          version: data.game.version
+        },
+      });
+    } else if (data.game.__typename === 'GamePatch') {
+      const version = data.game.version;
+      const modifiedGameID = fullGameID(data.game.gameID);
+      const game = apolloClient.readFragment<gqlTypes.GameFragment>({
+        id: modifiedGameID,
+        fragment: gqlTypes.GameFragmentDoc
+      });
 
-  if (!data) {
-    game = undefined;
-  } else if (data.game.__typename === 'Game') {
-    game = data.game;
-  } else if (data.game.__typename === 'GameCanceled') {
-    apolloClient.writeFragment({
-      id: fullGameID,
-      fragment: gqlTypes.GameCancelFragmentDoc,
-      data: {
-        canceled: true,
-        version: data.game.version
-      },
-    });
-    game = apolloClient.readFragment<gqlTypes.GameFragment>({
-      id: fullGameID,
-      fragment: gqlTypes.GameFragmentDoc
-    });
-  } else if (data.game.__typename === 'GamePatch') {
-    const version = data.game.version;
-    game = apolloClient.readFragment<gqlTypes.GameFragment>({
-      id: fullGameID,
-      fragment: gqlTypes.GameFragmentDoc
-    });
+      if (version !== game.version) {
+        if (version !== game.version + 1) {
+          throw new Error('Missing game version');
+        }
 
-    if (version !== game.version) {
-      if (version !== game.version + 1) {
-        throw new Error('Missing game version');
+        apolloClient.writeFragment({
+          id: modifiedGameID,
+          fragment: gqlTypes.GamePatchFragmentDoc,
+          data: {
+            patches: game.patches.concat([data.game.patch]),
+            version: version
+          },
+        });
       }
+    } else if (data.game.__typename === 'PlayerConnection') {
+      apolloClient.writeFragment<gqlTypes.PlayerFragment>({
+        id: fullPlayerID(data.game.playerID),
+        fragment: gqlTypes.PlayerFragmentDoc,
+        data: {
+          connected: data.game.connected
+        },
+      });
+    }
+  }
 
-      apolloClient.writeFragment({
-        id: fullGameID,
-        fragment: gqlTypes.GamePatchFragmentDoc,
-        data: {
-          patches: game.patches.concat([data.game.patch]),
-          initialState: game.initialState,
-          version: version
-        },
-      });
-      game = apolloClient.readFragment<gqlTypes.GameFragment>({
-        id: fullGameID,
-        fragment: gqlTypes.GameFragmentDoc
-      });
-    }
-  } else if (data.game.__typename === 'PlayerConnection') {
-    const newPLayer = data.game;
-    game = apolloClient.readFragment<gqlTypes.GameFragment>({
-      id: fullGameID,
-      fragment: gqlTypes.GameFragmentDoc
-    });
-    if (game) {
-      const newPlayers = game.players.map((player) =>
-        player.id === newPLayer.playerID ? { id: player.id, connected: newPLayer.connected, token: player.token } : player
-      );
-      apolloClient.writeFragment({
-        id: fullGameID,
-        fragment: gqlTypes.GamePlayersFragmentDoc,
-        data: {
-          players: newPlayers
-        },
-      });
-      game = apolloClient.readFragment<gqlTypes.GameFragment>({
-        id: fullGameID,
-        fragment: gqlTypes.GameFragmentDoc
-      });
-    }
-  };
-  return { game }
+  const result = apolloClient.readFragment<gqlTypes.GameFragment>({
+    id: fullGameID(gameID),
+    fragment: gqlTypes.GameFragmentDoc
+  });
+  return { game: result || undefined }
 }
 
 function useCreateDebugGame(userID: string, tournamentID: string) {

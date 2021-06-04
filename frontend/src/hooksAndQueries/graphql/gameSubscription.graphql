@@ -15,6 +15,7 @@ subscription game($gameID: ID!) {
       patches
     }
     ... on GameCanceled {
+      gameID,
       version
     }
     ... on PlayerConnection {
