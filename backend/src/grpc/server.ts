@@ -107,7 +107,7 @@ const playfulBotServer = new (class implements PlayfulBotHandlers {
       call.on('error', (error) => {
         call.end();
         stopped = true;
-        logger.log(error);
+        logger.error(error);
       });
 
       call.on('end', () => {
@@ -211,16 +211,17 @@ const playfulBotServer = new (class implements PlayfulBotHandlers {
         const game = Game.getGame(request.gameId);
         if (!game) {
           callback({ code: grpc.status.NOT_FOUND, message: 'Game not found.' });
-        }
-        try {
-          game.play(token.playerID, request.action, JSON.parse(request.data));
-        } catch (err) {
-          if (err instanceof ForbiddenError) {
-            callback({ code: grpc.status.PERMISSION_DENIED, message: err.message });
-          } else if (err instanceof GameNotPlayableError) {
-            callback({ code: grpc.status.FAILED_PRECONDITION, message: err.message });
-          } else {
-            throw err;
+        } else {
+          try {
+            game.play(token.playerID, request.action, JSON.parse(request.data));
+          } catch (err) {
+            if (err instanceof ForbiddenError) {
+              callback({ code: grpc.status.PERMISSION_DENIED, message: err.message });
+            } else if (err instanceof GameNotPlayableError) {
+              callback({ code: grpc.status.FAILED_PRECONDITION, message: err.message });
+            } else {
+              throw err;
+            }
           }
         }
       });
