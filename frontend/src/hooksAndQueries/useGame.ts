@@ -7,6 +7,8 @@ import { client as apolloClient } from '../apolloConfig';
 import * as gqlTypes from '../types/graphql';
 import { useFragment } from './useFragment';
 
+import { useRestartingSubscription } from './useRestartingSubscription';
+
 export default function useDebugGame(tournament: Tournament) {
   const { authenticatedUser } = useAuthenticatedUser();
 
@@ -35,10 +37,10 @@ function fullPlayerID(playerID) {
 }
 
 function useGameSubscription(gameID: string) {
-  const {data, loading, error } = gqlTypes.useGameSubscription({
+    const {data, loading, error } = useRestartingSubscription(gqlTypes.GameDocument, {
     variables: { gameID: gameID },
     skip: !gameID,
-    shouldResubscribe: true
+    shouldResubscribe: true,
   });
 
   if (data) {

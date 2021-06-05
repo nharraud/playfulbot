@@ -10,6 +10,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { triggerUserContextUpdate } from './UserContext';
+import { subscriptionReconnectListeners } from './hooksAndQueries/useRestartingSubscription';
 
 
 const httpLink = new HttpLink({
@@ -87,8 +88,12 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     },
   });
   subscriptionClient.onError((err) => console.log('onError', { err }));
-  subscriptionClient.onConnected((args) => console.log(`Success ${JSON.stringify(args)}`));
-  subscriptionClient.onReconnected((args) => client.resetStore());
+  subscriptionClient.onReconnected((args) => {
+    client.resetStore();
+    for (const listener of subscriptionReconnectListeners) {
+      listener();
+    }
+  });
 
   const wsLink = new WebSocketLink(subscriptionClient);
 
