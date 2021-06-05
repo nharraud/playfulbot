@@ -6,3 +6,10 @@ services:
     environment:
       POSTGRES_PASSWORD: dev-password
       POSTGRES_USER: playfulbot_backend
+  nginx:
+    build: ./nginx
+    extra_hosts:
+      - "backend:host-gateway"
+      - "frontend:host-gateway"
+    ports:
+      - "80:80"
