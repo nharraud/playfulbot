@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { db } from '~playfulbot/model/db';
 import { DbOrTx, DEFAULT } from './db/helpers';
-import { TeamID } from './Team';
+import { Team, TeamID } from './Team';
 import { TournamentID } from './Tournaments';
 import { UserID } from './User';
 import { TournamentInvitation } from './TournamentInvitation';
@@ -15,6 +15,19 @@ interface DbTournamentInvitationLink {
   tournament_id: TournamentID;
 }
 /* eslint-enable */
+
+export interface RegisteredTournamentInvitation {
+  invitation: TournamentInvitation;
+  inATeam: false;
+}
+
+export interface UserAlreadyInATeam {
+  inATeam: true;
+}
+
+export type RegisterTournamentInvitationResult =
+  | RegisteredTournamentInvitation
+  | UserAlreadyInATeam;
 
 export class TournamentInvitationLink {
   id: TournamentInvitationLinkID;
@@ -49,6 +62,9 @@ export class TournamentInvitationLink {
       'SELECT * FROM tournament_invitation_links WHERE id = $[id]',
       { id }
     );
+    if (data === null) {
+      return null;
+    }
     return new TournamentInvitationLink(data);
   }
 
@@ -63,8 +79,35 @@ export class TournamentInvitationLink {
     return rows.map((row) => new TournamentInvitationLink(row));
   }
 
-  async registerInvitationForUser(userID: UserID, dbOrTX: DbOrTx): Promise<TournamentInvitation> {
+  async registerInvitationForUser(
+    userID: UserID,
+    dbOrTX: DbOrTx
+  ): Promise<RegisterTournamentInvitationResult> {
     // This method will be especially useful later when we make single-use links.
-    return TournamentInvitation.create(this.tournamentID, userID, dbOrTX);
+    return dbOrTX.txIf<RegisterTournamentInvitationResult>(async (tx) => {
+      const invitations = await TournamentInvitation.getAll(
+        {
+          tournamentID: this.tournamentID,
+          userID,
+        },
+        tx
+      );
+      if (invitations.length === 1) {
+        return {
+          invitation: invitations[0],
+          inATeam: false,
+        };
+      }
+
+      const hasTeam = await Team.hasTeam(userID, this.tournamentID, tx);
+      if (hasTeam) {
+        return { inATeam: true };
+      }
+
+      return {
+        invitation: await TournamentInvitation.create(this.tournamentID, userID, tx),
+        inATeam: false,
+      };
+    });
   }
 }

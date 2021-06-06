@@ -16,6 +16,11 @@ export type Scalars = {
   JSON: any;
 };
 
+export type AlreadyInATeamError = Error & {
+  __typename?: 'AlreadyInATeamError';
+  message: Scalars['String'];
+};
+
 export type CreateTeamError = ForbiddenError | ValidationError;
 
 export type CreateTeamFailure = {
@@ -118,7 +123,7 @@ export type Mutation = {
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
-  registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
+  registerTournamentInvitationLink?: Maybe<RegisterTournamentInvitationResult>;
   createTeam?: Maybe<CreateTeamResult>;
   updateTeam?: Maybe<UpdateTeamResult>;
   joinTeam?: Maybe<JoinTeamResult>;
@@ -236,6 +241,20 @@ export type QueryTeamArgs = {
   tournamentID: Scalars['ID'];
 };
 
+export type RegisterTournamentInvitationError = AlreadyInATeamError | TournamentInvitationLinkNotFoundError;
+
+export type RegisterTournamentInvitationFailure = {
+  __typename?: 'RegisterTournamentInvitationFailure';
+  errors: Array<RegisterTournamentInvitationError>;
+};
+
+export type RegisterTournamentInvitationResult = RegisterTournamentInvitationSuccess | RegisterTournamentInvitationFailure;
+
+export type RegisterTournamentInvitationSuccess = {
+  __typename?: 'RegisterTournamentInvitationSuccess';
+  invitation?: Maybe<TournamentInvitation>;
+};
+
 export type Round = {
   __typename?: 'Round';
   id?: Maybe<Scalars['ID']>;
@@ -333,6 +352,11 @@ export type TournamentInvitation = {
   id?: Maybe<Scalars['ID']>;
   tournament?: Maybe<Tournament>;
   invitee?: Maybe<User>;
+};
+
+export type TournamentInvitationLinkNotFoundError = Error & {
+  __typename?: 'TournamentInvitationLinkNotFoundError';
+  message: Scalars['String'];
 };
 
 export enum TournamentRoleName {
@@ -458,6 +482,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AlreadyInATeamError: ResolverTypeWrapper<AlreadyInATeamError>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   CreateTeamError: ResolversTypes['ForbiddenError'] | ResolversTypes['ValidationError'];
   CreateTeamFailure: ResolverTypeWrapper<Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversTypes['CreateTeamError']> }>;
   CreateTeamResult: ResolversTypes['CreateTeamSuccess'] | ResolversTypes['CreateTeamFailure'];
@@ -466,8 +492,7 @@ export type ResolversTypes = {
   DebugArena: ResolverTypeWrapper<DebugArena>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   DeletedTeam: ResolverTypeWrapper<DeletedTeam>;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  Error: ResolversTypes['ForbiddenError'] | ResolversTypes['TeamNotFoundError'] | ResolversTypes['ValidationError'];
+  Error: ResolversTypes['AlreadyInATeamError'] | ResolversTypes['ForbiddenError'] | ResolversTypes['TeamNotFoundError'] | ResolversTypes['TournamentInvitationLinkNotFoundError'] | ResolversTypes['ValidationError'];
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
   Game: ResolverTypeWrapper<Game>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -490,6 +515,10 @@ export type ResolversTypes = {
   PlayerConnection: ResolverTypeWrapper<PlayerConnection>;
   PlayerGames: ResolverTypeWrapper<PlayerGames>;
   Query: ResolverTypeWrapper<{}>;
+  RegisterTournamentInvitationError: ResolversTypes['AlreadyInATeamError'] | ResolversTypes['TournamentInvitationLinkNotFoundError'];
+  RegisterTournamentInvitationFailure: ResolverTypeWrapper<Omit<RegisterTournamentInvitationFailure, 'errors'> & { errors: Array<ResolversTypes['RegisterTournamentInvitationError']> }>;
+  RegisterTournamentInvitationResult: ResolversTypes['RegisterTournamentInvitationSuccess'] | ResolversTypes['RegisterTournamentInvitationFailure'];
+  RegisterTournamentInvitationSuccess: ResolverTypeWrapper<RegisterTournamentInvitationSuccess>;
   Round: ResolverTypeWrapper<Round>;
   RoundStatus: RoundStatus;
   Subscription: ResolverTypeWrapper<{}>;
@@ -499,6 +528,7 @@ export type ResolversTypes = {
   TeamOrDeletedTeam: ResolversTypes['Team'] | ResolversTypes['DeletedTeam'];
   Tournament: ResolverTypeWrapper<Tournament>;
   TournamentInvitation: ResolverTypeWrapper<TournamentInvitation>;
+  TournamentInvitationLinkNotFoundError: ResolverTypeWrapper<TournamentInvitationLinkNotFoundError>;
   TournamentRoleName: TournamentRoleName;
   TournamentStatus: TournamentStatus;
   UpdateTeamError: ResolversTypes['ForbiddenError'] | ResolversTypes['ValidationError'];
@@ -513,6 +543,8 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AlreadyInATeamError: AlreadyInATeamError;
+  String: Scalars['String'];
   CreateTeamError: ResolversParentTypes['ForbiddenError'] | ResolversParentTypes['ValidationError'];
   CreateTeamFailure: Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversParentTypes['CreateTeamError']> };
   CreateTeamResult: ResolversParentTypes['CreateTeamSuccess'] | ResolversParentTypes['CreateTeamFailure'];
@@ -521,8 +553,7 @@ export type ResolversParentTypes = {
   DebugArena: DebugArena;
   ID: Scalars['ID'];
   DeletedTeam: DeletedTeam;
-  String: Scalars['String'];
-  Error: ResolversParentTypes['ForbiddenError'] | ResolversParentTypes['TeamNotFoundError'] | ResolversParentTypes['ValidationError'];
+  Error: ResolversParentTypes['AlreadyInATeamError'] | ResolversParentTypes['ForbiddenError'] | ResolversParentTypes['TeamNotFoundError'] | ResolversParentTypes['TournamentInvitationLinkNotFoundError'] | ResolversParentTypes['ValidationError'];
   ForbiddenError: ForbiddenError;
   Game: Game;
   Int: Scalars['Int'];
@@ -545,6 +576,10 @@ export type ResolversParentTypes = {
   PlayerConnection: PlayerConnection;
   PlayerGames: PlayerGames;
   Query: {};
+  RegisterTournamentInvitationError: ResolversParentTypes['AlreadyInATeamError'] | ResolversParentTypes['TournamentInvitationLinkNotFoundError'];
+  RegisterTournamentInvitationFailure: Omit<RegisterTournamentInvitationFailure, 'errors'> & { errors: Array<ResolversParentTypes['RegisterTournamentInvitationError']> };
+  RegisterTournamentInvitationResult: ResolversParentTypes['RegisterTournamentInvitationSuccess'] | ResolversParentTypes['RegisterTournamentInvitationFailure'];
+  RegisterTournamentInvitationSuccess: RegisterTournamentInvitationSuccess;
   Round: Round;
   Subscription: {};
   Team: Team;
@@ -553,6 +588,7 @@ export type ResolversParentTypes = {
   TeamOrDeletedTeam: ResolversParentTypes['Team'] | ResolversParentTypes['DeletedTeam'];
   Tournament: Tournament;
   TournamentInvitation: TournamentInvitation;
+  TournamentInvitationLinkNotFoundError: TournamentInvitationLinkNotFoundError;
   UpdateTeamError: ResolversParentTypes['ForbiddenError'] | ResolversParentTypes['ValidationError'];
   UpdateTeamFailure: Omit<UpdateTeamFailure, 'errors'> & { errors: Array<ResolversParentTypes['UpdateTeamError']> };
   UpdateTeamResult: ResolversParentTypes['UpdateTeamSuccess'] | ResolversParentTypes['UpdateTeamFailure'];
@@ -561,6 +597,11 @@ export type ResolversParentTypes = {
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
   UserTeamResult: ResolversParentTypes['Team'] | ResolversParentTypes['UserNotPartOfAnyTeam'];
   ValidationError: ValidationError;
+};
+
+export type AlreadyInATeamErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['AlreadyInATeamError'] = ResolversParentTypes['AlreadyInATeamError']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CreateTeamErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamError'] = ResolversParentTypes['CreateTeamError']> = {
@@ -598,7 +639,7 @@ export type DeletedTeamResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
-  __resolveType: TypeResolveFn<'ForbiddenError' | 'TeamNotFoundError' | 'ValidationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AlreadyInATeamError' | 'ForbiddenError' | 'TeamNotFoundError' | 'TournamentInvitationLinkNotFoundError' | 'ValidationError', ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
@@ -685,7 +726,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'username' | 'password'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'name' | 'startDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>>;
-  registerTournamentInvitationLink?: Resolver<Maybe<ResolversTypes['TournamentInvitation']>, ParentType, ContextType, RequireFields<MutationRegisterTournamentInvitationLinkArgs, 'tournamentInvitationLinkID'>>;
+  registerTournamentInvitationLink?: Resolver<Maybe<ResolversTypes['RegisterTournamentInvitationResult']>, ParentType, ContextType, RequireFields<MutationRegisterTournamentInvitationLinkArgs, 'tournamentInvitationLinkID'>>;
   createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'tournamentID' | 'input' | 'join'>>;
   updateTeam?: Resolver<Maybe<ResolversTypes['UpdateTeamResult']>, ParentType, ContextType, RequireFields<MutationUpdateTeamArgs, 'teamID' | 'input'>>;
   joinTeam?: Resolver<Maybe<ResolversTypes['JoinTeamResult']>, ParentType, ContextType, RequireFields<MutationJoinTeamArgs, 'teamID'>>;
@@ -721,6 +762,24 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   round?: Resolver<Maybe<ResolversTypes['Round']>, ParentType, ContextType, RequireFields<QueryRoundArgs, never>>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'userID' | 'tournamentID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type RegisterTournamentInvitationErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterTournamentInvitationError'] = ResolversParentTypes['RegisterTournamentInvitationError']> = {
+  __resolveType: TypeResolveFn<'AlreadyInATeamError' | 'TournamentInvitationLinkNotFoundError', ParentType, ContextType>;
+};
+
+export type RegisterTournamentInvitationFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterTournamentInvitationFailure'] = ResolversParentTypes['RegisterTournamentInvitationFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['RegisterTournamentInvitationError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RegisterTournamentInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterTournamentInvitationResult'] = ResolversParentTypes['RegisterTournamentInvitationResult']> = {
+  __resolveType: TypeResolveFn<'RegisterTournamentInvitationSuccess' | 'RegisterTournamentInvitationFailure', ParentType, ContextType>;
+};
+
+export type RegisterTournamentInvitationSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterTournamentInvitationSuccess'] = ResolversParentTypes['RegisterTournamentInvitationSuccess']> = {
+  invitation?: Resolver<Maybe<ResolversTypes['TournamentInvitation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RoundResolvers<ContextType = any, ParentType extends ResolversParentTypes['Round'] = ResolversParentTypes['Round']> = {
@@ -780,6 +839,11 @@ export type TournamentInvitationResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TournamentInvitationLinkNotFoundErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['TournamentInvitationLinkNotFoundError'] = ResolversParentTypes['TournamentInvitationLinkNotFoundError']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UpdateTeamErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateTeamError'] = ResolversParentTypes['UpdateTeamError']> = {
   __resolveType: TypeResolveFn<'ForbiddenError' | 'ValidationError', ParentType, ContextType>;
 };
@@ -822,6 +886,7 @@ export type ValidationErrorResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type Resolvers<ContextType = any> = {
+  AlreadyInATeamError?: AlreadyInATeamErrorResolvers<ContextType>;
   CreateTeamError?: CreateTeamErrorResolvers<ContextType>;
   CreateTeamFailure?: CreateTeamFailureResolvers<ContextType>;
   CreateTeamResult?: CreateTeamResultResolvers<ContextType>;
@@ -850,6 +915,10 @@ export type Resolvers<ContextType = any> = {
   PlayerConnection?: PlayerConnectionResolvers<ContextType>;
   PlayerGames?: PlayerGamesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RegisterTournamentInvitationError?: RegisterTournamentInvitationErrorResolvers<ContextType>;
+  RegisterTournamentInvitationFailure?: RegisterTournamentInvitationFailureResolvers<ContextType>;
+  RegisterTournamentInvitationResult?: RegisterTournamentInvitationResultResolvers<ContextType>;
+  RegisterTournamentInvitationSuccess?: RegisterTournamentInvitationSuccessResolvers<ContextType>;
   Round?: RoundResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
@@ -857,6 +926,7 @@ export type Resolvers<ContextType = any> = {
   TeamOrDeletedTeam?: TeamOrDeletedTeamResolvers<ContextType>;
   Tournament?: TournamentResolvers<ContextType>;
   TournamentInvitation?: TournamentInvitationResolvers<ContextType>;
+  TournamentInvitationLinkNotFoundError?: TournamentInvitationLinkNotFoundErrorResolvers<ContextType>;
   UpdateTeamError?: UpdateTeamErrorResolvers<ContextType>;
   UpdateTeamFailure?: UpdateTeamFailureResolvers<ContextType>;
   UpdateTeamResult?: UpdateTeamResultResolvers<ContextType>;

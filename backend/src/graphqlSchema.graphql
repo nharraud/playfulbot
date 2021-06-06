@@ -107,6 +107,28 @@ union JoinTeamError = TeamNotFoundError
 union JoinTeamResult = JoinTeamSuccess | JoinTeamFailure
 
 
+type RegisterTournamentInvitationSuccess {
+  invitation: TournamentInvitation
+}
+
+type RegisterTournamentInvitationFailure {
+  errors: [RegisterTournamentInvitationError!]!
+}
+
+type AlreadyInATeamError implements Error {
+  message: String!
+}
+
+type TournamentInvitationLinkNotFoundError implements Error {
+  message: String!
+}
+
+union RegisterTournamentInvitationError = AlreadyInATeamError | TournamentInvitationLinkNotFoundError
+
+union RegisterTournamentInvitationResult = RegisterTournamentInvitationSuccess | RegisterTournamentInvitationFailure
+
+
+
 #
 # Update Team Input/Output
 #
@@ -246,7 +268,7 @@ type Mutation {
     minutesBetweenRounds: Int!,
   ): Tournament
 
-  registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): TournamentInvitation
+  registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult
 
   createTeam(tournamentID: ID!, input: TeamInput!, join: Boolean! = true): CreateTeamResult
   updateTeam(teamID: ID!, input: TeamInput!): UpdateTeamResult

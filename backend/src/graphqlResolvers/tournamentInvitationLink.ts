@@ -1,5 +1,6 @@
 import { AuthenticationError, TournamentInvitationNotFound } from '~playfulbot/errors';
 import { db } from '~playfulbot/model/db';
+import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { TournamentInvitationLink } from '~playfulbot/model/TournamentInvitationLink';
 import { Tournament } from '~playfulbot/model/Tournaments';
 import {
@@ -8,6 +9,7 @@ import {
   isUserContext,
 } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import { RegisterTournamentInvitationResult } from '~playfulbot/types/graphql';
 
 export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<ApolloContext>['tournamentByInvitationLink'] =
   async (parent, args, ctx) => {
@@ -31,16 +33,41 @@ export const registerTournamentInvitationLinkResolver: gqlTypes.MutationResolver
   async (parent, args, ctx) => {
     if (!isUserContext(ctx)) {
       throw new AuthenticationError(
-        'Only Authenticated users are allowed to rehister a tournament Invitation'
+        'Only Authenticated users are allowed to register a tournament Invitation'
       );
     }
 
-    return db.default.tx(async (tx) => {
+    return db.default.tx<RegisterTournamentInvitationResult>(async (tx) => {
       const invitationLink = await TournamentInvitationLink.getByID(
         args.tournamentInvitationLinkID,
         tx
       );
-      const invitation = await invitationLink.registerInvitationForUser(ctx.userID, tx);
-      return invitation;
+      if (!invitationLink) {
+        return {
+          __typename: 'RegisterTournamentInvitationFailure',
+          errors: [
+            {
+              __typename: 'TournamentInvitationLinkNotFoundError',
+              message: 'This link is not valid.',
+            },
+          ],
+        };
+      }
+      const result = await invitationLink.registerInvitationForUser(ctx.userID, tx);
+      if (result.inATeam === true) {
+        return {
+          __typename: 'RegisterTournamentInvitationFailure',
+          errors: [
+            {
+              __typename: 'AlreadyInATeamError',
+              message: 'User already joined a team.',
+            },
+          ],
+        };
+      }
+      return {
+        __typename: 'RegisterTournamentInvitationSuccess',
+        invitation: result.invitation,
+      };
     });
   };

@@ -131,6 +131,30 @@ export type JoinTeamError = TeamNotFoundError;
 
 export type JoinTeamResult = JoinTeamSuccess | JoinTeamFailure;
 
+export type RegisterTournamentInvitationSuccess = {
+  __typename?: 'RegisterTournamentInvitationSuccess';
+  invitation?: Maybe<TournamentInvitation>;
+};
+
+export type RegisterTournamentInvitationFailure = {
+  __typename?: 'RegisterTournamentInvitationFailure';
+  errors: Array<RegisterTournamentInvitationError>;
+};
+
+export type AlreadyInATeamError = Error & {
+  __typename?: 'AlreadyInATeamError';
+  message: Scalars['String'];
+};
+
+export type TournamentInvitationLinkNotFoundError = Error & {
+  __typename?: 'TournamentInvitationLinkNotFoundError';
+  message: Scalars['String'];
+};
+
+export type RegisterTournamentInvitationError = AlreadyInATeamError | TournamentInvitationLinkNotFoundError;
+
+export type RegisterTournamentInvitationResult = RegisterTournamentInvitationSuccess | RegisterTournamentInvitationFailure;
+
 export type TeamInput = {
   name?: Maybe<Scalars['String']>;
 };
@@ -316,7 +340,7 @@ export type Mutation = {
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
   createTournament?: Maybe<Tournament>;
-  registerTournamentInvitationLink?: Maybe<TournamentInvitation>;
+  registerTournamentInvitationLink?: Maybe<RegisterTournamentInvitationResult>;
   createTeam?: Maybe<CreateTeamResult>;
   updateTeam?: Maybe<UpdateTeamResult>;
   joinTeam?: Maybe<JoinTeamResult>;
@@ -667,12 +691,18 @@ export type RegisterTournamentInvitationLinkMutationVariables = Exact<{
 export type RegisterTournamentInvitationLinkMutation = (
   { __typename?: 'Mutation' }
   & { registerTournamentInvitationLink?: Maybe<(
-    { __typename?: 'TournamentInvitation' }
-    & Pick<TournamentInvitation, 'id'>
-    & { tournament?: Maybe<(
-      { __typename?: 'Tournament' }
-      & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
+    { __typename?: 'RegisterTournamentInvitationSuccess' }
+    & { invitation?: Maybe<(
+      { __typename?: 'TournamentInvitation' }
+      & Pick<TournamentInvitation, 'id'>
+      & { tournament?: Maybe<(
+        { __typename?: 'Tournament' }
+        & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
+      )> }
     )> }
+  ) | (
+    { __typename?: 'RegisterTournamentInvitationFailure' }
+    & { errors: Array<{ __typename: 'AlreadyInATeamError' } | { __typename: 'TournamentInvitationLinkNotFoundError' }> }
   )> }
 );
 
@@ -1400,12 +1430,21 @@ export const RegisterTournamentInvitationLinkDocument = gql`
   registerTournamentInvitationLink(
     tournamentInvitationLinkID: $tournamentInvitationLinkID
   ) {
-    id
-    tournament {
-      id
-      name
-      lastRoundDate
-      status
+    ... on RegisterTournamentInvitationSuccess {
+      invitation {
+        id
+        tournament {
+          id
+          name
+          lastRoundDate
+          status
+        }
+      }
+    }
+    ... on RegisterTournamentInvitationFailure {
+      errors {
+        __typename
+      }
     }
   }
 }

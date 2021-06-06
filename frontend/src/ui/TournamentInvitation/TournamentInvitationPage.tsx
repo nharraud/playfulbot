@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
 import { useTournamentByInvitationLinkQuery } from '../../types/graphql-generated';
 import MenuBar from '../MenuBar/MenuBar';
@@ -39,9 +39,15 @@ export function TournamentInvitationPage() {
     )
   }
 
-  if (tournamentResult && !authenticated) {
-    history.push(`/login?tournament_invitation=${tournamentInvitationLinkID}`)
-  }
+  useEffect(() => {
+    if (tournamentResult) {
+      if (!authenticated) {
+        history.push(`/login?tournament_invitation=${tournamentInvitationLinkID}`)
+      } else {
+        history.push(`/home?tournament_invitation=${tournamentInvitationLinkID}`)
+      }
+    }
+  }, [history, tournamentResult, authenticated, tournamentInvitationLinkID]);
   
   return (
     <div className={classes.root}>

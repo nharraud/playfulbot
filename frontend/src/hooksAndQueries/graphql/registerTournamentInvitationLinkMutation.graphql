@@ -1,11 +1,22 @@
 mutation registerTournamentInvitationLink($tournamentInvitationLinkID: ID!) {
   registerTournamentInvitationLink(tournamentInvitationLinkID: $tournamentInvitationLinkID) {
-    id,
-    tournament {
-      id,
-      name,
-      lastRoundDate,
-      status,
+
+    ... on RegisterTournamentInvitationSuccess {
+      invitation {
+        id,
+        tournament {
+          id,
+          name,
+          lastRoundDate,
+          status,
+        }
+      }
+    }
+
+    ... on RegisterTournamentInvitationFailure {
+      errors {
+        __typename,
+      }
     }
   }
 }
