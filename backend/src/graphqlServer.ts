@@ -1,6 +1,6 @@
 import Cookies from 'cookies';
 
-import { ApolloServer, AuthenticationError } from 'apollo-server-koa';
+import { ApolloServer, AuthenticationError, makeExecutableSchema } from 'apollo-server-koa';
 
 import { ConnectionContext } from 'subscriptions-transport-ws';
 import { readFileSync } from 'fs';
@@ -22,9 +22,14 @@ import logger from '~playfulbot/logging';
 // we must convert the file Buffer to a UTF-8 string
 const typeDefs = readFileSync(join(__dirname, 'graphqlSchema.graphql')).toString('utf-8');
 
-export default new ApolloServer({
+const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
+  resolverValidationOptions: { requireResolversForResolveType: false },
+});
+
+export default new ApolloServer({
+  schema,
   formatError: (err) => {
     logger.error(err);
     return err;
