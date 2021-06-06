@@ -51,6 +51,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
     'no-useless-constructor': 'off',
+    'prefer-destructuring': 'off',
     'lines-between-class-members': ['error', "always", { 'exceptAfterSingleLine': true }],
     'max-classes-per-file': 'off',
     'no-await-in-loop': 'off',
