@@ -108,9 +108,11 @@ export default function TournamentPage() {
               <TestIcon className={classes.menuIcon}/>
             </Link>
           )}
-          <Link to={`${baseURL}/competition`} className={className('competition')}>
-            <CompetitionIcon className={classes.menuIcon}/>
-          </Link>
+          {tournament.status === TournamentStatus.Started && (
+            <Link to={`${baseURL}/competition`} className={className('competition')}>
+              <CompetitionIcon className={classes.menuIcon}/>
+            </Link>
+          )}
         </div>
         <main
           className={classes.main}
