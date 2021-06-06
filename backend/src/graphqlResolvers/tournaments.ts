@@ -4,6 +4,7 @@ import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
 import { TournamentRoleName } from '~playfulbot/model/TournamentRole';
 import { Tournament } from '~playfulbot/model/Tournaments';
+import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import {
   ApolloContext,
   isBotContext,
@@ -11,6 +12,10 @@ import {
   isUserContext,
 } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
+import {
+  TournamentInvitation as GraphQLTournamentInvitation,
+  TournamentInvitationsArgs,
+} from '~playfulbot/types/graphql';
 
 export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>['createTournament'] =
   async (parent, args, ctx) => {
@@ -88,6 +93,28 @@ export function tournamentInvitationIDResolver(
     }
     const result = await parent.getInvitationLink(db.default);
     return result.id;
+  });
+}
+
+export function tournamentInvitationsResolver(
+  parent: Tournament,
+  args: TournamentInvitationsArgs,
+  ctx: ApolloContext
+): Promise<GraphQLTournamentInvitation[]> {
+  if (isBotContext(ctx)) {
+    throw new BotsForbiddenError();
+  }
+  if (isUnauthenticatedContext(ctx)) {
+    return null;
+  }
+  return db.default.tx<GraphQLTournamentInvitation[]>(async (tx) => {
+    if (ctx.userID !== args.userID) {
+      const role = await parent.getUserRole(ctx.userID, tx);
+      if (role !== TournamentRoleName.Admin) {
+        throw new ForbiddenError('Non tournament admins can only ask for their own invitation.');
+      }
+    }
+    return TournamentInvitation.getAll({ tournamentID: parent.id, userID: args.userID }, tx);
   });
 }
 

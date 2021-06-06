@@ -18,6 +18,7 @@ import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,
   tournamentInvitationIDResolver,
+  tournamentInvitationsResolver,
   tournamentMyRolesResolver,
   tournamentResolver,
   tournamentRoundsResolver,
@@ -84,6 +85,7 @@ const resolvers: IResolvers = {
     invitationLinkID: tournamentInvitationIDResolver,
     myRole: tournamentMyRolesResolver,
     teams: tournamentTeamsResolver,
+    invitations: tournamentInvitationsResolver,
   },
   Round: {
     teamPoints: roundTeamPointsResolver,
