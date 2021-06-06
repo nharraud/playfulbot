@@ -23,11 +23,10 @@ import * as gqlTypes from '~playfulbot/types/graphql';
 import { InvalidRequest } from '~playfulbot/errors';
 import { PlayerID } from '~playfulbot/model/Player';
 import { db } from '~playfulbot/model/db';
+import { SECRET_KEY } from '~playfulbot/secret';
 
 const randomBytes = promisify(crypto.randomBytes);
 const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
-
-const SECRET_KEY = 'secret!';
 
 export async function authenticate(user: User, koaContext: Context): Promise<JWToken> {
   const binFingerprint = await randomBytes(50);
