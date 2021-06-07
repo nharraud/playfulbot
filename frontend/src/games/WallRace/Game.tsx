@@ -12,7 +12,7 @@ interface GamePropsInterface {
     gameState: WallRaceGameState;
   };
 }
-export default function Game(props: GamePropsInterface) {
+export function Game(props: GamePropsInterface) {
   // rescale the arena to fit the screen
   const scale = 1 / props.game.gameState.arena.size * 6;
   // translate the arena in order to start the origin on the bottom left corner

@@ -6,6 +6,7 @@ import { CodingBotInfoTab } from './infoTabs/CodingBotInfoTab';
 import { InfoHeader } from './InfoHeader';
 import { InfoSections} from './InfoSections';
 import IntroTab from './infoTabs/TournamentInfoTab';
+import { GameRulesTab } from './infoTabs/GameRulesTab';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +32,7 @@ export default function InfoSubPage(props: TournamentInfoProps) {
         <IntroTab tournament={props.tournament}/>
       </TabPanel>
       <TabPanel value={currentSection} index={InfoSections.GAME_RULES}>
+        <GameRulesTab/>
       </TabPanel>
       <TabPanel value={currentSection} index={InfoSections.CODING_BOT}>
         <CodingBotInfoTab/>

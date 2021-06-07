@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { Canvas } from 'react-three-fiber';
 
 import { getApolloContext } from '@apollo/client/react/context/ApolloContext';
-import Game from 'src/games/WallRace';
+import { gameDefinition } from 'src/games/WallRace';
 
 
 export default function GameCanvas(props) {
@@ -14,7 +14,7 @@ export default function GameCanvas(props) {
 
   let game;
   if (props?.game !== undefined) {
-    game = (<Game {...props} />)
+    game = (<gameDefinition.game {...props} />)
   }
   return (
   <Canvas
