@@ -241,6 +241,9 @@ export class Team {
         teamDeleted = await tx.oneOrNone<{ bool: boolean }>(deleteEmptyTeamQuery, {
           teamID: this.id,
         });
+        if (teamDeleted) {
+          Player.delete(this.id);
+        }
       }
     });
 

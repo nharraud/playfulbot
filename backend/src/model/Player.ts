@@ -28,6 +28,10 @@ export class Player {
     return player;
   }
 
+  static delete(id: PlayerID): boolean {
+    return Player.players.delete(id);
+  }
+
   static getPlayer(id: PlayerID): Player | undefined {
     return Player.players.get(id);
   }

@@ -92,6 +92,34 @@ describe('Model/Team', () => {
     });
   });
 
+  test('should remove empty teams when users change teams', async () => {
+    await db.default.tx(async (tx) => {
+      const oldTeam = (await Team.create('a team1', tournaments[0].id, tx)) as Team;
+      const newTeam = (await Team.create('a team2', tournaments[0].id, tx)) as Team;
+      const user = await User.create('Alice', 'a password', tx);
+      await oldTeam.addMember(user.id, tx);
+      const result = await newTeam.addMember(user.id, tx);
+      expect(result.oldTeamDeleted).toBeTruthy();
+      expect(oldTeam.getTournamentPlayer()).toBeUndefined();
+      expect(newTeam.getTournamentPlayer()).not.toBeUndefined();
+    });
+  });
+
+  test('should keep non-empty teams when users change teams', async () => {
+    await db.default.tx(async (tx) => {
+      const oldTeam = (await Team.create('a team1', tournaments[0].id, tx)) as Team;
+      const newTeam = (await Team.create('a team2', tournaments[0].id, tx)) as Team;
+      const user1 = await User.create('Alice', 'a password', tx);
+      const user2 = await User.create('Bob', 'a password', tx);
+      await oldTeam.addMember(user1.id, tx);
+      await oldTeam.addMember(user2.id, tx);
+      const result = await newTeam.addMember(user1.id, tx);
+      expect(result.oldTeamDeleted).toBeFalsy();
+      expect(oldTeam.getTournamentPlayer()).not.toBeUndefined();
+      expect(newTeam.getTournamentPlayer()).not.toBeUndefined();
+    });
+  });
+
   test('should be able to get teams of a given user', async () => {
     await db.default.tx(async (tx) => {
       const user = await User.create('Alice', 'a password', tx);
