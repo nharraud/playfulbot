@@ -2,9 +2,10 @@ import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import { TournamentQuery } from 'src/types/graphql-generated';
 import { TabPanel } from 'src/utils/TabPanel';
+import { CodingBotInfoTab } from './infoTabs/CodingBotInfoTab';
 import { InfoHeader } from './InfoHeader';
 import { InfoSections} from './InfoSections';
-import IntroTab from './TournamentInfoTab';
+import IntroTab from './infoTabs/TournamentInfoTab';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -32,6 +33,7 @@ export default function InfoSubPage(props: TournamentInfoProps) {
       <TabPanel value={currentSection} index={InfoSections.GAME_RULES}>
       </TabPanel>
       <TabPanel value={currentSection} index={InfoSections.CODING_BOT}>
+        <CodingBotInfoTab/>
       </TabPanel>
     </div>
   )

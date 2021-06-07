@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles, Typography} from '@material-ui/core';
-import { TournamentID } from 'src/types/graphql';
 import PeopleIcon from '@material-ui/icons/People';
 import { DateTime } from 'luxon';
 

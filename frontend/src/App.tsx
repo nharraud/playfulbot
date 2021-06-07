@@ -35,9 +35,11 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
     menu: Palette['primary'];
+    code: PaletteOptions['text'];
   }
   interface PaletteOptions {
     menu: PaletteOptions['primary'];
+    code: PaletteOptions['text'];
   }
 }
 
@@ -57,6 +59,9 @@ const theme = createMuiTheme({
     background: {
       default: '#212121',
       paper: '#353535',
+    },
+    code: {
+      primary: '#ffa657'
     }
   },
   typography: {
@@ -71,7 +76,7 @@ const theme = createMuiTheme({
     h3: {
       fontSize: '1.5rem',
       fontWeight: 400,
-    }
+    },
   }
 });
 
