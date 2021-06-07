@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { db } from '~playfulbot/model/db';
 import { DbOrTx, DEFAULT } from './db/helpers';
-import { Team, TeamID } from './Team';
+import { Team } from './Team';
 import { TournamentID } from './Tournaments';
 import { UserID } from './User';
 import { TournamentInvitation } from './TournamentInvitation';
