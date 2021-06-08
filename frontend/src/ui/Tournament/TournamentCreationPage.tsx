@@ -15,6 +15,8 @@ import { DateTime } from 'luxon';
 import {
   DateTimePicker,
 } from '@material-ui/pickers';
+import { MenuItem, Select } from '@material-ui/core';
+import { DateTimeSchema } from 'src/utils/yup/DateTimeSchema';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,11 +73,32 @@ const useStyles = makeStyles((theme: Theme) =>
     errorText: {
       color: theme.palette.error.main,
     },
+    startOptionsContainer: {
+      display: 'flex',
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(3),
+    },
+    startOptionsLabel: {
+      flex: '0 0 auto',
+      display: 'inline-flex',
+      alignItems: 'center',
+    },
+    startOptionsSelect: {
+      marginLeft: theme.spacing(2),
+      flex: '1 1 auto',
+    },
   }),
 );
 
+
+enum StartOptions {
+  Now = 'now',
+  Later = 'later',
+}
+
 interface Inputs {
-  name: string;
+  name: string,
+  startOption: StartOptions,
   startDate: DateTime,
   lastRoundDate: DateTime,
   roundsNumber: number,
@@ -84,13 +107,22 @@ interface Inputs {
 
 const schema = yup.object().shape({
   name: yup.string().max(15).min(5).required().label("Tournament's name"),
-  startDate: yup.date().required().typeError('Invalid Date').label('Start date')
-  .test('startDate-in-the-future', 'Start date cannot be in the past', (value, schema) => {
-    return DateTime.now() < DateTime.fromJSDate(value);
+  startOption: yup.string().required().oneOf(Object.values(StartOptions)).label('Tournament start option'),
+  startDate: new DateTimeSchema().typeError('Invalid Date').label('Start date')
+  .when('startOption', (startOption: StartOptions, schema) => {
+    if (startOption === StartOptions.Later.valueOf()) {
+      return schema.defined().min(DateTime.now(), 'Start date cannot be in the past');
+    }
+    return schema;
   }),
-  lastRoundDate: yup.date().required().typeError('Invalid Date').label("Last Round's date")
-  .when('startDate', (value, schema) => {
-    return schema.min(value, 'last round date must be after tournament start date');
+  lastRoundDate: new DateTimeSchema().required().typeError('Invalid Date').label("Last Round's date")
+  // @ts-ignore yup.w hen's type is incorrect
+  .when(['startOption', 'startDate'], (startOption, startDate, schema) => {
+    let start = startDate;
+    if (startOption === StartOptions.Now.valueOf()) {
+      start = DateTime.now()
+    }
+    return schema.min(start, `last round date must be after tournament start date (${start.toLocaleString(DateTime.DATETIME_FULL)})`);
   }),
   roundsNumber: yup.number().required().integer().min(1).max(32).label("Number of rounds"),
   minutesBetweenRounds: yup.number().required().integer().min(15).label("Minutes between rounds"),
@@ -102,9 +134,15 @@ const schema = yup.object().shape({
     return `With the provided schedule, the first round starts on ${firstRoundDate.toLocaleString(DateTime.DATETIME_FULL)}, which is exactly at or before the tournament start date.`
   },
   test: (value) => {
-    const result = DateTime.fromJSDate(value.startDate)
+    let start: DateTime;
+    if (value.startOption === StartOptions.Now.valueOf()) {
+      start = DateTime.now()
+    } else {
+      start = value.startDate;
+    }
+    const result = start
       <
-    DateTime.fromJSDate(value.lastRoundDate)
+      value.lastRoundDate
       .minus({ minutes: value.minutesBetweenRounds * (value.roundsNumber - 1) })
     return result;
   }
@@ -119,6 +157,7 @@ export default function TournamentCreationPage(props) {
   const { register, handleSubmit, errors, control } = useForm<Inputs>({
     resolver: yupResolver(schema),
     defaultValues: {
+      startOption: StartOptions.Now,
       startDate: now.plus({ hours: 1 }),
       lastRoundDate: now.plus({ hours: 4 }),
       roundsNumber: 9,
@@ -134,12 +173,18 @@ export default function TournamentCreationPage(props) {
   const [validSchedule, setValidSchedule] = useState<boolean>(true);
 
   useEffect(() => {
+    let start: DateTime;
+    if (formState.startOption === StartOptions.Now.valueOf()) {
+      start = DateTime.now()
+    } else {
+      start = formState.startDate as DateTime;
+    }
     const firstRound = (formState.lastRoundDate as DateTime)?.minus({
       minutes: formState.minutesBetweenRounds * (formState.roundsNumber - 1)
     });
     setFirstRoundDate(firstRound);
-    setValidSchedule(formState.startDate < firstRound);
-  }, [formState.startDate, formState.lastRoundDate, formState.roundsNumber, formState.minutesBetweenRounds]);
+    setValidSchedule(start < firstRound);
+  }, [formState.startOption, formState.startDate, formState.lastRoundDate, formState.roundsNumber, formState.minutesBetweenRounds]);
 
   const [ createTournament ] = useCreateTournamentMutation({
     onCompleted: (data) => {
@@ -148,8 +193,12 @@ export default function TournamentCreationPage(props) {
   });
 
   const onSubmit = async (data: Inputs) => {
+    const variables = {...data};
+    if (data.startOption === StartOptions.Now.valueOf()) {
+      variables.startDate = DateTime.now()
+    }
     createTournament({
-      variables: data
+      variables
     });
   };
 
@@ -174,25 +223,52 @@ export default function TournamentCreationPage(props) {
                   Tournament
                 </Typography>
               </div>
-              <Controller
-                name="startDate"
-                control={control}
-                render={({ ref, ...rest }) => (
-                  <DateTimePicker
-                    label="Start Date"
-                    animateYearScrolling
-                    invalidDateMessage="Invalid Date"
-                    views={["year", "month", "date", "hours", "minutes"]}
-                    cancelLabel="Cancel"
-                    openTo="hours"
-                    {...rest}
-                    inputVariant='outlined'
-                    className={classes.dateField}
-                    error={errors?.startDate !== undefined || !validSchedule}
-                    helperText={errors?.startDate && errors?.startDate['message']}
-                  />
-                )}
-              />
+
+              <div className={classes.startOptionsContainer}>
+                <Typography id='tournament-start-select-label'
+                  className={classes.startOptionsLabel} variant="body1">
+                  Start Tournament
+                </Typography>
+                <Controller
+                  name="startOption"
+                  control={control}
+                  render={({ ref, ...rest }) => (
+                    <Select
+                      labelId="tournament-start-select-label"
+                      className={classes.startOptionsSelect}
+                      {...rest}
+                      variant='outlined'
+                    >
+                      {
+                        Object.values(StartOptions).map((startOpt) => (
+                          <MenuItem value={startOpt} key={startOpt}>{startOpt}</MenuItem>
+                        ))
+                      }
+                    </Select>
+                  )}
+                />
+              </div>
+              { formState.startOption === StartOptions.Later && (
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ ref, ...rest }) => (
+                    <DateTimePicker
+                      label="Start Date"
+                      animateYearScrolling
+                      invalidDateMessage="Invalid Date"
+                      views={["year", "month", "date", "hours", "minutes"]}
+                      cancelLabel="Cancel"
+                      openTo="hours"
+                      {...rest}
+                      inputVariant='outlined'
+                      className={classes.dateField}
+                      error={errors?.startDate !== undefined || !validSchedule}
+                      helperText={errors?.startDate && errors?.startDate['message']}
+                    />
+                  )}
+                />
+              )}
               <Controller
                 name="lastRoundDate"
                 control={control}
