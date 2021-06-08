@@ -41,6 +41,16 @@ interface GetAllTournamentsFilters {
   organizingUserID?: UserID;
 }
 
+function computeFirstRoundDate(
+  lastRoundDate: DateTime,
+  minutesBetweenRounds: number,
+  roundsNumber: number
+): DateTime {
+  return lastRoundDate.minus({
+    minutes: minutesBetweenRounds * (roundsNumber - 1),
+  });
+}
+
 export class Tournament {
   readonly id: TournamentID;
   name: string;
@@ -73,8 +83,15 @@ export class Tournament {
     dbOrTX: DbOrTx,
     id?: TournamentID
   ): Promise<Tournament> {
-    if (lastRoundDate < DateTime.now()) {
-      throw new InvalidArgument('Cannot create a Tournament with a last round date in the past');
+    const firstRoundDate = computeFirstRoundDate(lastRoundDate, minutesBetweenRounds, roundsNumber);
+    if (firstRoundDate < DateTime.now()) {
+      throw new InvalidArgument('Cannot create a Tournament with a first round date in the past');
+    }
+
+    if (firstRoundDate < startDate) {
+      throw new InvalidArgument(
+        'Cannot create a Tournament with a start date after the first round date'
+      );
     }
 
     if (!gameDefinitions.has(gameName)) {
@@ -265,9 +282,7 @@ export class Tournament {
   }
 
   get firstRoundDate(): DateTime {
-    return this.lastRoundDate.minus({
-      minutes: this.minutesBetweenRounds * (this.roundsNumber - 1),
-    });
+    return computeFirstRoundDate(this.lastRoundDate, this.minutesBetweenRounds, this.roundsNumber);
   }
 
   get nextRoundDate(): DateTime {

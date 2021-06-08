@@ -59,13 +59,12 @@ describe('Model/Tournament', () => {
     expect(tournament).toMatchObject(input);
   });
 
-  test('should not be able to create a tournament ending in the past', () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  test('should not be able to create a tournament starting after its first round', () =>
     expect(() =>
       Tournament.create(
         'Team Building',
-        DateTime.now().minus({ hours: 8 }),
-        DateTime.now().minus({ hours: 1 }),
+        DateTime.now().plus({ hours: 4 }),
+        DateTime.now().plus({ hours: 5 }),
         5,
         30,
         gameDefinition.name,
@@ -73,16 +72,29 @@ describe('Model/Tournament', () => {
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
       )
-    ).rejects.toThrow('Cannot create a Tournament with a last round date in the past');
-  });
+    ).rejects.toThrow('Cannot create a Tournament with a start date after the first round date'));
 
-  test('should not be able to create a tournament with an invalid game name', () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  test('should not be able to create a tournament with a first round in the past', () =>
+    expect(() =>
+      Tournament.create(
+        'Team Building',
+        DateTime.now().minus({ hours: 1 }),
+        DateTime.now().plus({ hours: 1 }),
+        4,
+        30,
+        gameDefinition.name,
+        admin.id,
+        db.default,
+        'f00fabe0-0000-0000-0000-000000000001'
+      )
+    ).rejects.toThrow('Cannot create a Tournament with a first round date in the past'));
+
+  test('should not be able to create a tournament with an invalid game name', () =>
     expect(() =>
       Tournament.create(
         'Team Building',
         DateTime.now(),
-        DateTime.now().plus({ hours: 1 }),
+        DateTime.now().plus({ hours: 10 }),
         5,
         30,
         'InvalidGameName',
@@ -90,8 +102,7 @@ describe('Model/Tournament', () => {
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
       )
-    ).rejects.toThrow('Invalid game name');
-  });
+    ).rejects.toThrow('Invalid game name'));
 
   test('should create rounds when starting', async () => {
     const start = DateTime.now();
@@ -215,11 +226,10 @@ describe('Model/Tournament', () => {
   });
 
   test('nextRoundDate should provide the next round date', async () => {
-    const start = now.minus({ hours: 2, minutes: 10 });
-    const end = now.plus({ hours: 1, minutes: 20 });
+    const end = now.plus({ hours: 3, minutes: 30 });
     const tournament = await Tournament.create(
       'Team Building',
-      start,
+      now,
       end,
       5,
       30,
@@ -228,6 +238,7 @@ describe('Model/Tournament', () => {
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
     );
+    Settings.now = () => now.plus({ hours: 2, minutes: 10 }).valueOf();
     await tournament.start(db.default);
     expect(tournament.nextRoundDate).toEqual(end.minus({ minutes: 30 * 3 }));
   });
