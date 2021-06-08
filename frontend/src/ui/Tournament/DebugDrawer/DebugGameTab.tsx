@@ -29,20 +29,31 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
   const classes = useStyles();
 
   const [slidingVersion, setSlidingVersion] = useState<number>(undefined);
+  const [changingVersion, setChangingVersion] = useState<boolean>(false);
+  const [maxVersion, setMaxVersion] = useState<number>(0);
 
   const onSlidingVersionCommit = useCallback((event, version) => {
+    setChangingVersion(false);
     setGameVersion(version);
   }, [setGameVersion]);
 
   const onSlidingVersionChange = useCallback((event, version) => {
+    setChangingVersion(true);
     setSlidingVersion(version);
   }, [setSlidingVersion]);
 
   useEffect(() => {
-    if (controlledGame !== undefined && slidingVersion === undefined) {
+    if (controlledGame !== undefined && slidingVersion !== controlledGame.version && !changingVersion) {
       setSlidingVersion(controlledGame.version);
     }
-  }, [controlledGame, slidingVersion, setSlidingVersion])
+    if (controlledGame !== undefined && maxVersion !== controlledGame.maxVersion) {
+      setMaxVersion(controlledGame.maxVersion)
+    }
+  }, [
+    controlledGame, controlledGame?.version,
+    slidingVersion, changingVersion, setSlidingVersion,
+    maxVersion, setMaxVersion
+  ])
 
   const marks = [
     {
@@ -71,7 +82,7 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
           step={1}
           marks={marks}
           min={0}
-          max={game.version || 0}
+          max={maxVersion}
           color="secondary"
           valueLabelDisplay={ "on" }
         />

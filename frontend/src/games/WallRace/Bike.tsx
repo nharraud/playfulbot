@@ -12,7 +12,7 @@ export default function Bike(props: BikenProps) {
   const emissiveColor = useMemo(() => new THREE.Color('#ffffff'), [])
   return (
     <a.mesh position={props.position} layers={1}>
-      <boxBufferGeometry attach='geometry' args={[1, 1, 1]} />
+      <boxBufferGeometry attach='geometry' args={[1, 1, 2]} />
       <meshStandardMaterial
         attach='material'
         color={props.color}

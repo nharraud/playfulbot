@@ -9,6 +9,7 @@ export interface ControlledGame {
   id: GameID;
   gameState: GameState;
   version: number;
+  maxVersion: number;
 }
 
 export type SetGameVersion = (version: number) => void;
@@ -28,26 +29,47 @@ function patchStateToVersion(
   for (let patch = startVersion; patch < finalVersion; ++patch) {
     startState = applyPatch(startState, game.patches[patch], false, false).newDocument;
   }
-  return { id: game.id, gameState: startState, version: finalVersion };
+  return {
+    id: game.id,
+    gameState: startState,
+    version: finalVersion,
+    maxVersion: game.version,
+  };
 }
 
 export function useGameController(game?: Game) {
   // const displayedGame = useRef<DisplayedGame>(undefined);
-  const [gameVersion, setGameVersion] = useState(0);
+  const [gameVersion, setGameVersionInternal] = useState(0);
+  const [followLastVersion, setFollowLastVersion] = useState(true);
   const [controlledGame, setControlledGame] = useState<ControlledGame>(undefined);
+
+
+  const setGameVersion = useCallback((gameVersion) => {
+    setFollowLastVersion(gameVersion === game.version);
+    setGameVersionInternal(gameVersion);
+  }, [game?.version]);
 
   useEffect(() => {
     if (game !== undefined) {
       if (controlledGame === undefined) {
         setControlledGame(patchStateToVersion(game, gameVersion));
       } else if (controlledGame.id !== game.id) {
-        setGameVersion(0);
-        setControlledGame(patchStateToVersion(game, 0));
-      } else if (controlledGame.version !== gameVersion) {
-        setControlledGame(patchStateToVersion(game, gameVersion, controlledGame));
+        setGameVersion(game.version);
+        setControlledGame(patchStateToVersion(game, game.version));
+      } else {
+        let newVersion = gameVersion;
+        if (followLastVersion && gameVersion !== game.version) {
+          setGameVersionInternal(game.version);
+          newVersion = game.version;
+        }
+        if (controlledGame.version !== newVersion) {
+          setControlledGame(patchStateToVersion(game, newVersion, controlledGame));
+        } else if (controlledGame.maxVersion !== game.version) {
+          setControlledGame({...controlledGame, maxVersion: game.version})
+        }
       }
     }
-  }, [game, controlledGame, gameVersion])
+  }, [game, game?.version, controlledGame, gameVersion, followLastVersion, setGameVersion])
 
   return { controlledGame, setGameVersion };
 }
