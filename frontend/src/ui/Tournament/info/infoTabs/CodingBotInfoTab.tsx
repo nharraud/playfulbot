@@ -67,7 +67,7 @@ export function CodingBotInfoTab(props: CodingBotInfoTabProps) {
           First you have to choose the programming language you want to program your bot in.
         </Typography>
         <FormControl variant="outlined" className={classes.languageFormControl}>
-            <InputLabel id="demo-simple-select-outlined-label">Programming Language</InputLabel>
+            <InputLabel id="choose-language-select-label">Programming Language</InputLabel>
             <Select
             labelId="choose-language-select-label"
             id="choose-language-select"
