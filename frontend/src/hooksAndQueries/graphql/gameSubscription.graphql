@@ -2,7 +2,7 @@ subscription game($gameID: ID!) {
   game(gameID: $gameID) {
 
     ... on GamePatch {
-      gameID, version, patch
+      gameID, version, patch, winners
     }
     ... on Game {
       id
@@ -11,6 +11,7 @@ subscription game($gameID: ID!) {
       players {
         id, token, connected
       }
+      winners
       initialState
       patches
     }

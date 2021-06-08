@@ -193,6 +193,7 @@ export type Game = {
   version?: Maybe<Scalars['Int']>;
   canceled?: Maybe<Scalars['Boolean']>;
   players?: Maybe<Array<Maybe<Player>>>;
+  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
   initialState?: Maybe<Scalars['JSON']>;
   patches?: Maybe<Scalars['JSON']>;
 };
@@ -202,6 +203,7 @@ export type GamePatch = {
   patch?: Maybe<Scalars['JSON']>;
   gameID?: Maybe<Scalars['ID']>;
   version?: Maybe<Scalars['Int']>;
+  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
 export type GameCanceled = {
@@ -545,7 +547,7 @@ export type GameCancelFragment = (
 
 export type GameFragment = (
   { __typename?: 'Game' }
-  & Pick<Game, 'id' | 'version' | 'canceled' | 'initialState' | 'patches'>
+  & Pick<Game, 'id' | 'version' | 'canceled' | 'winners' | 'initialState' | 'patches'>
   & { players?: Maybe<Array<Maybe<(
     { __typename?: 'Player' }
     & Pick<Player, 'id' | 'token' | 'connected'>
@@ -554,7 +556,7 @@ export type GameFragment = (
 
 export type GamePatchFragment = (
   { __typename?: 'Game' }
-  & Pick<Game, 'version' | 'initialState' | 'patches'>
+  & Pick<Game, 'version' | 'initialState' | 'patches' | 'winners'>
 );
 
 export type GamePlayersFragment = (
@@ -574,14 +576,14 @@ export type GameSubscription = (
   { __typename?: 'Subscription' }
   & { game?: Maybe<(
     { __typename?: 'Game' }
-    & Pick<Game, 'id' | 'canceled' | 'version' | 'initialState' | 'patches'>
+    & Pick<Game, 'id' | 'canceled' | 'version' | 'winners' | 'initialState' | 'patches'>
     & { players?: Maybe<Array<Maybe<(
       { __typename?: 'Player' }
       & Pick<Player, 'id' | 'token' | 'connected'>
     )>>> }
   ) | (
     { __typename?: 'GamePatch' }
-    & Pick<GamePatch, 'gameID' | 'version' | 'patch'>
+    & Pick<GamePatch, 'gameID' | 'version' | 'patch' | 'winners'>
   ) | (
     { __typename?: 'GameCanceled' }
     & Pick<GameCanceled, 'gameID' | 'version'>
@@ -848,6 +850,7 @@ export const GameFragmentDoc = gql`
     token
     connected
   }
+  winners
   initialState
   patches
 }
@@ -857,6 +860,7 @@ export const GamePatchFragmentDoc = gql`
   version
   initialState
   patches
+  winners
 }
     `;
 export const GamePlayersFragmentDoc = gql`
@@ -1182,6 +1186,7 @@ export const GameDocument = gql`
       gameID
       version
       patch
+      winners
     }
     ... on Game {
       id
@@ -1192,6 +1197,7 @@ export const GameDocument = gql`
         token
         connected
       }
+      winners
       initialState
       patches
     }

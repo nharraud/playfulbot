@@ -7,6 +7,7 @@ export interface VersionedMessage {
 export interface GameStateChanged {
   patch: unknown;
   version: number;
+  winners?: number[];
 }
 
 export interface GameCanceled {

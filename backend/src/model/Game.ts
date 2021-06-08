@@ -131,7 +131,11 @@ export class Game {
       return;
     }
     this.version += 1;
-    pubsub.publish('GAME_CHANGED', this.id, { version: this.version, patch });
+    pubsub.publish('GAME_CHANGED', this.id, {
+      version: this.version,
+      patch,
+      winners: this.winners,
+    });
     if (this.gameState.end) {
       pubsub.complete('GAME_CHANGED', this.id);
       this.gameEndPromise.resolve(this);
@@ -148,5 +152,18 @@ export class Game {
 
   getStoredActions(id: GameID): GameAction[] {
     return Array.from(this.storedActions.values());
+  }
+
+  get winners(): number[] | undefined {
+    if (!this.gameState.end) {
+      return undefined;
+    }
+    return this.gameState.players
+      .map((player, playerNumber) => ({
+        playerNumber,
+        winner: player.winner,
+      }))
+      .filter((player) => player.winner)
+      .map((player) => player.playerNumber);
   }
 }

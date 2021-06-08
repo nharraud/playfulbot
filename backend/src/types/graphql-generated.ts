@@ -63,6 +63,7 @@ export type Game = {
   version?: Maybe<Scalars['Int']>;
   canceled?: Maybe<Scalars['Boolean']>;
   players?: Maybe<Array<Maybe<Player>>>;
+  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
   initialState?: Maybe<Scalars['JSON']>;
   patches?: Maybe<Scalars['JSON']>;
 };
@@ -78,6 +79,7 @@ export type GamePatch = {
   patch?: Maybe<Scalars['JSON']>;
   gameID?: Maybe<Scalars['ID']>;
   version?: Maybe<Scalars['Int']>;
+  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
 export type GameSummary = {
@@ -653,6 +655,7 @@ export type GameResolvers<ContextType = any, ParentType extends ResolversParentT
   version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   canceled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
+  winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
   initialState?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   patches?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -668,6 +671,7 @@ export type GamePatchResolvers<ContextType = any, ParentType extends ResolversPa
   patch?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
   gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

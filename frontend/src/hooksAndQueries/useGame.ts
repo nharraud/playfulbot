@@ -37,7 +37,7 @@ function fullPlayerID(playerID) {
 }
 
 function useGameSubscription(gameID: string) {
-    const {data, loading, error } = useRestartingSubscription(gqlTypes.GameDocument, {
+    const {data, loading, error } = useRestartingSubscription<gqlTypes.GameSubscription>(gqlTypes.GameDocument, {
     variables: { gameID: gameID },
     skip: !gameID,
     shouldResubscribe: true,
@@ -71,7 +71,8 @@ function useGameSubscription(gameID: string) {
           fragment: gqlTypes.GamePatchFragmentDoc,
           data: {
             patches: game.patches.concat([data.game.patch]),
-            version: version
+            version: version,
+            winners: data.game.winners
           },
         });
       }

@@ -48,6 +48,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
         canceled: currentGame.canceled,
         version: currentGame.version,
         players,
+        winners: currentGame.winners || null,
         initialState: currentGame.initialState,
         patches: currentGame.patches,
       });
@@ -61,6 +62,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
             __typename: 'GamePatch',
             patch: message.patch,
             version: message.version,
+            winners: message.winners || null,
           } as gqlTypes.GamePatch,
         };
       }

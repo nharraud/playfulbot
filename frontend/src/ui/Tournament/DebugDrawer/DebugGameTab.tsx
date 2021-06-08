@@ -3,11 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import { Game } from 'src/types/graphql-generated';
 import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameController';
-import { Typography } from '@material-ui/core';
+import { Divider, Typography } from '@material-ui/core';
 import GameVersionSlider from './GameVersionSlider';
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    display: 'flex'
+  },
   version: {
     paddingBottom: theme.spacing(3),
     paddingRight: theme.spacing(10),
@@ -15,6 +17,12 @@ const useStyles = makeStyles((theme) => ({
   },
   waitMessage: {
     padding: theme.spacing(2),
+  },
+  versionsColumn: {
+    flex: '1 1 auto'
+  },
+  resultColumn: {
+    flex: '1 1 auto'
   }
 }));
 
@@ -45,18 +53,33 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
   } else {
     waitMessage = (
       <Typography className={classes.waitMessage} variant="h6" gutterBottom>
-        Waiting for players to play
+        Waiting for players to start
       </Typography>
     )
   }
 
   return (
     <div className={classes.root}>
-      {waitMessage}
-      {slider}
-      <Button variant="contained" size="small" color="primary" onClick={createDebugGame}>
-        Start a New Game
-      </Button>
+      <div className={classes.versionsColumn}>
+        {waitMessage}
+        {slider}
+        <Button variant="contained" size="small" color="primary" onClick={createDebugGame}>
+          Start a New Game
+        </Button>
+      </div>
+      <Divider orientation="vertical" variant="middle" flexItem />
+      <div className={classes.resultColumn}>
+        <Typography variant="h6" gutterBottom>
+          Game Winner(s)
+        </Typography>
+          {
+            game?.winners?.map((playerNumber) => (
+              <Typography variant="body1" gutterBottom>
+                Player {playerNumber}
+              </Typography>
+            ))
+          }
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ fragment Game on Game {
     token
     connected
   }
+  winners
   initialState
   patches
 }
