@@ -53,7 +53,7 @@ function movePlayer(state: GameState, player: number, vector: Coordinate) {
   const newPosition: [number, number] = [lastPosition[0] + vector[0], lastPosition[1] + vector[1]];
   if (collidesWithWalls(newPosition, state.walls, state.arena.size)) {
     state.end = true;
-    state.players[player].winner = true;
+    state.players[player].winner = false;
     return false;
   }
   const beforeLastPosition = playerPath[playerPath.length - 2];
@@ -71,8 +71,16 @@ function movePlayer(state: GameState, player: number, vector: Coordinate) {
 }
 
 function actionHandler(state: GameState, actions: MoveAction[]) {
+  let shouldContinue = true;
   for (const { player, data } of actions) {
-    movePlayer(state, player, data.vector);
+    shouldContinue &&= movePlayer(state, player, data.vector);
+  }
+  if (!shouldContinue) {
+    for (const playerState of state.players) {
+      if (playerState.winner !== false) {
+        playerState.winner = true;
+      }
+    }
   }
 }
 
