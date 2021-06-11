@@ -10,6 +10,7 @@ import DebugPlayersTab from './DebugPlayersTab';
 import DebugGameTab from './DebugGameTab';
 import { Game } from 'src/types/graphql-generated';
 import { SetGameVersion, ControlledGame } from 'src/hooksAndQueries/useGameController';
+import { GameDefinition } from 'src/games/GameDefinition';
 
 
 interface TabPanelProps {
@@ -57,6 +58,7 @@ interface DebugDrawerProps {
   controlledGame: ControlledGame,
   setGameVersion: SetGameVersion,
   createDebugGame: () => void,
+  gameDefinition: GameDefinition,
 }
 
 export default function DebugDrawer(props: DebugDrawerProps) {
@@ -81,6 +83,7 @@ export default function DebugDrawer(props: DebugDrawerProps) {
             setGameVersion={props.setGameVersion}
             controlledGame={props.controlledGame}
             game={props.game}
+            gameDefinition={props.gameDefinition}
           />
       </TabPanel>
       <TabPanel value={value} index={1}>

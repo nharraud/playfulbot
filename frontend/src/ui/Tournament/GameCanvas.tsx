@@ -4,17 +4,22 @@ import { useContext } from 'react';
 import { Canvas } from 'react-three-fiber';
 
 import { getApolloContext } from '@apollo/client/react/context/ApolloContext';
-import { gameDefinition } from 'src/games/WallRace';
+import { ControlledGame } from 'src/hooksAndQueries/useGameController';
+import { GameDefinition } from 'src/games/GameDefinition';
 
+interface GameCanvasProps {
+  game: ControlledGame
+  gameDefinition: GameDefinition,
+}
 
-export default function GameCanvas(props) {
+export default function GameCanvas(props: GameCanvasProps) {
 
   const apolloContext = getApolloContext()
   const aplloContextValue = useContext(getApolloContext())
 
   let game;
   if (props?.game !== undefined) {
-    game = (<gameDefinition.game {...props} />)
+    game = (<props.gameDefinition.game {...props} />)
   }
   return (
   <Canvas

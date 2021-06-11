@@ -19,4 +19,5 @@ export interface RulesProps {
 export interface GameDefinition {
   game: (props: GameProps) => JSX.Element,
   rules: (props: RulesProps) => JSX.Element,
+  playerColor: (playerNumber: number) => string,
 }

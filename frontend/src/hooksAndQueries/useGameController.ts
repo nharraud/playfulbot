@@ -37,7 +37,12 @@ function patchStateToVersion(
   };
 }
 
-export function useGameController(game?: Game) {
+export interface useGameControllerResult {
+  controlledGame: ControlledGame,
+  setGameVersion: SetGameVersion,
+}
+
+export function useGameController(game?: Game): useGameControllerResult {
   // const displayedGame = useRef<DisplayedGame>(undefined);
   const [gameVersion, setGameVersionInternal] = useState(0);
   const [followLastVersion, setFollowLastVersion] = useState(true);

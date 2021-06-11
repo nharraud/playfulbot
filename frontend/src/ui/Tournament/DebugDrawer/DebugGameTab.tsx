@@ -5,6 +5,8 @@ import { Game } from 'src/types/graphql-generated';
 import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameController';
 import { Divider, Typography } from '@material-ui/core';
 import GameVersionSlider from './GameVersionSlider';
+import { gameDefinition } from 'src/games/WallRace';
+import { GameDefinition } from 'src/games/GameDefinition';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +25,23 @@ const useStyles = makeStyles((theme) => ({
   },
   resultColumn: {
     flex: '1 1 auto'
+  },
+  playerRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playerName: {
+    flex: '0 0 auto',
+    marginLeft: '1em',
+  },
+  playerColor: {
+    flex: '0 0 auto',
+    width: '2em',
+    height: '2em',
+    borderColor: '#000000',
+    borderStyle: 'solid',
+    borderWidth: '3px',
   }
 }));
 
@@ -31,6 +50,7 @@ interface DebugGameTabProps {
   createDebugGame: () => void,
   controlledGame: ControlledGame,
   setGameVersion: SetGameVersion,
+  gameDefinition: GameDefinition,
 }
 
 export default function DebugGameTab({ game, createDebugGame, controlledGame, setGameVersion}: DebugGameTabProps) {
@@ -74,9 +94,12 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
         </Typography>
           {
             game?.winners?.map((playerNumber) => (
-              <Typography variant="body1" gutterBottom>
-                Player {playerNumber}
-              </Typography>
+              <div className={classes.playerRow}>
+                <div className={classes.playerColor} style={{backgroundColor: gameDefinition.playerColor(playerNumber)}}/>
+                <Typography variant="body1" className={classes.playerName}>
+                  Player {playerNumber}
+                </Typography>
+              </div>
             ))
           }
       </div>
