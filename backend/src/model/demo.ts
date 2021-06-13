@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { User } from './User';
 import { Tournament } from './Tournaments';
 import { db } from '~playfulbot/model/db';
@@ -26,10 +26,13 @@ export async function initDemo(): Promise<void> {
     const admin = await User.create(`zeus`, `password`, tx, `ACEE0000-0000-0000-0000-000000000000`);
 
     const now = DateTime.now();
+    const tournamentStart = now.minus({ hours: 2, minutes: 58 });
+    const tournamentEnd = now.plus({ hours: 2, minutes: 2 });
+    Settings.now = () => tournamentStart.toMillis();
     const tournament = await Tournament.create(
       'Team Building',
-      now.minus({ hours: 2, minutes: 58 }),
-      now.plus({ hours: 2, minutes: 2 }),
+      tournamentStart,
+      tournamentEnd,
       7,
       30,
       gameDefinition.name,
@@ -83,6 +86,7 @@ export async function initDemo(): Promise<void> {
     );
 
     const teamIDs = teams.map((team) => team.id);
+    Settings.now = () => rounds[0].startDate.toMillis();
     await rounds[0].setResultsFromData(
       [
         { winners: [teamIDs[0]], losers: [teamIDs[1]] },
@@ -92,6 +96,7 @@ export async function initDemo(): Promise<void> {
       tx
     );
 
+    Settings.now = () => rounds[1].startDate.toMillis();
     await rounds[1].setResultsFromData(
       [
         { winners: [teamIDs[0]], losers: [teamIDs[1]] },
