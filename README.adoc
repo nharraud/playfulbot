@@ -1,0 +1,71 @@
+PlayfulBot: Organize Programming Tournament
+-------------------------------------------
+:hide-uri-scheme:
+
+WARNING: Playfulbot is currently in alpha stage and some features are not yet implemented. You can see a demo version at https://playfulbot.com.
+
+
+What is PlayfulBot
+~~~~~~~~~~~~~~~~~~
+
+It is a free and open source platform enabling the organization of programming tournaments.
+
+
+Designed for team building
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This platform is mainly designed for IT teams in need of a team building event. However it can be used by any group of developers enjoying a challenge (students, etc...).
+
+Nowadays IT teams often have remote teammates. Remote work usually reduces the opportunities for casual chat and bonding. Team building events are a good way to overcome this issue but it is not always possible to do them in person:
+
+* travel time can be expensive for the company and tiring for teammates.
+* teammates have to take care of their family.
+* regular travels are not eco-friendly.
+
+PlayfulBot complements in-person team building events with regular remote team building events. It specifically targets IT teams because its events require programming skills.
+
+
+Programming Tournaments
+~~~~~~~~~~~~~~~~~~~~~~~
+
+PlayfulBot enables you to organize programming tournaments in a few clicks. Participants group into small teams and program bots which will compete against other teams in a game.
+
+Tournaments have time constraints on purpose.
+
+* tournaments are short. They shouldn't go beyond office hours or you will disadvantage teammates with families.
+* tournaments include multiple rounds with a first round starting early in the competition. This encourages an agile approach, i.e. releasing a new bot version for each round even if it is not perfect.
+
+Bots can be programmed in many different programming languages. For now only JS/TS is supported but Java, C++, C# and others are planned.
+
+Players can see how their bot plays direcly in their browser. Bots run on players' computers, which means that they can use all their preferred tools and even do step-by-step debugging.
+
+
+Deploying PlayfulBot
+~~~~~~~~~~~~~~~~~~~~
+
+Bots run on teammates computers. Thus the server is a simple Node.JS process. There are plans to make it scallable later. 
+
+PlayfulBot is currently deployed with Docker Compose. Note that it is a demonstration version. It enables you to program bots and let it play games but the full tournament experience is not there yet.
+
+
+Open Source and extensible
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This project is open source so that additional games and features can be added by the community later on. Note that some refactoring needs to be done before we can add games via plugins, but the general architecture already supports it.
+
+
+Performance
+~~~~~~~~~~~
+
+The last benchmark showed that the server can handle approximately 150 games/second with a single server process. This is enough for a team building event of 40-60 teammates. Note that these performances depend on the game. The benchmark was made with a 2 player game where each player plays 50 turns and both players play simultaneously.
+
+
+Roadmap
+~~~~~~~
+
+You can look at link:https://github.com/nharraud/playfulbot/projects/1[this github project] to see the status of version 1.0.0.
+
+Many ambitious features are envisionned for later versions and are not yet visible, for example:
+
+* design games accessible to people with visual impairment.
+* enable players to learn agorithms they need to win the game.
