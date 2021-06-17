@@ -12,6 +12,7 @@
     "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
   },
   "author": "Nicolas Harraudeau",
+  "license": "AGPL-3.0-only",
   "engines": {
     "node": ">=16.1.0"
   },

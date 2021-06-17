@@ -49,6 +49,8 @@
     "eject": "react-scripts eject",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml"
   },
+  "author": "Nicolas Harraudeau",
+  "license": "AGPL-3.0-only",
   "eslintConfig": {
     "extends": [
       "react-app",
