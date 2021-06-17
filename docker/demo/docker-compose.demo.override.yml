@@ -1,23 +1,25 @@
 services:
   playfulbot-backend:
     environment:
-      DATABASE_NAME: 'playfulbot'
-      DATABASE_USER: 'playfulbot_backend'
-      DATABASE_PASSWORD: 'dev-password'
-      DATABASE_ADMIN_USER: 'playfulbot_backend'
-      DATABASE_ADMIN_PASSWORD: 'dev-password'
-      SSL_CERT: '/playfulbot/ssl/ssl.crt'
-      SSL_KEY: '/playfulbot/ssl/ssl.key'
-      FRONTEND_URL: 'http://playfulbot.com'
-      GRPC_HOST: '0.0.0.0'
+      - DATABASE_NAME=playfulbot
+      - DATABASE_USER=playfulbot_backend
+      - DATABASE_PASSWORD=dev-password
+      - DATABASE_ADMIN_USER=playfulbot_backend
+      - DATABASE_ADMIN_PASSWORD=dev-password
+      - SSL_CERT=/playfulbot/ssl/ssl.crt
+      - SSL_KEY=/playfulbot/ssl/ssl.key
+      - SECRET_KEY
+      - FRONTEND_URL=http://playfulbot.com
+      - GRPC_HOST=0.0.0.0
     volumes:
-        - ./demo/ssl:/playfulbot/ssl
+      - ./demo/ssl:/playfulbot/ssl
 
   playfulbot-frontend:
     build:
       args:
         - REACT_APP_API_HTTP_URL=https://playfulbot.com
         - REACT_APP_API_WEBSOCKET_URL=wss://playfulbot.com
+        - REACT_APP_FRONTEND_URL=https://playfulbot.com
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 
