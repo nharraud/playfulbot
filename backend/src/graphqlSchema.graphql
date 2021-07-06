@@ -1,4 +1,4 @@
-# Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+# GraphQL API between backend and React.js Frontend
 
 scalar Date
 scalar JSON
