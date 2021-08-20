@@ -13,8 +13,11 @@ upstream backend {
 server {
         client_max_body_size 10M; 
 
-        listen 80;
-        listen [::]:80;
+        listen 443 ssl;
+        listen [::]:443 ssl;
+
+        ssl_certificate /playfulbot/ssl/ssl.crt;
+        ssl_certificate_key /playfulbot/ssl/ssl.key;
 
         server_name localhost;
 
