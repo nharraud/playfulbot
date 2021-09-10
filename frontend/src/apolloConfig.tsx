@@ -14,7 +14,7 @@ import { subscriptionReconnectListeners } from './hooksAndQueries/useRestartingS
 
 
 const httpLink = new HttpLink({
-  uri: `${process.env.REACT_APP_API_HTTP_URL}/graphql`,
+  uri: `${import.meta.env.VITE_API_HTTP_URL}/graphql`,
   credentials: 'include'
 });
 
@@ -61,7 +61,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 
 // const wsLink = new WebSocketLink({
-//   uri: `${process.env.REACT_APP_API_WEBSOCKET_URL}/graphql`,
+//   uri: `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
 //   options: {
 //     reconnect: true,
 //     lazy: true,
@@ -76,7 +76,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 
   const subscriptionClient = new SubscriptionClient(
-    `${process.env.REACT_APP_API_WEBSOCKET_URL}/graphql`,
+    `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
     {
       reconnect: true,
       lazy: true,

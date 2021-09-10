@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, makeStyles, Typography} from '@material-ui/core';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import dedent from 'dedent';
+import dedent from 'ts-dedent';
 import { CodeTypo } from 'src/utils/Typography/CodeTypo';
 
 const useStyles = makeStyles((theme) => ({

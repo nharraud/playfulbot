@@ -36,7 +36,7 @@ server {
                 proxy_pass http://backend/graphql;
         }
 
-        location ^~/sockjs-node {
+        location / {
                 proxy_set_header Host $http_host;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
@@ -48,10 +48,6 @@ server {
                 proxy_send_timeout 1d;
                 proxy_read_timeout 1d;
 
-                proxy_pass http://frontend;
-        }
-
-        location / {
-                proxy_pass http://frontend;
+                proxy_pass http://frontend/;
         }
 }

@@ -17,9 +17,9 @@ services:
   playfulbot-frontend:
     build:
       args:
-        - REACT_APP_API_HTTP_URL=https://playfulbot.com
-        - REACT_APP_API_WEBSOCKET_URL=wss://playfulbot.com
-        - REACT_APP_FRONTEND_URL=https://playfulbot.com
+        - VITE_API_HTTP_URL=https://playfulbot.com
+        - VITE_API_WEBSOCKET_URL=wss://playfulbot.com
+        - VITE_FRONTEND_URL=https://playfulbot.com
     volumes:
         - ./demo/ssl:/playfulbot/ssl
 

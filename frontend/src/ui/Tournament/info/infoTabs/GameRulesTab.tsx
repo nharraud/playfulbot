@@ -4,7 +4,7 @@ import { gameDefinition } from 'src/games/WallRace';
 import { StringChildrenProps } from 'src/games/GameDefinition';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import dedent from 'dedent';
+import dedent from 'ts-dedent';
 
 const useStyles = makeStyles((theme) => ({
   root: {
