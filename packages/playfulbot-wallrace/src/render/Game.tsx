@@ -1,24 +1,26 @@
-import React, { useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import { WallRaceGameState } from './types';
 import { useThree } from 'react-three-fiber';
 import Grid from './Grid';
 import { Wall } from './Wall';
 import { PLAYER_COLORS } from './player';
 
-import { EffectComposer, SelectiveBloom } from 'react-postprocessing'
+import { EffectComposer, SelectiveBloom } from '@react-three/postprocessing'
 
 interface GamePropsInterface {
-  game: {
-    gameState: WallRaceGameState;
-  };
+  gameState: WallRaceGameState;
 }
 export function Game(props: GamePropsInterface) {
   // rescale the arena to fit the screen
-  const scale = 1 / props.game.gameState.arena.size * 6;
-  // translate the arena in order to start the origin on the bottom left corner
-  const translation = props.game.gameState.arena.size / 2;
-
-  const { camera } = useThree();
+  const [ scale, setScale ] = useState(0);
+  const [ translation, setTranslation ] = useState(0);
+  const { camera, viewport } = useThree();
+  useEffect(() => {
+    const minViewPort = viewport.width < viewport.height ? viewport.width : viewport.height;
+    const ratio = minViewPort / props.gameState.arena.size * 0.9;
+    setScale(ratio);
+    setTranslation((props.gameState.arena.size) / 2 * ratio);
+  }, [viewport, props.gameState.arena.size]);
 
   useEffect(() => {
     camera.layers.enable(0);
@@ -27,14 +29,16 @@ export function Game(props: GamePropsInterface) {
   }, [camera]);
 
   return (
-    <group position={[-translation * scale, -translation * scale, 0]} scale={[scale, scale, 1]}>
+    <group
+        position={[-translation, -translation, 0]}
+        scale={[scale, scale, 1]}>
       <group position={[0,0,1]}>
-      {props.game.gameState.walls.map((points, index) =>
+      {props.gameState.walls.map((points, index) =>
         <Wall points={points} key={index} color={PLAYER_COLORS[index]}/>
       )}
       </group>
       <group position={[0,0,0]}>
-      <Grid size={props.game.gameState.arena.size}/>
+      <Grid size={props.gameState.arena.size}/>
       </group>
 
       <EffectComposer>

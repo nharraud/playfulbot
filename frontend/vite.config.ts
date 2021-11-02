@@ -4,10 +4,12 @@ import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import svgrPlugin from 'vite-plugin-svgr';
 
+import playfulbotConfigLoader from 'rollup-plugin-playfulbot-config-loader';
+
 // https://vitejs.dev/config/
 export default defineConfig({
   mode: "development",
-  plugins: [reactRefresh(), svgrPlugin()],
+  plugins: [reactRefresh(), svgrPlugin(), playfulbotConfigLoader()],
   build: {
     outDir: 'build',
   },

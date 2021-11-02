@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { a } from 'react-spring/three'
+import { a } from '@react-spring/three'
 import Bike from './Bike';
 import { Coordinate } from './types';
 
@@ -16,21 +16,21 @@ const WallSection = (props: WallSectionProps) => {
   const height = Math.abs(props.end[1] - props.start[1]) + 1;
 
   const position = [
-    props.start[0] + (props.end[0] - props.start[0]) / 2,
-    props.start[1] + (props.end[1] - props.start[1]) / 2,
+    props.start[0] + 0.5 + (props.end[0] - props.start[0]) / 2,
+    props.start[1] + 0.5 + (props.end[1] - props.start[1]) / 2,
     1
-  ]
-  const bikePosition: Coordinate = [props.end[0], props.end[1]];
+  ] as [number, number, number];
+  const bikePosition = [props.end[0] + 0.5, props.end[1] + 0.5, 1] as [number, number, number];
   const size = [width, height];
 
-  let bike: JSX.Element;
+  let bike: JSX.Element | undefined = undefined;
   if (props.isHead) {
      bike = <Bike position={bikePosition} color={props.color}/>;
   }
   return (
     <group>
       {bike}
-      <a.mesh position={position} scale={size}>
+      <a.mesh position={position} scale={size as any}>
         <planeBufferGeometry attach="geometry"/>
         <meshBasicMaterial attach="material" color={props.color}/>
       </a.mesh>

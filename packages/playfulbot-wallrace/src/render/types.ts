@@ -1,4 +1,4 @@
-import { GameState } from 'src/types/gameState';
+import { GameState } from 'playfulbot-game';
 
 export type Coordinate = [number, number];
 

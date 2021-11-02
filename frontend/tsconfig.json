@@ -22,7 +22,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["./src/*"],
+      "playfulbot-config": ["./src/declarations.d.ts"],
     }
   },
   "include": [

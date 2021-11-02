@@ -8,8 +8,10 @@ import * as gqlTypes from '../types/graphql';
 import { useFragment } from './useFragment';
 
 import { useRestartingSubscription } from './useRestartingSubscription';
+import { GameID } from '../../../packages/playfulbot-game/lib';
+import { Maybe } from 'graphql/jsutils/Maybe';
 
-export default function useDebugGame(tournament: Tournament) {
+export default function useDebugGame(tournament?: Tournament) {
   const { authenticatedUser } = useAuthenticatedUser();
 
   const debugArena = useDebugArenaSubscription(authenticatedUser?.id, tournament?.id);
@@ -19,7 +21,7 @@ export default function useDebugGame(tournament: Tournament) {
 }
 
 
-function useDebugArenaSubscription(userID: string, tournamentID: string) {
+function useDebugArenaSubscription(userID?: string, tournamentID?: string) {
   const {data, loading, error} = useSubscription<gqlTypes.DebugArenaSubscription>(gqlTypes.DebugArenaDocument, {
     variables: { userID, tournamentID },
     skip: !userID || !tournamentID,
@@ -28,15 +30,15 @@ function useDebugArenaSubscription(userID: string, tournamentID: string) {
   return { arena: data?.debugArena };
 }
 
-function fullGameID(gameID) {
-  return `Game:${gameID}`;
+function fullGameID(gameID?: Maybe<GameID>) {
+  return gameID ? `Game:${gameID}` : undefined;
 }
 
-function fullPlayerID(playerID) {
-  return `Player:${playerID}`;
+function fullPlayerID(playerID?: Maybe<gqlTypes.PlayerID>) {
+  return playerID ? `Player:${playerID}` : undefined;
 }
 
-function useGameSubscription(gameID: string) {
+function useGameSubscription(gameID?: Maybe<string>) {
     const {data, loading, error } = useRestartingSubscription<gqlTypes.GameSubscription>(gqlTypes.GameDocument, {
     variables: { gameID: gameID },
     skip: !gameID,
@@ -44,7 +46,7 @@ function useGameSubscription(gameID: string) {
   });
 
   if (data) {
-    if (data.game.__typename === 'GameCanceled') {
+    if (data.game?.__typename === 'GameCanceled') {
       apolloClient.writeFragment({
         id: fullGameID(data.game.gameID),
         fragment: gqlTypes.GameCancelFragmentDoc,
@@ -53,7 +55,7 @@ function useGameSubscription(gameID: string) {
           version: data.game.version
         },
       });
-    } else if (data.game.__typename === 'GamePatch') {
+    } else if (data.game?.__typename === 'GamePatch') {
       const version = data.game.version;
       const modifiedGameID = fullGameID(data.game.gameID);
       const game = apolloClient.readFragment<gqlTypes.GameFragment>({
@@ -61,8 +63,8 @@ function useGameSubscription(gameID: string) {
         fragment: gqlTypes.GameFragmentDoc
       });
 
-      if (version !== game.version) {
-        if (version !== game.version + 1) {
+      if (version !== game?.version) {
+        if (version !== (game?.version || 0) + 1) {
           throw new Error('Missing game version');
         }
 
@@ -70,13 +72,13 @@ function useGameSubscription(gameID: string) {
           id: modifiedGameID,
           fragment: gqlTypes.GamePatchFragmentDoc,
           data: {
-            patches: game.patches.concat([data.game.patch]),
+            patches: game?.patches.concat([data.game.patch]),
             version: version,
             winners: data.game.winners
           },
         });
       }
-    } else if (data.game.__typename === 'PlayerConnection') {
+    } else if (data.game?.__typename === 'PlayerConnection') {
       apolloClient.writeFragment<gqlTypes.PlayerFragment>({
         id: fullPlayerID(data.game.playerID),
         fragment: gqlTypes.PlayerFragmentDoc,
@@ -95,13 +97,16 @@ function useGameSubscription(gameID: string) {
   return { game: result || undefined }
 }
 
-function useCreateDebugGame(userID: string, tournamentID: string) {
+function useCreateDebugGame(userID?: Maybe<string>, tournamentID?: Maybe<string>) {
   const [createNewDebugGameMutation] = useMutation<
       gqlTypes.CreateNewDebugGameMutation, gqlTypes.CreateNewDebugGameMutationVariables
     >(gqlTypes.CreateNewDebugGameDocument);
 
   const createDebugGame = useCallback(
     () =>  {
+      if (!userID || !tournamentID) {
+        throw new Error('userID or tournamentID are missing');
+      }
       createNewDebugGameMutation({variables:{userID, tournamentID}});
     }
   , [createNewDebugGameMutation, userID, tournamentID]);

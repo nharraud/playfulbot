@@ -68,7 +68,7 @@ export function Target() {
   return (
     <div className={classes.root}>
       { advantages.map((advantage => (
-          <Grid container>
+          <Grid key={advantage.text} container>
             <Grid item xs={2} className={classes.iconContainer}>
               {advantage.icon}
             </Grid>

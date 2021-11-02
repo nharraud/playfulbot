@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GameState } from "src/types/gameState";
+import { GameState } from "playfulbot-game";
 import { Game } from "src/types/graphql-generated";
 import { applyPatch, Operation } from 'fast-json-patch';
 import { NoUndefinedVariablesRule } from "graphql";

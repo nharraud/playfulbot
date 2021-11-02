@@ -8,6 +8,15 @@
     },
     {
       "path": "./frontend"
+    },
+    {
+      "path": "./packages/playfulbot-game"
+    },
+    {
+      "path": "./packages/playfulbot-wallrace"
+    },
+    {
+      "path": "./packages/rollup-plugin-playfulbot-config-loader"
     }
   ]
 }

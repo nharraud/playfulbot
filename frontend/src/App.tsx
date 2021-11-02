@@ -14,7 +14,6 @@ import Container from '@material-ui/core/Container';
 
 import logo from './logo.svg';
 import './App.css';
-import GameCanvas from './ui/Tournament/GameCanvas';
 import Login from './ui/Login';
 import Registration from './ui/Registration';
 

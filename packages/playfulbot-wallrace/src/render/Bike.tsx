@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
-import { Coordinate } from './types';
-import { a } from 'react-spring/three';
+import { a } from '@react-spring/three';
 import * as THREE from 'three';
 
 interface BikenProps {
-  position: Coordinate
+  position: [number, number, number]
   color: string
 }
 

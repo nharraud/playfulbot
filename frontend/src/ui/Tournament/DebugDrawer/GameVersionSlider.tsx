@@ -47,11 +47,13 @@ export default function GameVersionSlider({ controlledGame, setGameVersion}: Gam
       value: 0,
       label: '0',
     },
-    {
-      value: maxVersion || 0,
-      label: (maxVersion || 0).toString(),
-    },
   ];
+  if (maxVersion) {
+    marks.push({
+      value: maxVersion,
+      label: (maxVersion).toString(),
+    });
+  }
 
   return (
     <Slider className={classes.versionSlider}

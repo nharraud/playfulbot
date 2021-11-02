@@ -5,8 +5,8 @@ import { Game } from 'src/types/graphql-generated';
 import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameController';
 import { Divider, Typography } from '@material-ui/core';
 import GameVersionSlider from './GameVersionSlider';
-import { gameDefinition } from 'src/games/WallRace';
-import { GameDefinition } from 'src/games/GameDefinition';
+import { gameDefinition } from 'playfulbot-config';
+import { GameDefinition } from 'playfulbot-game';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +50,7 @@ interface DebugGameTabProps {
   createDebugGame: () => void,
   controlledGame: ControlledGame,
   setGameVersion: SetGameVersion,
-  gameDefinition: GameDefinition,
+  gameDefinition: GameDefinition<any>,
 }
 
 export default function DebugGameTab({ game, createDebugGame, controlledGame, setGameVersion}: DebugGameTabProps) {
@@ -93,14 +93,17 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
           Game Winner(s)
         </Typography>
           {
-            game?.winners?.map((playerNumber) => (
-              <div className={classes.playerRow}>
+            game?.winners?.map((playerNumber, index) => {
+              if (playerNumber === null) {
+                throw new Error('player number is missing');
+              }
+              return (<div className={classes.playerRow} key={index}>
                 <div className={classes.playerColor} style={{backgroundColor: gameDefinition.playerColor(playerNumber)}}/>
                 <Typography variant="body1" className={classes.playerName}>
                   Player {playerNumber}
                 </Typography>
-              </div>
-            ))
+              </div>)
+            })
           }
       </div>
     </div>

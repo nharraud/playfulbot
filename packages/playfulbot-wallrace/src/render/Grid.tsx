@@ -16,7 +16,7 @@ export default function Grid(props: GridPropsInterface) {
   
   const rows = useMemo(() => new Array(props.size + 1).fill(0).map((_, index) => {
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(
-      [new THREE.Vector3(-0.5, index - 0.5, 0), new THREE.Vector3(props.size - 0.5, index - 0.5, 0)]
+      [new THREE.Vector3(0, index, 0), new THREE.Vector3(props.size, index, 0)]
     )
     return (
     // @ts-ignore
@@ -28,7 +28,7 @@ export default function Grid(props: GridPropsInterface) {
 
   const columns = useMemo(() => new Array(props.size + 1).fill(0).map((_, index) => {
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(
-      [new THREE.Vector3(index - 0.5, -0.5, 0), new THREE.Vector3(index - 0.5, props.size - 0.5, 0)]
+      [new THREE.Vector3(index, 0, 0), new THREE.Vector3(index, props.size, 0)]
     )
     return (
     // @ts-ignore

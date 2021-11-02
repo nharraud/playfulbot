@@ -1,10 +1,10 @@
-import { GameState } from "src/types/gameState";
+import { GameID, GameState } from "./common";
 
-interface GameProps {
-  game: {
-    gameState: GameState;
-  };
+export interface GameRendererProps<GState extends GameState> {
+  gameState: GState;
 }
+
+export type GameRenderer<GState extends GameState> = (props: GameRendererProps<GState>) => JSX.Element;
 
 export interface StringChildrenProps {
   children: string
@@ -16,8 +16,8 @@ export interface RulesProps {
   CodeBlock: (props: StringChildrenProps) => JSX.Element
 }
 
-export interface GameDefinition {
-  game: (props: GameProps) => JSX.Element,
+export interface GameDefinition<GState extends GameState> {
+  game: GameRenderer<GState>,
   rules: (props: RulesProps) => JSX.Element,
   playerColor: (playerNumber: number) => string,
 }
