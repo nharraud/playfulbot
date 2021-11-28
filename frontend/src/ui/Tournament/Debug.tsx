@@ -35,7 +35,9 @@ export default function Debug(props: DebugProps) {
   if (game && controlledGame) {
     content = (
       <>
-        <gameDefinition.game gameState={controlledGame.gameState}/>
+        <Box style={{ flex: '1 1 0', overflow: 'hidden' }}>
+          <gameDefinition.game gameState={controlledGame.gameState}/>
+        </Box>
         <DebugBottomDrawer
           game={game} controlledGame={controlledGame}
           setGameVersion={setGameVersion} createDebugGame={createDebugGame}

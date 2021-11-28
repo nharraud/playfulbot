@@ -115,7 +115,7 @@ export default function TournamentPage() {
           )}
         </div>
         <main
-          className={classes.main}
+          className={classes.main} style={{ overflow: 'hidden' }}
         >
           <Switch>
             <Route path={`${baseURL}/info`}>
