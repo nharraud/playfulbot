@@ -1,4 +1,4 @@
-FROM node:16.1
+FROM node:17
 
 RUN apt-get update
 
