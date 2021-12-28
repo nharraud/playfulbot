@@ -1,19 +1,9 @@
-import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import { TournamentQuery } from 'src/types/graphql-generated';
-import { TabPanel } from 'src/utils/TabPanel';
 import { CodingBotInfoTab } from './infoTabs/CodingBotInfoTab';
-import { InfoHeader } from './InfoHeader';
-import { InfoSections} from './InfoSections';
 import IntroTab from './infoTabs/TournamentInfoTab';
 import { GameRulesTab } from './infoTabs/GameRulesTab';
-
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  }
-}));
+import TournamentSubPage from '../components/TournamentSubPage';
 
 
 interface TournamentInfoProps {
@@ -21,22 +11,18 @@ interface TournamentInfoProps {
 };
 
 export default function InfoSubPage(props: TournamentInfoProps) {
-  const classes = useStyles();
+  const sections=[
+    ['Tournament', <IntroTab tournament={props.tournament}/>],
+    ['Game rules', <GameRulesTab/>],
+    ['Coding a bot', <CodingBotInfoTab/>],
+  ] as [string, JSX.Element][];
 
-  const [ currentSection, setSection ] = useState(InfoSections.TOURNAMENT);
+  const [ currentSection, setSection ] = useState(0);
 
   return (
-    <div className={classes.root}>
-      <InfoHeader currentSection={currentSection} setSection={setSection}/>
-      <TabPanel value={currentSection} index={InfoSections.TOURNAMENT}>
-        <IntroTab tournament={props.tournament}/>
-      </TabPanel>
-      <TabPanel value={currentSection} index={InfoSections.GAME_RULES}>
-        <GameRulesTab/>
-      </TabPanel>
-      <TabPanel value={currentSection} index={InfoSections.CODING_BOT}>
-        <CodingBotInfoTab/>
-      </TabPanel>
-    </div>
+    <TournamentSubPage
+      title={`Information ${'\u0026'} Rules`}
+      sections={sections} currentSection={currentSection} setSection={setSection}
+    />
   )
 }

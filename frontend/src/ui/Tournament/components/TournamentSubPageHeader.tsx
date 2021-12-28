@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
-import { InfoSections } from './InfoSections';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,31 +29,34 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface InfoHeaderProps {
-  currentSection: InfoSections,
-  setSection: (section: InfoSections) => void
+interface TournamentSubPageHeaderProps {
+  title: string,
+  sections: Array<string>;
+  currentSection: number,
+  setSection: (section: number) => void
+  children?: JSX.Element;
 }
 
-export function InfoHeader(props: InfoHeaderProps) {
+export function TournamentSubPageHeader(props: TournamentSubPageHeaderProps) {
   const classes = useStyles();
 
   const handleSectionChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     props.setSection(newValue);
   };
+  const tabs = props.sections.map((sectionName, index) => <Tab label={sectionName} value={index} key={index}/>)
 
   return (
     <Box boxShadow={3} className={classes.root}>
       <div className={classes.mainRow}>
         <div className={classes.titleCell}>
           <Typography variant="h1">
-            Information {'\u0026'} Rules
+            {props.title}
           </Typography>
         </div>
+        {props.children}
       </div>
-      <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label="Information sections" className={classes.tabs}>
-      <Tab label="Tournament" value={InfoSections.TOURNAMENT}/>;
-      <Tab label="Game rules" value={InfoSections.GAME_RULES}/>;
-      <Tab label="Coding a bot" value={InfoSections.CODING_BOT}/>;
+      <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label='sub-sections menu' className={classes.tabs}>
+        {...tabs}
       </Tabs>
     </Box>
   )
