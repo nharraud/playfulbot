@@ -1,14 +1,11 @@
-import React from 'react';
-import { Grid, makeStyles, Paper } from "@material-ui/core";
+import React, { useState } from 'react';
+import { makeStyles } from "@material-ui/core";
 import { Tournament } from "src/types/graphql-generated";
-import TeamBotStatus from './TeamBotStatus';
-import RoundsTimeline from './RoundsTimeline';
 import {
-  Switch,
-  Route,
   useRouteMatch,
 } from 'react-router-dom';
-import RoundSubPage from '../round/RoundsSubPage';
+import TournamentSubPage from '../components/TournamentSubPage';
+import TeamBotTab from './competitionTabs/TeamBotTab';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,9 +30,20 @@ export default function CompetitionSubPage(props: CompetitionSubPageProps) {
     strict: true,
     sensitive: true
   });
+  const [ currentSection, setSection ] = useState(0);
+  const sections=[
+    ['Team\'s bot', <TeamBotTab tournament={props.tournament}/>],
+  ] as [string, JSX.Element][];
 
   return (
-    <Switch>
+    <>
+    <TournamentSubPage
+      title='Tournament'
+      sections={sections}
+      currentSection={currentSection}
+      setSection={setSection}
+    />
+    {/* <Switch>
       <Route exact path={`${match.url}/competition`}>
         <Grid container className={classes.root} spacing={3}>
           <Grid item lg={8}>
@@ -51,6 +59,7 @@ export default function CompetitionSubPage(props: CompetitionSubPageProps) {
       <Route path={`${match.url}/competition/rounds/:roundID`}>
         <RoundSubPage tournament={props.tournament}/>
       </Route>
-    </Switch>
+    </Switch> */}
+    </>
   )
 }

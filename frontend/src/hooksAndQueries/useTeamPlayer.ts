@@ -4,7 +4,7 @@ import { client as apolloClient } from '../apolloConfig';
 import * as gqlTypes from '../types/graphql';
 
 
-export function useTeamPlayer(teamID: string) {
+export function useTeamPlayer(teamID?: string) {
   const {data, loading, error} = useSubscription<gqlTypes.TeamPlayerSubscription>(gqlTypes.TeamPlayerDocument, {
     variables: { teamID: teamID },
     skip: !teamID,
