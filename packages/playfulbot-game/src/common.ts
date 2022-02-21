@@ -1,8 +1,8 @@
 export type GameID = string;
 
 export interface PlayerState {
-  points: number;
   playing: boolean;
+  winner?: boolean;
 }
 
 export interface GameState {

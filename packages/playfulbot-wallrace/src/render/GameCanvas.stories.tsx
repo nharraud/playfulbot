@@ -20,10 +20,8 @@ StartGame.args = {
     },
     players: [{
       playing: true,
-      points: 0,
     }, {
       playing: true,
-      points: 0,
     }],
     end: false,
     walls: [
