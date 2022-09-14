@@ -1,5 +1,6 @@
 export class TransformAsyncIterator<TNEXTORIGIN, TNEXTTRANSFORMED, TRESULT>
-  implements AsyncIterator<TNEXTTRANSFORMED, TRESULT> {
+  implements AsyncIterator<TNEXTTRANSFORMED, TRESULT>
+{
   constructor(
     private readonly inputIterator: AsyncIterator<TNEXTORIGIN, TRESULT>,
     private readonly transform: (input: TNEXTORIGIN) => TNEXTTRANSFORMED

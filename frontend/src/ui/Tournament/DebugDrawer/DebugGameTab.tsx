@@ -4,13 +4,13 @@ import Button from '@material-ui/core/Button';
 import { Game } from 'src/types/graphql-generated';
 import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameController';
 import { Divider, Typography } from '@material-ui/core';
-import GameVersionSlider from './GameVersionSlider';
 import { gameDefinition } from 'playfulbot-config';
 import { FrontendGameDefinition } from 'playfulbot-game-frontend';
+import GameVersionSlider from './GameVersionSlider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex'
+    display: 'flex',
   },
   version: {
     paddingBottom: theme.spacing(3),
@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
   versionsColumn: {
-    flex: '1 1 auto'
+    flex: '1 1 auto',
   },
   resultColumn: {
-    flex: '1 1 auto'
+    flex: '1 1 auto',
   },
   playerRow: {
     display: 'flex',
@@ -42,40 +42,42 @@ const useStyles = makeStyles((theme) => ({
     borderColor: '#000000',
     borderStyle: 'solid',
     borderWidth: '3px',
-  }
+  },
 }));
 
 interface DebugGameTabProps {
-  game: Game,
-  createDebugGame: () => void,
-  controlledGame: ControlledGame,
-  setGameVersion: SetGameVersion,
-  gameDefinition: FrontendGameDefinition<any>,
+  game: Game;
+  createDebugGame: () => void;
+  controlledGame: ControlledGame;
+  setGameVersion: SetGameVersion;
+  gameDefinition: FrontendGameDefinition<any>;
 }
 
-export default function DebugGameTab({ game, createDebugGame, controlledGame, setGameVersion}: DebugGameTabProps) {
+export default function DebugGameTab({
+  game,
+  createDebugGame,
+  controlledGame,
+  setGameVersion,
+}: DebugGameTabProps) {
   const classes = useStyles();
 
   let slider;
   let waitMessage;
   if (game !== undefined && game.version !== 0) {
     slider = (
-      <div className={classes.version} >
-        <Typography id='game-version-slider-title' variant="h6" gutterBottom>
+      <div className={classes.version}>
+        <Typography id="game-version-slider-title" variant="h6" gutterBottom>
           Game Turns
         </Typography>
-        <GameVersionSlider
-          controlledGame={controlledGame}
-          setGameVersion={setGameVersion}
-        />
+        <GameVersionSlider controlledGame={controlledGame} setGameVersion={setGameVersion} />
       </div>
-    )
+    );
   } else {
     waitMessage = (
       <Typography className={classes.waitMessage} variant="h6" gutterBottom>
         Waiting for players to start
       </Typography>
-    )
+    );
   }
 
   return (
@@ -92,19 +94,22 @@ export default function DebugGameTab({ game, createDebugGame, controlledGame, se
         <Typography variant="h6" gutterBottom>
           Game Winner(s)
         </Typography>
-          {
-            game?.winners?.map((playerNumber, index) => {
-              if (playerNumber === null) {
-                throw new Error('player number is missing');
-              }
-              return (<div className={classes.playerRow} key={index}>
-                <div className={classes.playerColor} style={{backgroundColor: gameDefinition.playerColor(playerNumber)}}/>
-                <Typography variant="body1" className={classes.playerName}>
-                  Player {playerNumber}
-                </Typography>
-              </div>)
-            })
+        {game?.winners?.map((playerNumber, index) => {
+          if (playerNumber === null) {
+            throw new Error('player number is missing');
           }
+          return (
+            <div className={classes.playerRow} key={index}>
+              <div
+                className={classes.playerColor}
+                style={{ backgroundColor: gameDefinition.playerColor(playerNumber) }}
+              />
+              <Typography variant="body1" className={classes.playerName}>
+                Player {playerNumber}
+              </Typography>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -2,18 +2,20 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { DocumentNode } from 'graphql';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
-  OperationVariables, SubscriptionHookOptions,
-  SubscriptionResult as ApolloSubscriptionResult, useApolloClient
+  OperationVariables,
+  SubscriptionHookOptions,
+  SubscriptionResult as ApolloSubscriptionResult,
+  useApolloClient,
 } from '@apollo/client';
 import { usePrevious } from './usePrevious';
 
-export const subscriptionReconnectListeners = new Array<() => void>()
+export const subscriptionReconnectListeners = new Array<() => void>();
 
 export function useRestartingSubscription<TData = any, TVariables = OperationVariables>(
   subscriptionDocument: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: SubscriptionHookOptions<TData, TVariables>
 ): ApolloSubscriptionResult<TData> {
-  const [result, setResult] = useState<ApolloSubscriptionResult<TData>>({loading: false});
+  const [result, setResult] = useState<ApolloSubscriptionResult<TData>>({ loading: false });
   const client = useApolloClient();
   const subscriptionRef = useRef<ZenObservable.Subscription>();
   const unsubscribe = useCallback(() => {
@@ -40,11 +42,11 @@ export function useRestartingSubscription<TData = any, TVariables = OperationVar
           setResult({ loading: false, data });
         },
         (error) => {
-          setResult({ loading: false, data: undefined, error })
+          setResult({ loading: false, data: undefined, error });
         }
       );
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, subscriptionDocument, options.skip, ...Object.values(options.variables)]);
 
   const resubscribe = useCallback(() => {
@@ -57,23 +59,27 @@ export function useRestartingSubscription<TData = any, TVariables = OperationVar
   useEffect(() => {
     subscribe();
     return unsubscribe;
-  }, [unsubscribe, subscribe])
+  }, [unsubscribe, subscribe]);
 
   useEffect(() => {
     if (previousResubscribe) {
-      const listenerIndex = subscriptionReconnectListeners.findIndex((value) => value === previousResubscribe);
+      const listenerIndex = subscriptionReconnectListeners.findIndex(
+        (value) => value === previousResubscribe
+      );
       if (listenerIndex !== -1) {
         subscriptionReconnectListeners.splice(listenerIndex, 1);
       }
     }
     subscriptionReconnectListeners.push(resubscribe);
     return () => {
-      const listenerIndex = subscriptionReconnectListeners.findIndex((value) => value === resubscribe);
+      const listenerIndex = subscriptionReconnectListeners.findIndex(
+        (value) => value === resubscribe
+      );
       if (listenerIndex !== -1) {
         subscriptionReconnectListeners.splice(listenerIndex, 1);
       }
     };
-  }, [previousResubscribe, resubscribe])
+  }, [previousResubscribe, resubscribe]);
 
   return result;
 }

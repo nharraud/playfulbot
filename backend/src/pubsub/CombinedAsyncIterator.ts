@@ -12,7 +12,8 @@ type CombineResults<ITERS extends AsyncIterator<any>[]> = IteratorResult<
 >;
 
 export class CombinedAsyncIterator<ITERS extends AsyncIterator<any>[]>
-  implements CombineIterators<ITERS> {
+  implements CombineIterators<ITERS>
+{
   private promises: Promise<CombineResults<ITERS>>[] = undefined;
   private queue = new Array<CombineResults<ITERS>>();
   private done = false;

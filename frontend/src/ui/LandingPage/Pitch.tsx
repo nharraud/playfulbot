@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
-import gameImage from '../../assets/images/game.png';
 import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
+import gameImage from '../../assets/images/game.png';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     arrow: {
       fontSize: 30,
-    }
-  }),
+    },
+  })
 );
 
 export function Pitch() {
@@ -53,16 +53,16 @@ export function Pitch() {
     <div className={classes.root}>
       <div className={classes.pitchRow}>
         <div className={classes.imgContainer}>
-          <img src={gameImage} className={classes.gameImg} alt='Game screenshot'/>
+          <img src={gameImage} className={classes.gameImg} alt="Game screenshot" />
         </div>
         <div className={classes.pitchContainer}>
-          <Typography variant='h3' className={classes.pitch}>
+          <Typography variant="h3" className={classes.pitch}>
             Organize Fun, Short and Intense Coding Competitions.
           </Typography>
         </div>
       </div>
       <div className={classes.arrowRow}>
-        <ArrowDownwardRoundedIcon className={classes.arrow}/>
+        <ArrowDownwardRoundedIcon className={classes.arrow} />
       </div>
     </div>
   );

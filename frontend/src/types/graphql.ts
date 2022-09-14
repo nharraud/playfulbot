@@ -1,6 +1,6 @@
 import * as gqlTypes from './graphql-generated';
 
-export * from './graphql-generated'
+export * from './graphql-generated';
 
 export type UserID = string;
 export type TournamentID = string;
@@ -18,6 +18,8 @@ export function isTeam(userTeamResult: gqlTypes.UserTeamResult): userTeamResult 
   return (userTeamResult as gqlTypes.Team).__typename === 'Team';
 }
 
-export function isUserNotPartOfAnyTeam(result: gqlTypes.UserTeamResult): result is gqlTypes.UserNotPartOfAnyTeam {
+export function isUserNotPartOfAnyTeam(
+  result: gqlTypes.UserTeamResult
+): result is gqlTypes.UserNotPartOfAnyTeam {
   return (result as gqlTypes.UserNotPartOfAnyTeam).__typename === 'UserNotPartOfAnyTeam';
 }

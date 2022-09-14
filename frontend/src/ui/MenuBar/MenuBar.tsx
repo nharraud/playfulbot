@@ -6,9 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
 import { UserContext } from 'src/UserContext';
-import { UserMenu } from './UserMenu';
 import { Link } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
+import { UserMenu } from './UserMenu';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,29 +39,27 @@ const useStyles = makeStyles((theme: Theme) =>
     sequenceLink: {
       marginRight: theme.spacing(2),
     },
-  }),
+  })
 );
 
 interface MenuAppBarProps {
-  location?: string,
-  showLogin?: boolean,
-  showTournaments?: boolean,
-};
+  location?: string;
+  showLogin?: boolean;
+  showTournaments?: boolean;
+}
 
 export default function MenuAppBar(props: MenuAppBarProps) {
   const classes = useStyles();
   const { authenticated } = useContext(UserContext);
 
-  let locationWidget = undefined;
+  let locationWidget;
   if (props.location) {
     locationWidget = (
       <>
-      <ArrowForwardIosRoundedIcon fontSize="small" color="secondary" />
-      <Typography variant="h6">
-        { props.location }
-      </Typography>
+        <ArrowForwardIosRoundedIcon fontSize="small" color="secondary" />
+        <Typography variant="h6">{props.location}</Typography>
       </>
-    )
+    );
   }
 
   return (
@@ -69,23 +67,25 @@ export default function MenuAppBar(props: MenuAppBarProps) {
       <AppBar position="sticky" elevation={0} className={classes.appBar}>
         <Toolbar variant="dense">
           <Link component={RouterLink} to={authenticated ? '/home' : '/'} className={classes.logo}>
-            <Typography variant="h6">
-              Playful Bot
-            </Typography>
+            <Typography variant="h6">Playful Bot</Typography>
           </Link>
           {locationWidget}
-          <div className={classes.pushRight}/>
-          {
-            authenticated && props.showTournaments &&
-            <Link component={RouterLink} to='/home' className={`${classes.link} ${classes.sequenceLink}`}>
+          <div className={classes.pushRight} />
+          {authenticated && props.showTournaments && (
+            <Link
+              component={RouterLink}
+              to="/home"
+              className={`${classes.link} ${classes.sequenceLink}`}
+            >
               Your Tournaments
             </Link>
-          }
-          { authenticated && (<UserMenu/>) }
-          {
-            !authenticated && props.showLogin &&
-            (<Link component={RouterLink} to='/login' className={classes.link}>Login</Link>)
-          }
+          )}
+          {authenticated && <UserMenu />}
+          {!authenticated && props.showLogin && (
+            <Link component={RouterLink} to="/login" className={classes.link}>
+              Login
+            </Link>
+          )}
         </Toolbar>
       </AppBar>
     </div>

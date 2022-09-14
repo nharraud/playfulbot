@@ -33,14 +33,13 @@ const useStyles = makeStyles((theme) => ({
   createButton: {
     backgroundColor: theme.palette.success.main,
     color: theme.palette.getContrastText(theme.palette.success.main),
-  }
+  },
 }));
-
 
 interface CreateTeamCardProps {
   tournamentID: TournamentID;
   onCreate: () => void;
-};
+}
 
 export default function CreateTeamCard({ tournamentID, onCreate }: CreateTeamCardProps) {
   const classes = useStyles();
@@ -51,18 +50,21 @@ export default function CreateTeamCard({ tournamentID, onCreate }: CreateTeamCar
     setDialogOpen(true);
   }, [setDialogOpen]);
 
-  const handleClose = useCallback((team) => {
-    setDialogOpen(false);
-    if (team) {
-      onCreate();
-    }
-  }, [setDialogOpen, onCreate]);
+  const handleClose = useCallback(
+    (team) => {
+      setDialogOpen(false);
+      if (team) {
+        onCreate();
+      }
+    },
+    [setDialogOpen, onCreate]
+  );
 
   return (
     <div className={classes.root}>
       <Card className={classes.card}>
         <CardContent className={classes.content}>
-          <FiberNewIcon className={classes.icon}/>
+          <FiberNewIcon className={classes.icon} />
         </CardContent>
         <CardActions className={classes.actions}>
           <Button
@@ -76,7 +78,7 @@ export default function CreateTeamCard({ tournamentID, onCreate }: CreateTeamCar
         </CardActions>
       </Card>
 
-      <TeamCreateDialog open={dialogOpen} handleClose={handleClose} tournamentID={tournamentID}/>
+      <TeamCreateDialog open={dialogOpen} handleClose={handleClose} tournamentID={tournamentID} />
     </div>
-  )
+  );
 }

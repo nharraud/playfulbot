@@ -8,10 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import CopyToClipboardButton from '../../../utils/CopyToClipboardButton';
-
 import { Game } from 'src/types/graphql-generated';
 import { PlayerID } from 'src/types/graphql';
+import CopyToClipboardButton from '../../../utils/CopyToClipboardButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -19,15 +18,15 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 650,
   },
   connected: {
-    color: theme.palette.success.main
+    color: theme.palette.success.main,
   },
   not_connected: {
-    color: theme.palette.error.main
-  }
+    color: theme.palette.error.main,
+  },
 }));
 
 const DebugPlayersTab: React.FunctionComponent<{
-  game: Game,
+  game: Game;
 }> = (props) => {
   const classes = useStyles();
 
@@ -35,7 +34,7 @@ const DebugPlayersTab: React.FunctionComponent<{
     const playerNumber = props.game?.players.findIndex((player) => player.id === playerID);
     return playerNumber;
   }
-  
+
   return (
     <div className={classes.root}>
       <TableContainer component={Paper}>
@@ -54,13 +53,9 @@ const DebugPlayersTab: React.FunctionComponent<{
                 <TableCell component="th" scope="row">
                   {`Player ${getPlayerNumber(player.id)}`}
                 </TableCell>
+                <TableCell>{player.id}</TableCell>
                 <TableCell>
-                  {player.id}
-                </TableCell>
-                <TableCell>
-                  <CopyToClipboardButton text={player.token}>
-                    Copy Token
-                  </CopyToClipboardButton>
+                  <CopyToClipboardButton text={player.token}>Copy Token</CopyToClipboardButton>
                 </TableCell>
                 <TableCell className={classes.not_connected}>
                   {player.connected.toString()}
@@ -72,6 +67,6 @@ const DebugPlayersTab: React.FunctionComponent<{
       </TableContainer>
     </div>
   );
-}
+};
 
 export default DebugPlayersTab;

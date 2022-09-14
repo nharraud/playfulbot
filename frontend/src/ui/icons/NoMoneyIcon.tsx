@@ -5,7 +5,7 @@ import { ReactComponent as Image } from '../../assets/images/noun_money free_374
 export function NoMoneyIcon(props) {
   return (
     <SvgIcon viewBox="0 0 100 125" {...props}>
-      <Image/>
+      <Image />
     </SvgIcon>
   );
 }

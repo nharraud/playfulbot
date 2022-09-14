@@ -8,6 +8,7 @@
     "backend": "PLAYFULBOT_CONFIG=../game-config.json nodemon --inspect --require dotenv-flow/config src/index.ts serve",
     "cli": "PLAYFULBOT_CONFIG=../game-config.json node --require dotenv-flow/config --require ts-node/register/transpile-only --require tsconfig-paths/register src/index.ts",
     "lint": "eslint src",
+    "lint-fix": "eslint --fix src",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
     "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
   },

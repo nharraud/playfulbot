@@ -1,21 +1,18 @@
-import { ApolloClient } from '@apollo/client';
-import { apolloCache } from './apolloCache';
+import { ApolloClient, split, from, HttpLink, ServerError } from '@apollo/client';
 
-
-import { split, from, HttpLink, ServerError } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
 
 import { setContext } from '@apollo/client/link/context';
-import { onError } from "@apollo/client/link/error";
+import { onError } from '@apollo/client/link/error';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { apolloCache } from './apolloCache';
 import { triggerUserContextUpdate } from './UserContext';
 import { subscriptionReconnectListeners } from './hooksAndQueries/useRestartingSubscription';
 
-
 const httpLink = new HttpLink({
   uri: `${import.meta.env.VITE_API_HTTP_URL}/graphql`,
-  credentials: 'include'
+  credentials: 'include',
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -25,9 +22,9 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
-    }
-  }
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
 });
 
 function isServerError(error): error is ServerError {
@@ -56,9 +53,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       }
     }
   }
-
 });
-
 
 // const wsLink = new WebSocketLink({
 //   uri: `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
@@ -74,28 +69,28 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 //   }
 // });
 
-
-  const subscriptionClient = new SubscriptionClient(
-    `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
-    {
-      reconnect: true,
-      lazy: true,
-      connectionParams: async () => {
-        const token = localStorage.getItem('token');
-        return {
-          authToken: token,
-        }
+const subscriptionClient = new SubscriptionClient(
+  `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
+  {
+    reconnect: true,
+    lazy: true,
+    connectionParams: async () => {
+      const token = localStorage.getItem('token');
+      return {
+        authToken: token,
+      };
     },
-  });
-  subscriptionClient.onError((err) => console.log('onError', { err }));
-  subscriptionClient.onReconnected((args) => {
-    client.resetStore();
-    for (const listener of subscriptionReconnectListeners) {
-      listener();
-    }
-  });
+  }
+);
+subscriptionClient.onError((err) => console.log('onError', { err }));
+subscriptionClient.onReconnected((args) => {
+  client.resetStore();
+  for (const listener of subscriptionReconnectListeners) {
+    listener();
+  }
+});
 
-  const wsLink = new WebSocketLink(subscriptionClient);
+const wsLink = new WebSocketLink(subscriptionClient);
 
 // The split function takes three parameters:
 //
@@ -105,17 +100,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
-  httpLink,
+  httpLink
 );
-
 
 export const client = new ApolloClient({
   link: from([errorLink, authLink, splitLink]),
-  cache: apolloCache
+  cache: apolloCache,
 });

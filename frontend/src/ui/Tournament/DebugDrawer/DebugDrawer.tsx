@@ -6,12 +6,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
-import DebugPlayersTab from './DebugPlayersTab';
-import DebugGameTab from './DebugGameTab';
 import { Game } from 'src/types/graphql-generated';
 import { SetGameVersion, ControlledGame } from 'src/hooksAndQueries/useGameController';
 import { GameDefinition } from 'src/games/GameDefinition';
-
+import DebugGameTab from './DebugGameTab';
+import DebugPlayersTab from './DebugPlayersTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -29,13 +28,9 @@ function TabPanel(props: TabPanelProps) {
       id={`tabpanel-${index}`}
       aria-labelledby={`tab-${index}`}
       {...other}
-      style={{height: '15em'}}
+      style={{ height: '15em' }}
     >
-      {value === index && (
-        <Box p={3}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -54,11 +49,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface DebugDrawerProps {
-  game: Game,
-  controlledGame: ControlledGame,
-  setGameVersion: SetGameVersion,
-  createDebugGame: () => void,
-  gameDefinition: GameDefinition,
+  game: Game;
+  controlledGame: ControlledGame;
+  setGameVersion: SetGameVersion;
+  createDebugGame: () => void;
+  gameDefinition: GameDefinition;
 }
 
 export default function DebugDrawer(props: DebugDrawerProps) {
@@ -71,23 +66,23 @@ export default function DebugDrawer(props: DebugDrawerProps) {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color='default'>
+      <AppBar position="static" color="default">
         <Tabs value={value} onChange={handleChange} aria-label="Game tabs">
           <Tab label="Game" {...a11yProps(0)} />
           <Tab label="Players" {...a11yProps(0)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-          <DebugGameTab
-            createDebugGame={props.createDebugGame}
-            setGameVersion={props.setGameVersion}
-            controlledGame={props.controlledGame}
-            game={props.game}
-            gameDefinition={props.gameDefinition}
-          />
+        <DebugGameTab
+          createDebugGame={props.createDebugGame}
+          setGameVersion={props.setGameVersion}
+          controlledGame={props.controlledGame}
+          game={props.game}
+          gameDefinition={props.gameDefinition}
+        />
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <DebugPlayersTab game={props.game} />
+        <DebugPlayersTab game={props.game} />
       </TabPanel>
     </div>
   );

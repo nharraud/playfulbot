@@ -1,8 +1,8 @@
-import { DateTime } from "luxon";
-import { MixedSchema } from "yup";
-import Ref from "yup/lib/Reference";
-import isAbsent from "yup/lib/util/isAbsent";
-import { Message } from "yup/lib/types";
+import { DateTime } from 'luxon';
+import { MixedSchema } from 'yup';
+import Ref from 'yup/lib/Reference';
+import isAbsent from 'yup/lib/util/isAbsent';
+import { Message } from 'yup/lib/types';
 
 export interface DateTimeLocale {
   min?: Message<{ min: DateTime | string }>;
@@ -11,7 +11,7 @@ export interface DateTimeLocale {
 }
 
 /* eslint-disable no-template-curly-in-string */
-export let dateTime: Required<DateTimeLocale> = {
+export const dateTime: Required<DateTimeLocale> = {
   min: '${path} field must be later than ${min}',
   max: '${path} field must be at earlier than ${max}',
   required: '${path} is a required field',
@@ -21,7 +21,7 @@ export let dateTime: Required<DateTimeLocale> = {
 const invalidDate = DateTime.fromISO('');
 
 export class DateTimeSchema extends MixedSchema<DateTime, Record<never, never>> {
-  static create (): DateTimeSchema {
+  static create(): DateTimeSchema {
     return new DateTimeSchema();
   }
 
@@ -46,22 +46,18 @@ export class DateTimeSchema extends MixedSchema<DateTime, Record<never, never>> 
     });
   }
 
-
-  _typeCheck (_value: unknown): _value is DateTime {
+  _typeCheck(_value: unknown): _value is DateTime {
     return DateTime.isDateTime(_value) && _value.isValid;
   }
 
-  private prepareParam(
-    ref: unknown | Ref<DateTime>,
-    name: string,
-  ): DateTime | Ref<DateTime> {
+  private prepareParam(ref: unknown | Ref<DateTime>, name: string): DateTime | Ref<DateTime> {
     let param: DateTime | Ref<DateTime>;
 
     if (!Ref.isRef(ref)) {
-      let cast = this.cast(ref);
+      const cast = this.cast(ref);
       if (!this._typeCheck(cast))
         throw new TypeError(
-          `\`${name}\` must be a DateTime or a value that can be \`cast()\` to a DateTime`,
+          `\`${name}\` must be a DateTime or a value that can be \`cast()\` to a DateTime`
         );
       param = cast;
     } else {
@@ -71,7 +67,7 @@ export class DateTimeSchema extends MixedSchema<DateTime, Record<never, never>> 
   }
 
   min(min: DateTime | Ref<DateTime>, message = dateTime.min) {
-    let limit = this.prepareParam(min, 'min');
+    const limit = this.prepareParam(min, 'min');
 
     return this.test({
       message,
@@ -85,7 +81,7 @@ export class DateTimeSchema extends MixedSchema<DateTime, Record<never, never>> 
   }
 
   max(max: DateTime | Ref<DateTime>, message = dateTime.max) {
-    var limit = this.prepareParam(max, 'max');
+    const limit = this.prepareParam(max, 'max');
 
     return this.test({
       message,

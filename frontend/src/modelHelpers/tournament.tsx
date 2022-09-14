@@ -1,9 +1,9 @@
-import { Tournament, TournamentStatus } from "src/types/graphql-generated";
+import { Tournament, TournamentStatus } from 'src/types/graphql-generated';
 import { DateTime } from 'luxon';
 
 export function tournamentStatusToText(tournament: Tournament) {
   const timeUntilLastRound = DateTime.fromISO(tournament.lastRoundDate);
-  switch(tournament.status) {
+  switch (tournament.status) {
     case TournamentStatus.Created: {
       return `starts ${timeUntilLastRound.toRelative()}`;
     }

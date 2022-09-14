@@ -5,14 +5,13 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
-import { useLogout } from '../../hooksAndQueries/authenticatedUser';
 import { Box } from '@material-ui/core';
+import { useLogout } from '../../hooksAndQueries/authenticatedUser';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    userButton: {
-    }
-  }),
+    userButton: {},
+  })
 );
 
 export function UserMenu() {
@@ -34,33 +33,33 @@ export function UserMenu() {
     logout();
   };
   return (
-  <Box className={classes.userButton}>
-    <IconButton
-      aria-label="user menu"
-      aria-controls="menu-appbar"
-      aria-haspopup="true"
-      onClick={handleMenu}
-      color="inherit"
-    >
-      <AccountCircle />
-    </IconButton>
-    <Menu
-      id="menu-appbar"
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={open}
-      onClose={handleClose}
-    >
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
-    </Menu>
-  </Box>
-  )
+    <Box className={classes.userButton}>
+      <IconButton
+        aria-label="user menu"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleMenu}
+        color="inherit"
+      >
+        <AccountCircle />
+      </IconButton>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
+    </Box>
+  );
 }

@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   mainRow: {
     paddingLeft: theme.spacing(3),
@@ -26,14 +26,14 @@ const useStyles = makeStyles((theme) => ({
   },
   tabs: {
     paddingTop: theme.spacing(1),
-  }
+  },
 }));
 
 interface TournamentSubPageHeaderProps {
-  title: string,
+  title: string;
   sections: Array<string>;
-  currentSection: number,
-  setSection: (section: number) => void
+  currentSection: number;
+  setSection: (section: number) => void;
   children?: JSX.Element;
 }
 
@@ -43,21 +43,26 @@ export function TournamentSubPageHeader(props: TournamentSubPageHeaderProps) {
   const handleSectionChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     props.setSection(newValue);
   };
-  const tabs = props.sections.map((sectionName, index) => <Tab label={sectionName} value={index} key={index}/>)
+  const tabs = props.sections.map((sectionName, index) => (
+    <Tab label={sectionName} value={index} key={index} />
+  ));
 
   return (
     <Box boxShadow={3} className={classes.root}>
       <div className={classes.mainRow}>
         <div className={classes.titleCell}>
-          <Typography variant="h1">
-            {props.title}
-          </Typography>
+          <Typography variant="h1">{props.title}</Typography>
         </div>
         {props.children}
       </div>
-      <Tabs value={props.currentSection} onChange={handleSectionChange} aria-label='sub-sections menu' className={classes.tabs}>
+      <Tabs
+        value={props.currentSection}
+        onChange={handleSectionChange}
+        aria-label="sub-sections menu"
+        className={classes.tabs}
+      >
         {...tabs}
       </Tabs>
     </Box>
-  )
+  );
 }

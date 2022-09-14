@@ -1,23 +1,19 @@
 import React from 'react';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
+import LuxonUtils from '@date-io/luxon';
+import { ApolloProvider } from '@apollo/client';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import logo from './logo.svg';
 import './App.css';
 import Login from './ui/Login';
 import Registration from './ui/Registration';
 
-import { ApolloProvider } from '@apollo/client';
 import { client } from './apolloConfig';
 
 import TournamentPage from './ui/Tournament/TournamentPage';
@@ -28,10 +24,7 @@ import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { AuthenticationRequired } from './AuthenticationRequired';
 import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
-import LuxonUtils from '@date-io/luxon';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-
-declare module "@material-ui/core/styles/createPalette" {
+declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
     menu: Palette['primary'];
     code: PaletteOptions['text'];
@@ -46,7 +39,7 @@ const theme = createMuiTheme({
   palette: {
     type: 'dark',
     primary: {
-      main: '#90caf9'
+      main: '#90caf9',
     },
     secondary: {
       main: '#ef5350',
@@ -60,8 +53,8 @@ const theme = createMuiTheme({
       paper: '#353535',
     },
     code: {
-      primary: '#ffa657'
-    }
+      primary: '#ffa657',
+    },
   },
   typography: {
     h1: {
@@ -76,53 +69,50 @@ const theme = createMuiTheme({
       fontSize: '1.5rem',
       fontWeight: 400,
     },
-  }
+  },
 });
 
 function App() {
   return (
     <ApolloProvider client={client}>
-    <MuiThemeProvider theme={theme}>
-    <MuiPickersUtilsProvider utils={LuxonUtils}>
-    <CssBaseline />
-    <div className="App">
-      <UserContextProvider>
-        <Router>
+      <MuiThemeProvider theme={theme}>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <CssBaseline />
+          <div className="App">
+            <UserContextProvider>
+              <Router>
+                <Switch>
+                  <Route exact path="/">
+                    <LandingPage />
+                  </Route>
+                  <Route path="/login">
+                    <Login />
+                  </Route>
+                  <Route path="/register">
+                    <Registration />
+                  </Route>
 
-        <Switch>
-          <Route exact path="/">
-            <LandingPage/>
-          </Route>
-          <Route path="/login">
-            <Login/>
-          </Route>
-          <Route path="/register">
-            <Registration/>
-          </Route>
+                  <Route path="/tournament_invitation/:tournamentInvitationLinkID">
+                    <TournamentInvitationPage />
+                  </Route>
 
-          <Route path="/tournament_invitation/:tournamentInvitationLinkID">
-              <TournamentInvitationPage/>
-            </Route>
-
-          <AuthenticationRequired>
-            <Route exact path="/home">
-              <UserHomePage/>
-            </Route>
-            <Route path="/tournament/:tournamentID">
-              <TournamentPage/>
-            </Route>
-            <Route path="/create_tournament">
-              <TournamentCreationPage/>
-            </Route>
-          </AuthenticationRequired>
-
-        </Switch>
-        
-        </Router>
-      </UserContextProvider>
-    </div>
-    </MuiPickersUtilsProvider>
-    </MuiThemeProvider>
+                  <AuthenticationRequired>
+                    <Route exact path="/home">
+                      <UserHomePage />
+                    </Route>
+                    <Route path="/tournament/:tournamentID">
+                      <TournamentPage />
+                    </Route>
+                    <Route path="/create_tournament">
+                      <TournamentCreationPage />
+                    </Route>
+                  </AuthenticationRequired>
+                </Switch>
+              </Router>
+            </UserContextProvider>
+          </div>
+        </MuiPickersUtilsProvider>
+      </MuiThemeProvider>
     </ApolloProvider>
   );
 }

@@ -7,7 +7,8 @@ export class VersionedAsyncIterator<
   TNEXT extends Versionned<VERSION>,
   TINITIAL extends Versionned<VERSION>,
   TRETURN = any
-> implements AsyncIterator<TNEXT | TINITIAL, TRETURN> {
+> implements AsyncIterator<TNEXT | TINITIAL, TRETURN>
+{
   private initialVersion?: VERSION = undefined;
 
   constructor(

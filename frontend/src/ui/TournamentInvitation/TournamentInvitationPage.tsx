@@ -1,20 +1,16 @@
 import React, { useContext, useEffect } from 'react';
-import { UserContext } from '../../UserContext';
-import { useTournamentByInvitationLinkQuery } from '../../types/graphql-generated';
-import MenuBar from '../MenuBar/MenuBar';
 
-import {
-  useHistory,
-  useParams
-} from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { TournamentInvitationID } from 'src/types/graphql';
 import { containsNotFoundError } from 'src/hooksAndQueries/errors';
 import { createStyles, makeStyles, Paper, Theme } from '@material-ui/core';
+import MenuBar from '../MenuBar/MenuBar';
+import { useTournamentByInvitationLinkQuery } from '../../types/graphql-generated';
+import { UserContext } from '../../UserContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-    }
+    root: {},
   })
 );
 
@@ -22,12 +18,14 @@ export function TournamentInvitationPage() {
   const classes = useStyles();
 
   const history = useHistory();
-  const { tournamentInvitationLinkID } = useParams<{tournamentInvitationLinkID: TournamentInvitationID}>();
+  const { tournamentInvitationLinkID } = useParams<{
+    tournamentInvitationLinkID: TournamentInvitationID;
+  }>();
   const { authenticated } = useContext(UserContext);
   const { error: tournamentError, data: tournamentResult } = useTournamentByInvitationLinkQuery({
     variables: {
-      tournamentInvitationLinkID: tournamentInvitationLinkID
-    }
+      tournamentInvitationLinkID,
+    },
   });
 
   let error;
@@ -36,23 +34,23 @@ export function TournamentInvitationPage() {
       <Paper>
         <p>No Tournament matches the provided Invitation</p>
       </Paper>
-    )
+    );
   }
 
   useEffect(() => {
     if (tournamentResult) {
       if (!authenticated) {
-        history.push(`/login?tournament_invitation=${tournamentInvitationLinkID}`)
+        history.push(`/login?tournament_invitation=${tournamentInvitationLinkID}`);
       } else {
-        history.push(`/home?tournament_invitation=${tournamentInvitationLinkID}`)
+        history.push(`/home?tournament_invitation=${tournamentInvitationLinkID}`);
       }
     }
   }, [history, tournamentResult, authenticated, tournamentInvitationLinkID]);
-  
+
   return (
     <div className={classes.root}>
       <MenuBar />
       {error}
     </div>
-  )
+  );
 }

@@ -4,7 +4,6 @@ import MenuBar from '../MenuBar/MenuBar';
 import { Pitch } from './Pitch';
 import { Target } from './Target';
 
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -19,19 +18,19 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
     },
-  }),
+  })
 );
 
 export function LandingPage() {
   const classes = useStyles();
 
   return (
-  <div className={classes.root}>
-    <div className={classes.introRow}>
-      <MenuBar showLogin={true}/>
-      <Pitch/>
+    <div className={classes.root}>
+      <div className={classes.introRow}>
+        <MenuBar showLogin={true} />
+        <Pitch />
+      </div>
+      <Target />
     </div>
-    <Target/>
-  </div>
-  )
+  );
 }

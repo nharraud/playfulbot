@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { apolloCache } from "src/apolloCache";
-import { usePrevious } from "./usePrevious";
+import { useEffect } from 'react';
+import { apolloCache } from 'src/apolloCache';
+import { usePrevious } from './usePrevious';
 
 /**
  * Force Apollo Cache to retain an object.
@@ -9,13 +9,13 @@ import { usePrevious } from "./usePrevious";
  */
 export function useGraphqlCacheLock(id: string): void {
   const previousID = usePrevious(id);
-  useEffect(() => {
+  useEffect(() =>
     // release all on unmount
-    return () => {
+    () => {
       apolloCache.release(previousID);
       apolloCache.release(id);
     }
-  });
+  );
   if (previousID !== id) {
     if (id) {
       apolloCache.retain(id);

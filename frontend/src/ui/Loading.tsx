@@ -11,11 +11,9 @@ export default function LoadingWidget() {
       justify="center"
       style={{ flex: '1' }}
     >
-
       <Grid item xs={3}>
-      <CircularProgress color="secondary" />
+        <CircularProgress color="secondary" />
       </Grid>
-
     </Grid>
   );
 }

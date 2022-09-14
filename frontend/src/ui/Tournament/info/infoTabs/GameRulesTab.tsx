@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Typography} from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { gameDefinition } from 'playfulbot-config';
 import { StringChildrenProps } from 'playfulbot-game-frontend';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     [theme.breakpoints.up('md')]: {
       width: '50rem',
-    }
+    },
   },
   mainTitle: {
     marginBottom: '3rem',
@@ -25,39 +25,37 @@ const useStyles = makeStyles((theme) => ({
   sectionTitle: {
     marginTop: '3rem',
     marginBottom: '1rem',
-  }
+  },
 }));
 
-
-function SectionTitle({children}: StringChildrenProps) {
+function SectionTitle({ children }: StringChildrenProps) {
   const classes = useStyles();
-  return (<Typography variant='h3' className={classes.sectionTitle}>{children}</Typography>)
-}
-
-function SectionParagraph({children}: StringChildrenProps) {
-  return (<Typography variant='body1'>{children}</Typography>)
-}
-
-function CodeBlock({children}: StringChildrenProps) {
   return (
-    <SyntaxHighlighter style={a11yDark}>
-      {dedent(children)}
-    </SyntaxHighlighter>
-  )
+    <Typography variant="h3" className={classes.sectionTitle}>
+      {children}
+    </Typography>
+  );
 }
 
-interface GameRulesTabProps {
-};
+function SectionParagraph({ children }: StringChildrenProps) {
+  return <Typography variant="body1">{children}</Typography>;
+}
+
+function CodeBlock({ children }: StringChildrenProps) {
+  return <SyntaxHighlighter style={a11yDark}>{dedent(children)}</SyntaxHighlighter>;
+}
+
+interface GameRulesTabProps {}
 
 export function GameRulesTab(props: GameRulesTabProps) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <Typography variant='h2' className={classes.mainTitle}>
+        <Typography variant="h2" className={classes.mainTitle}>
           Game Rules
         </Typography>
-    
+
         <gameDefinition.rules
           SectionTitle={SectionTitle}
           SectionParagraph={SectionParagraph}

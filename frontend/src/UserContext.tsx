@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useState } from 'react';
 
 export const UserContext = React.createContext({
@@ -8,12 +7,12 @@ export const UserContext = React.createContext({
 });
 
 export function triggerUserContextUpdate() {
-  var event = new Event("updateUserContexts");
+  const event = new Event('updateUserContexts');
   document.dispatchEvent(event);
 }
 
 export function UserContextProvider(props) {
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem('token') !== null)
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem('token') !== null);
 
   const setToken = useCallback((token: string) => {
     localStorage.setItem('token', token);
@@ -28,17 +27,17 @@ export function UserContextProvider(props) {
   useEffect(() => {
     const checkToken = () => {
       setAuthenticated(localStorage.getItem('token') !== null);
-    }
-    document.addEventListener("updateUserContexts", checkToken);
+    };
+    document.addEventListener('updateUserContexts', checkToken);
 
     return () => {
-      document.removeEventListener("updateUserContexts", checkToken);
-    }
+      document.removeEventListener('updateUserContexts', checkToken);
+    };
   }, []);
 
   return (
-    <UserContext.Provider value={{authenticated, setToken, deleteToken}}>
-        {props.children}
+    <UserContext.Provider value={{ authenticated, setToken, deleteToken }}>
+      {props.children}
     </UserContext.Provider>
-  )
+  );
 }

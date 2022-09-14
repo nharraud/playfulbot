@@ -1,10 +1,17 @@
-import { makeStyles, createStyles, Theme, Typography, ListItem, ListItemText, List } from '@material-ui/core';
+import {
+  makeStyles,
+  createStyles,
+  Theme,
+  Typography,
+  ListItem,
+  ListItemText,
+  List,
+} from '@material-ui/core';
 import React from 'react';
-import { Tournament } from '../../types/graphql';
 import { tournamentStatusToText } from 'src/modelHelpers/tournament';
 import { Link } from 'react-router-dom';
+import { Tournament } from '../../types/graphql';
 import { NoTournamentFound } from './NoTournamentFound';
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,45 +26,39 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     tournamentListItem: {
       color: 'inherit',
-    }
-  }),
+    },
+  })
 );
 
 export interface TournamentsListProps {
-  title: string,
+  title: string;
   tournaments?: Tournament[];
-};
+}
 
 export function TournamentsList(props: TournamentsListProps) {
   const classes = useStyles();
 
-  const tournamentListItems = props?.tournaments?.map((tournament) => {
-    return (
-      <ListItem className={classes.tournamentListItem} key={tournament.id}
-        component={Link} to={`/tournament/${tournament.id}/info`}
-      >
-        <ListItemText
-          primary={tournament.name}
-          secondary={tournamentStatusToText(tournament)}
-        />
-      </ListItem>
-    )
-  });
-  let content = (
-  <List  className={classes.list}>
-    {tournamentListItems}
-  </List>
-  )
+  const tournamentListItems = props?.tournaments?.map((tournament) => (
+    <ListItem
+      className={classes.tournamentListItem}
+      key={tournament.id}
+      component={Link}
+      to={`/tournament/${tournament.id}/info`}
+    >
+      <ListItemText primary={tournament.name} secondary={tournamentStatusToText(tournament)} />
+    </ListItem>
+  ));
+  let content = <List className={classes.list}>{tournamentListItems}</List>;
   if (tournamentListItems !== undefined && tournamentListItems.length === 0) {
-    content = (<NoTournamentFound/>)
+    content = <NoTournamentFound />;
   }
 
   return (
-  <div className={classes.root}>
-    <Typography variant="h6" className={classes.title}>
-      {props.title}
-    </Typography>
-    {content}
-  </div>
-  )
+    <div className={classes.root}>
+      <Typography variant="h6" className={classes.title}>
+        {props.title}
+      </Typography>
+      {content}
+    </div>
+  );
 }

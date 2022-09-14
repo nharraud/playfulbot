@@ -38,15 +38,12 @@ export const debugArenaResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['
   },
 };
 
-export const createNewDebugGameResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGame'] = async (
-  parent,
-  args,
-  ctx
-) => {
-  if (!isUserContext(ctx)) {
-    throw new ForbiddenError('Only users are allowed to create games');
-  }
-  const arena = DebugArena.getDebugArena(args.userID, args.tournamentID);
-  await arena.createNewGame();
-  return true;
-};
+export const createNewDebugGameResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGame'] =
+  async (parent, args, ctx) => {
+    if (!isUserContext(ctx)) {
+      throw new ForbiddenError('Only users are allowed to create games');
+    }
+    const arena = DebugArena.getDebugArena(args.userID, args.tournamentID);
+    await arena.createNewGame();
+    return true;
+  };

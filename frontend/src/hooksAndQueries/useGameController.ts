@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { GameState } from "playfulbot-game";
-import { Game } from "src/types/graphql-generated";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { GameState } from 'playfulbot-game';
+import { Game } from 'src/types/graphql-generated';
 import { applyPatch, Operation } from 'fast-json-patch';
-import { NoUndefinedVariablesRule } from "graphql";
-import { GameID } from "src/types/graphql";
+import { NoUndefinedVariablesRule } from 'graphql';
+import { GameID } from 'src/types/graphql';
 
 export interface ControlledGame {
   id: GameID;
@@ -15,7 +15,9 @@ export interface ControlledGame {
 export type SetGameVersion = (version: number) => void;
 
 function patchStateToVersion(
-  game: Game, finalVersion: number, currentControlledGame?: ControlledGame
+  game: Game,
+  finalVersion: number,
+  currentControlledGame?: ControlledGame
 ): ControlledGame {
   let startVersion: number;
   let startState: GameState;
@@ -38,8 +40,8 @@ function patchStateToVersion(
 }
 
 export interface useGameControllerResult {
-  controlledGame: ControlledGame,
-  setGameVersion: SetGameVersion,
+  controlledGame: ControlledGame;
+  setGameVersion: SetGameVersion;
 }
 
 export function useGameController(game?: Game): useGameControllerResult {
@@ -48,11 +50,13 @@ export function useGameController(game?: Game): useGameControllerResult {
   const [followLastVersion, setFollowLastVersion] = useState(true);
   const [controlledGame, setControlledGame] = useState<ControlledGame>(undefined);
 
-
-  const setGameVersion = useCallback((gameVersion) => {
-    setFollowLastVersion(gameVersion === game.version);
-    setGameVersionInternal(gameVersion);
-  }, [game?.version]);
+  const setGameVersion = useCallback(
+    (gameVersion) => {
+      setFollowLastVersion(gameVersion === game.version);
+      setGameVersionInternal(gameVersion);
+    },
+    [game?.version]
+  );
 
   useEffect(() => {
     if (game !== undefined) {
@@ -70,11 +74,11 @@ export function useGameController(game?: Game): useGameControllerResult {
         if (controlledGame.version !== newVersion) {
           setControlledGame(patchStateToVersion(game, newVersion, controlledGame));
         } else if (controlledGame.maxVersion !== game.version) {
-          setControlledGame({...controlledGame, maxVersion: game.version})
+          setControlledGame({ ...controlledGame, maxVersion: game.version });
         }
       }
     }
-  }, [game, game?.version, controlledGame, gameVersion, followLastVersion, setGameVersion])
+  }, [game, game?.version, controlledGame, gameVersion, followLastVersion, setGameVersion]);
 
   return { controlledGame, setGameVersion };
 }

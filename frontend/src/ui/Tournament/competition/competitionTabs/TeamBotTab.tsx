@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Typography} from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import useTeam from 'src/hooksAndQueries/useTeam';
 import { useTeamPlayer } from 'src/hooksAndQueries/useTeamPlayer';
 import { Tournament } from 'src/types/graphql-generated';
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     [theme.breakpoints.up('md')]: {
       width: '50rem',
-    }
+    },
   },
   mainTitle: {
     marginBottom: '3rem',
@@ -30,10 +30,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 interface TeamBotTabProps {
   tournament?: Tournament;
-};
+}
 
 export default function TeamBotTab({ tournament }: TeamBotTabProps) {
   const classes = useStyles();
@@ -44,20 +43,18 @@ export default function TeamBotTab({ tournament }: TeamBotTabProps) {
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <Typography variant='h2' className={classes.mainTitle}>
+        <Typography variant="h2" className={classes.mainTitle}>
           Your team's bot
         </Typography>
 
-        <Typography variant='h3' className={classes.sectionTitle}>
+        <Typography variant="h3" className={classes.sectionTitle}>
           Connection
         </Typography>
 
-        <Typography variant='body1' className={classes.sectionText}>
+        <Typography variant="body1" className={classes.sectionText}>
           Your team's bot is {connectionStatus}.
         </Typography>
-        <CopyToClipboardButton text={player?.token}>
-            Copy Token
-        </CopyToClipboardButton>
+        <CopyToClipboardButton text={player?.token}>Copy Token</CopyToClipboardButton>
       </div>
     </div>
   );

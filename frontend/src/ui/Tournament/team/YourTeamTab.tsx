@@ -37,17 +37,15 @@ const useStyles = makeStyles((theme) => ({
   subtitle: {
     textAlign: 'center',
   },
-  membersList: {
-  },
+  membersList: {},
   memberItem: {
     textAlign: 'center',
-  }
+  },
 }));
-
 
 interface YourTeamTabProps {
   tournamentID: TournamentID;
-};
+}
 
 export default function YourTeamTab({ tournamentID }: YourTeamTabProps) {
   const classes = useStyles();
@@ -64,14 +62,12 @@ export default function YourTeamTab({ tournamentID }: YourTeamTabProps) {
   }, [setEditOpen]);
 
   if (!team) {
-    return <div/>;
+    return <div />;
   }
 
   const members = team.members.map((member) => (
     <ListItem key={member.id} className={classes.memberItem}>
-      <ListItemText
-        primary={member.username}
-      />
+      <ListItemText primary={member.username} />
     </ListItem>
   ));
 
@@ -79,19 +75,23 @@ export default function YourTeamTab({ tournamentID }: YourTeamTabProps) {
     <div className={classes.root}>
       <Paper className={classes.teamContainer}>
         <div className={classes.teamNameContainer}>
-          <Typography className={classes.teamName} variant='h5' onClick={() =>{console.log('Foo')}}>
-            { team.name }
+          <Typography
+            className={classes.teamName}
+            variant="h5"
+            onClick={() => {
+              console.log('Foo');
+            }}
+          >
+            {team.name}
           </Typography>
           <EditIcon className={classes.editIcon} onClick={openDialog} />
         </div>
         <Typography color="textSecondary" className={classes.subtitle}>
           Team Members
         </Typography>
-        <List className={classes.membersList}>
-          {members}
-        </List>
+        <List className={classes.membersList}>{members}</List>
       </Paper>
-      <TeamEditDialog open={editOpen} handleClose={handleClose} team={team}/>
+      <TeamEditDialog open={editOpen} handleClose={handleClose} team={team} />
     </div>
-  )
+  );
 }

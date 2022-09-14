@@ -1,8 +1,7 @@
 import React from 'react';
 import { render, screen, within, fireEvent } from '@testing-library/react';
-import DebugPlayersTab from './DebugPlayersTab';
-
 import copy from 'copy-to-clipboard';
+import DebugPlayersTab from './DebugPlayersTab';
 
 jest.mock('copy-to-clipboard');
 

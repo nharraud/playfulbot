@@ -5,7 +5,7 @@ import { ReactComponent as Image } from '../../assets/images/noun_team building_
 export function TeamBuildingIcon(props) {
   return (
     <SvgIcon viewBox="0 0 100 125" {...props}>
-      <Image/>
+      <Image />
     </SvgIcon>
   );
 }

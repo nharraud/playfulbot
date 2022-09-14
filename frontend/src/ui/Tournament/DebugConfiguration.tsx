@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
 export default function DebugConfiguration(props) {
-    return (
-        <Dialog aria-labelledby="debug-configuration" open={true}>
-        <DialogTitle id="debug-configuration">Configure bot debugging</DialogTitle>
-        </Dialog>
-    );
+  return (
+    <Dialog aria-labelledby="debug-configuration" open={true}>
+      <DialogTitle id="debug-configuration">Configure bot debugging</DialogTitle>
+    </Dialog>
+  );
 }

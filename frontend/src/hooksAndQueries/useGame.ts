@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { useMutation, useSubscription } from '@apollo/client';
+import { Maybe } from 'graphql/jsutils/Maybe';
+import { GameID } from 'playfulbot-game/lib/lib';
 import { useAuthenticatedUser } from './authenticatedUser';
 import { Tournament } from '../types/graphql-generated';
 import { client as apolloClient } from '../apolloConfig';
@@ -8,25 +10,25 @@ import * as gqlTypes from '../types/graphql';
 import { useFragment } from './useFragment';
 
 import { useRestartingSubscription } from './useRestartingSubscription';
-import { GameID } from '../../../packages/playfulbot-game/lib';
-import { Maybe } from 'graphql/jsutils/Maybe';
 
 export default function useDebugGame(tournament?: Tournament) {
   const { authenticatedUser } = useAuthenticatedUser();
 
   const debugArena = useDebugArenaSubscription(authenticatedUser?.id, tournament?.id);
-  const {game} = useGameSubscription(debugArena?.arena?.game);
+  const { game } = useGameSubscription(debugArena?.arena?.game);
   const createDebugGame = useCreateDebugGame(authenticatedUser?.id, tournament?.id);
-  return {game, createDebugGame};
+  return { game, createDebugGame };
 }
 
-
 function useDebugArenaSubscription(userID?: string, tournamentID?: string) {
-  const {data, loading, error} = useSubscription<gqlTypes.DebugArenaSubscription>(gqlTypes.DebugArenaDocument, {
-    variables: { userID, tournamentID },
-    skip: !userID || !tournamentID,
-    shouldResubscribe: true,
-  });
+  const { data, loading, error } = useSubscription<gqlTypes.DebugArenaSubscription>(
+    gqlTypes.DebugArenaDocument,
+    {
+      variables: { userID, tournamentID },
+      skip: !userID || !tournamentID,
+      shouldResubscribe: true,
+    }
+  );
   return { arena: data?.debugArena };
 }
 
@@ -39,11 +41,14 @@ function fullPlayerID(playerID?: Maybe<gqlTypes.PlayerID>) {
 }
 
 function useGameSubscription(gameID?: Maybe<string>) {
-    const {data, loading, error } = useRestartingSubscription<gqlTypes.GameSubscription>(gqlTypes.GameDocument, {
-    variables: { gameID: gameID },
-    skip: !gameID,
-    shouldResubscribe: true,
-  });
+  const { data, loading, error } = useRestartingSubscription<gqlTypes.GameSubscription>(
+    gqlTypes.GameDocument,
+    {
+      variables: { gameID },
+      skip: !gameID,
+      shouldResubscribe: true,
+    }
+  );
 
   if (data) {
     if (data.game?.__typename === 'GameCanceled') {
@@ -52,15 +57,15 @@ function useGameSubscription(gameID?: Maybe<string>) {
         fragment: gqlTypes.GameCancelFragmentDoc,
         data: {
           canceled: true,
-          version: data.game.version
+          version: data.game.version,
         },
       });
     } else if (data.game?.__typename === 'GamePatch') {
-      const version = data.game.version;
+      const { version } = data.game;
       const modifiedGameID = fullGameID(data.game.gameID);
       const game = apolloClient.readFragment<gqlTypes.GameFragment>({
         id: modifiedGameID,
-        fragment: gqlTypes.GameFragmentDoc
+        fragment: gqlTypes.GameFragmentDoc,
       });
 
       if (version !== game?.version) {
@@ -73,8 +78,8 @@ function useGameSubscription(gameID?: Maybe<string>) {
           fragment: gqlTypes.GamePatchFragmentDoc,
           data: {
             patches: game?.patches.concat([data.game.patch]),
-            version: version,
-            winners: data.game.winners
+            version,
+            winners: data.game.winners,
           },
         });
       }
@@ -83,7 +88,7 @@ function useGameSubscription(gameID?: Maybe<string>) {
         id: fullPlayerID(data.game.playerID),
         fragment: gqlTypes.PlayerFragmentDoc,
         data: {
-          connected: data.game.connected
+          connected: data.game.connected,
         },
       });
     }
@@ -94,22 +99,21 @@ function useGameSubscription(gameID?: Maybe<string>) {
     fragment: gqlTypes.GameFragmentDoc,
   });
 
-  return { game: result || undefined }
+  return { game: result || undefined };
 }
 
 function useCreateDebugGame(userID?: Maybe<string>, tournamentID?: Maybe<string>) {
   const [createNewDebugGameMutation] = useMutation<
-      gqlTypes.CreateNewDebugGameMutation, gqlTypes.CreateNewDebugGameMutationVariables
-    >(gqlTypes.CreateNewDebugGameDocument);
+    gqlTypes.CreateNewDebugGameMutation,
+    gqlTypes.CreateNewDebugGameMutationVariables
+  >(gqlTypes.CreateNewDebugGameDocument);
 
-  const createDebugGame = useCallback(
-    () =>  {
-      if (!userID || !tournamentID) {
-        throw new Error('userID or tournamentID are missing');
-      }
-      createNewDebugGameMutation({variables:{userID, tournamentID}});
+  const createDebugGame = useCallback(() => {
+    if (!userID || !tournamentID) {
+      throw new Error('userID or tournamentID are missing');
     }
-  , [createNewDebugGameMutation, userID, tournamentID]);
+    createNewDebugGameMutation({ variables: { userID, tournamentID } });
+  }, [createNewDebugGameMutation, userID, tournamentID]);
 
   return createDebugGame;
 }

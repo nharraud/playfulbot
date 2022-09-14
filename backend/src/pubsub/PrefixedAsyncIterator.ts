@@ -1,5 +1,6 @@
 export class PrefixedAsyncIterator<TNEXT, TINITIAL, TRETURN = any>
-  implements AsyncIterator<TNEXT | TINITIAL, TRETURN> {
+  implements AsyncIterator<TNEXT | TINITIAL, TRETURN>
+{
   constructor(
     private readonly inputIterator: AsyncIterator<TNEXT, TRETURN>,
     private initial: () => Promise<TINITIAL>

@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { Button, makeStyles, Paper, Typography } from "@material-ui/core";
-import { Round, Tournament } from "src/types/graphql-generated";
+import { Button, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Round, Tournament } from 'src/types/graphql-generated';
 import useTournamentRounds from 'src/hooksAndQueries/useTournamentRounds';
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
@@ -14,10 +13,7 @@ import TimerIcon from '@material-ui/icons/Timer';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MemoryIcon from '@material-ui/icons/Memory';
 import { DateTime } from 'luxon';
-import {
-  Link,
-  useRouteMatch
-} from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,19 +21,19 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   title: {
-    textAlign: "left",
+    textAlign: 'left',
     marginLeft: theme.spacing(12),
     marginBottom: theme.spacing(7),
     marginTop: theme.spacing(2),
   },
   paper: {},
   oppositeContent: {
-    flex: 0.05
+    flex: 0.05,
   },
   link: {
-    textDecoration: "inherit",
-    color: "inherit",
-  }
+    textDecoration: 'inherit',
+    color: 'inherit',
+  },
 }));
 
 interface RoundsTimelineProps {
@@ -47,23 +43,26 @@ interface RoundsTimelineProps {
 export default function RoundsTimeline(props: RoundsTimelineProps) {
   const classes = useStyles();
   const match = useRouteMatch();
-  const { tournament: tournamentWithRounds, fetchPreviousRounds } = useTournamentRounds(props.tournament?.id);
+  const { tournament: tournamentWithRounds, fetchPreviousRounds } = useTournamentRounds(
+    props.tournament?.id
+  );
   if (tournamentWithRounds === undefined) {
-    return <div/>;
+    return <div />;
   }
 
   let nextRound: Round;
   let pastRounds: Round[] = [];
   if (tournamentWithRounds) {
-      nextRound = tournamentWithRounds.rounds[tournamentWithRounds.rounds.length - 1];
-      if (tournamentWithRounds.rounds.length > 1) {
-      pastRounds = tournamentWithRounds.rounds.slice(0, tournamentWithRounds?.rounds.length - 1).reverse()
+    nextRound = tournamentWithRounds.rounds[tournamentWithRounds.rounds.length - 1];
+    if (tournamentWithRounds.rounds.length > 1) {
+      pastRounds = tournamentWithRounds.rounds
+        .slice(0, tournamentWithRounds?.rounds.length - 1)
+        .reverse();
     }
   }
-  
+
   return (
     <div className={classes.root}>
-
       <Typography variant="h4" className={classes.title}>
         Tournament's rounds
       </Typography>
@@ -71,12 +70,14 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         <TimelineItem>
           <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
-              { DateTime.fromISO(tournamentWithRounds.lastRoundDate).toLocaleString(DateTime.TIME_SIMPLE) }
+              {DateTime.fromISO(tournamentWithRounds.lastRoundDate).toLocaleString(
+                DateTime.TIME_SIMPLE
+              )}
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color='primary'>
-              <TimerIcon/>
+            <TimelineDot color="primary">
+              <TimerIcon />
             </TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
@@ -88,13 +89,12 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
             </Paper>
           </TimelineContent>
         </TimelineItem>
-      
+
         <TimelineItem>
-          <TimelineOppositeContent className={classes.oppositeContent}>
-          </TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.oppositeContent}></TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color='grey' variant='outlined'>
-              <MoreVertIcon/>
+            <TimelineDot color="grey" variant="outlined">
+              <MoreVertIcon />
             </TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
@@ -110,11 +110,11 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         <TimelineItem>
           <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
-              { DateTime.fromISO(nextRound.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
+              {DateTime.fromISO(nextRound.startDate).toLocaleString(DateTime.TIME_SIMPLE)}
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color='grey' variant='outlined'>
+            <TimelineDot color="grey" variant="outlined">
               <MemoryIcon />
             </TimelineDot>
             <TimelineConnector />
@@ -128,21 +128,20 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
           </TimelineContent>
         </TimelineItem>
 
-        {pastRounds.map((round, index) =>
+        {pastRounds.map((round, index) => (
           <TimelineItem key={round.id}>
             <TimelineOppositeContent className={classes.oppositeContent}>
               <Typography variant="body2" color="textSecondary">
-                { DateTime.fromISO(round.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
+                {DateTime.fromISO(round.startDate).toLocaleString(DateTime.TIME_SIMPLE)}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot color='grey' variant='outlined'>
+              <TimelineDot color="grey" variant="outlined">
                 <MemoryIcon />
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              
               <Link to={`${match.url}/rounds/${round.id}`}>
                 <Paper elevation={3} className={classes.paper}>
                   <Typography variant="h6" component="h1">
@@ -155,14 +154,13 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
               </Link>
             </TimelineContent>
           </TimelineItem>
-        )}
+        ))}
 
         <TimelineItem>
-          <TimelineOppositeContent className={classes.oppositeContent}>
-          </TimelineOppositeContent>
+          <TimelineOppositeContent className={classes.oppositeContent}></TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color='grey' variant='outlined'>
-              <MoreVertIcon/>
+            <TimelineDot color="grey" variant="outlined">
+              <MoreVertIcon />
             </TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
@@ -171,7 +169,7 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
               <Typography variant="h6" component="h1">
                 Y more rounds
               </Typography>
-              <Button variant='contained' color='primary' onClick={fetchPreviousRounds}>
+              <Button variant="contained" color="primary" onClick={fetchPreviousRounds}>
                 Expand
               </Button>
             </Paper>
@@ -181,11 +179,13 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         <TimelineItem>
           <TimelineOppositeContent className={classes.oppositeContent}>
             <Typography variant="body2" color="textSecondary">
-              { DateTime.fromISO(tournamentWithRounds.startDate).toLocaleString(DateTime.TIME_SIMPLE) }
+              {DateTime.fromISO(tournamentWithRounds.startDate).toLocaleString(
+                DateTime.TIME_SIMPLE
+              )}
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color='primary'>
+            <TimelineDot color="primary">
               <TimerIcon />
             </TimelineDot>
           </TimelineSeparator>
@@ -199,5 +199,5 @@ export default function RoundsTimeline(props: RoundsTimelineProps) {
         </TimelineItem>
       </Timeline>
     </div>
-  )
+  );
 }

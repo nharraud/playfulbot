@@ -5,7 +5,7 @@ import { ReactComponent as Image } from '../../assets/images/noun_Hackathon_6324
 export function TimedCodingIcon(props) {
   return (
     <SvgIcon viewBox="0 0 100 100" {...props}>
-      <Image/>
+      <Image />
     </SvgIcon>
   );
 }

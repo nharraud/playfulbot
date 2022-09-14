@@ -5,7 +5,7 @@ import { ReactComponent as Image } from '../../assets/images/noun_deployment_258
 export function DeploymentIcon(props) {
   return (
     <SvgIcon viewBox="0 0 128 160" {...props}>
-      <Image/>
+      <Image />
     </SvgIcon>
   );
 }

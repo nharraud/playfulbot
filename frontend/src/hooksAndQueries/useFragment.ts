@@ -1,8 +1,11 @@
-import { DataProxy, OperationVariables } from "@apollo/client";
+import { DataProxy, OperationVariables } from '@apollo/client';
 import { client } from '../apolloConfig';
-import { useGraphqlCacheLock } from "./useGraphqlCacheLock";
+import { useGraphqlCacheLock } from './useGraphqlCacheLock';
 
-type readFragmentOptions<T = any, TVariables = OperationVariables> = DataProxy.Fragment<TVariables, T>;
+type readFragmentOptions<T = any, TVariables = OperationVariables> = DataProxy.Fragment<
+  TVariables,
+  T
+>;
 
 /**
  * Read a fragment from apollo cache and force cache to retain it as long as it is used.

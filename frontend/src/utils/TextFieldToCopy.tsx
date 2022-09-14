@@ -26,10 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 type PropsType = {
-  text: string,
-  format?: string
+  text: string;
+  format?: string;
 };
 
 export default function TextFieldToCopy({ text, format = 'text/plain' }: PropsType) {
@@ -37,18 +36,19 @@ export default function TextFieldToCopy({ text, format = 'text/plain' }: PropsTy
   return (
     <Paper className={classes.root}>
       <InputBase
-        type='text' 
+        type="text"
         defaultValue={text}
-        inputProps={
-          { readOnly: true, }
-        }
+        inputProps={{ readOnly: true }}
         className={classes.input}
       />
       <Divider className={classes.divider} orientation="vertical" />
-      <IconButton className={classes.button} onClick={() => copy(text, { format: format })} aria-label="directions">
+      <IconButton
+        className={classes.button}
+        onClick={() => copy(text, { format })}
+        aria-label="directions"
+      >
         <FileCopyIcon />
       </IconButton>
     </Paper>
   );
 }
-

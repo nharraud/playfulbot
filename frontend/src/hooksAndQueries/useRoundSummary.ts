@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client";
-import { RoundID, TeamID } from "../types/graphql";
+import { useQuery } from '@apollo/client';
+import { RoundID, TeamID } from '../types/graphql';
 import * as gqlTypes from '../types/graphql';
 
 export default function useRoundSummary(roundID: RoundID, teamID: TeamID) {
@@ -8,7 +8,7 @@ export default function useRoundSummary(roundID: RoundID, teamID: TeamID) {
       roundID,
       teamID,
     },
-    skip: !roundID || !teamID
+    skip: !roundID || !teamID,
   });
 
   return { round: data?.round };

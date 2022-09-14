@@ -3,15 +3,17 @@ import { client as apolloClient } from '../apolloConfig';
 
 import * as gqlTypes from '../types/graphql';
 
-
 export function useTeamPlayer(teamID?: string) {
-  const {data, loading, error} = useSubscription<gqlTypes.TeamPlayerSubscription>(gqlTypes.TeamPlayerDocument, {
-    variables: { teamID: teamID },
-    skip: !teamID,
-    shouldResubscribe: true,
-  });
+  const { data, loading, error } = useSubscription<gqlTypes.TeamPlayerSubscription>(
+    gqlTypes.TeamPlayerDocument,
+    {
+      variables: { teamID },
+      skip: !teamID,
+      shouldResubscribe: true,
+    }
+  );
 
-  let player: gqlTypes.Player = undefined;
+  let player: gqlTypes.Player;
 
   if (!data) {
     player = undefined;
@@ -22,13 +24,13 @@ export function useTeamPlayer(teamID?: string) {
       id: `Player:${data.teamPlayer.playerID}`,
       fragment: gqlTypes.PlayerConnectedFragmentDoc,
       data: {
-        connected: data.teamPlayer.connected
+        connected: data.teamPlayer.connected,
       },
     });
     player = apolloClient.readFragment<gqlTypes.PlayerFragment>({
       id: `Player:${data.teamPlayer.playerID}`,
-      fragment: gqlTypes.PlayerFragmentDoc
+      fragment: gqlTypes.PlayerFragmentDoc,
     });
   }
-  return { player }
+  return { player };
 }

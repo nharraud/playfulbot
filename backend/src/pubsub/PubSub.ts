@@ -27,11 +27,11 @@ export class PubSub {
     channel: CHANNEL,
     subChannel: string
   ): ChannelListener<CHANNEL> {
-    const newListener = (new ChannelListener<CHANNEL>(
+    const newListener = new ChannelListener<CHANNEL>(
       channel,
       subChannel,
       this.unsubscribe
-    ) as unknown) as ChannelListener<ChannelName>;
+    ) as unknown as ChannelListener<ChannelName>;
 
     const key = PubSub.createKey(channel, subChannel);
     let listeners = this.channels.get(key);
@@ -40,7 +40,7 @@ export class PubSub {
       this.channels.set(key, listeners);
     }
     listeners.add(newListener);
-    return (newListener as unknown) as ChannelListener<CHANNEL>;
+    return newListener as unknown as ChannelListener<CHANNEL>;
   }
 
   hasListeners<CHANNEL extends ChannelName>(channel: CHANNEL, subChannel: string): boolean {
@@ -52,9 +52,9 @@ export class PubSub {
     channel: CHANNEL,
     subChannel: string
   ): ChannelListener<CHANNEL>[] {
-    return (this.channels.get(
+    return this.channels.get(
       PubSub.createKey(channel, subChannel)
-    ) as unknown) as ChannelListener<CHANNEL>[];
+    ) as unknown as ChannelListener<CHANNEL>[];
   }
 
   private static createKey<CHANNEL extends ChannelName>(

@@ -4,43 +4,60 @@ import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameContr
 import { Slider } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  versionSlider: {}
+  versionSlider: {},
 }));
 
 interface GameVersionSliderProps {
-  controlledGame: ControlledGame,
-  setGameVersion: SetGameVersion,
+  controlledGame: ControlledGame;
+  setGameVersion: SetGameVersion;
 }
 
-export default function GameVersionSlider({ controlledGame, setGameVersion}: GameVersionSliderProps) {
+export default function GameVersionSlider({
+  controlledGame,
+  setGameVersion,
+}: GameVersionSliderProps) {
   const classes = useStyles();
 
   const [slidingVersion, setSlidingVersion] = useState<number>(undefined);
   const [changingVersion, setChangingVersion] = useState<boolean>(false);
   const [maxVersion, setMaxVersion] = useState<number>(0);
 
-  const onSlidingVersionCommit = useCallback((event, version) => {
-    setChangingVersion(false);
-    setGameVersion(version);
-  }, [setGameVersion]);
+  const onSlidingVersionCommit = useCallback(
+    (event, version) => {
+      setChangingVersion(false);
+      setGameVersion(version);
+    },
+    [setGameVersion]
+  );
 
-  const onSlidingVersionChange = useCallback((event, version) => {
-    setChangingVersion(true);
-    setSlidingVersion(version);
-  }, [setSlidingVersion]);
+  const onSlidingVersionChange = useCallback(
+    (event, version) => {
+      setChangingVersion(true);
+      setSlidingVersion(version);
+    },
+    [setSlidingVersion]
+  );
 
   useEffect(() => {
-    if (controlledGame !== undefined && slidingVersion !== controlledGame.version && !changingVersion) {
+    if (
+      controlledGame !== undefined &&
+      slidingVersion !== controlledGame.version &&
+      !changingVersion
+    ) {
       setSlidingVersion(controlledGame.version);
     }
     if (controlledGame !== undefined && maxVersion !== controlledGame.maxVersion) {
-      setMaxVersion(controlledGame.maxVersion)
+      setMaxVersion(controlledGame.maxVersion);
     }
   }, [
-    controlledGame, controlledGame?.version,
-    slidingVersion, changingVersion, setSlidingVersion,
-    maxVersion, setMaxVersion
-  ])
+    controlledGame,
+    controlledGame?.version,
+    slidingVersion,
+    changingVersion,
+    setSlidingVersion,
+    maxVersion,
+    setMaxVersion,
+  ]);
 
   const marks = [
     {
@@ -51,12 +68,13 @@ export default function GameVersionSlider({ controlledGame, setGameVersion}: Gam
   if (maxVersion) {
     marks.push({
       value: maxVersion,
-      label: (maxVersion).toString(),
+      label: maxVersion.toString(),
     });
   }
 
   return (
-    <Slider className={classes.versionSlider}
+    <Slider
+      className={classes.versionSlider}
       value={slidingVersion === undefined ? 0 : slidingVersion}
       onChangeCommitted={onSlidingVersionCommit}
       onChange={onSlidingVersionChange}
@@ -66,7 +84,7 @@ export default function GameVersionSlider({ controlledGame, setGameVersion}: Gam
       min={0}
       max={maxVersion}
       color="secondary"
-      valueLabelDisplay={ "on" }
+      valueLabelDisplay={'on'}
     />
-  )
+  );
 }
