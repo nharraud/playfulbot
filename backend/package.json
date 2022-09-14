@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
-    "backend": "nodemon --inspect --require dotenv-flow/config src/index.ts serve",
-    "cli": "node --require dotenv-flow/config --require ts-node/register/transpile-only --require tsconfig-paths/register src/index.ts",
+    "backend": "PLAYFULBOT_CONFIG=../game-config.json nodemon --inspect --require dotenv-flow/config src/index.ts serve",
+    "cli": "PLAYFULBOT_CONFIG=../game-config.json node --require dotenv-flow/config --require ts-node/register/transpile-only --require tsconfig-paths/register src/index.ts",
     "lint": "eslint src",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
     "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
@@ -17,6 +17,10 @@
     "node": ">=16.1.0"
   },
   "dependencies": {
+    "playfulbot-game": "file:../packages/playfulbot-game",
+    "playfulbot-game-backend": "file:../packages/playfulbot-game-backend",
+    "playfulbot-config-loader": "file:../packages/playfulbot-config-loader",
+    "playfulbot-wallrace": "file:../packages/playfulbot-wallrace",
     "@grpc/grpc-js": "^1.3.3",
     "@grpc/proto-loader": "^0.6.0-pre18",
     "@koa/cors": "^3.1.0",

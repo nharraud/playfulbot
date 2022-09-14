@@ -1,6 +1,6 @@
-import { GameDefinition, gameDefinitions } from '~playfulbot/model/GameDefinition';
+import { GameAction, GameActionHandler } from 'playfulbot-game-backend';
+import { gameDefinitions } from '~playfulbot/model/GameDefinition';
 import { GameState } from '~playfulbot/types/gameState';
-import { GameAction, GameActionHandler } from '~playfulbot/types/action';
 import { IllegalPlayAction } from '~playfulbot/errors';
 import { Game } from '~playfulbot/model/Game';
 import { PlayerID } from '~playfulbot/model/Player';

@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
+import { BackendGameDefinition } from 'playfulbot-game-backend';
 import { ConflictError, InvalidArgument } from '~playfulbot/errors';
 import logger from '~playfulbot/logging';
 
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
-import { GameDefinition, gameDefinitions } from './GameDefinition';
+import { gameDefinitions } from './GameDefinition';
 import { TournamentInvitationLink, TournamentInvitationLinkID } from './TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team, TeamID } from './Team';
@@ -277,7 +278,7 @@ export class Tournament {
     return Team.getAll({ tournamentID: this.id }, dbOrTX);
   }
 
-  getGameDefinition(): GameDefinition {
+  getGameDefinition(): BackendGameDefinition {
     return gameDefinitions.get(this.gameName);
   }
 

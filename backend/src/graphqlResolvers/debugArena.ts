@@ -1,5 +1,4 @@
 import { DebugArenaNotFoundError, ForbiddenError } from '~playfulbot/errors';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { DebugArena } from '~playfulbot/model/DebugArena';
 import { pubsub } from '~playfulbot/pubsub';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';

@@ -1,4 +1,4 @@
-import { GameID, GameState } from "./common";
+import { GameID, GameState } from "playfulbot-game";
 
 export interface GameRendererProps<GState extends GameState> {
   gameState: GState;
@@ -16,8 +16,9 @@ export interface RulesProps {
   CodeBlock: (props: StringChildrenProps) => JSX.Element
 }
 
-export interface GameDefinition<GState extends GameState> {
+export interface FrontendGameDefinition<GState extends GameState> {
   game: GameRenderer<GState>,
   rules: (props: RulesProps) => JSX.Element,
   playerColor: (playerNumber: number) => string,
 }
+

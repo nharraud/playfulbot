@@ -13,7 +13,6 @@ import {
   updateTeamResolver,
 } from '~playfulbot/graphqlResolvers/team';
 import { gameResolver, playResolver } from '~playfulbot/graphqlResolvers/game';
-import { GameState } from '~playfulbot/types/gameState';
 import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,

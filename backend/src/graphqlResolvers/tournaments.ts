@@ -1,5 +1,5 @@
+import { loadConfig } from 'playfulbot-config-loader';
 import { TournamentNotFoundError, ForbiddenError, BotsForbiddenError } from '~playfulbot/errors';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
 import { TournamentRoleName } from '~playfulbot/model/TournamentRole';
@@ -17,6 +17,8 @@ export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>
     if (!isUserContext(ctx)) {
       throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
     }
+    const config = await loadConfig();
+    const { gameDefinition } = await import(config.games.wallrace);
     return Tournament.create(
       args.name,
       args.startDate,

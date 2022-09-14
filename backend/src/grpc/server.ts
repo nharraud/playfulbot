@@ -7,7 +7,6 @@ import logger from '~playfulbot/logging';
 import { ProtoGrpcType } from './proto/types/playfulbot_v0';
 import { FollowPlayerGamesRequest } from './proto/types/playfulbot/v0/FollowPlayerGamesRequest';
 import { FollowPlayerGamesResponse } from './proto/types/playfulbot/v0/FollowPlayerGamesResponse';
-import { GameState } from '~playfulbot/types/gameState';
 import { PlayGameRequest } from './proto/types/playfulbot/v0/PlayGameRequest';
 import { PlayGameResponse } from './proto/types/playfulbot/v0/PlayGameResponse';
 import { FollowGameRequest } from './proto/types/playfulbot/v0/FollowGameRequest';

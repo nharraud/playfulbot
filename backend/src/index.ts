@@ -1,13 +1,16 @@
 /* eslint import/first: "off" */
 
+import { loadConfig } from 'playfulbot-config-loader';
 import { execute } from '~playfulbot/cli';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { gameDefinitions } from '~playfulbot/model/GameDefinition';
 import logger from './logging';
 import { handleRestart } from './model/handleRestart';
 
 async function main() {
-  gameDefinitions.set(gameDefinition.name, gameDefinition);
+  const config = await loadConfig();
+  const { gameDefinition } = await import(config.games.wallrace);
+  const backendGameDefinition = gameDefinition.backend;
+  gameDefinitions.set(backendGameDefinition.name, backendGameDefinition);
   await execute(process.argv);
 }
 

@@ -1,13 +1,7 @@
-import { GameDefinition } from 'playfulbot-game';
-import { Rules } from './rules/Rules';
-import { playerColor } from './render/player';
-import { WallRaceGameState } from './render/types';
-import { GameCanvas } from './render/GameCanvas';
+import * as backend from './backend';
+import * as frontend from './frontend';
 
-export type WallRaceGameDefinition = GameDefinition<WallRaceGameState>;
-
-export const gameDefinition: WallRaceGameDefinition = {
-  game: GameCanvas,
-  rules: Rules,
-  playerColor,
+export const gameDefinition = {
+  backend: backend.gameDefinition,
+  frontend: frontend.gameDefinition,
 }

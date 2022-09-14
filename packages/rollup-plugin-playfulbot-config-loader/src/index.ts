@@ -15,8 +15,10 @@
 // ${exports}
 // };
 // `
+import { loadConfig } from 'playfulbot-config-loader';
 
-export default function virtualModule () {
+export default async function virtualModule () {
+  const config = await loadConfig();
   return {
     name: 'rollup-plugin-playfulbot-config-loader', // this name will show up in warnings and errors
     resolveId ( source: string ) {
@@ -30,9 +32,9 @@ export default function virtualModule () {
         // return result;
 
         return `
-        import { gameDefinition } from 'playfulbot-wallrace';
+        import * as wallrace from '${config.games.wallrace}';
 
-        export { gameDefinition };
+        export const gameDefinition = wallrace.gameDefinition.frontend;
         `;
       }
       return null; // other ids should be handled as usually

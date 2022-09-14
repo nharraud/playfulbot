@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { WallRaceGameState } from './types';
-import { useThree } from 'react-three-fiber';
+import { WallRaceGameState } from '../../types';
+import { useThree } from '@react-three/fiber';
 import Grid from './Grid';
 import { Wall } from './Wall';
 import { PLAYER_COLORS } from './player';

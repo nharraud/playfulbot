@@ -1,5 +1,5 @@
-import { GameDefinition } from 'playfulbot-game';
+import { FrontendGameDefinition } from 'playfulbot-game-frontend';
 
 declare module 'playfulbot-config' {
-  export const gameDefinition: GameDefinition<any>;
+  export const gameDefinition: FrontendGameDefinition<any>;
 }

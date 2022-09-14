@@ -1,4 +1,4 @@
-import { GameState } from '~playfulbot/types/gameState';
+import { GameState } from "playfulbot-game";
 
 export interface GameAction {
   player: number;
@@ -11,6 +11,11 @@ export type GameActionHandler<GS extends GameState, GA extends GameAction> = (
 ) => void;
 
 export interface GameActionDefinition {
-  // schema: Record<string, unknown>;
   handler: GameActionHandler<any, any>;
+}
+
+export interface BackendGameDefinition {
+  name: string;
+  init: () => GameState;
+  actions: GameActionDefinition;
 }

@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
 import * as THREE from 'three'
-import { useTrail } from '@react-spring/core'
+import { useTrail } from 'react-spring'
 import { a } from '@react-spring/three';
 
 interface GridPropsInterface {
@@ -21,7 +21,8 @@ export default function Grid(props: GridPropsInterface) {
     return (
     // @ts-ignore
     <a.line key={index} geometry={lineGeometry}>
-      <a.lineBasicMaterial color={trail[index].color} linewidth={1}/>
+      {/* @ts-ignore: https://github.com/pmndrs/react-spring/issues/1515 */}
+      <a.lineBasicMaterial color={trail[index].color as any} linewidth={1}/>
     </a.line>
     )
   }), [props.size, trail]);
@@ -33,7 +34,7 @@ export default function Grid(props: GridPropsInterface) {
     return (
     // @ts-ignore
     <a.line key={index} geometry={lineGeometry}>
-      <a.lineBasicMaterial color={trail[index].color} linewidth={1}/>
+      <a.lineBasicMaterial color={trail[index].color as any} linewidth={1}/>
     </a.line>
     )
   }), [props.size, trail]);

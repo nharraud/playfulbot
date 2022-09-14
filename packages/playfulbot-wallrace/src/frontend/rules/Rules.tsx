@@ -1,5 +1,5 @@
 import React from 'react';
-import { RulesProps } from 'playfulbot-game';
+import { RulesProps } from 'playfulbot-game-frontend';
 
 export function Rules({SectionTitle, SectionParagraph, CodeBlock}: RulesProps) {
   return (

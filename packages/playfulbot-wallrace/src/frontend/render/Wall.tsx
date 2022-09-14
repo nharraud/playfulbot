@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { a } from '@react-spring/three'
 import Bike from './Bike';
-import { Coordinate } from './types';
+import { Coordinate } from '../../types';
 
 interface WallSectionProps {
   start: Coordinate

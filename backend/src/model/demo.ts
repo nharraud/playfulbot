@@ -1,13 +1,19 @@
 import { DateTime, Settings } from 'luxon';
+import { loadConfig } from 'playfulbot-config-loader';
 import { User } from './User';
 import { Tournament } from './Tournaments';
 import { db } from '~playfulbot/model/db';
 import { Team } from './Team';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { gameDefinitions } from './GameDefinition';
 import { TournamentInvitation } from './TournamentInvitation';
 
-gameDefinitions.set(gameDefinition.name, gameDefinition);
+async function getGameDefinition() {
+  const config = await loadConfig();
+  const { gameDefinition } = await import(config.games.wallrace);
+
+  gameDefinitions.set(gameDefinition.backend.name, gameDefinition.backend);
+  return gameDefinition.backend;
+}
 
 function numberToHexString(nb: number, length: number) {
   const strNb = nb.toString(16);
@@ -24,7 +30,7 @@ function numberToHexString(nb: number, length: number) {
 export async function initDemo(): Promise<void> {
   await db.default.tx(async (tx) => {
     const admin = await User.create(`zeus`, `password`, tx, `ACEE0000-0000-0000-0000-000000000000`);
-
+    const gameDefinition = await getGameDefinition();
     const now = DateTime.now();
     const tournamentStart = now.minus({ hours: 2, minutes: 58 });
     const tournamentEnd = now.plus({ hours: 2, minutes: 2 });

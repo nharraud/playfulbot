@@ -1,18 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as jsonpatch from 'fast-json-patch';
-import { GameState } from '~playfulbot/types/gameState';
-import { GameDefinition } from '~playfulbot/model/GameDefinition';
+import { GameState } from 'playfulbot-game';
+import { BackendGameDefinition, GameAction } from 'playfulbot-game-backend';
 import { pubsub } from '~playfulbot/pubsub';
-import { GameAction } from '~playfulbot/types/action';
 import {
   ForbiddenError,
   InvalidArgument,
   PlayingOutOfTurn,
   PlayingTwice,
 } from '~playfulbot/errors';
-import { PlayerID } from './Player';
 import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
 import { cloneDeep } from '~playfulbot/utils/clone';
+import { PlayerID } from './Player';
 
 export type GameID = string;
 
@@ -29,7 +28,7 @@ export class Game {
 
   version: number;
 
-  readonly gameDefinition: GameDefinition;
+  readonly gameDefinition: BackendGameDefinition;
 
   gameState: GameState;
 
@@ -42,7 +41,7 @@ export class Game {
 
   readonly gameEndPromise = new DeferredPromise<this>();
 
-  constructor(gameDefinition: GameDefinition, players: PlayerAssignment[]) {
+  constructor(gameDefinition: BackendGameDefinition, players: PlayerAssignment[]) {
     this.id = uuidv4();
     this.version = 0;
     this.gameDefinition = gameDefinition;

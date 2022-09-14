@@ -6,7 +6,7 @@ import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameContr
 import { Divider, Typography } from '@material-ui/core';
 import GameVersionSlider from './GameVersionSlider';
 import { gameDefinition } from 'playfulbot-config';
-import { GameDefinition } from 'playfulbot-game';
+import { FrontendGameDefinition } from 'playfulbot-game-frontend';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +50,7 @@ interface DebugGameTabProps {
   createDebugGame: () => void,
   controlledGame: ControlledGame,
   setGameVersion: SetGameVersion,
-  gameDefinition: GameDefinition<any>,
+  gameDefinition: FrontendGameDefinition<any>,
 }
 
 export default function DebugGameTab({ game, createDebugGame, controlledGame, setGameVersion}: DebugGameTabProps) {

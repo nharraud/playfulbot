@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Typography} from '@material-ui/core';
 import { gameDefinition } from 'playfulbot-config';
-import { StringChildrenProps } from 'playfulbot-game';
+import { StringChildrenProps } from 'playfulbot-game-frontend';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import dedent from 'ts-dedent';

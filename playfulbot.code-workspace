@@ -13,7 +13,16 @@
       "path": "./packages/playfulbot-game"
     },
     {
+      "path": "./packages/playfulbot-game-backend"
+    },
+    {
+      "path": "./packages/playfulbot-game-frontend"
+    },
+    {
       "path": "./packages/playfulbot-wallrace"
+    },
+    {
+      "path": "./packages/playfulbot-config"
     },
     {
       "path": "./packages/rollup-plugin-playfulbot-config-loader"

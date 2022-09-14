@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 
+import { BackendGameDefinition } from 'playfulbot-game-backend';
 import { PlayerAssignment, Game } from './Game';
-import { GameDefinition } from './GameDefinition';
 import { Player } from './Player';
 import { pubsub } from '~playfulbot/pubsub';
 import { ConflictError } from '~playfulbot/errors';
@@ -20,7 +20,7 @@ export class DebugArena {
   private constructor(
     readonly userID: UserID,
     readonly tournamentID: TournamentID,
-    readonly gameDefinition: GameDefinition
+    readonly gameDefinition: BackendGameDefinition
   ) {
     this.id = `${tournamentID}_${userID}`;
   }
@@ -28,7 +28,7 @@ export class DebugArena {
   static async createDebugArena(
     userID: UserID,
     tournamentID: TournamentID,
-    gameDefinition: GameDefinition
+    gameDefinition: BackendGameDefinition
   ): Promise<DebugArena> {
     let tournamentArenas = DebugArena.arenas.get(tournamentID);
     if (tournamentArenas === undefined) {

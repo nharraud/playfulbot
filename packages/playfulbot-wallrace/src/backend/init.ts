@@ -1,8 +1,8 @@
-import GameState from './GameState';
+import { WallRaceGameState } from '../types';
 
 const ARENA_SIZE = 20;
 
-export default function init(): GameState {
+export default function init(): WallRaceGameState {
   return {
     end: false,
     arena: {

@@ -1,10 +1,3 @@
-import { GameActionDefinition } from '~playfulbot/types/action';
-import { GameState } from '~playfulbot/types/gameState';
+import { BackendGameDefinition } from 'playfulbot-game-backend';
 
-export interface GameDefinition {
-  name: string;
-  init: () => GameState;
-  actions: GameActionDefinition;
-}
-
-export const gameDefinitions = new Map<string, GameDefinition>();
+export const gameDefinitions = new Map<string, BackendGameDefinition>();

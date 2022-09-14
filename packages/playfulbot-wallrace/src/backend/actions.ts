@@ -1,7 +1,6 @@
-import P from 'pino';
-import GameState, { Coordinate } from '~playfulbot/games/wallrace/GameState';
+import { GameAction, GameActionDefinition } from 'playfulbot-game-backend';
+import { Coordinate, WallRaceGameState } from '../types';
 import * as moveActionSchema from './moveActionSchema.json';
-import { GameAction, GameActionDefinition } from '~playfulbot/types/action';
 
 interface MoveAction extends GameAction {
   data: {
@@ -19,7 +18,7 @@ function collidesWithWalls(coordinate: Coordinate, walls: Coordinate[][], arenaS
     return true;
   }
   for (const wall of walls) {
-    let sectionStart: Coordinate = null;
+    let sectionStart: Coordinate | null = null;
     for (const sectionEnd of wall) {
       if (sectionStart === null) {
         sectionStart = sectionEnd;
@@ -47,7 +46,7 @@ function collidesWithWalls(coordinate: Coordinate, walls: Coordinate[][], arenaS
   return false;
 }
 
-function movePlayer(state: GameState, player: number, vector: Coordinate) {
+function movePlayer(state: WallRaceGameState, player: number, vector: Coordinate) {
   const playerPath = state.walls[player];
   const lastPosition = playerPath[playerPath.length - 1];
   const newPosition: [number, number] = [lastPosition[0] + vector[0], lastPosition[1] + vector[1]];
@@ -70,7 +69,7 @@ function movePlayer(state: GameState, player: number, vector: Coordinate) {
   return true;
 }
 
-function actionHandler(state: GameState, actions: MoveAction[]) {
+function actionHandler(state: WallRaceGameState, actions: MoveAction[]) {
   let shouldContinue = true;
   for (const { player, data } of actions) {
     shouldContinue &&= movePlayer(state, player, data.vector);
