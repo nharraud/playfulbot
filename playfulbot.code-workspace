@@ -22,10 +22,13 @@
       "path": "./packages/playfulbot-wallrace"
     },
     {
-      "path": "./packages/playfulbot-config"
+      "path": "./packages/playfulbot-config-loader"
     },
     {
       "path": "./packages/rollup-plugin-playfulbot-config-loader"
+    },
+    {
+      "path": "./devtools"
     }
   ]
 }
