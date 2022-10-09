@@ -9,11 +9,11 @@ import { RoundStatus } from '~playfulbot/model/Round';
 import { User } from '~playfulbot/model/User';
 import { tournamentAdminFixture } from '~playfulbot/model/__tests__/fixtures/tournamentFixtures';
 import { resetFixtures } from '~playfulbot/model/__tests__/fixtures/reset';
+import { gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
 
 jest.mock('~playfulbot/games');
 
 describe('Scheduler', () => {
-  const gameName = 'Test game';
   let oldDatabaseName: string;
   let clock: FakeTimers.InstalledClock;
   let admin: User;
@@ -49,7 +49,7 @@ describe('Scheduler', () => {
       now.plus({ hours: 8 }),
       5,
       30,
-      gameName,
+      gameDefinition.name,
       admin.id,
       db.default,
       `F00FABE0-0000-0000-0000-000000000001`
@@ -73,7 +73,7 @@ describe('Scheduler', () => {
       now.plus({ hours: 1 }),
       4,
       15,
-      gameName,
+      gameDefinition.name,
       admin.id,
       db.default,
       `F00FABE0-0000-0000-0000-000000000001`

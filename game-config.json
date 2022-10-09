@@ -1,5 +1,3 @@
 {
-  "games": {
-    "wallrace": "playfulbot-wallrace"
-  }
+  "games": ["playfulbot-wallrace"]
 }

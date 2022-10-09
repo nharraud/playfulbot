@@ -42,7 +42,7 @@ const actionHandler: GameActionHandler<TestGameState, TestGameAction> = (
 };
 
 export const gameDefinition: BackendGameDefinition = {
-  name: 'Test game',
+  name: 'TestGame',
   actions: { handler: actionHandler },
   init,
 };

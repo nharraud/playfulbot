@@ -32,7 +32,7 @@ export default async function virtualModule () {
         // return result;
 
         return `
-        import * as wallrace from '${config.games.wallrace}';
+        import * as wallrace from '${config.games[0]}';
 
         export const gameDefinition = wallrace.gameDefinition.frontend;
         `;

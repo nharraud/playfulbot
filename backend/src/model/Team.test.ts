@@ -12,12 +12,11 @@ import {
 import { resetFixtures } from './__tests__/fixtures/reset';
 import { newUserFixture } from './__tests__/fixtures/user';
 import { teamMemberFixture } from './__tests__/fixtures/teamFixtures';
+import { gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
 
 jest.mock('~playfulbot/games');
 
 describe('Model/Team', () => {
-  const gameName = 'Test game';
-
   let oldDatabaseName: string;
   let tournaments: Tournament[];
 
@@ -35,7 +34,7 @@ describe('Model/Team', () => {
         DateTime.now().plus({ hours: 8 }),
         5,
         30,
-        gameName,
+        gameDefinition.name,
         admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000001`
@@ -48,7 +47,7 @@ describe('Model/Team', () => {
         DateTime.now().plus({ hours: 9 }),
         5,
         30,
-        gameName,
+        gameDefinition.name,
         admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000002`

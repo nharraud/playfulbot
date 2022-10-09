@@ -11,8 +11,6 @@ import { newUserFixture } from './__tests__/fixtures/user';
 jest.mock('~playfulbot/games');
 
 describe('Model/TournamentInvitation', () => {
-  const gameName = 'Test game';
-
   let oldDatabaseName: string;
 
   beforeEach(async () => {

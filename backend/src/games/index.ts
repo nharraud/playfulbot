@@ -7,7 +7,7 @@ let loaded = false;
 export async function getGameDefinitions(): Promise<Map<string, BackendGameDefinition>> {
   if (!loaded) {
     const config = await loadConfig();
-    for (const [key, gameModule] of Object.entries(config.games)) {
+    for (const gameModule of config.games) {
       const { gameDefinition } = (await import(gameModule)) as {
         gameDefinition: { backend: BackendGameDefinition };
       };
