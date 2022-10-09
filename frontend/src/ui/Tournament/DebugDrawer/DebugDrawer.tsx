@@ -8,14 +8,15 @@ import Box from '@material-ui/core/Box';
 
 import { Game } from 'src/types/graphql-generated';
 import { SetGameVersion, ControlledGame } from 'src/hooksAndQueries/useGameController';
-import { GameDefinition } from 'src/games/GameDefinition';
+import { FrontendGameDefinition } from 'playfulbot-game-frontend';
+import { GameState } from 'playfulbot-game';
 import DebugGameTab from './DebugGameTab';
 import DebugPlayersTab from './DebugPlayersTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
-  value: any;
+  index: number;
+  value: number;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -35,7 +36,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: any) {
+function a11yProps(index: number) {
   return {
     id: `tab-${index}`,
     'aria-controls': `tabpanel-${index}`,
@@ -53,14 +54,14 @@ interface DebugDrawerProps {
   controlledGame: ControlledGame;
   setGameVersion: SetGameVersion;
   createDebugGame: () => void;
-  gameDefinition: GameDefinition;
+  gameDefinition: FrontendGameDefinition<GameState>;
 }
 
 export default function DebugDrawer(props: DebugDrawerProps) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue);
   };
 
