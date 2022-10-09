@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID as uuidv4 } from 'crypto';
 import { ITask } from 'pg-promise';
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { Tournament, TournamentID } from './Tournaments';
@@ -166,11 +166,12 @@ export class Round {
     const teamPlayers = teams.map((team) => ({ team, player: team.getTournamentPlayer() }));
     const roundPlayers = teamPlayers.filter((teamPlayer) => teamPlayer.player.connected);
     const gamePromises = new Array<Promise<Game>>();
-    roundPlayers.forEach((team1, player1Idx) => {
+    for (const [player1Idx, team1] of roundPlayers.entries()) {
       for (let team2Idx = player1Idx + 1; team2Idx < roundPlayers.length; team2Idx += 1) {
         const player1 = team1.player;
         const player2 = roundPlayers[team2Idx].player;
-        const game = new Game(tournament.getGameDefinition(), [
+        const gameDefinition = await tournament.getGameDefinition();
+        const game = new Game(gameDefinition, [
           {
             playerID: player1.id,
           },
@@ -183,7 +184,7 @@ export class Round {
         player2.addGames([game.id]);
         gamePromises.push(game.gameEndPromise.promise);
       }
-    });
+    }
     const games = Promise.all(gamePromises);
     const roundEndPromise = games.then(this.handleRoundEnd).catch((error) => {
       logger.error(error);

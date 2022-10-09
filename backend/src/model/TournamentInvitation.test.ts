@@ -1,7 +1,5 @@
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from './db';
 import { createDB, dropDB } from './db/db_admin';
-import { gameDefinitions } from './GameDefinition';
 import { config } from './db/config';
 import { createdTournamentFixture } from './__tests__/fixtures/tournamentFixtures';
 import { resetFixtures } from './__tests__/fixtures/reset';
@@ -10,10 +8,10 @@ import { TournamentInvitation } from './TournamentInvitation';
 import { teamsFixture } from './__tests__/fixtures/teamFixtures';
 import { newUserFixture } from './__tests__/fixtures/user';
 
+jest.mock('~playfulbot/games');
+
 describe('Model/TournamentInvitation', () => {
-  beforeAll(() => {
-    gameDefinitions.set(gameDefinition.name, gameDefinition);
-  });
+  const gameName = 'Test game';
 
   let oldDatabaseName: string;
 

@@ -200,7 +200,7 @@ export class Team {
 
     if (oldTeam === null) {
       const tournament = await this.getTournament(dbOrTX);
-      const gameDefinition = tournament.getGameDefinition();
+      const gameDefinition = await tournament.getGameDefinition();
       await DebugArena.createDebugArena(userID, this.tournamentID, gameDefinition);
     }
     return { oldTeam, oldTeamDeleted: oldTeamRemoval?.teamDeleted };

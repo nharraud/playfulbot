@@ -1,18 +1,14 @@
 import { DateTime, Settings } from 'luxon';
-import { loadConfig } from 'playfulbot-config-loader';
 import { User } from './User';
 import { Tournament } from './Tournaments';
 import { db } from '~playfulbot/model/db';
 import { Team } from './Team';
-import { gameDefinitions } from './GameDefinition';
 import { TournamentInvitation } from './TournamentInvitation';
+import { getGameDefinitions } from '~playfulbot/games';
 
 async function getGameDefinition() {
-  const config = await loadConfig();
-  const { gameDefinition } = await import(config.games.wallrace);
-
-  gameDefinitions.set(gameDefinition.backend.name, gameDefinition.backend);
-  return gameDefinition.backend;
+  const gameDefinitions = await getGameDefinitions();
+  return gameDefinitions.get('wallrace');
 }
 
 function numberToHexString(nb: number, length: number) {

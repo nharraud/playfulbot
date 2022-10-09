@@ -4,7 +4,7 @@ import { ConflictError, InvalidArgument } from '~playfulbot/errors';
 import logger from '~playfulbot/logging';
 
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
-import { gameDefinitions } from './GameDefinition';
+import { getGameDefinitions } from '~playfulbot/games';
 import { TournamentInvitationLink, TournamentInvitationLinkID } from './TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from './Round';
 import { Team, TeamID } from './Team';
@@ -61,6 +61,7 @@ export class Tournament {
   roundsNumber: number;
   minutesBetweenRounds: number;
   gameName: string;
+  gameDefinition: BackendGameDefinition;
 
   constructor(data: DbTournament) {
     this.id = data.id;
@@ -94,7 +95,7 @@ export class Tournament {
         'Cannot create a Tournament with a start date after the first round date'
       );
     }
-
+    const gameDefinitions = await getGameDefinitions();
     if (!gameDefinitions.has(gameName)) {
       throw new InvalidArgument('Invalid game name');
     }
@@ -167,7 +168,7 @@ export class Tournament {
       return null;
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error?.routine === 'string_to_uuid') {
+      if ((error as any)?.routine === 'string_to_uuid') {
         return null;
       }
       throw error;
@@ -278,7 +279,8 @@ export class Tournament {
     return Team.getAll({ tournamentID: this.id }, dbOrTX);
   }
 
-  getGameDefinition(): BackendGameDefinition {
+  async getGameDefinition(): Promise<BackendGameDefinition> {
+    const gameDefinitions = await getGameDefinitions();
     return gameDefinitions.get(this.gameName);
   }
 

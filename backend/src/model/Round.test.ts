@@ -11,6 +11,8 @@ import { teamsFixture } from './__tests__/fixtures/teamFixtures';
 import { startedTournamentFixture } from './__tests__/fixtures/tournamentFixtures';
 import { getGamesBetweenPlayers } from './__tests__/helpers/gameHelpers';
 
+jest.mock('~playfulbot/games');
+
 describe('model/Round', () => {
   let oldDatabaseName: string;
 

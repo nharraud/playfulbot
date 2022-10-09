@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { Tournament, TournamentStatus } from '~playfulbot/model/Tournaments';
-import { registerTestGame, gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
+import { gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
 import { db } from '~playfulbot/model/db';
 import { User } from '~playfulbot/model/User';
 import { onResetFixtures } from './reset';
@@ -24,7 +24,6 @@ export function tournamentAdminFixture(): Promise<User> {
 let _testTournament: Promise<Tournament>;
 export async function createdTournamentFixture(): Promise<Tournament> {
   if (_testTournament === undefined) {
-    registerTestGame();
     const start = DateTime.now();
     const admin = await tournamentAdminFixture();
     _testTournament = Tournament.create(

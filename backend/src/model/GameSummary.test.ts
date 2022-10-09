@@ -5,6 +5,8 @@ import { resetFixtures } from './__tests__/fixtures/reset';
 import { teamsFixture } from './__tests__/fixtures/teamFixtures';
 import { startedTournamentFixture } from './__tests__/fixtures/tournamentFixtures';
 
+jest.mock('~playfulbot/games');
+
 describe('model/GameSummary', () => {
   let oldDatabaseName: string;
 

@@ -1,8 +1,6 @@
 import { DateTime } from 'luxon';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from './db';
 import { createDB, dropDB } from './db/db_admin';
-import { gameDefinitions } from './GameDefinition';
 import { Team } from './Team';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
@@ -13,12 +11,12 @@ import {
 } from './__tests__/fixtures/tournamentFixtures';
 import { resetFixtures } from './__tests__/fixtures/reset';
 import { newUserFixture } from './__tests__/fixtures/user';
-import { teamFixture, teamMemberFixture, teamsFixture } from './__tests__/fixtures/teamFixtures';
+import { teamMemberFixture } from './__tests__/fixtures/teamFixtures';
+
+jest.mock('~playfulbot/games');
 
 describe('Model/Team', () => {
-  beforeAll(() => {
-    gameDefinitions.set(gameDefinition.name, gameDefinition);
-  });
+  const gameName = 'Test game';
 
   let oldDatabaseName: string;
   let tournaments: Tournament[];
@@ -37,7 +35,7 @@ describe('Model/Team', () => {
         DateTime.now().plus({ hours: 8 }),
         5,
         30,
-        gameDefinition.name,
+        gameName,
         admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000001`
@@ -50,7 +48,7 @@ describe('Model/Team', () => {
         DateTime.now().plus({ hours: 9 }),
         5,
         30,
-        gameDefinition.name,
+        gameName,
         admin.id,
         db.default,
         `F00FABE0-0000-0000-0000-000000000002`

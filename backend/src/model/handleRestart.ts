@@ -20,7 +20,7 @@ export async function handleRestart(): Promise<void> {
           await DebugArena.createDebugArena(
             member.id,
             tournament.id,
-            tournament.getGameDefinition()
+            await tournament.getGameDefinition()
           );
         });
         await Promise.all(membersPromises);

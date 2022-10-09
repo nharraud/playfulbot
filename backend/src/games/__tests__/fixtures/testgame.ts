@@ -1,6 +1,5 @@
-import { GameAction, GameActionHandler } from 'playfulbot-game-backend';
-import { gameDefinitions } from '~playfulbot/model/GameDefinition';
-import { GameState } from '~playfulbot/types/gameState';
+import { GameAction, GameActionHandler, BackendGameDefinition } from 'playfulbot-game-backend';
+import { GameState } from 'playfulbot-game';
 import { IllegalPlayAction } from '~playfulbot/errors';
 import { Game } from '~playfulbot/model/Game';
 import { PlayerID } from '~playfulbot/model/Player';
@@ -42,15 +41,11 @@ const actionHandler: GameActionHandler<TestGameState, TestGameAction> = (
   state.end = true;
 };
 
-export const gameDefinition: GameDefinition = {
+export const gameDefinition: BackendGameDefinition = {
   name: 'Test game',
   actions: { handler: actionHandler },
   init,
 };
-
-export function registerTestGame(): void {
-  gameDefinitions.set(gameDefinition.name, gameDefinition);
-}
 
 export function playGameSoThatGivenPlayerWins(game: Game, winnerID: PlayerID): void {
   for (const [playerNumber, assignment] of game.players.entries()) {

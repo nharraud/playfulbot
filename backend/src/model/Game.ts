@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID as uuidv4 } from 'crypto';
 import * as jsonpatch from 'fast-json-patch';
 import { GameState } from 'playfulbot-game';
 import { BackendGameDefinition, GameAction } from 'playfulbot-game-backend';

@@ -77,7 +77,6 @@
   // ],
   "exclude": [
     "types",
-    "jest.config.ts",
     "tmp"
     // "src/**/*.test.ts"
   ]

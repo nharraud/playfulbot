@@ -1,8 +1,6 @@
 import { Settings, DateTime } from 'luxon';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from './db';
 import { createDB, dropDB } from './db/db_admin';
-import { gameDefinitions } from './GameDefinition';
 import { Tournament } from './Tournaments';
 import { config } from './db/config';
 import * as gqlTypes from '~playfulbot/types/graphql';
@@ -10,12 +8,11 @@ import { tournamentAdminFixture } from './__tests__/fixtures/tournamentFixtures'
 import { User } from './User';
 import { resetFixtures } from './__tests__/fixtures/reset';
 
-describe('Model/Tournament', () => {
-  const now = DateTime.fromISO('2021-01-01T00:00:00.000');
+jest.mock('~playfulbot/games');
 
-  beforeAll(() => {
-    gameDefinitions.set(gameDefinition.name, gameDefinition);
-  });
+describe('Model/Tournament', () => {
+  const gameName = 'Test game';
+  const now = DateTime.fromISO('2021-01-01T00:00:00.000');
 
   let oldDatabaseName: string;
   let admin: User;
@@ -51,7 +48,7 @@ describe('Model/Tournament', () => {
       input.lastRoundDate,
       input.roundsNumber,
       input.minutesBetweenRounds,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       input.id
@@ -67,7 +64,7 @@ describe('Model/Tournament', () => {
         DateTime.now().plus({ hours: 5 }),
         5,
         30,
-        gameDefinition.name,
+        gameName,
         admin.id,
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
@@ -82,7 +79,7 @@ describe('Model/Tournament', () => {
         DateTime.now().plus({ hours: 1 }),
         4,
         30,
-        gameDefinition.name,
+        gameName,
         admin.id,
         db.default,
         'f00fabe0-0000-0000-0000-000000000001'
@@ -113,7 +110,7 @@ describe('Model/Tournament', () => {
       end,
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
@@ -140,7 +137,7 @@ describe('Model/Tournament', () => {
       end,
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
@@ -198,7 +195,7 @@ describe('Model/Tournament', () => {
       end,
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
@@ -216,7 +213,7 @@ describe('Model/Tournament', () => {
       end,
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'
@@ -233,7 +230,7 @@ describe('Model/Tournament', () => {
       end,
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       'f00fabe0-0000-0000-0000-000000000001'

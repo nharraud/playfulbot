@@ -1,26 +1,22 @@
-import { DateTime, Duration, Settings } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import FakeTimers from '@sinonjs/fake-timers';
-import { gameDefinition } from '~playfulbot/games/wallrace';
 import { db } from '~playfulbot/model/db';
 import { config } from '~playfulbot/model/db/config';
 import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
-import { gameDefinitions } from '~playfulbot/model/GameDefinition';
 import { Tournament, TournamentStatus } from '~playfulbot/model/Tournaments';
 import { Scheduler } from './Scheduler';
-import { Round, RoundStatus } from '~playfulbot/model/Round';
+import { RoundStatus } from '~playfulbot/model/Round';
 import { User } from '~playfulbot/model/User';
 import { tournamentAdminFixture } from '~playfulbot/model/__tests__/fixtures/tournamentFixtures';
 import { resetFixtures } from '~playfulbot/model/__tests__/fixtures/reset';
 
+jest.mock('~playfulbot/games');
+
 describe('Scheduler', () => {
-  // const now = DateTime.fromISO('2021-01-01T00:00:00.000');
+  const gameName = 'Test game';
   let oldDatabaseName: string;
   let clock: FakeTimers.InstalledClock;
   let admin: User;
-
-  beforeAll(() => {
-    gameDefinitions.set(gameDefinition.name, gameDefinition);
-  });
 
   beforeEach(async () => {
     oldDatabaseName = config.DATABASE_NAME;
@@ -53,7 +49,7 @@ describe('Scheduler', () => {
       now.plus({ hours: 8 }),
       5,
       30,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       `F00FABE0-0000-0000-0000-000000000001`
@@ -77,7 +73,7 @@ describe('Scheduler', () => {
       now.plus({ hours: 1 }),
       4,
       15,
-      gameDefinition.name,
+      gameName,
       admin.id,
       db.default,
       `F00FABE0-0000-0000-0000-000000000001`
