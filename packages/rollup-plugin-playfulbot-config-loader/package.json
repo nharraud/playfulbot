@@ -12,13 +12,13 @@
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "playfulbot-config-loader": "^1.0.0"
+    "playfulbot-config-loader": "file:../playfulbot-config-loader"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "rollup": "^2.56.3",
-    "rollup-plugin-typescript2": "^0.30.0",
+    "rollup-plugin-typescript2": "^0.34.0",
     "typescript": "^4.3.5"
   }
 }

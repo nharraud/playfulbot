@@ -1,6 +1,5 @@
 import { BackendGameDefinition } from 'playfulbot-game-backend';
 import init from './init';
-import * as gameStateSchema from './gameStateSchema.json';
 import { action } from './actions';
 
 const minPlayers = 2;
@@ -12,4 +11,3 @@ export const gameDefinition: BackendGameDefinition = {
   init,
 };
 
-// export { minPlayers, maxPlayers, gameStateSchema, init, action };

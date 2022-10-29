@@ -18,7 +18,7 @@ export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>
       throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
     }
     const config = await loadConfig();
-    const { gameDefinition } = await import(config.games.wallrace);
+    const { gameDefinition } = await import(config.games[0]);
     return Tournament.create(
       args.name,
       args.startDate,

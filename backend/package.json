@@ -48,7 +48,7 @@
     "playfulbot-game-backend": "file:../packages/playfulbot-game-backend",
     "playfulbot-wallrace": "file:../packages/playfulbot-wallrace",
     "subscriptions-transport-ws": "^0.9.18",
-    "ts-node": "^9.0.0",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.2.4",
     "uuid": "^8.3.2",

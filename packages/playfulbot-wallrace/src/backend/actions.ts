@@ -1,6 +1,5 @@
 import { GameAction, GameActionDefinition } from 'playfulbot-game-backend';
 import { Coordinate, WallRaceGameState } from '../types';
-import * as moveActionSchema from './moveActionSchema.json';
 
 interface MoveAction extends GameAction {
   data: {
