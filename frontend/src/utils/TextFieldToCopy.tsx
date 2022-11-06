@@ -1,8 +1,9 @@
 import React from 'react';
 
 import copy from 'copy-to-clipboard';
-import { Divider, IconButton, makeStyles, Paper, InputBase } from '@material-ui/core';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { Divider, IconButton, Paper, InputBase } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +47,7 @@ export default function TextFieldToCopy({ text, format = 'text/plain' }: PropsTy
         className={classes.button}
         onClick={() => copy(text, { format })}
         aria-label="directions"
-      >
+        size="large">
         <FileCopyIcon />
       </IconButton>
     </Paper>

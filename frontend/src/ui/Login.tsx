@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { UserContext } from 'src/UserContext';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import { Link } from 'react-router-dom';
 import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/authenticatedUser';
 import MenuBar from './MenuBar/MenuBar';
@@ -64,71 +66,69 @@ export default function Login(props) {
     login(username, password);
   };
 
-  return (
-    <>
-      <MenuBar />
-      <div className={classes.root}>
-        {result.error ? JSON.stringify(result.error) : null}
-        <Grid container xs={12} spacing={3} direction="row" justify="center">
-          <Grid item xs={4}>
-            <Paper className={classes.formBox} elevation={3}>
-              <form className={classes.form} noValidate autoComplete="off" onSubmit={submitLogin}>
-                <Typography className={classes.formTitle} variant="h4" component="h2" gutterBottom>
-                  Login
-                </Typography>
-                <Grid
-                  className={classes.formGrid}
-                  container
-                  xs={12}
-                  spacing={3}
-                  direction="row"
-                  justify="center"
-                >
-                  <Grid item xs={12}>
-                    <TextField
-                      label="username"
-                      variant="outlined"
-                      fullWidth
-                      onChange={(event) => setUsername(event.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} lg={12}>
-                    <TextField
-                      type="password"
-                      label="password"
-                      variant="outlined"
-                      fullWidth
-                      autoComplete="current-password"
-                      onChange={(event) => setPassword(event.target.value)}
-                    />
-                  </Grid>
-                  <Grid item container xs={12} className={classes.formButtons} justify="center">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      className={classes.loginButton}
-                    >
-                      login
-                    </Button>
-                  </Grid>
+  return <>
+    <MenuBar />
+    <div className={classes.root}>
+      {result.error ? JSON.stringify(result.error) : null}
+      <Grid container xs={12} spacing={3} direction="row" justifyContent="center">
+        <Grid item xs={4}>
+          <Paper className={classes.formBox} elevation={3}>
+            <form className={classes.form} noValidate autoComplete="off" onSubmit={submitLogin}>
+              <Typography className={classes.formTitle} variant="h4" component="h2" gutterBottom>
+                Login
+              </Typography>
+              <Grid
+                className={classes.formGrid}
+                container
+                xs={12}
+                spacing={3}
+                direction="row"
+                justifyContent="center"
+              >
+                <Grid item xs={12}>
+                  <TextField
+                    label="username"
+                    variant="outlined"
+                    fullWidth
+                    onChange={(event) => setUsername(event.target.value)}
+                  />
                 </Grid>
-              </form>
-              <Divider variant="middle" />
-              <div className={classes.registerButtonContainer}>
-                <Button
-                  component={Link}
-                  to="/register"
-                  variant="contained"
-                  className={classes.registerButton}
-                >
-                  Create New Account
-                </Button>
-              </div>
-            </Paper>
-          </Grid>
+                <Grid item xs={12} lg={12}>
+                  <TextField
+                    type="password"
+                    label="password"
+                    variant="outlined"
+                    fullWidth
+                    autoComplete="current-password"
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                </Grid>
+                <Grid item container xs={12} className={classes.formButtons} justifyContent="center">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    className={classes.loginButton}
+                  >
+                    login
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+            <Divider variant="middle" />
+            <div className={classes.registerButtonContainer}>
+              <Button
+                component={Link}
+                to="/register"
+                variant="contained"
+                className={classes.registerButton}
+              >
+                Create New Account
+              </Button>
+            </div>
+          </Paper>
         </Grid>
-      </div>
-    </>
-  );
+      </Grid>
+    </div>
+  </>;
 }

@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
-import { Button, Card, CardActions, CardContent, makeStyles } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TournamentID } from 'src/types/graphql';
-import FiberNewIcon from '@material-ui/icons/FiberNew';
+import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { TeamCreateDialog } from './TeamEditDialog';
 
 const useStyles = makeStyles((theme) => ({

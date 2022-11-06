@@ -1,4 +1,4 @@
-import { CircularProgress, Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@mui/material';
 import React from 'react';
 
 export default function LoadingWidget() {
@@ -8,7 +8,7 @@ export default function LoadingWidget() {
       spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
+      justifyContent="center"
       style={{ flex: '1' }}
     >
       <Grid item xs={3}>

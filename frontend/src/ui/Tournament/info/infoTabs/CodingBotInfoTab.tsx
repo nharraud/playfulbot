@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
-import {
-  FormControl,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { SupportedProgrammingLanguages } from 'src/types/programmingLanguages';
 import { TsJsBotInstructions } from './languageSpecificInstructions/TsJsBotInstructions';
 

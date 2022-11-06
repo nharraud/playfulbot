@@ -1,11 +1,13 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useLogout } from '../../hooksAndQueries/authenticatedUser';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,7 +42,7 @@ export function UserMenu() {
         aria-haspopup="true"
         onClick={handleMenu}
         color="inherit"
-      >
+        size="large">
         <AccountCircle />
       </IconButton>
       <Menu

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ControlledGame, SetGameVersion } from 'src/hooksAndQueries/useGameController';
-import { Slider } from '@material-ui/core';
+import { Slider } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   versionSlider: {},

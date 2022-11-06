@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { List, ListItem, ListItemText, makeStyles, Paper, Typography } from '@material-ui/core';
+import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TournamentID } from 'src/types/graphql';
 import useTeam from 'src/hooksAndQueries/useTeam';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { TeamEditDialog } from './TeamEditDialog';
 
 const useStyles = makeStyles((theme) => ({

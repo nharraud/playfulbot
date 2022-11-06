@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TeamID, TournamentID, useJoinTeamMutation } from 'src/types/graphql';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import { useTournamentTeamsQuery } from '../../../types/graphql';

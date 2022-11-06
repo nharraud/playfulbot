@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Theme, withStyles } from '@material-ui/core';
-import MuiDialogContent from '@material-ui/core/DialogContent';
+import { Theme } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
+import MuiDialogContent from '@mui/material/DialogContent';
 
 export const DialogContent = withStyles((theme: Theme) => ({
   root: {

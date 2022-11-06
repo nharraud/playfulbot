@@ -1,14 +1,14 @@
 import React from 'react';
 
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
 
-import Modal from '@material-ui/core/Modal';
+import Modal from '@mui/material/Modal';
 
-import Popper from '@material-ui/core/Popper';
+import Popper from '@mui/material/Popper';
 
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 
 export default function DebugConfiguration(props) {
   return (

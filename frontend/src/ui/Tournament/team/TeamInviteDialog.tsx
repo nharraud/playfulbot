@@ -1,4 +1,5 @@
-import { Dialog, makeStyles } from '@material-ui/core';
+import { Dialog } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { config } from 'src/config';
 import { TournamentInvitationID } from 'src/types/graphql';

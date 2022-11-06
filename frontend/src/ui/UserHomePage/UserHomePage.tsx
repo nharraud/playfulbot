@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles, createStyles, Theme, Typography, Button } from '@material-ui/core';
+import { Theme, Typography, Button } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
 import { useURIQuery } from 'src/utils/router/useURIQuery';
 import { useHistory } from 'react-router';

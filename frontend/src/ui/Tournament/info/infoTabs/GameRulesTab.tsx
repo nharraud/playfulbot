@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { gameDefinition } from 'playfulbot-config';
 import { StringChildrenProps } from 'playfulbot-game-frontend';
 import SyntaxHighlighter from 'react-syntax-highlighter';

@@ -1,12 +1,6 @@
-import {
-  makeStyles,
-  createStyles,
-  Theme,
-  Typography,
-  ListItem,
-  ListItemText,
-  List,
-} from '@material-ui/core';
+import { Theme, Typography, ListItem, ListItemText, List } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import React from 'react';
 import { tournamentStatusToText } from 'src/modelHelpers/tournament';
 import { Link } from 'react-router-dom';

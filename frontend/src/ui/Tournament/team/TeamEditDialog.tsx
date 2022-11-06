@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Team, useCreateTeamMutation, useUpdateTeamMutation } from 'src/types/graphql-generated';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Alert } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core';
+import { Alert } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TournamentID } from 'src/types/graphql';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       width: '50%',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xl')]: {
       width: '100%',
     },
     margin: '1rem',

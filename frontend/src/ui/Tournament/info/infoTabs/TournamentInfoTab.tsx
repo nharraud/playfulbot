@@ -1,6 +1,7 @@
 import React from 'react';
-import { makeStyles, Typography } from '@material-ui/core';
-import PeopleIcon from '@material-ui/icons/People';
+import { Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import PeopleIcon from '@mui/icons-material/People';
 import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme) => ({

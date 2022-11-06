@@ -7,11 +7,11 @@ import {
   List,
   ListItem,
   ListItemText,
-  makeStyles,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TeamID, UserID } from 'src/types/graphql';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 
 import { Switch, Route, Link, useRouteMatch, useParams } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import PeopleIcon from '@material-ui/icons/People';
+import PeopleIcon from '@mui/icons-material/People';
 
-import CompetitionIcon from '@material-ui/icons/EmojiEvents';
-import TestIcon from '@material-ui/icons/SlowMotionVideo';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
+import CompetitionIcon from '@mui/icons-material/EmojiEvents';
+import TestIcon from '@mui/icons-material/SlowMotionVideo';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useTournament } from 'src/hooksAndQueries/useTournament';
 import { TournamentStatus } from 'src/types/graphql-generated';
 import useTeam from 'src/hooksAndQueries/useTeam';

@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Button, makeStyles } from '@material-ui/core';
+import { Button } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { TournamentQuery } from 'src/types/graphql';
 import useTeam from 'src/hooksAndQueries/useTeam';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoadingWidget from '../../Loading';
 import { TournamentRoleName } from '../../../types/graphql';
 import AllTeamsTab from './AllTeamsTab';

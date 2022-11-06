@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -9,7 +8,8 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { Team, Tournament } from 'src/types/graphql-generated';
 import { useRouteMatch } from 'react-router-dom';
 import useRoundSummary from 'src/hooksAndQueries/useRoundSummary';

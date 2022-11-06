@@ -1,5 +1,7 @@
 import React from 'react';
-import { makeStyles, createStyles, Theme, Grid, Typography } from '@material-ui/core';
+import { Theme, Grid, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { TimedCodingIcon } from '../icons/TimedCodingIcon';
 import { DeploymentIcon } from '../icons/DeploymentIcon';
 import { GameBotIcon } from '../icons/GameBotIcon';

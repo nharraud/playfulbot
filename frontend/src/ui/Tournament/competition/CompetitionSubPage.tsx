@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import { Tournament } from 'src/types/graphql-generated';
 import { useRouteMatch } from 'react-router-dom';
 import TournamentSubPage from '../components/TournamentSubPage';

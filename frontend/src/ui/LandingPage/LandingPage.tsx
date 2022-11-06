@@ -1,4 +1,6 @@
-import { makeStyles, createStyles, Theme } from '@material-ui/core';
+import { Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import React from 'react';
 import MenuBar from '../MenuBar/MenuBar';
 import { Pitch } from './Pitch';

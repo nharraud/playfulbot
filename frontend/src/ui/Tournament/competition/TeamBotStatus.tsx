@@ -1,5 +1,6 @@
 import React from 'react';
-import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Grid, Paper, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { Tournament } from 'src/types/graphql-generated';
 import useTeam from 'src/hooksAndQueries/useTeam';
 import { useTeamPlayer } from 'src/hooksAndQueries/useTeamPlayer';

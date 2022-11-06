@@ -1,6 +1,8 @@
 import React from 'react';
-import { makeStyles, createStyles, Theme, Typography } from '@material-ui/core';
-import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
+import { Theme, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import gameImage from '../../assets/images/game.png';
 
 const useStyles = makeStyles((theme: Theme) =>

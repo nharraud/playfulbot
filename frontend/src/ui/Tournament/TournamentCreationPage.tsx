@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useHistory } from 'react-router-dom';
 import { useCreateTournamentMutation } from 'src/types/graphql-generated';
 import { DateTime } from 'luxon';
-import { DateTimePicker } from '@material-ui/pickers';
-import { MenuItem, Select } from '@material-ui/core';
+import DateTimePicker from '@mui/lab/DateTimePicker';
+import { MenuItem, Select } from '@mui/material';
 import { DateTimeSchema } from 'src/utils/yup/DateTimeSchema';
 import MenuBar from '../MenuBar/MenuBar';
 
@@ -224,91 +226,70 @@ export default function TournamentCreationPage(props) {
     });
   };
 
-  return (
-    <>
-      <MenuBar showTournaments={true} />
-      <div className={classes.root}>
-        <Grid container xs={12} spacing={3} direction="row" justify="center">
-          <Grid item xs={4}>
-            <Paper className={classes.formBox} elevation={3}>
-              <form
-                className={classes.form}
-                noValidate
-                autoComplete="off"
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <Typography className={classes.formTitle} variant="h4" component="h2" gutterBottom>
-                  Create a tournament
+  return <>
+    <MenuBar showTournaments={true} />
+    <div className={classes.root}>
+      <Grid container xs={12} spacing={3} direction="row" justifyContent="center">
+        <Grid item xs={4}>
+          <Paper className={classes.formBox} elevation={3}>
+            <form
+              className={classes.form}
+              noValidate
+              autoComplete="off"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <Typography className={classes.formTitle} variant="h4" component="h2" gutterBottom>
+                Create a tournament
+              </Typography>
+              <div className={classes.nameFieldContainer}>
+                <TextField
+                  inputRef={register}
+                  label="Name"
+                  name="name"
+                  variant="outlined"
+                  error={errors?.name !== undefined}
+                  helperText={errors?.name?.message}
+                  className={classes.nameField}
+                />
+                <Typography variant="body1" className={classes.nameFieldSuffix}>
+                  Tournament
                 </Typography>
-                <div className={classes.nameFieldContainer}>
-                  <TextField
-                    inputRef={register}
-                    label="Name"
-                    name="name"
-                    variant="outlined"
-                    error={errors?.name !== undefined}
-                    helperText={errors?.name?.message}
-                    className={classes.nameField}
-                  />
-                  <Typography variant="body1" className={classes.nameFieldSuffix}>
-                    Tournament
-                  </Typography>
-                </div>
+              </div>
 
-                <div className={classes.startOptionsContainer}>
-                  <Typography
-                    id="tournament-start-select-label"
-                    className={classes.startOptionsLabel}
-                    variant="body1"
-                  >
-                    Start Tournament
-                  </Typography>
-                  <Controller
-                    name="startOption"
-                    control={control}
-                    render={({ ref, ...rest }) => (
-                      <Select
-                        labelId="tournament-start-select-label"
-                        className={classes.startOptionsSelect}
-                        {...rest}
-                        variant="outlined"
-                      >
-                        {Object.values(StartOptions).map((startOpt) => (
-                          <MenuItem value={startOpt} key={startOpt}>
-                            {startOpt}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                </div>
-                {formState.startOption === StartOptions.Later && (
-                  <Controller
-                    name="startDate"
-                    control={control}
-                    render={({ ref, ...rest }) => (
-                      <DateTimePicker
-                        label="Start Date"
-                        animateYearScrolling
-                        invalidDateMessage="Invalid Date"
-                        views={['year', 'month', 'date', 'hours', 'minutes']}
-                        cancelLabel="Cancel"
-                        openTo="hours"
-                        {...rest}
-                        inputVariant="outlined"
-                        className={classes.dateField}
-                        error={errors?.startDate !== undefined || !validSchedule}
-                        helperText={errors?.startDate && errors?.startDate.message}
-                      />
-                    )}
-                  />
-                )}
+              <div className={classes.startOptionsContainer}>
+                <Typography
+                  id="tournament-start-select-label"
+                  className={classes.startOptionsLabel}
+                  variant="body1"
+                >
+                  Start Tournament
+                </Typography>
                 <Controller
-                  name="lastRoundDate"
+                  name="startOption"
+                  control={control}
+                  render={({ ref, ...rest }) => (
+                    <Select
+                      labelId="tournament-start-select-label"
+                      className={classes.startOptionsSelect}
+                      {...rest}
+                      variant="outlined"
+                    >
+                      {Object.values(StartOptions).map((startOpt) => (
+                        <MenuItem value={startOpt} key={startOpt}>
+                          {startOpt}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </div>
+              {formState.startOption === StartOptions.Later && (
+                <Controller
+                  name="startDate"
                   control={control}
                   render={({ ref, ...rest }) => (
                     <DateTimePicker
-                      label="Last Round Date"
+                      label="Start Date"
                       animateYearScrolling
                       invalidDateMessage="Invalid Date"
                       views={['year', 'month', 'date', 'hours', 'minutes']}
@@ -317,52 +298,71 @@ export default function TournamentCreationPage(props) {
                       {...rest}
                       inputVariant="outlined"
                       className={classes.dateField}
-                      error={errors?.lastRoundDate !== undefined || !validSchedule}
-                      helperText={errors?.lastRoundDate && errors?.lastRoundDate.message}
+                      error={errors?.startDate !== undefined || !validSchedule}
+                      helperText={errors?.startDate && errors?.startDate.message}
                     />
                   )}
                 />
-                <TextField
-                  inputRef={register}
-                  type="number"
-                  label="Number of Rounds"
-                  name="roundsNumber"
-                  variant="outlined"
-                  error={errors?.roundsNumber !== undefined || !validSchedule}
-                  helperText={errors?.roundsNumber?.message}
-                  className={classes.textField}
-                />
-                <TextField
-                  inputRef={register}
-                  type="number"
-                  label="Minutes between rounds"
-                  name="minutesBetweenRounds"
-                  variant="outlined"
-                  error={errors?.minutesBetweenRounds !== undefined || !validSchedule}
-                  helperText={errors?.minutesBetweenRounds?.message}
-                  className={classes.textField}
-                />
-                <div>
-                  <Typography variant="body1" className={!validSchedule && classes.errorText}>
-                    With this schedule the first round will be on{' '}
-                    {firstRoundDate?.toLocaleString(DateTime.DATETIME_FULL)}.
-                    {!validSchedule &&
-                      ' The first round should be after the tournament start date.'}
-                  </Typography>
-                </div>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  className={classes.createButton}
-                >
-                  Create
-                </Button>
-              </form>
-            </Paper>
-          </Grid>
+              )}
+              <Controller
+                name="lastRoundDate"
+                control={control}
+                render={({ ref, ...rest }) => (
+                  <DateTimePicker
+                    label="Last Round Date"
+                    animateYearScrolling
+                    invalidDateMessage="Invalid Date"
+                    views={['year', 'month', 'date', 'hours', 'minutes']}
+                    cancelLabel="Cancel"
+                    openTo="hours"
+                    {...rest}
+                    inputVariant="outlined"
+                    className={classes.dateField}
+                    error={errors?.lastRoundDate !== undefined || !validSchedule}
+                    helperText={errors?.lastRoundDate && errors?.lastRoundDate.message}
+                  />
+                )}
+              />
+              <TextField
+                inputRef={register}
+                type="number"
+                label="Number of Rounds"
+                name="roundsNumber"
+                variant="outlined"
+                error={errors?.roundsNumber !== undefined || !validSchedule}
+                helperText={errors?.roundsNumber?.message}
+                className={classes.textField}
+              />
+              <TextField
+                inputRef={register}
+                type="number"
+                label="Minutes between rounds"
+                name="minutesBetweenRounds"
+                variant="outlined"
+                error={errors?.minutesBetweenRounds !== undefined || !validSchedule}
+                helperText={errors?.minutesBetweenRounds?.message}
+                className={classes.textField}
+              />
+              <div>
+                <Typography variant="body1" className={!validSchedule && classes.errorText}>
+                  With this schedule the first round will be on{' '}
+                  {firstRoundDate?.toLocaleString(DateTime.DATETIME_FULL)}.
+                  {!validSchedule &&
+                    ' The first round should be after the tournament start date.'}
+                </Typography>
+              </div>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                className={classes.createButton}
+              >
+                Create
+              </Button>
+            </form>
+          </Paper>
         </Grid>
-      </div>
-    </>
-  );
+      </Grid>
+    </div>
+  </>;
 }

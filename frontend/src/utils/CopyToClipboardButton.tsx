@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import copy from 'copy-to-clipboard';
 
 type PropsType = {
