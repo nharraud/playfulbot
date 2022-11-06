@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions =  {}
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -28,24 +29,23 @@ export type CreateTeamFailure = {
   errors: Array<CreateTeamError>;
 };
 
-export type CreateTeamResult = CreateTeamSuccess | CreateTeamFailure;
+export type CreateTeamResult = CreateTeamFailure | CreateTeamSuccess;
 
 export type CreateTeamSuccess = {
   __typename?: 'CreateTeamSuccess';
   team?: Maybe<Team>;
 };
 
-
 export type DebugArena = {
   __typename?: 'DebugArena';
-  id?: Maybe<Scalars['ID']>;
   game?: Maybe<Scalars['ID']>;
+  id?: Maybe<Scalars['ID']>;
 };
 
 export type DeletedTeam = {
   __typename?: 'DeletedTeam';
-  teamID?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
+  teamID?: Maybe<Scalars['ID']>;
 };
 
 export type Error = {
@@ -59,13 +59,13 @@ export type ForbiddenError = Error & {
 
 export type Game = {
   __typename?: 'Game';
-  id?: Maybe<Scalars['ID']>;
-  version?: Maybe<Scalars['Int']>;
   canceled?: Maybe<Scalars['Boolean']>;
-  players?: Maybe<Array<Maybe<Player>>>;
-  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  id?: Maybe<Scalars['ID']>;
   initialState?: Maybe<Scalars['JSON']>;
   patches?: Maybe<Scalars['JSON']>;
+  players?: Maybe<Array<Maybe<Player>>>;
+  version?: Maybe<Scalars['Int']>;
+  winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
 export type GameCanceled = {
@@ -76,8 +76,8 @@ export type GameCanceled = {
 
 export type GamePatch = {
   __typename?: 'GamePatch';
-  patch?: Maybe<Scalars['JSON']>;
   gameID?: Maybe<Scalars['ID']>;
+  patch?: Maybe<Scalars['JSON']>;
   version?: Maybe<Scalars['Int']>;
   winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
@@ -89,7 +89,6 @@ export type GameSummary = {
   winners?: Maybe<Array<Maybe<Team>>>;
 };
 
-
 export type JoinTeamError = TeamNotFoundError;
 
 export type JoinTeamFailure = {
@@ -97,45 +96,38 @@ export type JoinTeamFailure = {
   errors: Array<JoinTeamError>;
 };
 
-export type JoinTeamResult = JoinTeamSuccess | JoinTeamFailure;
+export type JoinTeamResult = JoinTeamFailure | JoinTeamSuccess;
 
 export type JoinTeamSuccess = {
   __typename?: 'JoinTeamSuccess';
-  oldTeam?: Maybe<TeamOrDeletedTeam>;
   newTeam?: Maybe<Team>;
+  oldTeam?: Maybe<TeamOrDeletedTeam>;
 };
 
-export type LiveGame = Game | GamePatch | GameCanceled | PlayerConnection;
+export type LiveGame = Game | GameCanceled | GamePatch | PlayerConnection;
 
 export type LivePlayer = Player | PlayerConnection;
 
-export type LivePlayerGames = PlayerGames | NewPlayerGames;
+export type LivePlayerGames = NewPlayerGames | PlayerGames;
 
 export type LoginResult = {
   __typename?: 'LoginResult';
-  user: User;
   token: Scalars['String'];
+  user: User;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  play?: Maybe<Scalars['Boolean']>;
   createNewDebugGame?: Maybe<Scalars['Boolean']>;
-  registerUser?: Maybe<LoginResult>;
+  createTeam?: Maybe<CreateTeamResult>;
+  createTournament?: Maybe<Tournament>;
+  joinTeam?: Maybe<JoinTeamResult>;
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']>;
-  createTournament?: Maybe<Tournament>;
+  play?: Maybe<Scalars['Boolean']>;
   registerTournamentInvitationLink?: Maybe<RegisterTournamentInvitationResult>;
-  createTeam?: Maybe<CreateTeamResult>;
+  registerUser?: Maybe<LoginResult>;
   updateTeam?: Maybe<UpdateTeamResult>;
-  joinTeam?: Maybe<JoinTeamResult>;
-};
-
-
-export type MutationPlayArgs = {
-  gameID: Scalars['ID'];
-  playerID: Scalars['ID'];
-  data: Scalars['JSON'];
 };
 
 
@@ -145,24 +137,37 @@ export type MutationCreateNewDebugGameArgs = {
 };
 
 
-export type MutationRegisterUserArgs = {
-  username: Scalars['String'];
-  password: Scalars['String'];
-};
-
-
-export type MutationLoginArgs = {
-  username: Scalars['String'];
-  password: Scalars['String'];
+export type MutationCreateTeamArgs = {
+  input: TeamInput;
+  join?: Scalars['Boolean'];
+  tournamentID: Scalars['ID'];
 };
 
 
 export type MutationCreateTournamentArgs = {
-  name: Scalars['String'];
-  startDate: Scalars['Date'];
   lastRoundDate: Scalars['Date'];
-  roundsNumber: Scalars['Int'];
   minutesBetweenRounds: Scalars['Int'];
+  name: Scalars['String'];
+  roundsNumber: Scalars['Int'];
+  startDate: Scalars['Date'];
+};
+
+
+export type MutationJoinTeamArgs = {
+  teamID: Scalars['ID'];
+};
+
+
+export type MutationLoginArgs = {
+  password: Scalars['String'];
+  username: Scalars['String'];
+};
+
+
+export type MutationPlayArgs = {
+  data: Scalars['JSON'];
+  gameID: Scalars['ID'];
+  playerID: Scalars['ID'];
 };
 
 
@@ -171,20 +176,14 @@ export type MutationRegisterTournamentInvitationLinkArgs = {
 };
 
 
-export type MutationCreateTeamArgs = {
-  tournamentID: Scalars['ID'];
-  input: TeamInput;
-  join?: Scalars['Boolean'];
+export type MutationRegisterUserArgs = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 
 export type MutationUpdateTeamArgs = {
-  teamID: Scalars['ID'];
   input: TeamInput;
-};
-
-
-export type MutationJoinTeamArgs = {
   teamID: Scalars['ID'];
 };
 
@@ -195,51 +194,51 @@ export type NewPlayerGames = {
 
 export type Player = {
   __typename?: 'Player';
+  connected?: Maybe<Scalars['Boolean']>;
   id?: Maybe<Scalars['ID']>;
   token?: Maybe<Scalars['String']>;
-  connected?: Maybe<Scalars['Boolean']>;
 };
 
 export type PlayerConnection = {
   __typename?: 'PlayerConnection';
-  playerID?: Maybe<Scalars['ID']>;
   connected?: Maybe<Scalars['Boolean']>;
+  playerID?: Maybe<Scalars['ID']>;
 };
 
 export type PlayerGames = {
   __typename?: 'PlayerGames';
-  playerID?: Maybe<Scalars['ID']>;
   games?: Maybe<Array<Maybe<Scalars['ID']>>>;
+  playerID?: Maybe<Scalars['ID']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  tournament?: Maybe<Tournament>;
-  tournamentByInvitationLink?: Maybe<Tournament>;
+  authenticatedUser?: Maybe<User>;
   round?: Maybe<Round>;
   team?: Maybe<UserTeamResult>;
-  authenticatedUser?: Maybe<User>;
+  tournament?: Maybe<Tournament>;
+  tournamentByInvitationLink?: Maybe<Tournament>;
+};
+
+
+export type QueryRoundArgs = {
+  roundID?: InputMaybe<Scalars['ID']>;
+};
+
+
+export type QueryTeamArgs = {
+  tournamentID: Scalars['ID'];
+  userID: Scalars['ID'];
 };
 
 
 export type QueryTournamentArgs = {
-  tournamentID?: Maybe<Scalars['ID']>;
+  tournamentID?: InputMaybe<Scalars['ID']>;
 };
 
 
 export type QueryTournamentByInvitationLinkArgs = {
   tournamentInvitationLinkID: Scalars['ID'];
-};
-
-
-export type QueryRoundArgs = {
-  roundID?: Maybe<Scalars['ID']>;
-};
-
-
-export type QueryTeamArgs = {
-  userID: Scalars['ID'];
-  tournamentID: Scalars['ID'];
 };
 
 export type RegisterTournamentInvitationError = AlreadyInATeamError | TournamentInvitationLinkNotFoundError;
@@ -249,7 +248,7 @@ export type RegisterTournamentInvitationFailure = {
   errors: Array<RegisterTournamentInvitationError>;
 };
 
-export type RegisterTournamentInvitationResult = RegisterTournamentInvitationSuccess | RegisterTournamentInvitationFailure;
+export type RegisterTournamentInvitationResult = RegisterTournamentInvitationFailure | RegisterTournamentInvitationSuccess;
 
 export type RegisterTournamentInvitationSuccess = {
   __typename?: 'RegisterTournamentInvitationSuccess';
@@ -259,40 +258,40 @@ export type RegisterTournamentInvitationSuccess = {
 export type Round = {
   __typename?: 'Round';
   id?: Maybe<Scalars['ID']>;
-  status?: Maybe<RoundStatus>;
   startDate?: Maybe<Scalars['Date']>;
-  teamPoints?: Maybe<Scalars['Int']>;
+  status?: Maybe<RoundStatus>;
   teamGames?: Maybe<Array<Maybe<GameSummary>>>;
+  teamPoints?: Maybe<Scalars['Int']>;
 };
 
 
 export type RoundTeamGamesArgs = {
-  teamID?: Maybe<Scalars['ID']>;
+  teamID?: InputMaybe<Scalars['ID']>;
 };
 
 export enum RoundStatus {
   Created = 'CREATED',
-  Started = 'STARTED',
-  Ended = 'ENDED'
+  Ended = 'ENDED',
+  Started = 'STARTED'
 }
 
 export type Subscription = {
   __typename?: 'Subscription';
-  game?: Maybe<LiveGame>;
   debugArena?: Maybe<DebugArena>;
+  game?: Maybe<LiveGame>;
   playerGames?: Maybe<LivePlayerGames>;
   teamPlayer?: Maybe<LivePlayer>;
 };
 
 
-export type SubscriptionGameArgs = {
-  gameID: Scalars['ID'];
+export type SubscriptionDebugArenaArgs = {
+  tournamentID: Scalars['ID'];
+  userID: Scalars['ID'];
 };
 
 
-export type SubscriptionDebugArenaArgs = {
-  userID: Scalars['ID'];
-  tournamentID: Scalars['ID'];
+export type SubscriptionGameArgs = {
+  gameID: Scalars['ID'];
 };
 
 
@@ -308,13 +307,13 @@ export type SubscriptionTeamPlayerArgs = {
 export type Team = {
   __typename?: 'Team';
   id: Scalars['ID'];
-  name: Scalars['String'];
   members?: Maybe<Array<Maybe<User>>>;
+  name: Scalars['String'];
   tournament?: Maybe<Tournament>;
 };
 
 export type TeamInput = {
-  name?: Maybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type TeamNotFoundError = Error & {
@@ -323,36 +322,36 @@ export type TeamNotFoundError = Error & {
   teamID?: Maybe<Scalars['ID']>;
 };
 
-export type TeamOrDeletedTeam = Team | DeletedTeam;
+export type TeamOrDeletedTeam = DeletedTeam | Team;
 
 export type Tournament = {
   __typename?: 'Tournament';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  status?: Maybe<TournamentStatus>;
-  startDate?: Maybe<Scalars['Date']>;
-  lastRoundDate?: Maybe<Scalars['Date']>;
   firstRoundDate?: Maybe<Scalars['Date']>;
-  roundsNumber?: Maybe<Scalars['Int']>;
-  minutesBetweenRounds?: Maybe<Scalars['Int']>;
-  teams?: Maybe<Array<Maybe<Team>>>;
-  rounds?: Maybe<Array<Maybe<Round>>>;
-  myRole?: Maybe<TournamentRoleName>;
+  id: Scalars['ID'];
   invitationLinkID?: Maybe<Scalars['ID']>;
+  lastRoundDate?: Maybe<Scalars['Date']>;
+  minutesBetweenRounds?: Maybe<Scalars['Int']>;
+  myRole?: Maybe<TournamentRoleName>;
+  name: Scalars['String'];
+  rounds?: Maybe<Array<Maybe<Round>>>;
+  roundsNumber?: Maybe<Scalars['Int']>;
+  startDate?: Maybe<Scalars['Date']>;
+  status?: Maybe<TournamentStatus>;
+  teams?: Maybe<Array<Maybe<Team>>>;
 };
 
 
 export type TournamentRoundsArgs = {
-  maxSize?: Maybe<Scalars['Int']>;
-  before?: Maybe<Scalars['Date']>;
-  after?: Maybe<Scalars['Date']>;
+  after?: InputMaybe<Scalars['Date']>;
+  before?: InputMaybe<Scalars['Date']>;
+  maxSize?: InputMaybe<Scalars['Int']>;
 };
 
 export type TournamentInvitation = {
   __typename?: 'TournamentInvitation';
   id?: Maybe<Scalars['ID']>;
-  tournament?: Maybe<Tournament>;
   invitee?: Maybe<User>;
+  tournament?: Maybe<Tournament>;
 };
 
 export type TournamentInvitationLinkNotFoundError = Error & {
@@ -366,8 +365,8 @@ export enum TournamentRoleName {
 
 export enum TournamentStatus {
   Created = 'CREATED',
-  Started = 'STARTED',
-  Ended = 'ENDED'
+  Ended = 'ENDED',
+  Started = 'STARTED'
 }
 
 export type UpdateTeamError = ForbiddenError | ValidationError;
@@ -377,7 +376,7 @@ export type UpdateTeamFailure = {
   errors: Array<UpdateTeamError>;
 };
 
-export type UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure;
+export type UpdateTeamResult = UpdateTeamFailure | UpdateTeamSuccess;
 
 export type UpdateTeamSuccess = {
   __typename?: 'UpdateTeamSuccess';
@@ -387,10 +386,10 @@ export type UpdateTeamSuccess = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
-  username: Scalars['String'];
+  organizedTournaments?: Maybe<Array<Tournament>>;
   teams?: Maybe<Array<Maybe<Team>>>;
   tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
-  organizedTournaments?: Maybe<Array<Tournament>>;
+  username: Scalars['String'];
 };
 
 export type UserNotPartOfAnyTeam = {
@@ -411,25 +410,7 @@ export type CreateTeamMutationVariables = Exact<{
 }>;
 
 
-export type CreateTeamMutation = (
-  { __typename?: 'Mutation' }
-  & { createTeam?: Maybe<(
-    { __typename?: 'CreateTeamSuccess' }
-    & { team?: Maybe<(
-      { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
-    )> }
-  ) | (
-    { __typename?: 'CreateTeamFailure' }
-    & { errors: Array<(
-      { __typename?: 'ForbiddenError' }
-      & Pick<ForbiddenError, 'message'>
-    ) | (
-      { __typename?: 'ValidationError' }
-      & Pick<ValidationError, 'message'>
-    )> }
-  )> }
-);
+export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'CreateTeamFailure', errors: Array<{ __typename?: 'ForbiddenError', message: string } | { __typename?: 'ValidationError', message: string }> } | { __typename?: 'CreateTeamSuccess', team?: { __typename?: 'Team', id: string, name: string } | null } | null };
 
 export type UpdateTeamMutationVariables = Exact<{
   teamID: Scalars['ID'];
@@ -437,65 +418,17 @@ export type UpdateTeamMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTeamMutation = (
-  { __typename?: 'Mutation' }
-  & { updateTeam?: Maybe<(
-    { __typename?: 'UpdateTeamSuccess' }
-    & { team?: Maybe<(
-      { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
-    )> }
-  ) | (
-    { __typename?: 'UpdateTeamFailure' }
-    & { errors: Array<(
-      { __typename?: 'ForbiddenError' }
-      & Pick<ForbiddenError, 'message'>
-    ) | (
-      { __typename?: 'ValidationError' }
-      & Pick<ValidationError, 'message'>
-    )> }
-  )> }
-);
+export type UpdateTeamMutation = { __typename?: 'Mutation', updateTeam?: { __typename?: 'UpdateTeamFailure', errors: Array<{ __typename?: 'ForbiddenError', message: string } | { __typename?: 'ValidationError', message: string }> } | { __typename?: 'UpdateTeamSuccess', team?: { __typename?: 'Team', id: string, name: string } | null } | null };
 
 export type GetAuthenticatedUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAuthenticatedUserQuery = (
-  { __typename?: 'Query' }
-  & { authenticatedUser?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
-  )> }
-);
+export type GetAuthenticatedUserQuery = { __typename?: 'Query', authenticatedUser?: { __typename?: 'User', id: string, username: string } | null };
 
 export type AuthenticatedUserTournamentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AuthenticatedUserTournamentsQuery = (
-  { __typename?: 'Query' }
-  & { authenticatedUser?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
-    & { teams?: Maybe<Array<Maybe<(
-      { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
-      & { tournament?: Maybe<(
-        { __typename?: 'Tournament' }
-        & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
-      )> }
-    )>>>, tournamentInvitations?: Maybe<Array<(
-      { __typename?: 'TournamentInvitation' }
-      & Pick<TournamentInvitation, 'id'>
-      & { tournament?: Maybe<(
-        { __typename?: 'Tournament' }
-        & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
-      )> }
-    )>>, organizedTournaments?: Maybe<Array<(
-      { __typename?: 'Tournament' }
-      & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
-    )>> }
-  )> }
-);
+export type AuthenticatedUserTournamentsQuery = { __typename?: 'Query', authenticatedUser?: { __typename?: 'User', id: string, username: string, teams?: Array<{ __typename?: 'Team', id: string, name: string, tournament?: { __typename?: 'Tournament', id: string, name: string, lastRoundDate?: any | null, status?: TournamentStatus | null } | null } | null> | null, tournamentInvitations?: Array<{ __typename?: 'TournamentInvitation', id?: string | null, tournament?: { __typename?: 'Tournament', id: string, name: string, lastRoundDate?: any | null, status?: TournamentStatus | null } | null }> | null, organizedTournaments?: Array<{ __typename?: 'Tournament', id: string, name: string, lastRoundDate?: any | null, status?: TournamentStatus | null }> | null } | null };
 
 export type CreateNewDebugGameMutationVariables = Exact<{
   userID: Scalars['ID'];
@@ -503,10 +436,7 @@ export type CreateNewDebugGameMutationVariables = Exact<{
 }>;
 
 
-export type CreateNewDebugGameMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'createNewDebugGame'>
-);
+export type CreateNewDebugGameMutation = { __typename?: 'Mutation', createNewDebugGame?: boolean | null };
 
 export type CreateTournamentMutationVariables = Exact<{
   name: Scalars['String'];
@@ -517,13 +447,7 @@ export type CreateTournamentMutationVariables = Exact<{
 }>;
 
 
-export type CreateTournamentMutation = (
-  { __typename?: 'Mutation' }
-  & { createTournament?: Maybe<(
-    { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'name'>
-  )> }
-);
+export type CreateTournamentMutation = { __typename?: 'Mutation', createTournament?: { __typename?: 'Tournament', id: string, name: string } | null };
 
 export type DebugArenaSubscriptionVariables = Exact<{
   userID: Scalars['ID'];
@@ -531,66 +455,22 @@ export type DebugArenaSubscriptionVariables = Exact<{
 }>;
 
 
-export type DebugArenaSubscription = (
-  { __typename?: 'Subscription' }
-  & { debugArena?: Maybe<(
-    { __typename?: 'DebugArena' }
-    & Pick<DebugArena, 'id' | 'game'>
-  )> }
-);
+export type DebugArenaSubscription = { __typename?: 'Subscription', debugArena?: { __typename?: 'DebugArena', id?: string | null, game?: string | null } | null };
 
-export type GameCancelFragment = (
-  { __typename?: 'Game' }
-  & Pick<Game, 'version' | 'canceled'>
-);
+export type GameCancelFragment = { __typename?: 'Game', version?: number | null, canceled?: boolean | null };
 
-export type GameFragment = (
-  { __typename?: 'Game' }
-  & Pick<Game, 'id' | 'version' | 'canceled' | 'winners' | 'initialState' | 'patches'>
-  & { players?: Maybe<Array<Maybe<(
-    { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'token' | 'connected'>
-  )>>> }
-);
+export type GameFragment = { __typename?: 'Game', id?: string | null, version?: number | null, canceled?: boolean | null, winners?: Array<number | null> | null, initialState?: any | null, patches?: any | null, players?: Array<{ __typename?: 'Player', id?: string | null, token?: string | null, connected?: boolean | null } | null> | null };
 
-export type GamePatchFragment = (
-  { __typename?: 'Game' }
-  & Pick<Game, 'version' | 'initialState' | 'patches' | 'winners'>
-);
+export type GamePatchFragment = { __typename?: 'Game', version?: number | null, initialState?: any | null, patches?: any | null, winners?: Array<number | null> | null };
 
-export type GamePlayersFragment = (
-  { __typename?: 'Game' }
-  & { players?: Maybe<Array<Maybe<(
-    { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'token' | 'connected'>
-  )>>> }
-);
+export type GamePlayersFragment = { __typename?: 'Game', players?: Array<{ __typename?: 'Player', id?: string | null, token?: string | null, connected?: boolean | null } | null> | null };
 
 export type GameSubscriptionVariables = Exact<{
   gameID: Scalars['ID'];
 }>;
 
 
-export type GameSubscription = (
-  { __typename?: 'Subscription' }
-  & { game?: Maybe<(
-    { __typename?: 'Game' }
-    & Pick<Game, 'id' | 'canceled' | 'version' | 'winners' | 'initialState' | 'patches'>
-    & { players?: Maybe<Array<Maybe<(
-      { __typename?: 'Player' }
-      & Pick<Player, 'id' | 'token' | 'connected'>
-    )>>> }
-  ) | (
-    { __typename?: 'GamePatch' }
-    & Pick<GamePatch, 'gameID' | 'version' | 'patch' | 'winners'>
-  ) | (
-    { __typename?: 'GameCanceled' }
-    & Pick<GameCanceled, 'gameID' | 'version'>
-  ) | (
-    { __typename?: 'PlayerConnection' }
-    & Pick<PlayerConnection, 'playerID' | 'connected'>
-  )> }
-);
+export type GameSubscription = { __typename?: 'Subscription', game?: { __typename?: 'Game', id?: string | null, canceled?: boolean | null, version?: number | null, winners?: Array<number | null> | null, initialState?: any | null, patches?: any | null, players?: Array<{ __typename?: 'Player', id?: string | null, token?: string | null, connected?: boolean | null } | null> | null } | { __typename?: 'GameCanceled', gameID?: string | null, version?: number | null } | { __typename?: 'GamePatch', gameID?: string | null, version?: number | null, patch?: any | null, winners?: Array<number | null> | null } | { __typename?: 'PlayerConnection', playerID?: string | null, connected?: boolean | null } | null };
 
 export type GetTeamQueryVariables = Exact<{
   userID: Scalars['ID'];
@@ -598,42 +478,14 @@ export type GetTeamQueryVariables = Exact<{
 }>;
 
 
-export type GetTeamQuery = (
-  { __typename?: 'Query' }
-  & { team?: Maybe<(
-    { __typename?: 'Team' }
-    & Pick<Team, 'id' | 'name'>
-    & { members?: Maybe<Array<Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    )>>> }
-  ) | (
-    { __typename?: 'UserNotPartOfAnyTeam' }
-    & Pick<UserNotPartOfAnyTeam, 'message'>
-  )> }
-);
+export type GetTeamQuery = { __typename?: 'Query', team?: { __typename?: 'Team', id: string, name: string, members?: Array<{ __typename?: 'User', id: string, username: string } | null> | null } | { __typename?: 'UserNotPartOfAnyTeam', message: string } | null };
 
 export type JoinTeamMutationVariables = Exact<{
   teamID: Scalars['ID'];
 }>;
 
 
-export type JoinTeamMutation = (
-  { __typename?: 'Mutation' }
-  & { joinTeam?: Maybe<(
-    { __typename?: 'JoinTeamSuccess' }
-    & { newTeam?: Maybe<(
-      { __typename?: 'Team' }
-      & Pick<Team, 'id'>
-    )> }
-  ) | (
-    { __typename?: 'JoinTeamFailure' }
-    & { errors: Array<(
-      { __typename?: 'TeamNotFoundError' }
-      & Pick<TeamNotFoundError, 'teamID' | 'message'>
-    )> }
-  )> }
-);
+export type JoinTeamMutation = { __typename?: 'Mutation', joinTeam?: { __typename?: 'JoinTeamFailure', errors: Array<{ __typename?: 'TeamNotFoundError', teamID?: string | null, message: string }> } | { __typename?: 'JoinTeamSuccess', newTeam?: { __typename?: 'Team', id: string } | null } | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -641,25 +493,12 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = (
-  { __typename?: 'Mutation' }
-  & { login?: Maybe<(
-    { __typename?: 'LoginResult' }
-    & Pick<LoginResult, 'token'>
-    & { user: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
-);
+export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginResult', token: string, user: { __typename?: 'User', id: string, username: string } } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LogoutMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'logout'>
-);
+export type LogoutMutation = { __typename?: 'Mutation', logout?: boolean | null };
 
 export type PlayMutationVariables = Exact<{
   gameID: Scalars['ID'];
@@ -668,43 +507,18 @@ export type PlayMutationVariables = Exact<{
 }>;
 
 
-export type PlayMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'play'>
-);
+export type PlayMutation = { __typename?: 'Mutation', play?: boolean | null };
 
-export type PlayerConnectedFragment = (
-  { __typename?: 'Player' }
-  & Pick<Player, 'connected'>
-);
+export type PlayerConnectedFragment = { __typename?: 'Player', connected?: boolean | null };
 
-export type PlayerFragment = (
-  { __typename?: 'Player' }
-  & Pick<Player, 'id' | 'token' | 'connected'>
-);
+export type PlayerFragment = { __typename?: 'Player', id?: string | null, token?: string | null, connected?: boolean | null };
 
 export type RegisterTournamentInvitationLinkMutationVariables = Exact<{
   tournamentInvitationLinkID: Scalars['ID'];
 }>;
 
 
-export type RegisterTournamentInvitationLinkMutation = (
-  { __typename?: 'Mutation' }
-  & { registerTournamentInvitationLink?: Maybe<(
-    { __typename?: 'RegisterTournamentInvitationSuccess' }
-    & { invitation?: Maybe<(
-      { __typename?: 'TournamentInvitation' }
-      & Pick<TournamentInvitation, 'id'>
-      & { tournament?: Maybe<(
-        { __typename?: 'Tournament' }
-        & Pick<Tournament, 'id' | 'name' | 'lastRoundDate' | 'status'>
-      )> }
-    )> }
-  ) | (
-    { __typename?: 'RegisterTournamentInvitationFailure' }
-    & { errors: Array<{ __typename: 'AlreadyInATeamError' } | { __typename: 'TournamentInvitationLinkNotFoundError' }> }
-  )> }
-);
+export type RegisterTournamentInvitationLinkMutation = { __typename?: 'Mutation', registerTournamentInvitationLink?: { __typename?: 'RegisterTournamentInvitationFailure', errors: Array<{ __typename: 'AlreadyInATeamError' } | { __typename: 'TournamentInvitationLinkNotFoundError' }> } | { __typename?: 'RegisterTournamentInvitationSuccess', invitation?: { __typename?: 'TournamentInvitation', id?: string | null, tournament?: { __typename?: 'Tournament', id: string, name: string, lastRoundDate?: any | null, status?: TournamentStatus | null } | null } | null } | null };
 
 export type RegisterUserMutationVariables = Exact<{
   username: Scalars['String'];
@@ -712,17 +526,7 @@ export type RegisterUserMutationVariables = Exact<{
 }>;
 
 
-export type RegisterUserMutation = (
-  { __typename?: 'Mutation' }
-  & { registerUser?: Maybe<(
-    { __typename?: 'LoginResult' }
-    & Pick<LoginResult, 'token'>
-    & { user: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
-);
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser?: { __typename?: 'LoginResult', token: string, user: { __typename?: 'User', id: string, username: string } } | null };
 
 export type RoundSummaryQueryVariables = Exact<{
   roundID: Scalars['ID'];
@@ -730,107 +534,45 @@ export type RoundSummaryQueryVariables = Exact<{
 }>;
 
 
-export type RoundSummaryQuery = (
-  { __typename?: 'Query' }
-  & { round?: Maybe<(
-    { __typename?: 'Round' }
-    & Pick<Round, 'id' | 'status' | 'startDate' | 'teamPoints'>
-    & { teamGames?: Maybe<Array<Maybe<(
-      { __typename?: 'GameSummary' }
-      & Pick<GameSummary, 'id'>
-      & { losers?: Maybe<Array<Maybe<(
-        { __typename?: 'Team' }
-        & Pick<Team, 'id' | 'name'>
-      )>>>, winners?: Maybe<Array<Maybe<(
-        { __typename?: 'Team' }
-        & Pick<Team, 'id' | 'name'>
-      )>>> }
-    )>>> }
-  )> }
-);
+export type RoundSummaryQuery = { __typename?: 'Query', round?: { __typename?: 'Round', id?: string | null, status?: RoundStatus | null, startDate?: any | null, teamPoints?: number | null, teamGames?: Array<{ __typename?: 'GameSummary', id?: string | null, losers?: Array<{ __typename?: 'Team', id: string, name: string } | null> | null, winners?: Array<{ __typename?: 'Team', id: string, name: string } | null> | null } | null> | null } | null };
 
 export type TeamPlayerSubscriptionVariables = Exact<{
   teamID: Scalars['ID'];
 }>;
 
 
-export type TeamPlayerSubscription = (
-  { __typename?: 'Subscription' }
-  & { teamPlayer?: Maybe<(
-    { __typename?: 'Player' }
-    & Pick<Player, 'id' | 'token' | 'connected'>
-  ) | (
-    { __typename?: 'PlayerConnection' }
-    & Pick<PlayerConnection, 'playerID' | 'connected'>
-  )> }
-);
+export type TeamPlayerSubscription = { __typename?: 'Subscription', teamPlayer?: { __typename?: 'Player', id?: string | null, token?: string | null, connected?: boolean | null } | { __typename?: 'PlayerConnection', playerID?: string | null, connected?: boolean | null } | null };
 
 export type TournamentByInvitationLinkQueryVariables = Exact<{
   tournamentInvitationLinkID: Scalars['ID'];
 }>;
 
 
-export type TournamentByInvitationLinkQuery = (
-  { __typename?: 'Query' }
-  & { tournamentByInvitationLink?: Maybe<(
-    { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'name'>
-  )> }
-);
+export type TournamentByInvitationLinkQuery = { __typename?: 'Query', tournamentByInvitationLink?: { __typename?: 'Tournament', id: string, name: string } | null };
 
 export type TournamentQueryVariables = Exact<{
   tournamentID: Scalars['ID'];
 }>;
 
 
-export type TournamentQuery = (
-  { __typename?: 'Query' }
-  & { tournament?: Maybe<(
-    { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'name' | 'status' | 'startDate' | 'firstRoundDate' | 'lastRoundDate' | 'roundsNumber' | 'minutesBetweenRounds' | 'myRole' | 'invitationLinkID'>
-  )> }
-);
+export type TournamentQuery = { __typename?: 'Query', tournament?: { __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null, startDate?: any | null, firstRoundDate?: any | null, lastRoundDate?: any | null, roundsNumber?: number | null, minutesBetweenRounds?: number | null, myRole?: TournamentRoleName | null, invitationLinkID?: string | null } | null };
 
 export type TournamentRoundsQueryVariables = Exact<{
   tournamentID: Scalars['ID'];
   maxSize: Scalars['Int'];
-  before?: Maybe<Scalars['Date']>;
-  after?: Maybe<Scalars['Date']>;
+  before?: InputMaybe<Scalars['Date']>;
+  after?: InputMaybe<Scalars['Date']>;
 }>;
 
 
-export type TournamentRoundsQuery = (
-  { __typename?: 'Query' }
-  & { tournament?: Maybe<(
-    { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id' | 'startDate' | 'lastRoundDate' | 'firstRoundDate' | 'roundsNumber' | 'minutesBetweenRounds'>
-    & { rounds?: Maybe<Array<Maybe<(
-      { __typename?: 'Round' }
-      & Pick<Round, 'id' | 'status' | 'startDate' | 'teamPoints'>
-    )>>> }
-  )> }
-);
+export type TournamentRoundsQuery = { __typename?: 'Query', tournament?: { __typename?: 'Tournament', id: string, startDate?: any | null, lastRoundDate?: any | null, firstRoundDate?: any | null, roundsNumber?: number | null, minutesBetweenRounds?: number | null, rounds?: Array<{ __typename?: 'Round', id?: string | null, status?: RoundStatus | null, startDate?: any | null, teamPoints?: number | null } | null> | null } | null };
 
 export type TournamentTeamsQueryVariables = Exact<{
   tournamentID: Scalars['ID'];
 }>;
 
 
-export type TournamentTeamsQuery = (
-  { __typename?: 'Query' }
-  & { tournament?: Maybe<(
-    { __typename?: 'Tournament' }
-    & Pick<Tournament, 'id'>
-    & { teams?: Maybe<Array<Maybe<(
-      { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
-      & { members?: Maybe<Array<Maybe<(
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      )>>> }
-    )>>> }
-  )> }
-);
+export type TournamentTeamsQuery = { __typename?: 'Query', tournament?: { __typename?: 'Tournament', id: string, teams?: Array<{ __typename?: 'Team', id: string, name: string, members?: Array<{ __typename?: 'User', id: string, username: string } | null> | null } | null> | null } | null };
 
 export const GameCancelFragmentDoc = gql`
     fragment GameCancel on Game {
