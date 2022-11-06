@@ -1,6 +1,5 @@
 import { GameAction, GameActionHandler, BackendGameDefinition } from 'playfulbot-game-backend';
 import { GameState } from 'playfulbot-game';
-import { IllegalPlayAction } from '~playfulbot/errors';
 import { Game } from '~playfulbot/model/Game';
 import { PlayerID } from '~playfulbot/model/Player';
 
@@ -43,21 +42,21 @@ const actionHandler: GameActionHandler<TestGameState, TestGameAction> = (
 
 export const gameDefinition: BackendGameDefinition = {
   name: 'TestGame',
-  actions: { handler: actionHandler },
+  actionHandler,
   init,
 };
 
 export function playGameSoThatGivenPlayerWins(game: Game, winnerID: PlayerID): void {
   for (const [playerNumber, assignment] of game.players.entries()) {
     if (assignment.playerID !== winnerID) {
-      game.play(playerNumber, 'whatever', { wins: false } as TestActionData);
+      game.play(playerNumber, { wins: false });
     }
   }
   const winnerNumber = game.players.findIndex((assignment) => assignment.playerID === winnerID);
-  game.play(winnerNumber, 'whatever', { wins: true } as TestActionData);
+  game.play(winnerNumber, { wins: true });
 }
 
 export function playGameAndGetADraw(game: Game): void {
-  game.play(0, 'whatever', { wins: false } as TestActionData);
-  game.play(1, 'whatever', { wins: false } as TestActionData);
+  game.play(0, { wins: false });
+  game.play(1, { wins: false });
 }

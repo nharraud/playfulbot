@@ -74,13 +74,9 @@ export class Game {
     return !(this.canceled || this.gameState.end);
   }
 
-  play(playerNumber: number, actionName: string, actionData: Record<string, any>): void;
-  play(playerID: PlayerID, actionName: string, actionData: Record<string, any>): void;
-  play(
-    playerIDOrNumber: number | PlayerID,
-    actionName: string,
-    actionData: Record<string, any>
-  ): void {
+  play(playerNumber: number, actionData: Record<string, any>): void;
+  play(playerID: PlayerID, actionData: Record<string, any>): void;
+  play(playerIDOrNumber: number | PlayerID, actionData: Record<string, any>): void {
     let playerNumber: number;
     if (typeof playerIDOrNumber === 'number') {
       playerNumber = playerIDOrNumber;
@@ -98,7 +94,6 @@ export class Game {
     const playerState = this.gameState.players[playerNumber];
     const action = {
       player: playerNumber,
-      name: actionName,
       data: actionData,
     };
 
@@ -120,7 +115,7 @@ export class Game {
     if (!playerState.playing) {
       throw new PlayingOutOfTurn();
     }
-    this.gameDefinition.actions.handler(this.gameState, actionsToPlay);
+    this.gameDefinition.actionHandler(this.gameState, actionsToPlay);
 
     const patch = jsonpatch.generate(observer);
     jsonpatch.unobserve(this.gameState, observer);

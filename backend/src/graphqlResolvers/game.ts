@@ -89,7 +89,7 @@ export const playResolver: gqlTypes.MutationResolvers<ApolloContext>['play'] = (
     throw new ForbiddenError(`Bot is not allowed to play as player ${args.playerID}.`);
   }
 
-  game.play(args.playerID, args.action, args.data);
+  game.play(args.playerID, args.data);
 
   return true;
 };

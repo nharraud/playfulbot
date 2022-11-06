@@ -1,10 +1,8 @@
-import { GameAction, GameActionDefinition } from 'playfulbot-game-backend';
+import { GameAction, errors } from 'playfulbot-game-backend';
 import { Coordinate, WallRaceGameState } from '../types';
 
 interface MoveAction extends GameAction {
-  data: {
-    vector: Coordinate;
-  };
+  data: Coordinate; // movement vector
 }
 
 function collidesWithWalls(coordinate: Coordinate, walls: Coordinate[][], arenaSize: number) {
@@ -68,10 +66,16 @@ function movePlayer(state: WallRaceGameState, player: number, vector: Coordinate
   return true;
 }
 
-function actionHandler(state: WallRaceGameState, actions: MoveAction[]) {
+export function actionHandler(state: WallRaceGameState, actions: MoveAction[]) {
   let shouldContinue = true;
   for (const { player, data } of actions) {
-    shouldContinue &&= movePlayer(state, player, data.vector);
+    if (!Array.isArray(data)) {
+      throw new errors.InvalidPlayActionData('Data is not an array');
+    }
+    if (data.length !== 2) {
+      throw new errors.InvalidPlayActionData('Data array should have length 2');
+    }
+    shouldContinue &&= movePlayer(state, player, data);
   }
   if (!shouldContinue) {
     for (const playerState of state.players) {
@@ -81,7 +85,3 @@ function actionHandler(state: WallRaceGameState, actions: MoveAction[]) {
     }
   }
 }
-
-export const action: GameActionDefinition = {
-  handler: actionHandler,
-};

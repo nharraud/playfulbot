@@ -255,7 +255,7 @@ type Query {
 }
 
 type Mutation {
-  play(gameID: ID!, playerID: ID!, action: String!, data: JSON!): Boolean
+  play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
   createNewDebugGame(tournamentID: ID!, userID: ID!): Boolean
 
   registerUser(username: String!, password: String!): LoginResult

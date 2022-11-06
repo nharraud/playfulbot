@@ -3,12 +3,10 @@
 
 export interface PlayGameRequest {
   'gameId'?: (string);
-  'action'?: (string);
   'data'?: (string);
 }
 
 export interface PlayGameRequest__Output {
   'gameId': (string);
-  'action': (string);
   'data': (string);
 }

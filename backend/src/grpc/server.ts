@@ -212,7 +212,7 @@ const playfulBotServer = new (class implements PlayfulBotHandlers {
           callback({ code: grpc.status.NOT_FOUND, message: 'Game not found.' });
         } else {
           try {
-            game.play(token.playerID, request.action, JSON.parse(request.data));
+            game.play(token.playerID, JSON.parse(request.data));
           } catch (err) {
             if (err instanceof ForbiddenError) {
               callback({ code: grpc.status.PERMISSION_DENIED, message: err.message });

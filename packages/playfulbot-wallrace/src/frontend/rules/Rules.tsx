@@ -20,10 +20,10 @@ export function Rules({SectionTitle, SectionParagraph, CodeBlock}: RulesProps) {
       </SectionParagraph>
       <CodeBlock>
         {`
-        { vector: [0, 1] } // Move up
-        { vector: [0, -1] } // Move down
-        { vector: [1, 0] } // Move left
-        { vector: [-1, 0] } // Move right
+        [0, 1] // Move up
+        [0, -1] // Move down
+        [1, 0] // Move left
+        [-1, 0] // Move right
         `}
       </CodeBlock>
       <SectionParagraph>

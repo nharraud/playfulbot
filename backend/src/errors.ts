@@ -7,12 +7,6 @@ import {
   UserInputError,
 } from 'apollo-server-koa';
 
-export class UnknownAction extends ApolloError {
-  constructor(action: string) {
-    super(`Unknown action ${action} played.`, 'UNKNOWN_ACTION', null);
-  }
-}
-
 export class GameNotPlayableError extends ApolloError {}
 
 export class PlayingOutOfTurn extends GameNotPlayableError {
@@ -34,12 +28,6 @@ export class PlayingInactiveGame extends GameNotPlayableError {
 export class PlayingTwice extends GameNotPlayableError {
   constructor() {
     super('You already played for this turn.', 'PLAYING_TWICE', null);
-  }
-}
-
-export class IllegalPlayAction extends ApolloError {
-  constructor(message: string) {
-    super(message, 'ILLEGAL_ACTION', null);
   }
 }
 
