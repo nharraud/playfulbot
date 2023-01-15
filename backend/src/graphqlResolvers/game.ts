@@ -1,6 +1,4 @@
-import { ForbiddenError } from 'apollo-server-koa';
-
-import { GameNotFoundError } from '~playfulbot/errors';
+import { GameNotFoundError, ForbiddenError } from '~playfulbot/errors';
 
 import { ApolloContext, isBotContext } from '~playfulbot/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/types/graphql';
@@ -15,6 +13,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
   // There is no built-in way to confirm that a subscription is done via Graphql.
   // See https://github.com/apollographql/subscriptions-transport-ws/issues/451
   // Thus some messages might be missed. This is why we first send the whole game state
+  // TODO: check this again now that we switched to graphql-ws instead of subscriptions-transport-ws
   subscribe: (model, args, context, info) => {
     const game = Game.getGame(args.gameID);
     if (game === undefined) {

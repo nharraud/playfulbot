@@ -1,4 +1,4 @@
-import { AuthenticationError } from 'apollo-server-koa';
+import { AuthenticationError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { db } from '~playfulbot/model/db';
 import * as gqlTypes from '~playfulbot/types/graphql';

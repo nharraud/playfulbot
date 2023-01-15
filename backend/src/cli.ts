@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { startServer as startGraphqlServer } from '~playfulbot/server';
+import { createGraphqlServer } from '~playfulbot/graphqlServer';
 import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
 
@@ -22,7 +22,7 @@ async function execute(argv: string[]): Promise<void> {
     .action(async () => {
       validateSecretKey();
       await handleRestart();
-      startGraphqlServer();
+      await createGraphqlServer();
       startGrpcServer();
       await scheduler.start();
     });

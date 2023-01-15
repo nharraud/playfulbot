@@ -12,11 +12,11 @@ interface RegisterUserArguments {
 export async function registerUserResolver(
   parent: unknown,
   args: RegisterUserArguments,
-  { koaContext }: ApolloContext
+  { req }: ApolloContext
 ): Promise<gqlTypes.LoginResult> {
   const newUser = await User.create(args.username, args.password, db.default);
 
-  const token = await authenticate(newUser, koaContext);
+  const token = await authenticate(newUser, req);
   return {
     token,
     user: {

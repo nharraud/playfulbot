@@ -5,7 +5,10 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
-import { SubscriptionClient } from 'subscriptions-transport-ws';
+
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+
 import { apolloCache } from './apolloCache';
 import { triggerUserContextUpdate } from './UserContext';
 import { subscriptionReconnectListeners } from './hooksAndQueries/useRestartingSubscription';
@@ -55,42 +58,30 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// const wsLink = new WebSocketLink({
-//   uri: `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
-//   options: {
-//     reconnect: true,
-//     lazy: true,
-//     connectionParams: async () => {
-//       const token = localStorage.getItem('token');
-//       return {
-//         authToken: token,
-//       }
-//     },
-//   }
-// });
-
-const subscriptionClient = new SubscriptionClient(
-  `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
-  {
-    reconnect: true,
-    lazy: true,
-    connectionParams: async () => {
-      const token = localStorage.getItem('token');
-      return {
-        authToken: token,
-      };
+// const wsLink = new GraphQLWsLink(
+const subscriptionClient = createClient({
+  url: `${import.meta.env.VITE_API_WEBSOCKET_URL}/graphql`,
+  lazy: true,
+  connectionParams: () => {
+    const token = localStorage.getItem('token');
+    return {
+      authToken: token,
+    };
+  },
+  on: {
+    connected: (socket) => {
+      client.resetStore();
+      for (const listener of subscriptionReconnectListeners) {
+        listener();
+      }
     },
-  }
-);
-subscriptionClient.onError((err) => console.log('onError', { err }));
-subscriptionClient.onReconnected((args) => {
-  client.resetStore();
-  for (const listener of subscriptionReconnectListeners) {
-    listener();
-  }
+    error: (error) => {
+      console.error('Graphql Websocket client onError', { error });
+    },
+  },
 });
 
-const wsLink = new WebSocketLink(subscriptionClient);
+const wsLink = new GraphQLWsLink(subscriptionClient);
 
 // The split function takes three parameters:
 //

@@ -1,6 +1,6 @@
 import GraphQLJSON from 'graphql-type-json';
 
-import { IResolvers } from 'apollo-server-koa';
+import { IResolvers } from '@graphql-tools/utils';
 import { loginResolver, logoutResolver } from '~playfulbot/graphqlResolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/graphqlResolvers/authenticatedUser';

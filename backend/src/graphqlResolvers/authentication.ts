@@ -6,9 +6,8 @@ import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 
 import bcrypt from 'bcrypt';
 
-import { AuthenticationError } from 'apollo-server-koa';
-
-import { Context } from 'koa';
+import Cookies from 'cookies';
+import express from 'express';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { User } from '~playfulbot/model/User';
 
@@ -20,7 +19,7 @@ import {
   JWToken,
 } from '~playfulbot/types/token';
 import * as gqlTypes from '~playfulbot/types/graphql';
-import { InvalidRequest } from '~playfulbot/errors';
+import { InvalidRequest, AuthenticationError } from '~playfulbot/errors';
 import { PlayerID } from '~playfulbot/model/Player';
 import { db } from '~playfulbot/model/db';
 import { SECRET_KEY } from '~playfulbot/secret';
@@ -28,7 +27,7 @@ import { SECRET_KEY } from '~playfulbot/secret';
 const randomBytes = promisify(crypto.randomBytes);
 const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
 
-export async function authenticate(user: User, koaContext: Context): Promise<JWToken> {
+export async function authenticate(user: User, req: express.Request): Promise<JWToken> {
   const binFingerprint = await randomBytes(50);
   const strFingerprint = binFingerprint.toString('base64');
 
@@ -40,7 +39,9 @@ export async function authenticate(user: User, koaContext: Context): Promise<JWT
   const tokenData: UserJWTokenData = { userID: user.id, JWTFingerprint: fingerprintHash };
 
   const token = jwt.sign(tokenData, SECRET_KEY);
-  koaContext.cookies.set('JWTFingerprint', strFingerprint);
+
+  const cookies = new Cookies(req, req.res);
+  cookies.set('JWTFingerprint', strFingerprint);
   return token;
 }
 
@@ -59,7 +60,7 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   if (!match) {
     throw new AuthenticationError('Incorrect credentials');
   }
-  const token = await authenticate(foundUser, ctx.koaContext);
+  const token = await authenticate(foundUser, ctx.req);
   return {
     token,
     user: {
@@ -74,10 +75,12 @@ export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout']
   args,
   ctx
 ) => {
-  if (ctx.koaContext === undefined) {
+  if (ctx.req === undefined || ctx.req.res === undefined) {
     throw new InvalidRequest('Logout needs to be done via an HTTPS request, not via a websocket.');
   }
-  ctx.koaContext.cookies.set('JWTFingerprint');
+
+  const cookies = new Cookies(ctx.req, ctx.req.res);
+  cookies.set('JWTFingerprint');
   return true;
 };
 

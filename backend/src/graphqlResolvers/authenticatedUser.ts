@@ -1,4 +1,4 @@
-import { AuthenticationError, ForbiddenError } from 'apollo-server-koa';
+import { AuthenticationError, ForbiddenError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { User } from '~playfulbot/model/User';
 import * as gqlTypes from '~playfulbot/types/graphql';

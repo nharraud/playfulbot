@@ -1,23 +1,28 @@
 /* eslint-disable max-classes-per-file */
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 
-import {
-  ApolloError,
-  ForbiddenError as ApolloForbiddenError,
-  AuthenticationError as ApolloAuthenticationError,
-  UserInputError,
-} from 'apollo-server-koa';
+import { GraphQLError } from 'graphql';
 
-export class GameNotPlayableError extends ApolloError {}
+export class GameNotPlayableError extends GraphQLError {
+  constructor(message: string, code: string, additionalProperties?: Record<string, unknown>) {
+    super(message, {
+      extensions: {
+        code,
+        ...additionalProperties,
+      },
+    });
+  }
+}
 
 export class PlayingOutOfTurn extends GameNotPlayableError {
   constructor() {
-    super('Action played out of turn.', 'PLAYING_OUT_OF_TURN', null);
+    super('Action played out of turn.', 'PLAYING_OUT_OF_TURN');
   }
 }
 
 export class PlayingInactiveGame extends GameNotPlayableError {
   constructor() {
-    super('This game cannot be played.', 'PLAYING_INACTIVE_GAME', null);
+    super('This game cannot be played.', 'PLAYING_INACTIVE_GAME');
   }
 }
 
@@ -27,13 +32,18 @@ export class PlayingInactiveGame extends GameNotPlayableError {
  */
 export class PlayingTwice extends GameNotPlayableError {
   constructor() {
-    super('You already played for this turn.', 'PLAYING_TWICE', null);
+    super('You already played for this turn.', 'PLAYING_TWICE');
   }
 }
 
-export class NotFoundError extends ApolloError {
+export class NotFoundError extends GraphQLError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
-    super(message, 'NOT_FOUND', additionalProperties);
+    super(message, {
+      extensions: {
+        code: 'NOT_FOUND',
+        ...additionalProperties,
+      },
+    });
   }
 }
 
@@ -91,21 +101,35 @@ export class TournamentInvitationNotFound extends NotFoundError {
   }
 }
 
-export class InvalidRequest extends ApolloError {
+export class InvalidRequest extends GraphQLError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
-    super(message, 'INVALID_REQUEST', additionalProperties);
+    super(message, {
+      extensions: {
+        code: ApolloServerErrorCode.BAD_REQUEST,
+        ...additionalProperties,
+      },
+    });
   }
 }
 
-export class InvalidArgument extends UserInputError {
+export class InvalidArgument extends GraphQLError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
-    super(message);
+    super(message, {
+      extensions: {
+        code: ApolloServerErrorCode.BAD_USER_INPUT,
+        ...additionalProperties,
+      },
+    });
   }
 }
 
-export class ForbiddenError extends ApolloForbiddenError {
+export class ForbiddenError extends GraphQLError {
   constructor(message: string) {
-    super(message);
+    super(message, {
+      extensions: {
+        code: 'FORBIDDEN',
+      },
+    });
   }
 }
 
@@ -115,9 +139,13 @@ export class BotsForbiddenError extends ForbiddenError {
   }
 }
 
-export class AuthenticationError extends ApolloAuthenticationError {
+export class AuthenticationError extends GraphQLError {
   constructor(message: string) {
-    super(message);
+    super(message, {
+      extensions: {
+        code: 'UNAUTHENTICATED',
+      },
+    });
   }
 }
 

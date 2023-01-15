@@ -1,18 +1,18 @@
-import { Context as KoaContext } from 'koa';
+import express from 'express';
 import { PlayerID } from '~playfulbot/model/Player';
 import { UserID } from '~playfulbot/model/User';
 
 export type ApolloUnauthenticatedContext = {
-  koaContext: KoaContext;
+  req: express.Request;
 };
 
 export type ApolloUserContext = {
-  koaContext?: KoaContext;
+  req?: express.Request;
   userID: UserID;
 };
 
 export type ApolloBotContext = {
-  koaContext?: KoaContext;
+  req?: express.Request;
   playerID: PlayerID;
 };
 
@@ -56,8 +56,3 @@ export function isUserWSContext(context: WSConnectionContext): context is UserWS
 export function isBotWSContext(context: WSConnectionContext): context is BotWSConnectionContext {
   return (context as BotWSConnectionContext).playerID !== undefined;
 }
-
-export type ContextParams = {
-  connection?: { context: WSConnectionContext };
-  ctx?: KoaContext;
-};
