@@ -93,6 +93,7 @@ export class Scheduler {
     const now = DateTime.now();
     if (tournament.startDate <= now.plus(Scheduler.SCHEDULE_WINDOW)) {
       const timeout = setTimeout(() => {
+        this.timeouts.delete(timeout);
         if (this.stopped) {
           return;
         }
@@ -106,7 +107,6 @@ export class Scheduler {
             this.jobs.delete(job);
           });
         this.jobs.add(job);
-        this.timeouts.delete(timeout);
       }, tournament.startDate.diffNow().valueOf());
       this.timeouts.add(timeout);
     }
@@ -145,6 +145,7 @@ export class Scheduler {
     const now = DateTime.now();
     if (round.startDate <= now.plus(Scheduler.SCHEDULE_WINDOW)) {
       const timeout = setTimeout(() => {
+        this.timeouts.delete(timeout);
         if (this.stopped) {
           return;
         }
@@ -159,7 +160,6 @@ export class Scheduler {
             this.jobs.delete(job);
           });
         this.jobs.add(job);
-        this.timeouts.delete(timeout);
       }, round.startDate.diffNow().valueOf());
       this.timeouts.add(timeout);
     }
