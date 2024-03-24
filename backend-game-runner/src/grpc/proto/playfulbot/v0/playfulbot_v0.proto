@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package playfulbot.v0;
+
+service PlayfulBotGameRunner {
+  rpc createGames (CreateGamesRequest) returns (CreateGamesResponse) {}
+  rpc FollowGame (stream FollowGameRequest) returns (stream FollowGameResponse) {}
+  rpc PlayGame (stream PlayGameRequest) returns (PlayGameResponse) {}
+}
+
+message Game {
+  string id = 1;
+  bool canceled = 2;
+  int32 version = 3;
+  int32 player = 4;
+  string game_state = 5;
+}
+
+message GamePatch {
+  string game_id = 1;
+  int32 version = 2;
+  string patch = 3;
+}
+
+message GameCanceled {
+  string game_id = 1;
+  int32 version = 2;
+}
+
+message PlayGameRequest {
+  string game_id = 1;
+  string data = 3;
+}
+message PlayGameResponse {}
+
+message FollowGameRequest {
+  string game_id = 1;
+}
+
+message FollowGameResponse {
+  oneof game_or_update {
+    Game game = 1;
+    GamePatch patch = 2;
+    GameCanceled canceled = 3;
+  }
+}
+
+message CreateGamesRequest {
+  int32 nbOfGames = 1;
+}
+
+message CreateGamesResponse {
+
+}

@@ -1,0 +1,5 @@
+{
+  "execMap": {
+    "ts": "node --import tsx/esm --import tsconfig-paths/register.js"
+  }
+}
