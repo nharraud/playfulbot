@@ -4,7 +4,13 @@
       "path": "./docker"
     },
     {
+      "path": "./backend-commons"
+    },
+    {
       "path": "./backend"
+    },
+    {
+      "path": "./backend-game-runner"
     },
     {
       "path": "./frontend"
@@ -30,5 +36,8 @@
     {
       "path": "./devtools"
     }
-  ]
+  ],
+  "settings": {
+    "asciidoc.antora.enableAntoraSupport": false
+  }
 }

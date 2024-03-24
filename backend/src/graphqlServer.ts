@@ -50,10 +50,15 @@ export async function createGraphqlServer() {
         if (!ctx.connectionParams.authToken) {
           throw new AuthenticationError('Missing token.');
         }
-        const tokenData = await validateAuthToken(
-          ctx.connectionParams.authToken as string,
-          cookies.get('JWTFingerprint')
-        );
+        let tokenData;
+        try {
+          tokenData = await validateAuthToken(
+            ctx.connectionParams.authToken as string,
+            cookies.get('JWTFingerprint')
+          );
+        } catch (error) {
+          throw new AuthenticationError('Invalid token');
+        }
         if (!isUserJWToken(tokenData) && !isBotJWToken(tokenData)) {
           throw new InvalidRequest('Invalid JWToken');
         }
@@ -63,10 +68,15 @@ export async function createGraphqlServer() {
         if (!ctx.connectionParams.authToken) {
           throw new AuthenticationError('Missing token.');
         }
-        const tokenData = await validateAuthToken(
-          ctx.connectionParams.authToken as string,
-          cookies.get('JWTFingerprint')
-        );
+        let tokenData;
+        try {
+          tokenData = await validateAuthToken(
+            ctx.connectionParams.authToken as string,
+            cookies.get('JWTFingerprint')
+          );
+        } catch (error) {
+          throw new AuthenticationError('Invalid token');
+        }
         if (isUserJWToken(tokenData)) {
           return {
             userID: tokenData.userID,
@@ -118,7 +128,13 @@ export async function createGraphqlServer() {
           const token = req.headers.authorization.split(' ')[1];
 
           const cookies = new Cookies(req, null);
-          const tokenData = await validateAuthToken(token, cookies.get('JWTFingerprint'));
+
+          let tokenData;
+          try {
+            tokenData = await validateAuthToken(token, cookies.get('JWTFingerprint'));
+          } catch (error) {
+            throw new AuthenticationError('Invalid token');
+          }
           if (isUserJWToken(tokenData)) {
             return Promise.resolve({ userID: tokenData.userID, req });
           }

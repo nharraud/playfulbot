@@ -7,11 +7,19 @@ windows:
       - cd ../..
     panes:
       - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-backend-commons' 
+          - cd backend-commons
+          - npm run build:watch
+      - shell_command:
           - printf '\033]2;%s\033\\' 'backend'
           - cd ./backend
           - sleep 5s
           - npm run cli db-drop && npm run cli db-create && npm run cli load-demo
           - npm run backend
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'game runner'
+          - cd ./backend-game-runner
+          - npm run debug
       - shell_command:
           - printf '\033]2;%s\033\\' 'frontend' 
           - cd ./frontend
