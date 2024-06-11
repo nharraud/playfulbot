@@ -34,8 +34,11 @@
       "path": "./packages/rollup-plugin-playfulbot-config-loader"
     },
     {
+      "path": "./packages/mem-pubsub"
+    },
+    {
       "path": "./devtools"
-    }
+    },
   ],
   "settings": {
     "asciidoc.antora.enableAntoraSupport": false

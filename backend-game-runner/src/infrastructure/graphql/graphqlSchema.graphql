@@ -1,0 +1,70 @@
+# GraphQL API between backend and React.js Frontend
+
+scalar Date
+scalar JSON
+
+# #
+# # Generic Error types
+# #
+# interface Error {
+#   message: String!
+# }
+
+# type ForbiddenError implements Error {
+#   message: String!
+# }
+
+# type ValidationError implements Error {
+#   message: String!
+# }
+
+# #
+# # Main types
+# #
+
+type Game {
+  id: ID
+  version: Int
+  canceled: Boolean
+  players: [Player]
+  winners: [Int]
+  initialState: JSON
+  patches: JSON
+}
+
+type GamePatch {
+  patch: JSON
+  gameID: ID
+  version: Int
+  winners: [Int]
+}
+
+type GameCanceled {
+  gameID: ID
+  version: Int
+}
+
+type PlayerConnection {
+  playerID: ID
+  connected: Boolean
+}
+
+union LiveGame = Game | GamePatch | GameCanceled | PlayerConnection
+
+type Player {
+  id: ID
+  token: String
+  connected: Boolean
+}
+
+type Query {
+  ping: Boolean
+}
+
+type Subscription {
+  game(gameID: ID!): LiveGame
+}
+
+type Mutation {
+  play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
+}

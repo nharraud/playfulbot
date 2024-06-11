@@ -58,6 +58,29 @@ CREATE TABLE round_players (
 );
 
 
+/*
+ * Game Logic
+ */
+
+CREATE TABLE game_runners (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY
+);
+
+CREATE TYPE game_status AS ENUM ('pending', 'started', 'ended');
+
+CREATE TABLE games (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  game_def_id VARCHAR(36) NOT NULL,
+  players json[] NOT NULL,
+  runner_id uuid REFERENCES game_runners(id) on delete set null,
+  status game_status DEFAULT 'pending'
+);
+
+/*
+ * FIXME
+ */
+
+
 CREATE TABLE game_summaries (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   round_id uuid REFERENCES rounds (id) ON DELETE CASCADE

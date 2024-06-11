@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/games/__mocks__/index.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,gDAAgD,CAAC;AAEhF,MAAM,eAAe,GAAG,IAAI,GAAG,EAAiC,CAAC;AACjE,eAAe,CAAC,GAAG,CAAC,cAAc,CAAC,IAAI,EAAE,cAAc,CAAC,CAAC;AAEzD,MAAM,UAAU,kBAAkB;IAChC,OAAO,OAAO,CAAC,OAAO,CAAC,eAAe,CAAC,CAAC;AAC1C,CAAC"}
