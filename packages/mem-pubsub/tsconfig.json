@@ -73,11 +73,6 @@
   },
   "tsc-alias": {
     "resolveFullPaths": true,
-  },
-  "exclude": [
-    "lib",
-    "tests",
-    "vitest.config.*"
-  ]
+  }
 }
 
