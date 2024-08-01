@@ -44,4 +44,21 @@ describe('AsyncStream', () => {
     const allReadValues = await promise;
     expect(allReadValues).toEqual(sentValues);
   });
+
+  test('should resolve waitOnComplete when stream is complete', async () => {
+    const stream = new AsyncStream();
+    let completed = false;
+    setTimeout(async () => {
+      stream.complete();
+      completed = true;
+    }, 500);
+
+    const promiseComplete = new Promise(async (resolve) => {
+      await stream.waitOnComplete();
+      resolve(completed);
+    });
+    
+    const hasWaitedForCompletion = await promiseComplete;
+    expect(hasWaitedForCompletion).toBeTruthy();
+  });
 });

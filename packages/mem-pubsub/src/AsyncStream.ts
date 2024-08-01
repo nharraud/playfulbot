@@ -50,4 +50,14 @@ export class AsyncStream<T> implements AsyncIterator<T, undefined> {
   complete(): void {
     this.lastPromise.resolve(undefined);
   }
+
+  async waitOnComplete() {
+    let lastPromise = this.lastPromise;
+    while (true) {
+        lastPromise = await lastPromise.promise as DeferredPromise<ChainedPromise<T>> | undefined;
+        if (!lastPromise) {
+            break;
+        }
+    }
+  }
 }
