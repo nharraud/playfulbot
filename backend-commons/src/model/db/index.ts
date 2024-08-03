@@ -5,7 +5,9 @@ import { fixTimeParsing } from './fixTimeParsing';
 
 fixTimeParsing();
 
-type DB = IDatabase<unknown>;
+export type DB = IDatabase<unknown>;
+export type TX = pgPromise.ITask<unknown>;
+
 const dbPGP = pgPromise();
 
 class Database {

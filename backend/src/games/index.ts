@@ -1,10 +1,10 @@
-import { loadConfig } from 'playfulbot-config-loader';
+import { loadConfig, GameDefinitionID } from 'playfulbot-config-loader';
 import { BackendGameDefinition } from 'playfulbot-game-backend';
 
 const gameDefinitions = new Map<string, BackendGameDefinition>();
 let loaded = false;
 
-export async function getGameDefinitions(): Promise<Map<string, BackendGameDefinition>> {
+export async function getGameDefinitions(): Promise<Map<GameDefinitionID, BackendGameDefinition>> {
   if (!loaded) {
     const config = await loadConfig();
     for (const gameModule of config.games) {

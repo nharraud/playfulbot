@@ -66,15 +66,62 @@ CREATE TABLE game_runners (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY
 );
 
+CREATE TABLE arena (
+  id VARCHAR(73) PRIMARY KEY
+);
+
 CREATE TYPE game_status AS ENUM ('pending', 'started', 'ended');
 
 CREATE TABLE games (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  started_at timestamp DEFAULT NOW(),
   game_def_id VARCHAR(36) NOT NULL,
   players json[] NOT NULL,
-  runner_id uuid REFERENCES game_runners(id) on delete set null,
+  runner_id uuid REFERENCES game_runners(id) ON DELETE SET NULL,
+  arena VARCHAR(73) NULL REFERENCES arena(id) ON DELETE CASCADE,
   status game_status DEFAULT 'pending'
 );
+
+
+CREATE FUNCTION fetch_game(calling_runner_id uuid) RETURNS games AS $$
+DECLARE
+    selected_game games;
+BEGIN
+    UPDATE games
+      SET runner_id = calling_runner_id, status = 'started'
+      WHERE id = (
+          SELECT id
+          FROM games
+          WHERE runner_id IS NULL
+          FOR UPDATE SKIP LOCKED
+          LIMIT 1
+      ) RETURNING * INTO selected_game;
+
+    IF selected_game IS NULL THEN
+        -- No game was found
+        RETURN NULL;
+    END IF;
+
+    IF selected_game.arena IS NOT NULL THEN
+      -- Send a NOTIFY message to the game_scheduler channel with the game.
+      PERFORM pg_notify('arena_' || selected_game.arena, row_to_json(selected_game)::text);
+    END IF;
+
+    RETURN selected_game;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- CREATE FUNCTION notify_arena_delete() RETURNS void AS $$
+-- BEGIN
+--     PERFORM pg_notify('arena_' || OLD.id, 'DELETED');
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- CREATE TRIGGER notify_arena_delete
+--     AFTER DELETE ON arena
+--     FOR EACH ROW
+--     EXECUTE FUNCTION notify_arena_delete();
 
 /*
  * FIXME

@@ -1,8 +1,7 @@
 
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-import { afterEach } from 'node:test';
-import { PSQLGameRepository } from '~game-runner/infrastructure/games/PSQLGameRepository';
+import { PSQLGameRepository } from 'tests/unit-tests/infrastructure/utils/PSQLGameRepository';
 import { basicGameDefinition } from '../mocks/mockGameDefinitions';
 import { randomUUID } from 'crypto';
 import { PSQLGameProvider } from '~game-runner/infrastructure/games/PSQLGameProvider';

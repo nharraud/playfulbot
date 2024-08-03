@@ -30,17 +30,7 @@ export class PSQLGameProvider implements GameProvider {
     if (!this.#runnerID) {
       await this.init();
     }
-    const fetchGameRequest = `
-      UPDATE games
-      SET runner_id = $[runnerID], status = 'started'
-      WHERE id = (
-          SELECT id
-          FROM games
-          WHERE runner_id IS NULL
-          FOR UPDATE SKIP LOCKED
-          LIMIT 1
-      ) RETURNING *;
-    `;
+    const fetchGameRequest = `SELECT * from fetch_game($[runnerID]);`;
     let gameRow: GameRow;
     await db.default.tx(async (tx) => {
       gameRow = await tx.oneOrNone<GameRow>(fetchGameRequest, { runnerID: this.#runnerID })
