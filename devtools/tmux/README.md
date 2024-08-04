@@ -1,4 +1,4 @@
 ```
 $ brew install tmuxp
-$ tmuxp load ./playfulbot-dev-session.yaml
+$ tmuxp load ./playfulbot-build-session.yaml
 ```

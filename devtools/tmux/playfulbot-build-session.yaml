@@ -1,0 +1,36 @@
+session_name: playfulbot-build
+windows:
+  - window_name: playfulbot-build
+    layout: tiled
+    shell_command_before:
+      # run as a first command in all panes
+      - cd ../..
+    panes:
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-backend-commons' 
+          - cd backend-commons
+          - npm run build:watch
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-game' 
+          - cd packages/playfulbot-game
+          - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-game-backend' 
+          - cd packages/playfulbot-game-backend
+          - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-game-frontend' 
+          - cd packages/playfulbot-game-frontend
+          - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-config-loader' 
+          - cd packages/playfulbot-config-loader
+          - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'rollup-plugin-playfulbot-config-loader' 
+          - cd packages/rollup-plugin-playfulbot-config-loader
+          - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'playfulbot-wallrace' 
+          - cd packages/playfulbot-wallrace
+          - npm run watch-build
