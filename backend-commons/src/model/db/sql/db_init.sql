@@ -4,8 +4,8 @@ SET timezone='UTC';
 
 CREATE TABLE users (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR(15) NOT NULL UNIQUE CHECK (length(username) >= 3),
-  password BYTEA NOT NULL
+  username VARCHAR(15) NOT NULL UNIQUE CONSTRAINT users_username_check CHECK (length(username) >= 3),
+  password_hash BYTEA NOT NULL
 );
 
 CREATE TYPE tournament_status AS ENUM ('CREATED', 'STARTED', 'ENDED');

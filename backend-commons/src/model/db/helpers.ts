@@ -1,5 +1,6 @@
 /* eslint-disable prefer-template */
 import { IBaseProtocol } from 'pg-promise';
+import { DatabaseError } from 'pg-protocol/dist/messages';
 
 // Default value which can be used with pg-promise. It will transform into "DEFAULT" for Postgresql.
 export const DEFAULT = {
@@ -64,4 +65,8 @@ export class QueryBuilder {
     }
     return result;
   }
+}
+
+export function isDatabaseError(obj: any): obj is DatabaseError {
+  return obj instanceof DatabaseError;
 }

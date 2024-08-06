@@ -1,6 +1,6 @@
 import express from 'express';
 import { PlayerID } from '~playfulbot/model/Player';
-import { UserID } from '~playfulbot/model/User';
+import { UserID } from '~playfulbot/core/entities/Users';
 
 export type ApolloUnauthenticatedContext = {
   req: express.Request;

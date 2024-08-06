@@ -3,11 +3,12 @@ import { config } from 'playfulbot-backend-commons/lib/model/db/config';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
 import { DebugArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
 import { GameID } from 'playfulbot-game';
+import { randomUUID } from 'crypto';
 
 let OLD_DATABASE_NAME: string;
 export async function initTestDB() {
   OLD_DATABASE_NAME = config.DATABASE_NAME;
-  config.DATABASE_NAME = 'testdb';
+  config.DATABASE_NAME = `testdb-${randomUUID()}`.replaceAll('-', '_');
   await dropDB();
   await createDB();
 }
