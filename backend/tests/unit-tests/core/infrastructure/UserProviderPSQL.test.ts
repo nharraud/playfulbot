@@ -2,7 +2,7 @@
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
 import { dropTestDB, initTestDB } from './utils/psql';
-import { UserProviderPLSQL } from '~playfulbot/infrastructure/UserProviderPLSQL';
+import { UserProviderPLSQL } from '~playfulbot/infrastructure/UserProviderPSQL';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
 import { createLogger } from './utils/logging';
 import { User } from '~playfulbot/core/entities/Users';

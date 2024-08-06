@@ -1,10 +1,10 @@
 import { randomUUID } from 'crypto';
 import pgPromise from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
-import { DB, TX } from 'playfulbot-backend-commons/lib/model/db/index';
+import { DB } from 'playfulbot-backend-commons/lib/model/db/index';
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
-import { DebugArenaID, GameRunnerId, PlayerID } from '~playfulbot/core/entities/base-types';
+import { DebugArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
 import { GameRef, GameRefWithDate } from '~playfulbot/core/use-cases/GameRef';
 import { GameRepository } from '~playfulbot/core/use-cases/GameRepository';
 import logger from '~playfulbot/logging';
@@ -31,7 +31,7 @@ interface VersionedGameRef extends GameRef {
  * GameRepository based on PostgreSQL. When we add games, the game runner servers fetch the game and notify
  * every backend server which listens for Debug Arena changes and Player games changes.
  */
-export class PSQLGameRepository implements GameRepository {
+export class GameRepositoryPSQL implements GameRepository {
   #connection : pgPromise.IConnected<unknown, pg.IClient>;
   #closed = false;
   #arenasStreams = new Map<GameID, Promise<AsyncStream<VersionedGameRef>[]>>();
@@ -69,7 +69,7 @@ export class PSQLGameRepository implements GameRepository {
   }
 
   static async createRepository(db: DB) {
-    const repository = new PSQLGameRepository(db);
+    const repository = new GameRepositoryPSQL(db);
     await repository.#init();
     return repository;
   }

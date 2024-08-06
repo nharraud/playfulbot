@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import { DEFAULT, isDatabaseError } from "playfulbot-backend-commons/lib/model/db/helpers";
-import { TeamID } from '../model/Team';
+import { TeamID } from './TeamsPSQL';
 import { User, UserID, UserProvider } from '~playfulbot/core/entities/Users';
-import { ContextPLSQL } from './ContextPLSQL';
+import { ContextPSQL } from './ContextPSQL';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 
 interface DbUser {
@@ -22,10 +22,10 @@ function buildUser(data: DbUser): User {
   return result;
 }
 
-export class UserProviderPLSQL implements UserProvider<ContextPLSQL> {
+export class UserProviderPLSQL implements UserProvider<ContextPSQL> {
 
   async createUser(
-    ctx: ContextPLSQL,
+    ctx: ContextPSQL,
     user: {
       username: string,
       password: string,
@@ -49,20 +49,20 @@ export class UserProviderPLSQL implements UserProvider<ContextPLSQL> {
     }
   }
 
-  async getUserByName(ctx: ContextPLSQL, username: string): Promise<User | null> {
+  async getUserByName(ctx: ContextPSQL, username: string, withPassword = false): Promise<User | null> {
     const data = await ctx.dbOrTx.oneOrNone<DbUser>(
-      'SELECT id, username FROM users WHERE username = $[username]',
+      `SELECT id, username ${ withPassword ? ', password': '' } FROM users WHERE username = $[username]`,
       { username }
     );
     return data ? buildUser(data) : null;
   }
 
-  async getUserByID(ctx: ContextPLSQL, id: UserID): Promise<User | null> {
+  async getUserByID(ctx: ContextPSQL, id: UserID): Promise<User | null> {
     const data = await ctx.dbOrTx.oneOrNone<DbUser>('SELECT id, username FROM users WHERE id = $[id]', { id });
     return data ? buildUser(data) : null;
   }
 
-  async userExists(ctx: ContextPLSQL, id: UserID): Promise<boolean> {
+  async userExists(ctx: ContextPSQL, id: UserID): Promise<boolean> {
     const result = await ctx.dbOrTx.oneOrNone<{ exists: boolean }>(
       'SELECT EXISTS(SELECT 1 FROM users WHERE id = $[id])',
       { id }
@@ -70,7 +70,7 @@ export class UserProviderPLSQL implements UserProvider<ContextPLSQL> {
     return result.exists || false;
   }
 
-  async getUserByTeam(ctx: ContextPLSQL, teamID: TeamID): Promise<User[]> {
+  async getUserByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<User[]> {
     const query = `SELECT users.id, users.username FROM team_memberships
                     JOIN users ON users.id = team_memberships.user_id
                     WHERE team_memberships.team_id = $[teamID] ORDER BY users.username`;

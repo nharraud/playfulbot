@@ -1,20 +1,13 @@
 
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-// import { PSQLGameRepository } from 'tests/unit-tests/infrastructure/utils/PSQLGameRepository';
-// import { basicGameDefinition } from '../mocks/mockGameDefinitions';
-// import { randomUUID } from 'crypto';
-// import { PSQLGameProvider } from '~game-runner/infrastructure/games/PSQLGameProvider';
 import { createArena, dropTestDB, initTestDB, getGame } from './utils/psql';
-import { PSQLGameRepository } from '~playfulbot/infrastructure/PSQLGameRepository';
+import { GameRepositoryPSQL } from '~playfulbot/infrastructure/GameRepositoryPSQL';
 import { PSQLGameRunnerMock } from './utils/PSQLGameRunnerMock';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
-import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
-import { rejects } from 'assert';
 
-describe.only('infrastructure/games/PSQLGameRepository', () => {
-  // const gameDefProvider = () => Promise.resolve(basicGameDefinition);
-  let repositories: PSQLGameRepository[] = [];
+describe('infrastructure/GameRepositoryPLSQL', () => {
+  let repositories: GameRepositoryPSQL[] = [];
   beforeEach(async () => {
     await initTestDB()
   });
@@ -24,12 +17,11 @@ describe.only('infrastructure/games/PSQLGameRepository', () => {
       await repository.close();
     }
     repositories = [];
-    // await PSQLGameRepository.stopAll();
     await dropTestDB();
   })
 
   async function createRepository() {
-    const repository = await PSQLGameRepository.createRepository(db.default);
+    const repository = await GameRepositoryPSQL.createRepository(db.default);
     repositories.push(repository);
     return repository;
   }
