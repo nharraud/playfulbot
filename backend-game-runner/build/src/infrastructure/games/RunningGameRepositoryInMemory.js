@@ -1,7 +1,13 @@
-export class GameInMemoryRepository {
+export class RunningGameRepositoryInMemory {
     games = new Map();
+    get nbGames() {
+        return this.games.size;
+    }
     get(id) {
         return this.games.get(id);
+    }
+    list() {
+        return [...this.games.values()];
     }
     add(game) {
         this.games.set(game.id, game);
@@ -13,4 +19,4 @@ export class GameInMemoryRepository {
         this.games.clear();
     }
 }
-//# sourceMappingURL=gameInMemoryRepository.js.map
+//# sourceMappingURL=RunningGameRepositoryInMemory.js.map

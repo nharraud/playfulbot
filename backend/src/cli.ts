@@ -1,13 +1,18 @@
 import { Command } from 'commander';
 import { createGraphqlServer } from '~playfulbot/graphqlServer';
 import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
-import { createDB, dropDB } from '~playfulbot/model/db/db_admin';
+import { createDB, dropDB } from 'playfulbot-backend-commons/lib/model/db/db_admin';
 
-import { db } from '~playfulbot/model/db';
-import { initDemo } from './model/demo';
+import { db } from 'playfulbot-backend-commons/lib/model/db';
+import { createLogger } from '~playfulbot/logging';
+import { initDemo } from './infrastructure/demo';
 import { handleRestart } from './model/handleRestart';
 import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';
+import { ContextPSQL } from './infrastructure/ContextPSQL';
+import { convertError } from './infrastructure/convertError';
+import { UserProviderPSQL } from './infrastructure/UserProviderPSQL';
+import { TournamentProviderPSQL } from './infrastructure/TournamentProviderPSQL';
 
 async function closeConnections() {
   await db.disconnectDefault();
@@ -15,6 +20,15 @@ async function closeConnections() {
 
 async function execute(argv: string[]): Promise<void> {
   const program = new Command();
+  const context: ContextPSQL = {
+    logger: createLogger(),
+    dbOrTx: db.default,
+    convertError,
+    providers: {
+      user: new UserProviderPSQL(),
+      tournament: new TournamentProviderPSQL(),
+    }
+  }
 
   program
     .command('serve')
@@ -22,7 +36,7 @@ async function execute(argv: string[]): Promise<void> {
     .action(async () => {
       validateSecretKey();
       await handleRestart();
-      await createGraphqlServer();
+      await createGraphqlServer<ContextPSQL>(context);
       startGrpcServer();
       await scheduler.start();
     });
@@ -55,7 +69,7 @@ async function execute(argv: string[]): Promise<void> {
     .action(async () => {
       // await db.admin.loadDemo();
       try {
-        await initDemo();
+        await initDemo(context);
       } finally {
         await closeConnections();
       }

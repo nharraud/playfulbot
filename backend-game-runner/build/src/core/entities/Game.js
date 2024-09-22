@@ -1,10 +1,9 @@
-import { randomUUID as uuidv4 } from 'crypto';
 import * as jsonpatch from 'fast-json-patch';
 import { DeferredPromise, cloneDeep } from 'playfulbot-backend-commons/lib/utils/index.js';
-import { ForbiddenError, InvalidArgument, InvalidGameState, PlayingOutOfTurn, AlreadyPlayed } from './errors';
+import { ForbiddenError, InvalidArgument, InvalidGameState, PlayingOutOfTurn, AlreadyPlayed, GameCancelledError } from './errors';
 export class Game {
     id;
-    canceled = false;
+    #cancelled = false;
     version;
     gameDefinition;
     gameState;
@@ -15,8 +14,8 @@ export class Game {
     #gameEndPromise = new DeferredPromise();
     watcher;
     stateObserver;
-    constructor(gameDefinition, players) {
-        this.id = uuidv4();
+    constructor(id, gameDefinition, players) {
+        this.id = id;
         this.version = 0;
         this.gameDefinition = gameDefinition;
         this.gameState = gameDefinition.init();
@@ -32,14 +31,21 @@ export class Game {
         this.watcher = watcher;
     }
     cancel() {
-        this.canceled = true;
+        this.#cancelled = true;
         // FIXME: there could be a race condition here if the game is played at the same time.
         this.version += 1;
         this.watcher?.notifyGameCancelled(this.id, this.version);
         jsonpatch.unobserve(this.gameState, this.stateObserver);
+        this.#gameEndPromise.resolve(this);
     }
-    isActive() {
-        return !(this.canceled || this.gameState.end);
+    get isActive() {
+        return !(this.#cancelled || this.gameState.end);
+    }
+    get cancelled() {
+        return this.#cancelled;
+    }
+    get gameEndPromise() {
+        return this.#gameEndPromise.promise;
     }
     play(playerIDOrNumber, actionData) {
         let playerNumber;
@@ -58,6 +64,9 @@ export class Game {
         const playerState = this.gameState.players[playerNumber];
         if (!playerState.playing) {
             throw new PlayingOutOfTurn();
+        }
+        if (!this.isActive) {
+            throw new GameCancelledError();
         }
         const action = {
             player: playerNumber,
@@ -85,7 +94,7 @@ export class Game {
         this.version += 1;
         this.watcher?.notifyGameStateChanged(this.id, this.version, patch, this.winners);
         if (this.gameState.end) {
-            this.gameEndPromise.resolve(this);
+            this.#gameEndPromise.resolve(this);
             jsonpatch.unobserve(this.gameState, this.stateObserver);
         }
     }

@@ -1,5 +1,5 @@
 import { db } from '~playfulbot/model/db';
-import { User } from '~playfulbot/model/User';
+import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { onResetFixtures } from './reset';
 import { createdTournamentFixture } from './tournamentFixtures';

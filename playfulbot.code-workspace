@@ -41,6 +41,7 @@
     },
   ],
   "settings": {
-    "asciidoc.antora.enableAntoraSupport": false
+    "asciidoc.antora.enableAntoraSupport": false,
+    "typescript.tsserver.experimental.useVsCodeWatcher": true
   }
 }

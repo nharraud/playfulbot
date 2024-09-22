@@ -2,7 +2,7 @@ import { AuthenticationError, TournamentInvitationNotFound } from '~playfulbot/e
 import { db } from '~playfulbot/model/db';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { TournamentInvitationLink } from '~playfulbot/model/TournamentInvitationLink';
-import { Tournament } from '~playfulbot/model/Tournaments';
+import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import {
   ApolloContext,
   isUnauthenticatedContext,

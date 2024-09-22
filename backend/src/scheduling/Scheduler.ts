@@ -4,7 +4,7 @@ import { db } from '~playfulbot/model/db';
 import { fixTimeParsing } from '~playfulbot/model/db/fixTimeParsing';
 import { DbOrTx } from '~playfulbot/model/db/helpers';
 import { Round, RoundStatus } from '~playfulbot/model/Round';
-import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/model/Tournaments';
+import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
 export class Scheduler {

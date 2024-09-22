@@ -3,7 +3,7 @@ import { TournamentNotFoundError, ForbiddenError, BotsForbiddenError } from '~pl
 import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
 import { TournamentRoleName } from '~playfulbot/model/TournamentRole';
-import { Tournament } from '~playfulbot/model/Tournaments';
+import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import {
   ApolloContext,
   isBotContext,

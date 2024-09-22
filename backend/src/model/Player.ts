@@ -1,10 +1,9 @@
+import { GameID } from 'playfulbot-backend-commons/lib/model/Game';
+import { PlayerID } from 'playfulbot-backend-commons/lib/model/Player';
 import { pubsub } from '~playfulbot/pubsub';
 import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
 import { JWToken } from '~playfulbot/types/token';
-import { GameID } from './Game';
 import { ConflictError } from '~playfulbot/errors';
-
-export type PlayerID = string;
 
 export interface PlayerAccess {
   id: PlayerID;

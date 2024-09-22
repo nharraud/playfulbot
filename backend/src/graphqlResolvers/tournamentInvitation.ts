@@ -1,11 +1,11 @@
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import { User } from '~playfulbot/model/User';
+import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { db } from '~playfulbot/model/db';
-import { Team } from '~playfulbot/model/Team';
+import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
 import { Resolver, ResolversTypes } from '~playfulbot/types/graphql';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
-import { Tournament } from '~playfulbot/model/Tournaments';
+import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 
 export function tournamentInvitationTournamentResolver(
   parent: TournamentInvitation,

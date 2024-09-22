@@ -14,7 +14,7 @@ import {
   CallAndCallbackRequireAuthentication,
   CRequireAuthentication as CallRequireAuthentication,
 } from './authentication';
-import { pubsub } from 'playfulbot-backend-commons/lib/pubsub/index.js';
+import { pubsub, isGameStateChanged } from '~game-runner/infrastructure/pubsub';
 import {
   ForbiddenError,
   GameNotFoundError,
@@ -22,7 +22,6 @@ import {
 } from '~game-runner/infrastructure/graphql/errors';
 import { asyncCallHandler } from './asyncGrpc';
 import { Game } from '~game-runner/core/entities/Game';
-import { isGameStateChanged } from 'playfulbot-backend-commons/lib/pubsub/messages.js';
 import { getDirName } from 'playfulbot-backend-commons/lib/utils/esm.js';
 import { sslConfig } from './sslConfig';
 import { PlayfulBotGameRunnerHandlers } from './proto/types/playfulbot/v0/PlayfulBotGameRunner';

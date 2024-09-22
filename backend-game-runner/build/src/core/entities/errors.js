@@ -13,4 +13,7 @@ export class PlayingOutOfTurn extends Error {
 export class AlreadyPlayed extends Error {
 }
 ;
+export class GameCancelledError extends Error {
+}
+;
 //# sourceMappingURL=errors.js.map

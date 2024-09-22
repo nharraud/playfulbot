@@ -50,7 +50,10 @@ module.exports = {
     'no-param-reassign': ['error', { 'props': false }],
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error"
     'no-useless-constructor': 'off',
+    "@typescript-eslint/prefer-literal-enum-member": "error",
     'prefer-destructuring': 'off',
     'lines-between-class-members': ['error', "always", { 'exceptAfterSingleLine': true }],
     'max-classes-per-file': 'off',

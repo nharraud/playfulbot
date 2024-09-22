@@ -18,9 +18,9 @@ interface GameCanceled {
 
 type GameChanged = GameStateChanged | GameCanceled;
 
-// export function isGameStateChanged(value: GameChanged): value is GameStateChanged {
-//   return 'patch' in value;
-// }
+export function isGameStateChanged(value: GameChanged): value is GameStateChanged {
+  return 'patch' in value;
+}
 
 interface DebugGame extends VersionedMessage {
   gameID: GameID;

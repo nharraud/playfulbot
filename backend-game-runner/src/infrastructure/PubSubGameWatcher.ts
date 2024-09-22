@@ -1,5 +1,4 @@
 import { GameWatcher } from "~game-runner/core/entities/GameWatcher";
-// import { pubsub } from 'playfulbot-backend-commons/lib/pubsub/index.js';
 import { pubsub } from '~game-runner/infrastructure/pubsub';
 
 import { JSONPatch } from "~game-runner/core/entities/base-types";

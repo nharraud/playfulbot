@@ -1,7 +1,7 @@
 import { db } from './db';
-import { DebugArena } from './DebugArena';
+import { DebugArena } from '../infrastructure/DebugArenaPSQL';
 import { Player } from './Player';
-import { Tournament } from './Tournaments';
+import { Tournament } from '../infrastructure/TournamentProviderPSQL';
 import * as gqlTypes from '~playfulbot/types/graphql';
 
 /**

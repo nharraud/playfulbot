@@ -1,10 +1,10 @@
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import { User } from '~playfulbot/model/User';
+import { User } from '~playfulbot/core/entities/Users';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { db } from '~playfulbot/model/db';
-import { Team } from '~playfulbot/model/Team';
+import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
-import { Tournament } from '~playfulbot/model/Tournaments';
+import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 
 export async function userTeamsResolver(
   parent: User,

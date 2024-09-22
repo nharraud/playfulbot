@@ -1,8 +1,6 @@
-import { User } from '~playfulbot/model/User';
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
 import { authenticate } from '~playfulbot/graphqlResolvers/authentication';
 import * as gqlTypes from '~playfulbot/types/graphql';
-import { db } from '~playfulbot/model/db';
 
 interface RegisterUserArguments {
   username: string;
@@ -12,11 +10,11 @@ interface RegisterUserArguments {
 export async function registerUserResolver(
   parent: unknown,
   args: RegisterUserArguments,
-  { req }: ApolloContext
+  ctx: ApolloContext
 ): Promise<gqlTypes.LoginResult> {
-  const newUser = await User.create(args.username, args.password, db.default);
+  const newUser = await ctx.userProviddder.createUser(ctx, { username: args.username, password: args.password });
 
-  const token = await authenticate(newUser, req);
+  const token = await authenticate(newUser, ctx.req);
   return {
     token,
     user: {

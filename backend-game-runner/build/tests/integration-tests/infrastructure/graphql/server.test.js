@@ -6,7 +6,7 @@ import WebSocket from 'ws';
 import { serverConfig } from '~game-runner/serverConfig';
 import jwt from 'jsonwebtoken';
 import { SECRET_KEY } from 'playfulbot-backend-commons/lib/secret';
-import { GameInMemoryRepository } from '~game-runner/infrastructure/games/gameInMemoryRepository';
+import { RunningGameRepositoryInMemory } from '~game-runner/infrastructure/games/RunningGameRepositoryInMemory';
 import { Game } from '~game-runner/core/entities/Game';
 import { PubSubGameWatcher } from '~game-runner/infrastructure/PubSubGameWatcher';
 ;
@@ -31,7 +31,7 @@ describe('graphql', () => {
     let client;
     let server;
     let url = `ws://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
-    let gameRepository = new GameInMemoryRepository();
+    let gameRepository = new RunningGameRepositoryInMemory();
     beforeAll(async () => {
         server = await createGraphqlServer({ gameRepository });
     });
@@ -42,17 +42,6 @@ describe('graphql', () => {
     afterAll(async () => {
         client.terminate();
         await server.close();
-    });
-    test('testing readonly', () => {
-        class Test {
-            x_ = 42;
-            get x() {
-                return this.x_;
-            }
-        }
-        const t = new Test();
-        t.x_ = 21;
-        console.error(t.x_);
     });
     describe('errors', () => {
         beforeAll(async () => {
@@ -108,7 +97,7 @@ describe('graphql', () => {
     describe('with existing game', () => {
         let game;
         beforeEach(() => {
-            game = new Game(basicGameDefinition, [{ playerID: 'a' }]);
+            game = new Game('testgame', basicGameDefinition, [{ playerID: 'a' }]);
             game.watch(new PubSubGameWatcher());
             gameRepository.add(game);
         });
@@ -199,7 +188,7 @@ describe('graphql', () => {
             const lastMessage = await query.next();
             expect(lastMessage.done).toEqual(true);
         });
-        test('should notify when the game is canceled', async () => {
+        test('should notify when the game is cancelled', async () => {
             const authToken = jwt.sign({ playerID: 'myPlayer' }, SECRET_KEY);
             createTestClient({ connectionParams: { authToken } });
             const query = client.iterate({

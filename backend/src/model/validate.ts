@@ -13,6 +13,7 @@ export async function validateSchema<SCHEMA extends yup.ObjectSchema<any>, DATA>
     await schema.validate(data);
   } catch (err) {
     if (err instanceof yup.ValidationError) {
+      err.inner.forEach(e => e.path)
       return { validationErrors: err.errors };
     }
     throw err;
@@ -29,8 +30,8 @@ export function validationErrorsToGraphQL(
   }));
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function isValidationError(obj: any): obj is ValidationError {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return obj?.validationErrors !== undefined;
-}
+// // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// export function isValidationError(obj: any): obj is ValidationError {
+//   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+//   return obj?.validationErrors !== undefined;
+// }

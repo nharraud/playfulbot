@@ -1,12 +1,13 @@
 import bcrypt from 'bcrypt';
 import { DEFAULT, isDatabaseError } from "playfulbot-backend-commons/lib/model/db/helpers";
-import { TeamID } from './TeamsPSQL';
-import { User, UserID, UserProvider } from '~playfulbot/core/entities/Users';
+import { TeamID } from './TeamProviderPSQL';
+import { User, UserID } from '~playfulbot/core/entities/Users';
 import { ContextPSQL } from './ContextPSQL';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
+import { UserProvider } from '~playfulbot/core/use-cases/UserProvider';
 
 interface DbUser {
-  id: UserID;
+  readonly id: UserID;
   username: string;
   password_hash: Buffer;
 }
@@ -22,7 +23,7 @@ function buildUser(data: DbUser): User {
   return result;
 }
 
-export class UserProviderPLSQL implements UserProvider<ContextPSQL> {
+export class UserProviderPSQL implements UserProvider<ContextPSQL> {
 
   async createUser(
     ctx: ContextPSQL,
@@ -70,7 +71,7 @@ export class UserProviderPLSQL implements UserProvider<ContextPSQL> {
     return result.exists || false;
   }
 
-  async getUserByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<User[]> {
+  async getUsersByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<User[]> {
     const query = `SELECT users.id, users.username FROM team_memberships
                     JOIN users ON users.id = team_memberships.user_id
                     WHERE team_memberships.team_id = $[teamID] ORDER BY users.username`;

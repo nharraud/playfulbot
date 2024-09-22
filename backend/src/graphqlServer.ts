@@ -22,12 +22,13 @@ import { serverConfig } from './serverConfig';
 import { AuthenticationError, InvalidRequest } from './errors';
 import { validateAuthToken } from './graphqlResolvers/authentication';
 import { isBotJWToken, isUserJWToken } from './types/token';
+import { Context } from './infrastructure/Context';
 
 interface MyContext {
   token?: string;
 }
 
-export async function createGraphqlServer() {
+export async function createGraphqlServer<CTX extends Context>(baseContext: CTX) {
   const app = express();
   const httpServer = http.createServer(app);
 
@@ -79,11 +80,13 @@ export async function createGraphqlServer() {
         }
         if (isUserJWToken(tokenData)) {
           return {
+            ...baseContext,
             userID: tokenData.userID,
           };
         }
         if (isBotJWToken(tokenData)) {
           return {
+            ...baseContext,
             ...tokenData,
           };
         }
@@ -136,10 +139,18 @@ export async function createGraphqlServer() {
             throw new AuthenticationError('Invalid token');
           }
           if (isUserJWToken(tokenData)) {
-            return Promise.resolve({ userID: tokenData.userID, req });
+            return Promise.resolve({
+              ...baseContext,
+              userID: tokenData.userID,
+              req
+            });
           }
           if (isBotJWToken(tokenData)) {
-            return Promise.resolve({ ...tokenData, req });
+            return Promise.resolve({
+              ...baseContext,
+              ...tokenData,
+              req
+            });
           }
           throw new Error('Unknown token type');
         }

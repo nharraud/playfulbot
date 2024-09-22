@@ -1,17 +1,21 @@
 import express from 'express';
-import { PlayerID } from '~playfulbot/model/Player';
-import { UserID } from '~playfulbot/core/entities/Users';
+import { PlayerID } from '~playfulbot/core/entities/Players';
+import { UserID, UserProvider } from '~playfulbot/core/entities/Users';
 
-export type ApolloUnauthenticatedContext = {
+export type ApolloBaseContext = {
+  userProviddder: UserProvider<unknown>,
+}
+
+export interface ApolloUnauthenticatedContext extends ApolloBaseContext {
   req: express.Request;
 };
 
-export type ApolloUserContext = {
+export interface ApolloUserContext extends ApolloBaseContext {
   req?: express.Request;
   userID: UserID;
 };
 
-export type ApolloBotContext = {
+export interface ApolloBotContext extends ApolloBaseContext {
   req?: express.Request;
   playerID: PlayerID;
 };

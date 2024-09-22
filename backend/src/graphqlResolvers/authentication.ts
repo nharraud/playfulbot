@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 import Cookies from 'cookies';
 import express from 'express';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import { User } from '~playfulbot/model/User';
+import { User } from '~playfulbot/core/entities/Users';
 
 import {
   JWTokenData,
@@ -20,8 +20,7 @@ import {
 } from '~playfulbot/types/token';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { InvalidRequest, AuthenticationError } from '~playfulbot/errors';
-import { PlayerID } from '~playfulbot/model/Player';
-import { db } from '~playfulbot/model/db';
+import { PlayerID } from '~playfulbot/core/entities/Players';
 import { SECRET_KEY } from '~playfulbot/secret';
 
 const randomBytes = promisify(crypto.randomBytes);
@@ -50,12 +49,12 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   args,
   ctx
 ) => {
-  const foundUser = await User.getByName(args.username, db.default);
+  const foundUser = await ctx.userProviddder.getUserByName(ctx, args.username);
 
   if (!foundUser) {
     throw new AuthenticationError(`Could not find account: ${args.username}`);
   }
-  const match = await bcrypt.compare(args.password, foundUser.password.toString('utf8'));
+  const match = await bcrypt.compare(args.password, foundUser.passwordHash?.toString('utf8'));
 
   if (!match) {
     throw new AuthenticationError('Incorrect credentials');

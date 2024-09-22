@@ -31,7 +31,7 @@ describe('core/entities/game', () => {
         });
         test('should throw an error if a player plays out of turn', async () => {
             const basicGameDefinition = { name: 'TestGame', actionHandler: noopHandler, init: multiInit };
-            const game = new Game(basicGameDefinition, multiPlayers);
+            const game = new Game('testgame', basicGameDefinition, multiPlayers);
             expect(() => game.play(1, {})).toThrow(PlayingOutOfTurn);
         });
         test('should throw an error if a player plays multiple times', async () => {
@@ -45,12 +45,12 @@ describe('core/entities/game', () => {
         const game = new Game('testgame', basicGameDefinition, players);
         expect(game.initialState).toEqual(basicInit());
         expect(game.initialState).toEqual(game.gameState);
-        expect(game.isActive()).toBe(true);
+        expect(game.isActive).toBe(true);
     });
     test('should cancel game', async () => {
         const game = new Game('testgame', basicGameDefinition, players);
         game.cancel();
-        expect(game.isActive()).toBe(false);
+        expect(game.isActive).toBe(false);
     });
     test('should change state when playing game', async () => {
         let receivedState;
@@ -69,7 +69,7 @@ describe('core/entities/game', () => {
         expect(game.gameState).toEqual(expectedState);
         expect(receivedState).toEqual(basicInit());
         expect(receivedActions).toEqual([{ player: 0, data: action }]);
-        expect(game.isActive()).toBe(true);
+        expect(game.isActive).toBe(true);
     });
     test('should generate patches and increment version when playing game', async () => {
         let handler = (state, actions) => {
@@ -106,7 +106,7 @@ describe('core/entities/game', () => {
         expect(game.gameState.number).toEqual(3);
         expect(receivedState).toEqual(multiInit());
         expect(receivedActions).toEqual([{ player: 0, data: action0 }, { player: 2, data: action2 }]);
-        expect(game.isActive()).toBe(true);
+        expect(game.isActive).toBe(true);
     });
     test('should end game', async () => {
         let handler = (state) => {
@@ -115,8 +115,8 @@ describe('core/entities/game', () => {
         const basicGameDefinition = { name: 'TestGame', actionHandler: handler, init: basicInit };
         const game = new Game('testgame', basicGameDefinition, players);
         game.play(0, {});
-        expect(game.isActive()).toEqual(false);
-        await expect(game.gameEndPromise.promise).resolves.toBeInstanceOf(Game);
+        expect(game.isActive).toEqual(false);
+        await expect(game.gameEndPromise).resolves.toBeInstanceOf(Game);
     });
     test('should return winners', async () => {
         function init() {
@@ -137,7 +137,7 @@ describe('core/entities/game', () => {
         game.play(0, { wins: true });
         game.play(1, { wins: false });
         game.play(2, { wins: true });
-        await game.gameEndPromise.promise;
+        await game.gameEndPromise;
         expect(game.winners).toEqual(expect.arrayContaining([0, 2]));
         expect(game.winners).to.have.lengthOf(2);
     });
@@ -149,7 +149,7 @@ describe('core/entities/game', () => {
                 notifyGameStateChanged: vi.fn(),
             };
         });
-        test('should nofify watchers when game is canceled', () => {
+        test('should nofify watchers when game is cancelled', () => {
             const game = new Game('testgame', basicGameDefinition, players);
             game.watch(watcher);
             game.cancel();

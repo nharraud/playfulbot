@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
 export default defineConfig({
     test: {
         server: {
@@ -14,7 +14,11 @@ export default defineConfig({
             // https://github.com/graphql/graphql-js/issues/2801#issuecomment-1846206543
             'graphql': 'graphql/index.js',
         },
-        setupFiles: 'dotenv-flow/config'
+        setupFiles: 'dotenv-flow/config',
+        exclude: [
+            ...configDefaults.exclude,
+            'build/**'
+        ]
     },
 });
 //# sourceMappingURL=vitest.config.js.map

@@ -1,4 +1,4 @@
-import { PlayerID } from "./base-types";
+import { PlayerID } from "./Players";
 
 export interface PlayerAssignment {
   playerID: PlayerID;

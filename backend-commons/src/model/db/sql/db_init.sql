@@ -18,7 +18,7 @@ CREATE TABLE tournaments (
   last_round_date timestamp with time zone NOT NULL,
   rounds_number smallint NOT NULL CHECK (rounds_number > 1),
   minutes_between_rounds smallint NOT NULL,
-  game_name VARCHAR(30) NOT NULL,
+  game_definition_id VARCHAR(70) NOT NULL,
 
   CONSTRAINT first_round_after_tournament_start CHECK (
     start_date <= last_round_date - rounds_number * make_interval(mins := minutes_between_rounds)
@@ -29,7 +29,7 @@ CREATE TABLE tournaments (
 CREATE TABLE teams (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE,
-  name VARCHAR(15) NOT NULL CHECK (length(name) >= 3),
+  name VARCHAR(15) NOT NULL CONSTRAINT team_name_check CHECK (length(name) >= 3),
   UNIQUE(tournament_id, name)
 );
 

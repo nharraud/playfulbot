@@ -4,7 +4,7 @@ import * as protoLoader from '@grpc/proto-loader';
 import * as path from 'path';
 import logger from '~game-runner/infrastructure/logging';
 import { CallAndCallbackRequireAuthentication, CRequireAuthentication as CallRequireAuthentication, } from './authentication';
-import { pubsub } from 'playfulbot-backend-commons/lib/pubsub/index.js';
+import { pubsub } from '~game-runner/infrastructure/pubsub';
 import { ForbiddenError, GameNotFoundError, GameNotPlayableError, } from '~game-runner/infrastructure/graphql/errors';
 import { asyncCallHandler } from './asyncGrpc';
 import { Game } from '~game-runner/core/entities/Game';

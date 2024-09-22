@@ -1,6 +1,6 @@
 import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
-import { Team } from '~playfulbot/model/Team';
+import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
 import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { RoundNotFoundError } from '~playfulbot/errors';
 import * as gqlTypes from '~playfulbot/types/graphql';

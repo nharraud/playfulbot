@@ -1,4 +1,3 @@
-// import { pubsub } from 'playfulbot-backend-commons/lib/pubsub/index.js';
 import { pubsub } from '~game-runner/infrastructure/pubsub';
 export class PubSubGameWatcher {
     notifyGameCancelled(gameId, version) {

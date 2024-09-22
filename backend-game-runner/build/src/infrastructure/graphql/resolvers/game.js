@@ -41,7 +41,7 @@ export const gameResolver = {
             });
             return Promise.resolve({
                 id: currentGame.id,
-                canceled: currentGame.canceled,
+                canceled: currentGame.cancelled,
                 version: currentGame.version,
                 players,
                 winners: currentGame.winners || null,
