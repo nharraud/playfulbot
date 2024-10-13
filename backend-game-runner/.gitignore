@@ -26,3 +26,5 @@ docker-compose.override.yml
 isolate-0x*
 
 /ssl
+
+/build
