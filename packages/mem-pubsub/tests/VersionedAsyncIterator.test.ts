@@ -62,6 +62,21 @@ describe('VersionedAsyncIterator', () => {
     expect(await versionedIterator.next()).toMatchObject({ done: true, value: undefined });
   });
 
+
+  test('should skip the initial version if is falsy', async () => {
+    const wrappedIterator = enumerate(0, [1, 2, 3]);
+    const expectedIterator = enumerate(0, [1, 2, 3]);
+    const initialValue: any = null;
+    const versionedIterator = new VersionedAsyncIterator(wrappedIterator, () =>
+      Promise.resolve(initialValue)
+    );
+
+    for await (const expected of expectedIterator) {
+      expect(await versionedIterator.next()).toMatchObject({ done: false, value: expected });
+    }
+    expect(await versionedIterator.next()).toMatchObject({ done: true, value: undefined });
+  });
+
   test('should forward "throw" call to nested iterator but still return initial value', async () => {
     const wrappedIterator = enumerate(0, [1, 2, 3]);
     const initialValue = { key: 42, version: 2 };

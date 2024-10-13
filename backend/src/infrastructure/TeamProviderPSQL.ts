@@ -248,14 +248,14 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
     const deleteMemberQuery = `
       DELETE FROM team_memberships
       WHERE user_id = $[userID] AND team_id = $[teamID]
-      RETURNING true
+      RETURNING true as bool
     `;
     const deleteEmptyTeamQuery = `
       DELETE FROM teams
       WHERE teams.id = $[teamID] AND NOT EXISTS (
         SELECT 1 FROM team_memberships WHERE team_memberships.team_id = $[teamID]
       )
-      RETURNING true
+      RETURNING true as bool
     `;
     let memberRemoved: { bool: boolean };
     let teamDeleted: { bool: boolean };

@@ -45,6 +45,23 @@ describe('AsyncStream', () => {
     expect(allReadValues).toEqual(sentValues);
   });
 
+  test('should return all pushed values (multiple values in one call)', async () => {
+    const stream = new AsyncStream();
+    const promise = new Promise(async (resolve) => {
+      const readValues = [];
+      for await (const v of stream) {
+        readValues.push(v);
+      }
+      resolve(readValues);
+    });
+    const sentValues = [1, 2, 3, 4, 5];
+    stream.push(...sentValues);
+    stream.complete();
+    
+    const allReadValues = await promise;
+    expect(allReadValues).toEqual(sentValues);
+  });
+
   test('should resolve waitOnComplete when stream is complete', async () => {
     const stream = new AsyncStream();
     let completed = false;

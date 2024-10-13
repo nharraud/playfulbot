@@ -22,7 +22,13 @@ export class AsyncStream<T> implements AsyncIterator<T, undefined> {
     return this;
   }
 
-  push(value: T): void {
+  push(...values: T[]): void {
+    for (const value of values) {
+      this.#pushOne(value);
+    }
+  }
+
+  #pushOne(value: T): void {
     const chainedPromise = new ChainedPromise<T>(value);
     this.lastPromise.resolve(chainedPromise);
     this.lastPromise = chainedPromise;

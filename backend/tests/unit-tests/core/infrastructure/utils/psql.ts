@@ -33,3 +33,8 @@ export function getGame(gameId: GameID): Promise<DBGame> {
   const addArenaRequest = 'SELECT * from games WHERE id = $[gameId];';
   return db.default.oneOrNone<DBGame>(addArenaRequest, { gameId });
 }
+
+export function endGame(gameId: GameID): Promise<void> {
+  const endArenaRequest = 'UPDATE games SET status = \'ended\' WHERE id = $[gameId];';
+  return db.default.none(endArenaRequest, { gameId });
+}

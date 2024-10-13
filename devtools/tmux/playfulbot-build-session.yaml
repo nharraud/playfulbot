@@ -34,3 +34,8 @@ windows:
           - printf '\033]2;%s\033\\' 'playfulbot-wallrace' 
           - cd packages/playfulbot-wallrace
           - npm run watch-build
+      - shell_command:
+          - printf '\033]2;%s\033\\' 'mem-pubsub' 
+          - cd packages/mem-pubsub
+          - npm run watch-build
+

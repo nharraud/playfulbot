@@ -18,7 +18,7 @@ export class VersionedAsyncIterator<
 
   constructor(
     private readonly inputIterator: AsyncIterator<TNEXT, TRETURN>,
-    private readonly getInitialVersion: () => Promise<TINITIAL>
+    private readonly getInitialVersion: () => Promise<TINITIAL | null | undefined>
   ) {}
 
   [Symbol.asyncIterator](): AsyncIterator<TNEXT | TINITIAL, TRETURN> {
@@ -28,14 +28,17 @@ export class VersionedAsyncIterator<
   async next(): Promise<IteratorResult<TNEXT | TINITIAL, TRETURN>> {
     if (this.initialVersion === undefined) {
       const init = await this.getInitialVersion();
-      this.initialVersion = init.version;
-      return { done: false, value: init };
+      if (init) {
+        this.initialVersion = init.version;
+        return { done: false, value: init };
+      }
+      this.initialVersion = null;
     }
     let next = await this.inputIterator.next();
     if (next.done) {
       return next;
     }
-    while (!next.done && (next.value as TNEXT).version <= this.initialVersion) {
+    while (!next.done && this.initialVersion !== null && (next.value as TNEXT).version <= this.initialVersion) {
       next = await this.inputIterator.next();
     }
     return next;
