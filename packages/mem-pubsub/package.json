@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "build": "rm -rf lib && tsc --project tsconfig.build.json && tsc-alias"
+    "build": "rm -rf lib && tsc --project tsconfig.build.json && tsc-alias",
+    "build:watch": "rm -rf lib && tsc --project tsconfig.build.json && (concurrently \"tsc --project tsconfig.build.json -w\" \"tsc-alias -w\")"
   },
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "tsc-alias": "^1.8.8",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0"

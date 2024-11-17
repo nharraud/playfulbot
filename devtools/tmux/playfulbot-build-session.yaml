@@ -37,5 +37,5 @@ windows:
       - shell_command:
           - printf '\033]2;%s\033\\' 'mem-pubsub' 
           - cd packages/mem-pubsub
-          - npm run watch-build
+          - npm run build:watch
 
