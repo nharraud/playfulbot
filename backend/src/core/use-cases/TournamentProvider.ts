@@ -10,23 +10,23 @@ import { UserID } from '../entities/Users';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 
 
-interface GetAllTournamentsFilters {
-  status?: TournamentStatus;
-  startingAfter?: string;
-  startingBefore?: string;
-  invitedUserID?: UserID;
-  organizingUserID?: UserID;
-}
+// interface GetAllTournamentsFilters {
+//   status?: TournamentStatus;
+//   startingAfter?: string;
+//   startingBefore?: string;
+//   invitedUserID?: UserID;
+//   organizingUserID?: UserID;
+// }
 
-function computeFirstRoundDate(
-  lastRoundDate: DateTime,
-  minutesBetweenRounds: number,
-  roundsNumber: number
-): DateTime {
-  return lastRoundDate.minus({
-    minutes: minutesBetweenRounds * (roundsNumber - 1),
-  });
-}
+// function computeFirstRoundDate(
+//   lastRoundDate: DateTime,
+//   minutesBetweenRounds: number,
+//   roundsNumber: number
+// ): DateTime {
+//   return lastRoundDate.minus({
+//     minutes: minutesBetweenRounds * (roundsNumber - 1),
+//   });
+// }
 
 export interface TournamentProvider<Context> {
 

@@ -28,7 +28,7 @@ export interface TeamProvider<Context> {
     }
   ): Promise<Team>;
 
-  updateTeam( ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team>
+  updateTeam(ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team>
 
   getTeamByName(ctx: Context, name: string): Promise<Team | null>
   getTeamByID(ctx: Context, id: TeamID): Promise<Team | null>

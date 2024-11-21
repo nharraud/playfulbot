@@ -5,7 +5,7 @@ import { createDB, dropDB } from 'playfulbot-backend-commons/lib/model/db/db_adm
 
 import { db } from 'playfulbot-backend-commons/lib/model/db';
 import { createLogger } from '~playfulbot/logging';
-import { initDemo } from './infrastructure/demo';
+import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 import { handleRestart } from './model/handleRestart';
 import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';

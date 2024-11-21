@@ -1,5 +1,5 @@
 import { Logger } from "pino";
-import { Context, ErrorConverter } from "./Context";
+import { Context, ErrorConverter } from "../core/use-cases/Context";
 import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { UserProviderPSQL } from "./UserProviderPSQL";
 import { TournamentProviderPSQL } from "./TournamentProviderPSQL";
@@ -7,15 +7,18 @@ import { createLogger } from "~playfulbot/logging";
 import { db, TX } from "playfulbot-backend-commons/lib/model/db";
 import { convertError } from './convertError';
 import { TeamProviderPSQL } from "./TeamProviderPSQL";
+import { TournamentInvitationProviderPSQL } from "./TournamentInvitiationProviderPSQL";
 
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
   convertError: ErrorConverter,
   dbOrTx: DbOrTx,
   ctxWithTx: (tx: TX) => ContextPSQL,
+  txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
   providers: {
     user: UserProviderPSQL,
     tournament: TournamentProviderPSQL,
+    tournamentInvitation: TournamentInvitationProviderPSQL,
     team: TeamProviderPSQL
   }
 }
@@ -25,10 +28,16 @@ export function createPSQLContext() {
     logger: createLogger(),
     dbOrTx: db.default,
     ctxWithTx: (tx: TX) => ({ ...context, dbOrTx: tx }),
+    txIf(task) {
+      return context.dbOrTx.txIf(async (tx) => {
+        await task({ ...context, dbOrTx: tx });
+      });
+    },
     convertError,
     providers: {
       user: new UserProviderPSQL(),
       tournament: new TournamentProviderPSQL(),
+      tournamentInvitation: new TournamentInvitationProviderPSQL(),
       team: new TeamProviderPSQL(),
     }
   }

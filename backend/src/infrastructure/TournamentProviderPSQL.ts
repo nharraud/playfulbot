@@ -1,13 +1,11 @@
 import { DateTime } from 'luxon';
 import { BackendGameDefinition } from 'playfulbot-game-backend';
 import { ConflictError, InvalidArgument } from '~playfulbot/errors';
-import logger from '~playfulbot/logging';
 
 // import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { getGameDefinitions } from '~playfulbot/games';
 import { TournamentInvitationLink, TournamentInvitationLinkID } from '../model/TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from '../model/Round';
-import { Team, TeamID } from './TeamProviderPSQL';
 import { TournamentRoleName } from '../model/TournamentRole';
 import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';
 import { TournamentProvider } from '~playfulbot/core/use-cases/TournamentProvider';

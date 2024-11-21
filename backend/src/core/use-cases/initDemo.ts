@@ -1,11 +1,8 @@
 import { DateTime, Settings } from 'luxon';
-// import { User } from './UserProviderPSQL';
-// import { Tournament } from './TournamentProviderPSQL';
-import { Team } from './TeamProviderPSQL';
-import { TournamentInvitation } from '../model/TournamentInvitation';
 import { getGameDefinitions } from '~playfulbot/games';
-import { ContextPSQL } from './ContextPSQL';
 import { User } from '~playfulbot/core/entities/Users';
+import { Context } from './Context';
+import { Team } from '../entities/Teams';
 
 async function getGameDefinition() {
   const gameDefinitions = await getGameDefinitions();
@@ -24,9 +21,8 @@ function numberToHexString(nb: number, length: number) {
   throw new Error('number to big for the given string length');
 }
 
-export async function initDemo(ctx: ContextPSQL): Promise<void> {
-  await ctx.dbOrTx.tx(async (tx) => {
-    const txCtx = ctx.ctxWithTx(tx);
+export async function initDemo(ctx: Context<any>): Promise<void> {
+  await ctx.txIf(async (txCtx) => {
     const admin = await txCtx.providers.user.createUser(txCtx, {
       username: 'zeus', password: 'password', id: 'ACEE0000-0000-0000-0000-000000000000'
     });
@@ -71,7 +67,7 @@ export async function initDemo(ctx: ContextPSQL): Promise<void> {
         }
       );
       users.push(user);
-      await teams[teamIdx].addMember(user.id, tx);
+      await ctx.providers.team.addTeamMember(ctx, teams[teamIdx].id, user.id);
     }
 
     const invitedUser = await txCtx.providers.user.createUser(
@@ -82,16 +78,18 @@ export async function initDemo(ctx: ContextPSQL): Promise<void> {
       }
     );
 
-    await TournamentInvitation.create(tournament.id, invitedUser.id, tx);
+    await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, {
+      tournamentId: tournament.id, userId: invitedUser.id
+    });
 
-    await tournament.start(tx);
+    // await tournament.start(tx);
 
-    const rounds = await tournament.getRounds(
-      {
-        startingBefore: tournament.lastRoundDate,
-      },
-      tx
-    );
+    // const rounds = await tournament.getRounds(
+    //   {
+    //     startingBefore: tournament.lastRoundDate,
+    //   },
+    //   tx
+    // );
 
     // const teamIDs = teams.map((team) => team.id);
     // Settings.now = () => rounds[0].startDate.toMillis();
