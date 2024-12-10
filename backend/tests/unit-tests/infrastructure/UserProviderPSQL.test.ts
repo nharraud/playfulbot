@@ -1,11 +1,11 @@
 
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-import { dropTestDB, initTestDB } from './utils/psql';
+import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/UserProviderPSQL';
 import { User } from '~playfulbot/core/entities/Users';
 import { randomUUID } from 'crypto';
-import { createMockContext } from './utils/context';
+import { createMockContext } from '../../../utils/context';
 
 async function userFixture({}, use: any) {
   const provider = new UserProviderPSQL();

@@ -2,7 +2,7 @@
 // import { Tournament, TournamentID, DbTournament } from '../infrastructure/TournamentProviderPSQL';
 // import { User, UserID } from '../infrastructure/UserProviderPSQL';
 
-import { TournamentInvitationProvider } from '~playfulbot/core/use-cases/TournamentInvitiationProvider';
+import { TournamentInvitationProvider } from '~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider';
 import { TournamentInvitation } from '~playfulbot/core/entities/TournamentInvitation';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { UserID } from '~playfulbot/core/entities/Users';

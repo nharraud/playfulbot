@@ -1,10 +1,10 @@
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-import { dropTestDB, initTestDB } from './utils/psql';
+import { dropTestDB, initTestDB } from '../../utils/psql';
 import { TournamentInvitationProviderPSQL } from '~playfulbot/infrastructure/TournamentInvitiationProviderPSQL';
 import { TournamentProviderPSQL } from '~playfulbot/infrastructure/TournamentProviderPSQL';
 import { Tournament } from '~playfulbot/core/entities/Tournaments';
-import { createMockContext } from './utils/context';
+import { createMockContext } from '../../utils/context';
 import { InvalidArgument } from '~playfulbot/core/use-cases/Errors';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/UserProviderPSQL';
 import { User } from '~playfulbot/core/entities/Users';

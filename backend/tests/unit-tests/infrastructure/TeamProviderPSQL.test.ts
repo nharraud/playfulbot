@@ -1,10 +1,10 @@
 
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-import { dropTestDB, initTestDB } from './utils/psql';
+import { dropTestDB, initTestDB } from '../../utils/psql';
 import { TeamProviderPSQL } from '~playfulbot/infrastructure/TeamProviderPSQL';
 import { Team } from '~playfulbot/core/entities/Teams';
-import { createMockContext } from './utils/context';
+import { createMockContext } from '../../utils/context';
 import { TournamentProviderPSQL } from '~playfulbot/infrastructure/TournamentProviderPSQL';
 import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { randomUUID } from 'crypto';
@@ -180,7 +180,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const teamProvider = new TeamProviderPSQL();
 
       const result = await teamProvider.addTeamMember(ctx, team.id, user.id);
-      expect(result).toEqual({ oldTeam: null });
+      expect(result).toEqual(true);
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toEqual(team);
@@ -192,38 +192,34 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
       await teamProvider.addTeamMember(ctx, team.id, user.id);
       const result = await teamProvider.addTeamMember(ctx, team.id, user.id);
-      expect(result).toEqual({ oldTeam: team, oldTeamDeleted: false });
+      expect(result).toEqual(false);
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toEqual(team);
-    });
-
-    ctest('should remove the user from its previous team if there was one', async ({ team, user, tournament }) => {
-      const team2 = await addTeam('testTeam2', tournament.id);
-      const ctx = createMockContext();
-      const teamProvider = new TeamProviderPSQL();
-
-      await teamProvider.addTeamMember(ctx, team.id, user.id);
-      const result = await teamProvider.addTeamMember(ctx, team2.id, user.id);
-      expect(result).toEqual({ oldTeam: team, oldTeamDeleted: true });
-
-      const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
-      expect(foundTeam).toEqual(team2);
     });
   });
 
 
   describe('removeTeamMember', () => {
-    ctest('should remove team member', async ({ team, user, tournament }) => {
+    ctest('should remove existing team member', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 
       await teamProvider.addTeamMember(ctx, team.id, user.id);
       const result = await teamProvider.removeTeamMember(ctx, team.id, user.id);
-      expect(result).toEqual({ memberRemoved: true, teamDeleted: true });
+      expect(result).toEqual(true);
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toBeNull();
+    });
+
+
+    ctest('should not fail when removing non team member', async ({ team, user, tournament }) => {
+      const ctx = createMockContext();
+      const teamProvider = new TeamProviderPSQL();
+
+      const result = await teamProvider.removeTeamMember(ctx, team.id, user.id);
+      expect(result).toEqual(false);
     });
     
   });

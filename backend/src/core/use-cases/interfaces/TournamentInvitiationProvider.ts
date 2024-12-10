@@ -2,9 +2,9 @@
 // import { Tournament, TournamentID, DbTournament } from '../infrastructure/TournamentProviderPSQL';
 // import { User, UserID } from '../infrastructure/UserProviderPSQL';
 
-import { TournamentInvitation } from "../entities/TournamentInvitation";
-import { TournamentID } from "../entities/Tournaments";
-import { UserID } from "../entities/Users";
+import { TournamentInvitation } from "../../entities/TournamentInvitation";
+import { TournamentID } from "../../entities/Tournaments";
+import { UserID } from "../../entities/Users";
 
 // export type TournamentInvitationID = string;
 

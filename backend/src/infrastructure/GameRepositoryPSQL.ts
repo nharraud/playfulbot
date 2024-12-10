@@ -5,8 +5,8 @@ import { DB } from 'playfulbot-backend-commons/lib/model/db/index';
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
 import { DebugArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
-import { GameRef, GameRefWithDate } from '~playfulbot/core/use-cases/GameRef';
-import { GameRepository } from '~playfulbot/core/use-cases/GameRepository';
+import { GameRef, GameRefWithDate } from '~playfulbot/core/use-cases/interfaces/GameRef';
+import { GameRepository } from '~playfulbot/core/use-cases/interfaces/GameRepository';
 import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
 import { VersionedAsyncIterator } from 'mem-pubsub/lib/VersionedAsyncIterator';
 import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator'

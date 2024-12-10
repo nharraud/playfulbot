@@ -1,10 +1,10 @@
 
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
-import { createArena, dropTestDB, initTestDB, getGame, endGame } from './utils/psql';
+import { createArena, dropTestDB, initTestDB, getGame, endGame } from '../../utils/psql';
 import { GameRepositoryPSQL } from '~playfulbot/infrastructure/GameRepositoryPSQL';
-import { PSQLGameRunnerMock } from './utils/PSQLGameRunnerMock';
+import { PSQLGameRunnerMock } from '../../utils/PSQLGameRunnerMock';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
-import { GameRef } from '~playfulbot/core/use-cases/GameRef';
+import { GameRef } from '~playfulbot/core/use-cases/interfaces/GameRef';
 
 describe('infrastructure/GameRepositoryPLSQL', () => {
   let repositories: GameRepositoryPSQL[] = [];

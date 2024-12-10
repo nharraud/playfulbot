@@ -8,7 +8,7 @@ import { TournamentInvitationLink, TournamentInvitationLinkID } from '../model/T
 import { Round, RoundsSearchOptions } from '../model/Round';
 import { TournamentRoleName } from '../model/TournamentRole';
 import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';
-import { TournamentProvider } from '~playfulbot/core/use-cases/TournamentProvider';
+import { TournamentProvider } from '~playfulbot/core/use-cases/interfaces/TournamentProvider';
 import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/core/entities/Tournaments';
 import { ContextPSQL } from './ContextPSQL';
 import { GameDefinitionID } from 'playfulbot-config-loader';

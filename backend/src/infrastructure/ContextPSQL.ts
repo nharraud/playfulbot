@@ -1,5 +1,5 @@
 import { Logger } from "pino";
-import { Context, ErrorConverter } from "../core/use-cases/Context";
+import { Context, ErrorConverter } from "../core/use-cases/interfaces/Context";
 import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { UserProviderPSQL } from "./UserProviderPSQL";
 import { TournamentProviderPSQL } from "./TournamentProviderPSQL";
@@ -8,6 +8,8 @@ import { db, TX } from "playfulbot-backend-commons/lib/model/db";
 import { convertError } from './convertError';
 import { TeamProviderPSQL } from "./TeamProviderPSQL";
 import { TournamentInvitationProviderPSQL } from "./TournamentInvitiationProviderPSQL";
+import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/GameDefinitionProvider";
+import { GamedDefinitionProviderEnv } from "./GameDefinitionProviderEnv";
 
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
@@ -19,7 +21,8 @@ export interface ContextPSQL extends Context<ContextPSQL> {
     user: UserProviderPSQL,
     tournament: TournamentProviderPSQL,
     tournamentInvitation: TournamentInvitationProviderPSQL,
-    team: TeamProviderPSQL
+    team: TeamProviderPSQL,
+    gameDefinitions: GameDefinitionProvider,
   }
 }
 
@@ -39,6 +42,7 @@ export function createPSQLContext() {
       tournament: new TournamentProviderPSQL(),
       tournamentInvitation: new TournamentInvitationProviderPSQL(),
       team: new TeamProviderPSQL(),
+      gameDefinitions: new GamedDefinitionProviderEnv(),
     }
   }
 }

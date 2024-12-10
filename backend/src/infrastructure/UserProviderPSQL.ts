@@ -4,7 +4,7 @@ import { TeamID } from './TeamProviderPSQL';
 import { User, UserID } from '~playfulbot/core/entities/Users';
 import { ContextPSQL } from './ContextPSQL';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
-import { UserProvider } from '~playfulbot/core/use-cases/UserProvider';
+import { UserProvider } from '~playfulbot/core/use-cases/interfaces/UserProvider';
 
 interface DbUser {
   readonly id: UserID;

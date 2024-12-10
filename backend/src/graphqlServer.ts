@@ -22,7 +22,7 @@ import { serverConfig } from './serverConfig';
 import { AuthenticationError, InvalidRequest } from './errors';
 import { validateAuthToken } from './graphqlResolvers/authentication';
 import { isBotJWToken, isUserJWToken } from './types/token';
-import { Context } from './core/use-cases/Context';
+import { Context } from './core/use-cases/interfaces/Context';
 
 interface MyContext {
   token?: string;

@@ -1,6 +1,6 @@
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
-import { DebugArenaID, GameRunnerId } from '../entities/base-types';
+import { DebugArenaID, GameRunnerId } from '../../entities/base-types';
 import { GameRef, GameRefWithDate } from './GameRef';
 
 export interface GameRepository {

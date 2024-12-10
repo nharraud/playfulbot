@@ -7,7 +7,7 @@ import { Player } from '../model/Player';
 // import { User, UserID } from './UserProviderPSQL';
 // import { validateSchema, ValidationError } from '../model/validate';
 import { Team } from '~playfulbot/core/entities/Teams';
-import { AddTeamMemberResult, RemoveTeamMemberResult, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/TeamProvider';
+import { TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
@@ -194,62 +194,49 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
   //   return rows.map((row) => new Team(row));
   // }
 
-  async addTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID, tournamentID?: TournamentID): Promise<AddTeamMemberResult> {
+  async addTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean> {
     const insertQuery = `INSERT INTO team_memberships(user_id, team_id)
                          VALUES($[userID], $[teamID])
-                         RETURNING *`;
-    let oldTeam: Team = null;
-    let oldTeamRemoval: RemoveTeamMemberResult;
-
-    await ctx.dbOrTx.taskIf(async (tx: TX) => {
-      const txCtx = ctx.ctxWithTx(tx);
-      if (!tournamentID) {
-        const team = await this.getTeamByID(txCtx, teamID);
-        tournamentID = team.tournamentId;
-      }
-      
-      oldTeam = await this.getTeamByMember(txCtx, userID, tournamentID);
-      if (oldTeam) {
-        if (oldTeam.id === teamID) {
-          oldTeamRemoval = { memberRemoved: false, teamDeleted: false }
-          return;
-        }
-        oldTeamRemoval = await this.removeTeamMember(txCtx, oldTeam.id, userID);
-      }
-
-      // try {
+                         RETURNING true`;
+    try {
       await ctx.dbOrTx.one(insertQuery, { userID, teamID });
-      // } catch (err) {
-      //   if (isDatabaseError(err) && err.constraint === 'team_memberships_pkey') {
-      //     // ignore error, the user is already part of this team
-      //     return;
-      //   }
-      //   throw err;
-      // }
-      // await TournamentInvitation.delete(this.tournamentID, userID, tx);
-    });
-
-  //   if (oldTeam === null) {
-  //     const tournament = await this.getTournament(dbOrTX);
-  //     const gameDefinition = await tournament.getGameDefinition();
-  //     await DebugArena.createDebugArena(userID, this.tournamentID, gameDefinition);
-  //   }
-    return { oldTeam, oldTeamDeleted: oldTeamRemoval?.teamDeleted };
+      return true;
+    } catch (err) {
+      if (isDatabaseError(err) && err.constraint === 'team_memberships_pkey') {
+        // ignore error, the user is already part of this team
+        return false;
+      }
+      throw err;
+    }
   }
 
   /**
-   * Remove a member from a team and delete the team if it has no remaining member.
+   * Remove a member from a team.
+   * @param ctx
+   * @param teamID ID of the team to remove the user from.
    * @param userID ID of the user to remove.
-   * @param dbOrTX connection to use during database requests.
-   * @param deleteArena if set to true, the Debug Arena will be deleted.
-   * @returns true for "memberRemoved" if the team member was removed, true for "teamDeleted" if the team was deleted.
+   * @returns true if the team member was removed, else false
    */
-  async removeTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<RemoveTeamMemberResult> {
+  async removeTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean> {
     const deleteMemberQuery = `
       DELETE FROM team_memberships
       WHERE user_id = $[userID] AND team_id = $[teamID]
       RETURNING true as bool
     `;
+    const memberRemoved = await ctx.dbOrTx.oneOrNone<{ bool: boolean }>(deleteMemberQuery, {
+        userID,
+        teamID,
+      });
+    return memberRemoved?.bool || false;
+  }
+
+
+  /**
+   * Delete a team if it has no members.
+   * @param teamID ID of the team to delete.
+   * @returns true if the team was deleted, else false.
+   */
+  async deleteTeamIfNoMembers(ctx: ContextPSQL, teamID: TeamID): Promise<boolean> {
     const deleteEmptyTeamQuery = `
       DELETE FROM teams
       WHERE teams.id = $[teamID] AND NOT EXISTS (
@@ -257,27 +244,10 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       )
       RETURNING true as bool
     `;
-    let memberRemoved: { bool: boolean };
-    let teamDeleted: { bool: boolean };
-    await ctx.dbOrTx.txIf(async (tx) => {
-      memberRemoved = await tx.oneOrNone<{ bool: boolean }>(deleteMemberQuery, {
-        userID,
-        teamID,
-      });
-      if (memberRemoved.bool) {
-        teamDeleted = await tx.oneOrNone<{ bool: boolean }>(deleteEmptyTeamQuery, {
-          teamID,
-        });
-        // if (teamDeleted) {
-        //   Player.delete(teamID));
-        // }
-      }
+    const result = await ctx.dbOrTx.oneOrNone<{ bool: boolean }>(deleteEmptyTeamQuery, {
+      teamID,
     });
-
-    // if (memberRemoved?.bool && deleteArena) {
-    //   DebugArena.deleteDebugArena(userID, this.tournamentID);
-    // }
-    return { memberRemoved: memberRemoved?.bool || false, teamDeleted: teamDeleted?.bool || false };
+    return result?.bool || false;
   }
 
   // async getMembers(dbOrTX: DbOrTx): Promise<User[]> {

@@ -8,10 +8,10 @@ import { ConflictError } from '~playfulbot/errors';
 import { TournamentID } from './TournamentProviderPSQL';
 import { UserID } from './UserProviderPSQL';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
-import { DebugArena, DebugArenaID } from '~playfulbot/core/use-cases/DebugArena';
+import { DebugArena, DebugArenaID } from '~playfulbot/core/use-cases/interfaces/DebugArena';
 import { DebugArenaPSQL } from './DebugArenaPSQL';
-import { GameRef } from '~playfulbot/core/use-cases/GameRef';
-import { GameRepository } from '~playfulbot/core/use-cases/GameRepository';
+import { GameRef } from '~playfulbot/core/use-cases/interfaces/GameRef';
+import { GameRepository } from '~playfulbot/core/use-cases/interfaces/GameRepository';
 
 export class DebugArenaProviderPSQL {
   constructor(readonly gameRepository: GameRepository) {}
