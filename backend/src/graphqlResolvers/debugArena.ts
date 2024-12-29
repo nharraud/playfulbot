@@ -1,5 +1,5 @@
 import { DebugArenaNotFoundError, ForbiddenError } from '~playfulbot/errors';
-import { DebugArena } from '~playfulbot/infrastructure/DebugArenaPSQL';
+import { DebugArena } from '~playfulbot/infrastructure/providers/DebugArenaPSQL';
 import { pubsub } from '~playfulbot/pubsub';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';

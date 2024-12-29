@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { db } from '~playfulbot/model/db';
 import { DbOrTx, DEFAULT } from './db/helpers';
-import { Team } from '../infrastructure/TeamProviderPSQL';
-import { TournamentID } from '../infrastructure/TournamentProviderPSQL';
-import { UserID } from '../infrastructure/UserProviderPSQL';
+import { Team } from '../infrastructure/providers/TeamProviderPSQL';
+import { TournamentID } from '../infrastructure/providers/TournamentProviderPSQL';
+import { UserID } from '../infrastructure/providers/UserProviderPSQL';
 import { TournamentInvitation } from './TournamentInvitation';
 
 export type TournamentInvitationLinkID = string;

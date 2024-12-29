@@ -2,7 +2,7 @@
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../../utils/psql';
-import { UserProviderPSQL } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { User } from '~playfulbot/core/entities/Users';
 import { randomUUID } from 'crypto';
 import { createMockContext } from '../../../utils/context';

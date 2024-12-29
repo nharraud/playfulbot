@@ -1,5 +1,5 @@
 import { db } from '~playfulbot/model/db';
-import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { onResetFixtures } from './reset';
 
 let _testNewUser: User;

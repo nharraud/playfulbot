@@ -2,14 +2,14 @@
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../utils/psql';
-import { TeamProviderPSQL } from '~playfulbot/infrastructure/TeamProviderPSQL';
+import { TeamProviderPSQL } from '~playfulbot/infrastructure/providers/TeamProviderPSQL';
 import { Team } from '~playfulbot/core/entities/Teams';
 import { createMockContext } from '../../utils/context';
-import { TournamentProviderPSQL } from '~playfulbot/infrastructure/TournamentProviderPSQL';
+import { TournamentProviderPSQL } from '~playfulbot/infrastructure/providers/TournamentProviderPSQL';
 import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { randomUUID } from 'crypto';
 import { User } from '~playfulbot/core/entities/Users';
-import { UserProviderPSQL } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 
 async function tournamentFixture({}, use: any) {
   const provider = new TournamentProviderPSQL();

@@ -9,10 +9,10 @@ import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 import { handleRestart } from './model/handleRestart';
 import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';
-import { ContextPSQL } from './infrastructure/ContextPSQL';
-import { convertError } from './infrastructure/convertError';
-import { UserProviderPSQL } from './infrastructure/UserProviderPSQL';
-import { TournamentProviderPSQL } from './infrastructure/TournamentProviderPSQL';
+import { ContextPSQL } from './infrastructure/providers/ContextPSQL';
+import { convertError } from './infrastructure/providers/convertError';
+import { UserProviderPSQL } from './infrastructure/providers/UserProviderPSQL';
+import { TournamentProviderPSQL } from './infrastructure/providers/TournamentProviderPSQL';
 
 async function closeConnections() {
   await db.disconnectDefault();

@@ -2,11 +2,11 @@
 
 import { BackendGameDefinition } from 'playfulbot-game-backend';
 import { db } from 'playfulbot-backend-commons/lib/model/db/index';
-import { Player } from '../model/Player';
+import { Player } from '../../model/Player';
 import { pubsub } from '~playfulbot/pubsub';
 import { ConflictError } from '~playfulbot/errors';
-import { TournamentID } from './TournamentProviderPSQL';
-import { UserID } from './UserProviderPSQL';
+import { TournamentID } from '~playfulbot/core/entities/Tournaments';
+import { UserID } from '~playfulbot/core/entities/Users';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
 import { DebugArena, DebugArenaID } from '~playfulbot/core/use-cases/interfaces/DebugArena';
 import { DebugArenaPSQL } from './DebugArenaPSQL';

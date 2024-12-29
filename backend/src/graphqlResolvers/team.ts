@@ -3,7 +3,7 @@ import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
 import { db } from '~playfulbot/model/db';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { Team, TeamID } from '~playfulbot/infrastructure/TeamsPSQL';
-import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { isValidationError, validationErrorsToGraphQL } from '~playfulbot/model/validate';

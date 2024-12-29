@@ -1,5 +1,5 @@
 import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import * as gqlTypes from '~playfulbot/types/graphql';
 import { db } from '~playfulbot/model/db';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';

@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../../utils/psql';
-import { TournamentProviderPSQL } from '~playfulbot/infrastructure/TournamentProviderPSQL';
+import { TournamentProviderPSQL } from '~playfulbot/infrastructure/providers/TournamentProviderPSQL';
 import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { createMockContext } from '../../../utils/context';
 import { InvalidArgument } from '~playfulbot/core/use-cases/Errors';

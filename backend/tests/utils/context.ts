@@ -1,11 +1,11 @@
 import { db, TX } from "playfulbot-backend-commons/lib/model/db";
 import { createLogger } from "./logging";
-import { convertError } from "~playfulbot/infrastructure/convertError";
-import { ContextPSQL } from "~playfulbot/infrastructure/ContextPSQL";
-import { UserProviderPSQL } from "~playfulbot/infrastructure/UserProviderPSQL";
-import { TournamentProviderPSQL } from "~playfulbot/infrastructure/TournamentProviderPSQL";
-import { TeamProviderPSQL } from "~playfulbot/infrastructure/TeamProviderPSQL";
-import { TournamentInvitationProviderPSQL } from "~playfulbot/infrastructure/TournamentInvitiationProviderPSQL";
+import { convertError } from "~playfulbot/infrastructure/providers/convertError";
+import { ContextPSQL } from "~playfulbot/infrastructure/providers/ContextPSQL";
+import { UserProviderPSQL } from "~playfulbot/infrastructure/providers/UserProviderPSQL";
+import { TournamentProviderPSQL } from "~playfulbot/infrastructure/providers/TournamentProviderPSQL";
+import { TeamProviderPSQL } from "~playfulbot/infrastructure/providers/TeamProviderPSQL";
+import { TournamentInvitationProviderPSQL } from "~playfulbot/infrastructure/providers/TournamentInvitiationProviderPSQL";
 import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/GameDefinitionProvider";
 import { GameDefinitionID } from "playfulbot-config-loader";
 import { BackendGameDefinition } from "playfulbot-game-backend";

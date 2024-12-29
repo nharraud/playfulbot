@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { Tournament, TournamentStatus } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import { gameDefinition } from '~playfulbot/games/__tests__/fixtures/testgame';
 import { db } from '~playfulbot/model/db';
-import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { onResetFixtures } from './reset';
 
 let _testTournamentAdmin: Promise<User>;

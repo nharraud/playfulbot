@@ -3,8 +3,8 @@ import { DbOrTx } from './db/helpers';
 import { Game, GameID } from './Game';
 import { Player, PlayerID } from './Player';
 import { RoundID } from './Round';
-import { Team, TeamID, DbTeam } from '../infrastructure/TeamProviderPSQL';
-import { TournamentID } from '../infrastructure/TournamentProviderPSQL';
+import { Team, TeamID, DbTeam } from '../infrastructure/providers/TeamProviderPSQL';
+import { TournamentID } from '../infrastructure/providers/TournamentProviderPSQL';
 
 /* eslint-disable camelcase */
 interface DbGameSummary {

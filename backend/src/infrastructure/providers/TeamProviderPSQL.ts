@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 // import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 // import { DebugArena } from './DebugArenaPSQL';
-import { Player } from '../model/Player';
+import { Player } from '../../model/Player';
 // import { TournamentInvitation } from '../model/TournamentInvitation';
 // import { Tournament, TournamentID, TournamentStatus } from './TournamentProviderPSQL';
 // import { User, UserID } from './UserProviderPSQL';
@@ -11,7 +11,7 @@ import { TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/T
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
-import { validateSchema } from './validateSchema';
+import { validateSchema } from '../validateSchema';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { TX } from 'playfulbot-backend-commons/lib/model/db';

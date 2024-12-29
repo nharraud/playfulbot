@@ -1,6 +1,6 @@
 import { db } from '~playfulbot/model/db';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
-import { User } from '~playfulbot/infrastructure/UserProviderPSQL';
+import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { createdTournamentFixture } from './tournamentFixtures';
 
 export async function teamsFixture(): Promise<Team[]> {

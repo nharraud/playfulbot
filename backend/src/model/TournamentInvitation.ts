@@ -1,6 +1,6 @@
 import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
-import { Tournament, TournamentID, DbTournament } from '../infrastructure/TournamentProviderPSQL';
-import { User, UserID } from '../infrastructure/UserProviderPSQL';
+import { Tournament, TournamentID, DbTournament } from '../infrastructure/providers/TournamentProviderPSQL';
+import { User, UserID } from '../infrastructure/providers/UserProviderPSQL';
 
 export type TournamentInvitationID = string;
 

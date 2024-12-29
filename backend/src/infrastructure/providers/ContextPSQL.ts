@@ -1,5 +1,5 @@
 import { Logger } from "pino";
-import { Context, ErrorConverter } from "../core/use-cases/interfaces/Context";
+import { Context, ErrorConverter } from "../../core/use-cases/interfaces/Context";
 import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { UserProviderPSQL } from "./UserProviderPSQL";
 import { TournamentProviderPSQL } from "./TournamentProviderPSQL";

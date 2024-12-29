@@ -1,5 +1,5 @@
-import { TournamentID } from '../infrastructure/TournamentProviderPSQL';
-import { UserID } from '../infrastructure/UserProviderPSQL';
+import { TournamentID } from '../infrastructure/providers/TournamentProviderPSQL';
+import { UserID } from '../infrastructure/providers/UserProviderPSQL';
 
 // eslint-disable-next-line no-shadow
 export enum TournamentRoleName {
