@@ -38,6 +38,7 @@ export class GameRepositoryPSQL implements GameRepository {
   #arenasStreams = new Map<GameID, Promise<AsyncStream<VersionedGameRef>[]>>();
   #playerStreams = new Map<GameID, Promise<AsyncStream<GameRef>[]>>();
   #db: DB;
+  #closingPromises: Array<Promise<any>> = [];
 
   private constructor(db: DB) {
     this.#db = db;
@@ -92,6 +93,7 @@ export class GameRepositoryPSQL implements GameRepository {
 
   async close() {
     this.#closed = true;
+    await Promise.allSettled(this.#closingPromises);
     await this.#connection.done();
   }
 
@@ -216,10 +218,12 @@ export class GameRepositoryPSQL implements GameRepository {
       if (streams.length === 0) {
         streamsMap.delete(key);
         if (!this.#closed) {
-          return this.#connection.none('UNLISTEN $1:name', channel).catch(error => {
+          const ubsubscribePromise = this.#connection.none('UNLISTEN $1:name', channel).catch(error => {
             // FIXME use logger
             console.error('Error caught when PSQL UNLISTEN', error);
           });
+          this.#closingPromises.push(ubsubscribePromise);
+          return ubsubscribePromise;
         }
       }
     });
