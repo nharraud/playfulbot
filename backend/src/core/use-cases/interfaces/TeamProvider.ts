@@ -1,6 +1,6 @@
-import { Team, TeamID } from "../../entities/Teams";
-import { TournamentID } from "../../entities/Tournaments";
-import { UserID } from "../../entities/Users";
+import { Team, TeamID } from "~playfulbot/core/entities/Teams";
+import { TournamentID } from "~playfulbot/core/entities/Tournaments";
+import { UserID } from "~playfulbot/core/entities/Users";
 import { ValidationError } from "../Errors";
 
 export interface TeamPatch {

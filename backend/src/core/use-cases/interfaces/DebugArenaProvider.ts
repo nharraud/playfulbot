@@ -1,7 +1,7 @@
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { DebugArena } from './DebugArena';
-import { UserID } from '../../entities/Users';
-import { TournamentID } from '../../entities/Tournaments';
+import { UserID } from '~playfulbot/core/entities/Users';
+import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 
 export interface DebugArenaProvider {
   getDebugArena(

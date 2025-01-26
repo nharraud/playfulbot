@@ -5,8 +5,8 @@ import { DateTime } from 'luxon';
 
 // import { getGameDefinitions } from '~playfulbot/games';
 // import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';
-import { Tournament, TournamentID, TournamentStatus } from '../../entities/Tournaments';
-import { UserID } from '../../entities/Users';
+import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/core/entities/Tournaments';
+import { UserID } from '~playfulbot/core/entities/Users';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 
 

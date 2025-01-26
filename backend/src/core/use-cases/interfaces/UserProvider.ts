@@ -1,5 +1,5 @@
-import { TeamID } from '../../entities/Teams';
-import { User, UserID } from '../../entities/Users';
+import { TeamID } from '~playfulbot/core/entities/Teams';
+import { User, UserID } from '~playfulbot/core/entities/Users';
 
 export interface UserProvider<Context> {
   createUser(

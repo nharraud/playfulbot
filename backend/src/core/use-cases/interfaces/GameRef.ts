@@ -1,5 +1,5 @@
 import { GameID } from "playfulbot-game";
-import { GameRunnerId } from "../../entities/base-types";
+import { GameRunnerId } from "~playfulbot/core/entities/base-types";
 
 export interface GameRef {
   gameId: GameID,

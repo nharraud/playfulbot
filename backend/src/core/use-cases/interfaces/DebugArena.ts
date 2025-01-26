@@ -1,4 +1,4 @@
-import { Player } from '../model/Player';
+import { Player } from '~playfulbot/core/entities/Players';
 import { GameRef } from './GameRef';
 
 export interface DebugArena {
