@@ -11,7 +11,7 @@ export interface UserProvider<Context> {
     }
   ): Promise<User>;
 
-  getUserByName(ctx: Context, username: string): Promise<User | null>;
+  getUserByName(ctx: Context, username: string, withPassword?: boolean): Promise<User | null>;
 
   getUserByID(ctx: Context, id: UserID): Promise<User | null>;
 

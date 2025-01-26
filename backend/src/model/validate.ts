@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { ValidationError as GraphQLValidationError } from '../types/graphql-generated';
+import { ValidationError as GraphQLValidationError } from '../infrastructure/graphql/types/graphql-generated';
 
 export interface ValidationError {
   validationErrors: string[];

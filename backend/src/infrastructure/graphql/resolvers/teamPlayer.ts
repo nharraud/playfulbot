@@ -1,6 +1,6 @@
 import { pubsub } from '~playfulbot/pubsub';
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { TeamNotFoundError } from '~playfulbot/errors';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
 import { db } from '~playfulbot/model/db';

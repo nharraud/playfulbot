@@ -44,7 +44,7 @@ export class UserProviderPSQL implements UserProvider<ContextPSQL> {
       return buildUser(data);
     } catch (err) {
       if (isDatabaseError(err) && err.constraint === 'users_username_check') {
-        throw new ValidationError('Invalid user', { username: 'username must be at least 3 characters long' });
+        throw new ValidationError('Invalid user', { username: [ 'username must be at least 3 characters long' ] });
       }
       throw err;
     }
@@ -52,7 +52,7 @@ export class UserProviderPSQL implements UserProvider<ContextPSQL> {
 
   async getUserByName(ctx: ContextPSQL, username: string, withPassword = false): Promise<User | null> {
     const data = await ctx.dbOrTx.oneOrNone<DbUser>(
-      `SELECT id, username ${ withPassword ? ', password': '' } FROM users WHERE username = $[username]`,
+      `SELECT id, username ${ withPassword ? ', password_hash': '' } FROM users WHERE username = $[username]`,
       { username }
     );
     return data ? buildUser(data) : null;

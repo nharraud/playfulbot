@@ -1,7 +1,7 @@
 import { Player } from '~playfulbot/model/Player';
 import { pubsub } from '~playfulbot/pubsub';
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { PlayerNotFoundError } from '~playfulbot/errors';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
 import { PrefixedAsyncIterator } from '~playfulbot/pubsub/PrefixedAsyncIterator';

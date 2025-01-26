@@ -1,18 +1,14 @@
 import { Command } from 'commander';
-import { createGraphqlServer } from '~playfulbot/graphqlServer';
+import { createGraphqlServer } from '~playfulbot/infrastructure/graphql/graphqlServer';
 import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from 'playfulbot-backend-commons/lib/model/db/db_admin';
 
 import { db } from 'playfulbot-backend-commons/lib/model/db';
-import { createLogger } from '~playfulbot/logging';
 import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 import { handleRestart } from './model/handleRestart';
 import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';
-import { ContextPSQL } from './infrastructure/providers/ContextPSQL';
-import { convertError } from './infrastructure/providers/convertError';
-import { UserProviderPSQL } from './infrastructure/providers/UserProviderPSQL';
-import { TournamentProviderPSQL } from './infrastructure/providers/TournamentProviderPSQL';
+import { ContextPSQL, ContextPSQLImpl } from './infrastructure/providers/ContextPSQL';
 
 async function closeConnections() {
   await db.disconnectDefault();
@@ -20,15 +16,7 @@ async function closeConnections() {
 
 async function execute(argv: string[]): Promise<void> {
   const program = new Command();
-  const context: ContextPSQL = {
-    logger: createLogger(),
-    dbOrTx: db.default,
-    convertError,
-    providers: {
-      user: new UserProviderPSQL(),
-      tournament: new TournamentProviderPSQL(),
-    }
-  }
+  const context = new ContextPSQLImpl().ctxWithChildLogger({ module: __filename });
 
   program
     .command('serve')

@@ -2,29 +2,24 @@ import { promisify } from 'util';
 
 import crypto from 'crypto';
 
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import bcrypt from 'bcrypt';
 
 import Cookies from 'cookies';
 import express from 'express';
-import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { User } from '~playfulbot/core/entities/Users';
 
 import {
-  JWTokenData,
-  isUserJWToken,
-  isBotJWToken,
   UserJWTokenData,
   JWToken,
 } from '~playfulbot/types/token';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { InvalidRequest, AuthenticationError } from '~playfulbot/errors';
-import { PlayerID } from '~playfulbot/core/entities/Players';
 import { SECRET_KEY } from '~playfulbot/secret';
 
 const randomBytes = promisify(crypto.randomBytes);
-const jwtVerifyAsync = promisify<string, string, unknown>(jwt.verify);
 
 export async function authenticate(user: User, req: express.Request): Promise<JWToken> {
   const binFingerprint = await randomBytes(50);
@@ -47,9 +42,9 @@ export async function authenticate(user: User, req: express.Request): Promise<JW
 export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async (
   parent,
   args,
-  ctx
+  apolloContext
 ) => {
-  const foundUser = await ctx.userProviddder.getUserByName(ctx, args.username);
+  const foundUser = await apolloContext.ctx.providers.user.getUserByName(apolloContext.ctx, args.username, true);
 
   if (!foundUser) {
     throw new AuthenticationError(`Could not find account: ${args.username}`);
@@ -59,7 +54,7 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   if (!match) {
     throw new AuthenticationError('Incorrect credentials');
   }
-  const token = await authenticate(foundUser, ctx.req);
+  const token = await authenticate(foundUser, apolloContext.req);
   return {
     token,
     user: {
@@ -82,36 +77,3 @@ export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout']
   cookies.set('JWTFingerprint');
   return true;
 };
-
-export async function validateAuthToken(token: string, fingerprint?: string): Promise<JWTokenData> {
-  try {
-    const tokenData: JWTokenData = (await jwtVerifyAsync(token, SECRET_KEY)) as JWTokenData;
-
-    if (isUserJWToken(tokenData)) {
-      if (!fingerprint) {
-        throw new AuthenticationError('Invalid authorization token: missing fingerprint.');
-      }
-      const hash = crypto.createHash('sha256');
-      hash.update(fingerprint);
-      const fingerprintHash = hash.digest('hex');
-      hash.end();
-
-      if (fingerprintHash !== tokenData.JWTFingerprint) {
-        throw new AuthenticationError("Invalid authorization token: fingerprint doesn't match");
-      }
-    } else if (isBotJWToken(tokenData) && tokenData.playerID === undefined) {
-      throw new AuthenticationError('Invalid authorization token: token validation failed.');
-    }
-
-    return tokenData;
-  } catch (e) {
-    if (e instanceof JsonWebTokenError) {
-      throw new AuthenticationError('Invalid authorization token: token validation failed.');
-    }
-    throw e;
-  }
-}
-
-export function createPlayerToken(playerID: PlayerID): string {
-  return jwt.sign({ playerID }, SECRET_KEY);
-}

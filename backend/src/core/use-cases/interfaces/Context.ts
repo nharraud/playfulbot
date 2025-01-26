@@ -1,4 +1,4 @@
-import { Logger } from "pino";
+import { Logger, Bindings } from "pino";
 import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider";
 import { TournamentInvitationProvider } from "~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider";
 import { TournamentProvider } from "~playfulbot/core/use-cases/interfaces/TournamentProvider";
@@ -9,6 +9,7 @@ export type ErrorConverter = (error: any) => Error;
 
 export interface Context<FinalContext extends Context<FinalContext>> {
   logger: Logger,
+  ctxWithChildLogger: (bindings: Bindings) => FinalContext,
   convertError: ErrorConverter,
   txIf: (task: (ctx: FinalContext) => Promise<void> | void) => Promise<void>,
   providers: {

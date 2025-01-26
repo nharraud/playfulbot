@@ -1,7 +1,7 @@
 import { GameID } from 'playfulbot-backend-commons/lib/model/Game';
 import { PlayerID } from 'playfulbot-backend-commons/lib/model/Player';
 import { pubsub } from '~playfulbot/pubsub';
-import { createPlayerToken } from '~playfulbot/graphqlResolvers/authentication';
+import { createPlayerToken } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
 import { JWToken } from '~playfulbot/types/token';
 import { ConflictError } from '~playfulbot/errors';
 

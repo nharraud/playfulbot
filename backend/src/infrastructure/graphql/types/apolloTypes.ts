@@ -1,9 +1,11 @@
 import express from 'express';
 import { PlayerID } from '~playfulbot/core/entities/Players';
-import { UserID, UserProvider } from '~playfulbot/core/entities/Users';
+import { UserID } from '~playfulbot/core/entities/Users';
+import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
+
 
 export type ApolloBaseContext = {
-  userProviddder: UserProvider<unknown>,
+  ctx: Context<any>
 }
 
 export interface ApolloUnauthenticatedContext extends ApolloBaseContext {

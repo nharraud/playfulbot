@@ -1,4 +1,4 @@
-import { Logger } from "pino";
+import { Bindings, Logger } from "pino";
 import { Context, ErrorConverter } from "../../core/use-cases/interfaces/Context";
 import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { UserProviderPSQL } from "./UserProviderPSQL";
@@ -26,23 +26,42 @@ export interface ContextPSQL extends Context<ContextPSQL> {
   }
 }
 
-export function createPSQLContext() {
-  const context: ContextPSQL = {
-    logger: createLogger(),
-    dbOrTx: db.default,
-    ctxWithTx: (tx: TX) => ({ ...context, dbOrTx: tx }),
-    txIf(task) {
-      return context.dbOrTx.txIf(async (tx) => {
-        await task({ ...context, dbOrTx: tx });
-      });
-    },
-    convertError,
-    providers: {
+export class ContextPSQLImpl implements ContextPSQL {
+  readonly logger;
+  readonly dbOrTx;
+  readonly providers;
+  readonly convertError;
+
+  constructor({ logger = createLogger(), dbOrTx = db.default }: { logger?: Logger, dbOrTx?: DbOrTx} = {}) {
+    this.logger = logger;
+    this.dbOrTx = dbOrTx;
+    this.providers = {
       user: new UserProviderPSQL(),
       tournament: new TournamentProviderPSQL(),
       tournamentInvitation: new TournamentInvitationProviderPSQL(),
       team: new TeamProviderPSQL(),
       gameDefinitions: new GamedDefinitionProviderEnv(),
-    }
+    };
+    this.convertError = convertError;
+  }
+
+  ctxWithChildLogger(bindings: Bindings) {
+    return new ContextPSQLImpl({
+      ...this,
+      logger: this.logger.child(bindings),
+    });
+  }
+
+  ctxWithTx(tx: TX) {
+    return new ContextPSQLImpl({
+      ...this,
+      dbOrTx: tx,
+    });
+  }
+
+  txIf(task: (ctx: ContextPSQL) => Promise<void> | void) {
+    return this.dbOrTx.txIf(async (tx) => {
+      await task(new ContextPSQLImpl({ dbOrTx: tx }));
+    });
   }
 }

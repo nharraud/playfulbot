@@ -1,11 +1,11 @@
 
 import { beforeEach, afterEach, describe, expect, test } from 'vitest';
 
-import { dropTestDB, initTestDB } from '../../../utils/psql';
+import { dropTestDB, initTestDB } from '../../utils/psql';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { User } from '~playfulbot/core/entities/Users';
 import { randomUUID } from 'crypto';
-import { createMockContext } from '../../../utils/context';
+import { createMockContext } from '../../utils/context';
 
 async function userFixture({}, use: any) {
   const provider = new UserProviderPSQL();
@@ -61,6 +61,15 @@ describe('infrastructure/games/UserProviderPSQL', () => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.getUserByName(createMockContext(), 'Alice');
       expect(foundUser).toEqual(user);
+    });
+
+    ctest('should return password hash only when requested', async ({ user }) => {
+      const provider = new UserProviderPSQL();
+      const foundUser1 = await provider.getUserByName(createMockContext(), 'Alice');
+      expect(foundUser1.passwordHash).toBeUndefined();
+
+      const foundUser2 = await provider.getUserByName(createMockContext(), 'Alice', true);
+      expect(foundUser2.passwordHash).not.toBeUndefined();
     });
 
     ctest('should return null when no user is found', async ({}) => {

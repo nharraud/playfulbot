@@ -14,21 +14,22 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import resolvers from '~playfulbot/graphqlResolvers';
+import resolvers from '~playfulbot/infrastructure/graphql/resolvers';
 
-import logger from '~playfulbot/logging';
-
-import { serverConfig } from './serverConfig';
-import { AuthenticationError, InvalidRequest } from './errors';
-import { validateAuthToken } from './graphqlResolvers/authentication';
-import { isBotJWToken, isUserJWToken } from './types/token';
-import { Context } from './core/use-cases/interfaces/Context';
+import { serverConfig } from '../../serverConfig';
+import { AuthenticationError, InvalidRequest } from '../../errors';
+// import { validateAuthToken } from './resolvers/authentication';
+// import { isBotJWToken, isUserJWToken } from '../../types/token';
+import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication.js';
+import { isBotJWToken, isUserJWToken } from 'playfulbot-backend-commons/lib/types/token.js';
+import { Context } from '../../core/use-cases/interfaces/Context';
 
 interface MyContext {
   token?: string;
 }
 
-export async function createGraphqlServer<CTX extends Context>(baseContext: CTX) {
+export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host }: { port?: number, host?: string } = {}) {
+  const logger = baseContext.logger.child({ module: __filename, source: 'createGraphqlServer' });
   const app = express();
   const httpServer = http.createServer(app);
 
@@ -48,45 +49,43 @@ export async function createGraphqlServer<CTX extends Context>(baseContext: CTX)
       schema,
       onConnect: async (ctx) => {
         const cookies = new Cookies(ctx.extra.request, null);
-        if (!ctx.connectionParams.authToken) {
+        if (!ctx.connectionParams?.authToken) {
           throw new AuthenticationError('Missing token.');
         }
+
         let tokenData;
         try {
           tokenData = await validateAuthToken(
             ctx.connectionParams.authToken as string,
             cookies.get('JWTFingerprint')
           );
-        } catch (error) {
-          throw new AuthenticationError('Invalid token');
+        } catch (err) {
+          baseContext.logger.error('Token validation failed', err);
+          throw new InvalidRequest((err as any)?.message);
         }
+
         if (!isUserJWToken(tokenData) && !isBotJWToken(tokenData)) {
           throw new InvalidRequest('Invalid JWToken');
         }
       },
       context: async (ctx, msg, args) => {
         const cookies = new Cookies(ctx.extra.request, null);
-        if (!ctx.connectionParams.authToken) {
+        if (!ctx.connectionParams?.authToken) {
           throw new AuthenticationError('Missing token.');
         }
-        let tokenData;
-        try {
-          tokenData = await validateAuthToken(
-            ctx.connectionParams.authToken as string,
-            cookies.get('JWTFingerprint')
-          );
-        } catch (error) {
-          throw new AuthenticationError('Invalid token');
-        }
+        const tokenData = await validateAuthToken(
+          ctx.connectionParams.authToken as string,
+          cookies.get('JWTFingerprint')
+        );
         if (isUserJWToken(tokenData)) {
           return {
-            ...baseContext,
+            ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
             userID: tokenData.userID,
           };
         }
         if (isBotJWToken(tokenData)) {
           return {
-            ...baseContext,
+            ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
             ...tokenData,
           };
         }
@@ -131,38 +130,41 @@ export async function createGraphqlServer<CTX extends Context>(baseContext: CTX)
           const token = req.headers.authorization.split(' ')[1];
 
           const cookies = new Cookies(req, null);
-
-          let tokenData;
-          try {
-            tokenData = await validateAuthToken(token, cookies.get('JWTFingerprint'));
-          } catch (error) {
-            throw new AuthenticationError('Invalid token');
-          }
+          const tokenData = await validateAuthToken(token, cookies.get('JWTFingerprint'));
           if (isUserJWToken(tokenData)) {
             return Promise.resolve({
-              ...baseContext,
+              ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
               userID: tokenData.userID,
               req
             });
           }
           if (isBotJWToken(tokenData)) {
             return Promise.resolve({
-              ...baseContext,
+              ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
               ...tokenData,
               req
             });
           }
           throw new Error('Unknown token type');
         }
-        return Promise.resolve({ req });
+        return Promise.resolve({ req, ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }) });
       },
     })
   );
 
-  await new Promise<void>((resolve) =>
-    httpServer.listen({ port: serverConfig.GRAPHQL_PORT }, resolve)
-  );
-  logger.info(
-    `🚀 Server ready at http://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`
-  );
+  const serverPort = port || serverConfig.GRAPHQL_PORT;
+  const serverHost = host || serverConfig.BACKEND_HOST;
+  return new Promise<http.Server>((resolve) =>
+    httpServer.listen({ port: serverPort }, () => {
+      logger.info(
+        `🚀 Server ready at http://${serverHost}:${serverPort}/graphql`
+      );
+      resolve(httpServer);
+  }));
+  // await new Promise<void>((resolve) =>
+  //   httpServer.listen({ port: serverPort }, resolve)
+  // );
+  // logger.info(
+  //   `🚀 Server ready at http://${serverHost}:${serverPort}/graphql`
+  // );
 }

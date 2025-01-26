@@ -25,6 +25,7 @@ class MockGameDefinitionProvider implements GameDefinitionProvider {
 export function createMockContext(params : { gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition> } = {}) {
   const context = {
     dbOrTx: db.default,
+    ctxWithChildLogger: () => context,
     logger: createLogger(),
     convertError,
     ctxWithTx: (tx: TX) => ({ ...context, dbOrTx: tx }),

@@ -1,6 +1,6 @@
 import { db } from '~playfulbot/model/db';
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { GameSummary } from '~playfulbot/model/GameSummary';
 
 export async function gameSummaryWinnersResolver(

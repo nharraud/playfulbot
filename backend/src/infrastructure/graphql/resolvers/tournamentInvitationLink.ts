@@ -7,9 +7,9 @@ import {
   ApolloContext,
   isUnauthenticatedContext,
   isUserContext,
-} from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
-import { RegisterTournamentInvitationResult } from '~playfulbot/types/graphql';
+} from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
+import { RegisterTournamentInvitationResult } from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<ApolloContext>['tournamentByInvitationLink'] =
   async (parent, args, ctx) => {

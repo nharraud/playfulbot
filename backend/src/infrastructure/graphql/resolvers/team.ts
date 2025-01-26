@@ -1,7 +1,7 @@
 import { AuthenticationError } from '~playfulbot/errors';
-import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { db } from '~playfulbot/model/db';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { Team, TeamID } from '~playfulbot/infrastructure/TeamsPSQL';
 import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';

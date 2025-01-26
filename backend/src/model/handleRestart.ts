@@ -2,7 +2,7 @@ import { db } from './db';
 import { DebugArena } from '../infrastructure/providers/DebugArenaPSQL';
 import { Player } from './Player';
 import { Tournament } from '../infrastructure/providers/TournamentProviderPSQL';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 /**
  * Recreate every in-memory resource after a server restart.

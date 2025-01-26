@@ -5,7 +5,7 @@ import { fixTimeParsing } from '~playfulbot/model/db/fixTimeParsing';
 import { DbOrTx } from '~playfulbot/model/db/helpers';
 import { Round, RoundStatus } from '~playfulbot/model/Round';
 import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export class Scheduler {
   private static readonly SCHEDULE_WINDOW = Duration.fromISOTime('00:15');

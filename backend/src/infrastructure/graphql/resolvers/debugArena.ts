@@ -3,8 +3,8 @@ import { DebugArena } from '~playfulbot/infrastructure/providers/DebugArenaPSQL'
 import { pubsub } from '~playfulbot/pubsub';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
-import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export const debugArenaResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['debugArena'] = {
   subscribe: async (model, args, context, info) => {

@@ -1,9 +1,9 @@
 import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
-import { ApolloContext, isUserContext } from '~playfulbot/types/apolloTypes';
+import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { RoundNotFoundError } from '~playfulbot/errors';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export async function roundTeamPointsResolver(
   parent: Round,

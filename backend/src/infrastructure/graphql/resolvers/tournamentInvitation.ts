@@ -1,9 +1,9 @@
-import { ApolloContext } from '~playfulbot/types/apolloTypes';
+import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
-import * as gqlTypes from '~playfulbot/types/graphql';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { db } from '~playfulbot/model/db';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
-import { Resolver, ResolversTypes } from '~playfulbot/types/graphql';
+import { Resolver, ResolversTypes } from '~playfulbot/infrastructure/graphql/types/graphql';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 

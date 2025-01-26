@@ -9,8 +9,8 @@ import {
   isBotContext,
   isUnauthenticatedContext,
   isUserContext,
-} from '~playfulbot/types/apolloTypes';
-import * as gqlTypes from '~playfulbot/types/graphql';
+} from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>['createTournament'] =
   async (parent, args, ctx) => {

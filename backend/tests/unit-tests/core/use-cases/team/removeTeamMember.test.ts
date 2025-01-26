@@ -94,8 +94,8 @@ describe('use-cases/team/addTeamMember', () => {
       username: 'testUser2',
       password: 'mypassword'
     });
-    ctx.providers.team.addTeamMember(ctx, team.id, user.id);
-    ctx.providers.team.addTeamMember(ctx, team.id, user2.id);
+    await ctx.providers.team.addTeamMember(ctx, team.id, user.id);
+    await ctx.providers.team.addTeamMember(ctx, team.id, user2.id);
 
     const result = await removeTeamMember(ctx, team.id, user.id);
     expect(result).toEqual({ memberRemoved: true, teamDeleted: false });
