@@ -50,7 +50,7 @@ async function createTeamMembers(ctx: Context<any>, nbUsers: number, teams: Team
       }
     );
     await ctx.providers.team.addTeamMember(ctx, teams[teamIdx].id, user.id);
-    console.error(`user ${user.id} created`);
+    ctx.logger.info(`user ${user.id} created`);
   });
   return Promise.all(users);
 }
