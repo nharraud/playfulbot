@@ -4,21 +4,16 @@ import http from 'http';
 import { Client, createClient } from 'graphql-ws';
 import got from 'got';
 import WebSocket from 'ws';
-import { serverConfig } from '~playfulbot/serverConfig';
 import { createMockContext } from '../../../utils/context';
 import { dropTestDB, initTestDB } from '../../../utils/psql';
+import { hideErrorLogs } from './utils/logger';
 
 describe('graphql', () => {
   let client: Client;
   let server: http.Server;
-  let wsUrl: string;// = `ws://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
-  let httpUrl: string;// = `http://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
+  let wsUrl: string;
+  let httpUrl: string;
   const userData = { username: 'testuser', password: 'testpassword' };
-
-  beforeAll(() => {
-    // hide error logs
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-  });
 
   afterAll(() => {
     vi.restoreAllMocks();
@@ -27,10 +22,7 @@ describe('graphql', () => {
   beforeEach(async () => {
     await initTestDB();
     const ctx = createMockContext();
-    server = await createGraphqlServer(ctx);
-    const port = (server.address() as any).port;
-    wsUrl = `ws://${serverConfig.BACKEND_HOST}:${port}/graphql`;
-    httpUrl = `http://${serverConfig.BACKEND_HOST}:${port}/graphql`;
+    ({ server, wsUrl, httpUrl} = await createGraphqlServer(ctx));
     await ctx.providers.user.createUser(ctx, userData);
   });
 
@@ -46,6 +38,9 @@ describe('graphql', () => {
   });
 
   describe('Websocket server errors', () => {
+    beforeEach(() => {
+      hideErrorLogs();
+    });
 
     test('should fail if no connectionParams are provided', async () => {
       createTestWsClient({})
@@ -115,6 +110,7 @@ describe('graphql', () => {
     });
 
     test('should return an error when the user does not exist', async () => {
+      hideErrorLogs();
       const variables = { username: 'unknown', password: 'pass' };
       const response = await login(variables);
       const body = JSON.parse(response.body);
@@ -129,6 +125,7 @@ describe('graphql', () => {
     });
 
     test('should fail when the password is invalid', async () => {
+      hideErrorLogs();
       const variables = { username: userData.username, password: 'wrong password' };
       const response = await login(variables);
       const body = JSON.parse(response.body);
@@ -186,6 +183,7 @@ describe('graphql', () => {
     });
 
     test('should fail if the token is missing', async () => {
+      hideErrorLogs();
       const loginResponse = await login(userData);
       const body = JSON.parse(loginResponse.body);
       const fingerprint = /JWTFingerprint=([^;]+);/.exec(loginResponse.headers['set-cookie'][0])[1];
@@ -203,6 +201,7 @@ describe('graphql', () => {
     });
 
     test('should fail if the fingerprint is incorrect', async () => {
+      hideErrorLogs();
       const loginResponse = await login(userData);
       const body = JSON.parse(loginResponse.body);
       const token = body.data.login.token;
@@ -218,6 +217,7 @@ describe('graphql', () => {
     });
 
     test('should fail if the fingerprint is missing', async () => {
+      hideErrorLogs();
       const loginResponse = await login(userData);
       const body = JSON.parse(loginResponse.body);
       const token = body.data.login.token;

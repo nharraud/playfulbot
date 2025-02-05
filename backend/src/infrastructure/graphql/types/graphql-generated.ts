@@ -48,6 +48,26 @@ export type MutationLoginArgs = {
 export type Query = {
   __typename?: 'Query';
   authenticatedUser?: Maybe<User>;
+  team?: Maybe<UserTeamResult>;
+};
+
+
+export type QueryTeamArgs = {
+  tournamentID: Scalars['ID']['input'];
+  userID: Scalars['ID']['input'];
+};
+
+export type Team = {
+  __typename?: 'Team';
+  id: Scalars['ID']['output'];
+  members?: Maybe<Array<Maybe<User>>>;
+  name: Scalars['String']['output'];
+  tournament?: Maybe<Tournament>;
+};
+
+export type Tournament = {
+  __typename?: 'Tournament';
+  id: Scalars['ID']['output'];
 };
 
 export type User = {
@@ -55,6 +75,13 @@ export type User = {
   id: Scalars['ID']['output'];
   username: Scalars['String']['output'];
 };
+
+export type UserNotPartOfAnyTeam = {
+  __typename?: 'UserNotPartOfAnyTeam';
+  message: Scalars['String']['output'];
+};
+
+export type UserTeamResult = Team | UserNotPartOfAnyTeam;
 
 export type ValidationError = Error & {
   __typename?: 'ValidationError';
@@ -128,6 +155,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  UserTeamResult: ( Team ) | ( UserNotPartOfAnyTeam );
+};
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
@@ -146,7 +177,11 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Team: ResolverTypeWrapper<Team>;
+  Tournament: ResolverTypeWrapper<Tournament>;
   User: ResolverTypeWrapper<User>;
+  UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
+  UserTeamResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UserTeamResult']>;
   ValidationError: ResolverTypeWrapper<ValidationError>;
 };
 
@@ -162,7 +197,11 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
+  Team: Team;
+  Tournament: Tournament;
   User: User;
+  UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
+  UserTeamResult: ResolversUnionTypes<ResolversParentTypes>['UserTeamResult'];
   ValidationError: ValidationError;
 };
 
@@ -197,12 +236,35 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'tournamentID' | 'userID'>>;
+};
+
+export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserNotPartOfAnyTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserNotPartOfAnyTeam'] = ResolversParentTypes['UserNotPartOfAnyTeam']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserTeamResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserTeamResult'] = ResolversParentTypes['UserTeamResult']> = {
+  __resolveType: TypeResolveFn<'Team' | 'UserNotPartOfAnyTeam', ParentType, ContextType>;
 };
 
 export type ValidationErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ValidationError'] = ResolversParentTypes['ValidationError']> = {
@@ -218,7 +280,11 @@ export type Resolvers<ContextType = any> = {
   LoginResult?: LoginResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Team?: TeamResolvers<ContextType>;
+  Tournament?: TournamentResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserNotPartOfAnyTeam?: UserNotPartOfAnyTeamResolvers<ContextType>;
+  UserTeamResult?: UserTeamResultResolvers<ContextType>;
   ValidationError?: ValidationErrorResolvers<ContextType>;
 };
 

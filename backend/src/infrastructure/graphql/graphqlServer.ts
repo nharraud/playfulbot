@@ -154,17 +154,16 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
 
   const serverPort = port || serverConfig.GRAPHQL_PORT;
   const serverHost = host || serverConfig.BACKEND_HOST;
-  return new Promise<http.Server>((resolve) =>
+  return new Promise<{ server: http.Server, httpUrl: string, wsUrl: string }>((resolve) =>
     httpServer.listen({ port: serverPort }, () => {
       logger.info(
         `🚀 Server ready at http://${serverHost}:${serverPort}/graphql`
       );
-      resolve(httpServer);
+      const finalPort = (httpServer.address() as any).port;
+      resolve({
+        server: httpServer,
+        httpUrl:`http://${serverHost}:${finalPort}/graphql`,
+        wsUrl: `ws://${serverHost}:${finalPort}/graphql`,
+      });
   }));
-  // await new Promise<void>((resolve) =>
-  //   httpServer.listen({ port: serverPort }, resolve)
-  // );
-  // logger.info(
-  //   `🚀 Server ready at http://${serverHost}:${serverPort}/graphql`
-  // );
 }

@@ -4,14 +4,14 @@ import { IResolvers } from '@graphql-tools/utils';
 import { loginResolver, logoutResolver } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/infrastructure/graphql/resolvers/authenticatedUser';
-// import {
+import {
 //   createTeamResolver,
 //   joinTeamResolver,
 //   teamMembersResolver,
-//   teamResolver,
+  teamResolver,
 //   teamTournamentResolver,
 //   updateTeamResolver,
-// } from '~playfulbot/infrastructure/graphql/resolvers/team';
+} from '~playfulbot/infrastructure/graphql/resolvers/team';
 // import { registerUserResolver } from './registration';
 // import {
 //   createTournamentResolver,
@@ -49,7 +49,7 @@ const resolvers: IResolvers = {
   //   teamPlayer: teamPlayerResolver,
   // } as gqlTypes.SubscriptionResolvers,
   Query: {
-    // team: teamResolver,
+    team: teamResolver,
     authenticatedUser: authenticatedUserResolver,
     // tournament: tournamentResolver,
     // round: roundResolver,

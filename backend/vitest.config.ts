@@ -19,6 +19,7 @@ export default defineConfig({
     exclude:[
       ...configDefaults.exclude, 
       'build/**'
-    ]
+    ],
+    restoreMocks: true,
   },
 })

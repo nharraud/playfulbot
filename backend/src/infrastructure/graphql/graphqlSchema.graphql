@@ -37,23 +37,23 @@ type User {
 #   ADMIN
 # }
 
-# type Tournament {
-#   id: ID!
-#   name: String!
-#   status: TournamentStatus
-#   startDate: Date
-#   lastRoundDate: Date
-#   firstRoundDate: Date
-#   roundsNumber: Int
-#   minutesBetweenRounds: Int
-#   teams: [Team]
+type Tournament {
+  id: ID!
+  # name: String!
+  # status: TournamentStatus
+  # startDate: Date
+  # lastRoundDate: Date
+  # firstRoundDate: Date
+  # roundsNumber: Int
+  # minutesBetweenRounds: Int
+  # teams: [Team]
 
-#   rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
+  # rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
 
-#   myRole: TournamentRoleName
+  # myRole: TournamentRoleName
 
-#   invitationLinkID: ID
-# }
+  # invitationLinkID: ID
+}
 
 # type TournamentInvitation {
 #   id: ID
@@ -61,18 +61,18 @@ type User {
 #   invitee: User
 # }
 
-# type Team {
-#   id: ID!
-#   name: String!
-#   members: [User]
-#   tournament: Tournament
-# }
+type Team {
+  id: ID!
+  name: String!
+  members: [User]
+  tournament: Tournament
+}
 
-# type UserNotPartOfAnyTeam {
-#   message: String!
-# }
+type UserNotPartOfAnyTeam {
+  message: String!
+}
 
-# union UserTeamResult = Team | UserNotPartOfAnyTeam
+union UserTeamResult = Team | UserNotPartOfAnyTeam
 
 type LoginResult {
   user: User!
@@ -250,7 +250,7 @@ type Query {
   # tournament(tournamentID: ID): Tournament
   # tournamentByInvitationLink(tournamentInvitationLinkID: ID!): Tournament
   # round(roundID: ID): Round
-  # team(userID: ID!, tournamentID: ID!): UserTeamResult
+  team(userID: ID!, tournamentID: ID!): UserTeamResult
   authenticatedUser: User
 }
 
