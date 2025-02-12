@@ -1,7 +1,7 @@
 import Cookies from 'cookies';
 import express from 'express';
 import http from 'http';
-import { ApolloServer } from '@apollo/server';
+import { ApolloServer, ApolloServerPlugin } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors';
@@ -23,10 +23,57 @@ import { AuthenticationError, InvalidRequest } from '../../errors';
 import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication.js';
 import { isBotJWToken, isUserJWToken } from 'playfulbot-backend-commons/lib/types/token.js';
 import { Context } from '../../core/use-cases/interfaces/Context';
+import { ApolloContext } from './types/apolloTypes';
+import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
+import { UnkownError } from '~playfulbot/core/use-cases/Errors';
 
-interface MyContext {
-  token?: string;
+class CancelTransactionError extends Error {
+  constructor() {
+    super('This error is used to cancel the GraphQL transaction after an error happened');
+  }
 }
+
+/**
+ * @returns Apollo server plugin which creates a new transaction for each request and stops it when the request ends
+ */
+function ApolloTransactionPlugin (): ApolloServerPlugin<ApolloContext> {
+  return {
+    async requestDidStart() {
+      const requestPromise = new DeferredPromise<void>;
+      const txPromise = new DeferredPromise<void>;
+      return {
+        async executionDidStart({ contextValue: { ctx } }) {
+          const { contextReady, transactionPromise } = await ctx.txPromise(requestPromise.promise);
+
+          transactionPromise.then(() => txPromise.resolve())
+            .catch((err) => {
+              if (err instanceof CancelTransactionError) {
+                txPromise.resolve();
+              } else {
+                txPromise.reject(new UnkownError('Transaction failed', err))
+              }
+            });
+
+          await contextReady;
+
+          return {
+            async executionDidEnd(err) {
+              // if `err` is set, `requestPromise` is already rejected by `didEncounterErrors` and it also awaits `txPromise`
+              if (!err) {
+                requestPromise.resolve();
+                await txPromise.promise;
+              }
+            }
+          }
+        },
+        async didEncounterErrors() {
+          requestPromise.reject(new CancelTransactionError());
+          await txPromise.promise;
+        }
+      }
+    },
+  };
+};
 
 export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host }: { port?: number, host?: string } = {}) {
   const logger = baseContext.logger.child({ module: __filename, source: 'createGraphqlServer' });
@@ -95,7 +142,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     wsServer
   );
 
-  const server = new ApolloServer<MyContext>({
+  const server = new ApolloServer<ApolloContext>({
     schema,
     plugins: [
       // Tell Apollo Server to "drain" this httpServer,
@@ -111,6 +158,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
           });
         },
       },
+      ApolloTransactionPlugin(),
     ],
   });
   // Ensure we wait for our server to start

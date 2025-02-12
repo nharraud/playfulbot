@@ -11,6 +11,7 @@ export interface Context<FinalContext extends Context<FinalContext>> {
   logger: Logger,
   ctxWithChildLogger: (bindings: Bindings) => FinalContext,
   convertError: ErrorConverter,
+  txPromise: (releaseTransactionPromise: Promise<void>) => Promise<{ contextReady: Promise<void>, transactionPromise: Promise<void> }>,
   txIf: (task: (ctx: FinalContext) => Promise<void> | void) => Promise<void>,
   providers: {
     user: UserProvider<FinalContext>,

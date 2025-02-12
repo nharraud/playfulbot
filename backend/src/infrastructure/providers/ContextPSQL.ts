@@ -10,39 +10,47 @@ import { TeamProviderPSQL } from "./TeamProviderPSQL";
 import { TournamentInvitationProviderPSQL } from "./TournamentInvitiationProviderPSQL";
 import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/GameDefinitionProvider";
 import { GamedDefinitionProviderEnv } from "./GameDefinitionProviderEnv";
+import { DeferredPromise } from "~playfulbot/utils/DeferredPromise";
+import { UserProvider } from "~playfulbot/core/use-cases/interfaces/UserProvider";
+import { TournamentProvider } from "~playfulbot/core/use-cases/interfaces/TournamentProvider";
+import { TournamentInvitationProvider } from "~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider";
+import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider";
 
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
   convertError: ErrorConverter,
-  dbOrTx: DbOrTx,
   ctxWithTx: (tx: TX) => ContextPSQL,
   txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
   providers: {
-    user: UserProviderPSQL,
-    tournament: TournamentProviderPSQL,
-    tournamentInvitation: TournamentInvitationProviderPSQL,
-    team: TeamProviderPSQL,
+    user: UserProvider<any>,
+    tournament: TournamentProvider<any>,
+    tournamentInvitation: TournamentInvitationProvider<any>,
+    team: TeamProvider<any>,
     gameDefinitions: GameDefinitionProvider,
   }
 }
 
 export class ContextPSQLImpl implements ContextPSQL {
   readonly logger;
-  readonly dbOrTx;
-  readonly providers;
   readonly convertError;
+  readonly providers: Context<any>['providers'];
+  #dbOrTx: DbOrTx;
 
-  constructor({ logger = createLogger(), dbOrTx = db.default }: { logger?: Logger, dbOrTx?: DbOrTx} = {}) {
+  get dbOrTx() {
+    return this.#dbOrTx;
+  }
+
+  constructor({ logger = createLogger(), dbOrTx = db.default, providers }: { logger?: Logger, dbOrTx?: DbOrTx, providers?: Partial<Context<any>['providers']> } = {}) {
     this.logger = logger;
-    this.dbOrTx = dbOrTx;
-    this.providers = {
-      user: new UserProviderPSQL(),
-      tournament: new TournamentProviderPSQL(),
-      tournamentInvitation: new TournamentInvitationProviderPSQL(),
-      team: new TeamProviderPSQL(),
-      gameDefinitions: new GamedDefinitionProviderEnv(),
-    };
+    this.#dbOrTx = dbOrTx;
     this.convertError = convertError;
+    this.providers = {
+      user: providers.user || new UserProviderPSQL(),
+      tournament: providers.tournament || new TournamentProviderPSQL(),
+      tournamentInvitation: providers.tournamentInvitation || new TournamentInvitationProviderPSQL(),
+      team: providers.team || new TeamProviderPSQL(),
+      gameDefinitions: providers.gameDefinitions || new GamedDefinitionProviderEnv(),
+    };
   }
 
   ctxWithChildLogger(bindings: Bindings) {
@@ -59,9 +67,23 @@ export class ContextPSQLImpl implements ContextPSQL {
     });
   }
 
+  async txPromise(releaseTransactionPromise: Promise<void>): Promise<{ contextReady: Promise<void>, transactionPromise: Promise<void> }> {
+    const oldDbOrTx = this.#dbOrTx;
+    const contextReady = new DeferredPromise<void>();
+    const transactionPromise = this.#dbOrTx.txIf(async (tx) => {
+      this.#dbOrTx = tx;
+      contextReady.resolve();
+      await releaseTransactionPromise;
+    }).finally(() => {
+      this.#dbOrTx = oldDbOrTx;
+    });
+    return { contextReady: contextReady.promise, transactionPromise }
+  }
+
   txIf(task: (ctx: ContextPSQL) => Promise<void> | void) {
-    return this.dbOrTx.txIf(async (tx) => {
-      await task(new ContextPSQLImpl({ dbOrTx: tx }));
+    return this.#dbOrTx.txIf(async (tx) => {
+      // call this.constructor to create subclass's constructor necessary
+      await task(new (this.constructor as any)({ ...this, dbOrTx: tx }));
     });
   }
 }

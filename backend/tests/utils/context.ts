@@ -1,7 +1,7 @@
 import { db, TX } from "playfulbot-backend-commons/lib/model/db";
 import { createLogger } from "./logging";
 import { convertError } from "~playfulbot/infrastructure/providers/convertError";
-import { ContextPSQL } from "~playfulbot/infrastructure/providers/ContextPSQL";
+import { ContextPSQL, ContextPSQLImpl, PartialContextPSQLImpl } from "~playfulbot/infrastructure/providers/ContextPSQL";
 import { UserProviderPSQL } from "~playfulbot/infrastructure/providers/UserProviderPSQL";
 import { TournamentProviderPSQL } from "~playfulbot/infrastructure/providers/TournamentProviderPSQL";
 import { TeamProviderPSQL } from "~playfulbot/infrastructure/providers/TeamProviderPSQL";
@@ -10,6 +10,8 @@ import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/Ga
 import { GameDefinitionID } from "playfulbot-config-loader";
 import { BackendGameDefinition } from "playfulbot-game-backend";
 import { mockGameDefinition } from "./mockGameDefinition";
+import { Logger } from "pino";
+import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 
 class MockGameDefinitionProvider implements GameDefinitionProvider {
   #gameDefinitions:  Map<GameDefinitionID, BackendGameDefinition>;
@@ -22,25 +24,16 @@ class MockGameDefinitionProvider implements GameDefinitionProvider {
   }
 }
 
+class MockContext extends ContextPSQLImpl<MockContext> {
+  constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions }: { logger?: Logger, dbOrTx?: DbOrTx, gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>} = {}) {
+    super({
+      logger, dbOrTx, providers: {
+        gameDefinitions: new MockGameDefinitionProvider(gameDefinitions),
+      }
+    });
+  }
+}
+
 export function createMockContext(params : { gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition> } = {}) {
-  const context = {
-    dbOrTx: db.default,
-    ctxWithChildLogger: () => context,
-    logger: createLogger(),
-    convertError,
-    ctxWithTx: (tx: TX) => ({ ...context, dbOrTx: tx }),
-    txIf(task) {
-      return context.dbOrTx.txIf(async (tx) => {
-        await task({ ...context, dbOrTx: tx });
-      });
-    },
-    providers: {
-      user: new UserProviderPSQL(),
-      tournament: new TournamentProviderPSQL(),
-      team: new TeamProviderPSQL(),
-      tournamentInvitation: new TournamentInvitationProviderPSQL(),
-      gameDefinitions: new MockGameDefinitionProvider(params.gameDefinitions),
-    }
-  } as ContextPSQL;
-  return context;
+  return new MockContext({ gameDefinitions: params?.gameDefinitions });
 };
