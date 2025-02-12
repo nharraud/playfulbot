@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 import { createMockContext } from '../../../utils/context';
@@ -13,7 +13,7 @@ async function contextFixture({}, use: any) {
   await use(createMockContext());
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   ctx: contextFixture,
 });
 
@@ -26,7 +26,7 @@ describe('use-cases/initDemo', () => {
     await dropTestDB();
   })
 
-  ctest('should init and stop', async ({ ctx }) => {
+  test('should init and stop', async ({ ctx }) => {
     await initDemo(ctx, { gameDefinitionId: 'TestGame' })
   });
 });

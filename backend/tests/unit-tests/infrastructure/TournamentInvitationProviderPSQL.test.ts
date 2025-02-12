@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../utils/psql';
 import { TournamentInvitationProviderPSQL } from '~playfulbot/infrastructure/providers/TournamentInvitiationProviderPSQL';
@@ -47,7 +47,7 @@ interface TestFixtures {
   invitation: TournamentInvitation
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   tournament: tournamentFixture,
   user: userFixture,
   invitation: tournamentInvitationFixture,
@@ -63,7 +63,7 @@ describe('infrastructure/games/TournamentInvitationProviderPLSQL', () => {
   });
 
   describe('createTournamentInvitation', () => {
-    ctest('should create tournament invitation', async ({ tournament, user }) => {
+    test('should create tournament invitation', async ({ tournament, user }) => {
       const provider = new TournamentInvitationProviderPSQL();
       const invitation = await provider.createTournamentInvitation(createMockContext(), {
         tournamentId: tournament.id,
@@ -75,7 +75,7 @@ describe('infrastructure/games/TournamentInvitationProviderPLSQL', () => {
   });
 
   describe('deleteTournamentInvitation', () => {
-    ctest('should delete tournament invitation', async ({ tournament, user, invitation }) => {
+    test('should delete tournament invitation', async ({ tournament, user, invitation }) => {
       const provider = new TournamentInvitationProviderPSQL();
       await provider.deleteTournamentInvitation(createMockContext(), {
         tournamentId: tournament.id,
@@ -85,7 +85,7 @@ describe('infrastructure/games/TournamentInvitationProviderPLSQL', () => {
       expect(isInvited).toEqual(false);
     });
 
-    ctest('should not fail if the invitation does not exist', async ({ tournament, user }) => {
+    test('should not fail if the invitation does not exist', async ({ tournament, user }) => {
       const provider = new TournamentInvitationProviderPSQL();
       await provider.deleteTournamentInvitation(createMockContext(), {
         tournamentId: tournament.id,
@@ -96,13 +96,13 @@ describe('infrastructure/games/TournamentInvitationProviderPLSQL', () => {
 
 
   describe('isInvited', () => {
-    ctest('should return false when the user is not invited', async ({ tournament, user }) => {
+    test('should return false when the user is not invited', async ({ tournament, user }) => {
       const provider = new TournamentInvitationProviderPSQL();
       const isInvited = await provider.isInvited(createMockContext(), { tournamentId: tournament.id, userId: user.id });
       expect(isInvited).toEqual(false);
     });
 
-    ctest('should return true when the user is invited', async ({ tournament, user, invitation }) => {
+    test('should return true when the user is invited', async ({ tournament, user, invitation }) => {
       const provider = new TournamentInvitationProviderPSQL();
       const isInvited = await provider.isInvited(createMockContext(), { tournamentId: tournament.id, userId: user.id });
       expect(isInvited).toEqual(true);

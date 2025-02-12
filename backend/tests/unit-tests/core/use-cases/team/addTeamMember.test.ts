@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 import { dropTestDB, initTestDB } from '../../../../utils/psql';
 import { createMockContext } from '../../../../utils/context';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
@@ -50,7 +50,7 @@ async function userFixture({ ctx }: TestFixtures, use: any) {
   await use(user);
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   ctx: contextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
@@ -66,7 +66,7 @@ describe('use-cases/team/addTeamMember', () => {
     await dropTestDB();
   });
 
-  ctest('should add team member', async ({ctx, team, user, tournament }) => {
+  test('should add team member', async ({ctx, team, user, tournament }) => {
     const result = await addTeamMember(ctx, team.id, user.id);
     expect(result).toEqual({ oldTeam: null });
 
@@ -74,7 +74,7 @@ describe('use-cases/team/addTeamMember', () => {
     expect(foundTeam).toEqual(team);
   });
 
-  ctest('should do nothing if we add user to the team twice', async ({ ctx, team, user, tournament }) => {
+  test('should do nothing if we add user to the team twice', async ({ ctx, team, user, tournament }) => {
     await addTeamMember(ctx, team.id, user.id);
     const result = await addTeamMember(ctx, team.id, user.id);
     expect(result).toEqual({ oldTeam: team, oldTeamDeleted: false });
@@ -83,7 +83,7 @@ describe('use-cases/team/addTeamMember', () => {
     expect(foundTeam).toEqual(team);
   });
 
-  ctest('should remove the user from its previous team if there was one', async ({ ctx, team, user, tournament }) => {
+  test('should remove the user from its previous team if there was one', async ({ ctx, team, user, tournament }) => {
     const team2 = await addTeam(ctx, 'testTeam2', tournament.id);
 
     await addTeamMember(ctx, team.id, user.id);

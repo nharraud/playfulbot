@@ -1,5 +1,5 @@
 
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../utils/psql';
 import { TeamProviderPSQL } from '~playfulbot/infrastructure/providers/TeamProviderPSQL';
@@ -52,7 +52,7 @@ interface TestFixtures {
   user: User,
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   tournament: tournamentFixture,
   team: teamFixture,
   user: userFixture,
@@ -68,7 +68,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
   });
 
   describe('createTeam', () => {
-    ctest('should create a team', async ({ tournament }) => {
+    test('should create a team', async ({ tournament }) => {
       const provider = new TeamProviderPSQL();
       const team = await provider.createTeam(createMockContext(), {
         name: 'testTeam2',
@@ -81,7 +81,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
 
-    ctest('should throw an error when team name is too short', async ({ tournament }) => {
+    test('should throw an error when team name is too short', async ({ tournament }) => {
       const provider = new TeamProviderPSQL();
       const teamPromise = provider.createTeam(createMockContext(), {
         name: 't',
@@ -93,7 +93,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
   
   describe('updateTeam', () => {
-    ctest('should update the team', async ({ tournament, team }) => {
+    test('should update the team', async ({ tournament, team }) => {
       const provider = new TeamProviderPSQL();
       const updatedTeam = await provider.updateTeam(createMockContext(), team.id, {
         name: 'updatedTeamName'
@@ -105,7 +105,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
 
-    ctest('should throw an error when team name is too short', async ({ team }) => {
+    test('should throw an error when team name is too short', async ({ team }) => {
       const provider = new TeamProviderPSQL();
       const teamPromise = provider.updateTeam(createMockContext(), team.id, {
         name: 'a'
@@ -116,13 +116,13 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('getByName', () => {
-    ctest('should find team by name', async ({ team }) => {
+    test('should find team by name', async ({ team }) => {
       const provider = new TeamProviderPSQL();
       const foundTeam = await provider.getTeamByName(createMockContext(), 'testTeam');
       expect(foundTeam).toEqual(team);
     });
 
-    ctest('should return null when no user is found', async ({}) => {
+    test('should return null when no user is found', async ({}) => {
       const provider = new TeamProviderPSQL();
       const foundTeam = await provider.getTeamByName(createMockContext(), 'Unknown');
       expect(foundTeam).toBeNull();
@@ -131,13 +131,13 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('getTeamByID', () => {
-    ctest('should find Team by id', async ({ team }) => {
+    test('should find Team by id', async ({ team }) => {
       const provider = new TeamProviderPSQL();
       const foundTeam = await provider.getTeamByID(createMockContext(), team.id);
       expect(foundTeam).toEqual(team);
     });
 
-    ctest('should return null when no Team is found', async ({}) => {
+    test('should return null when no Team is found', async ({}) => {
       const provider = new TeamProviderPSQL();
       const foundTeam = await provider.getTeamByID(createMockContext(), randomUUID());
       expect(foundTeam).toBeNull();
@@ -146,7 +146,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('getTeamByMember', () => {
-    ctest('should retrun null when the user is not in any team', async ({ team, user, tournament }) => {
+    test('should retrun null when the user is not in any team', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 
@@ -154,7 +154,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       expect(foundTeam).toBeNull();
     });
 
-    ctest('should retrun null when the user is not in any team of this tournament', async ({ team, tournament, user }) => {
+    test('should retrun null when the user is not in any team of this tournament', async ({ team, tournament, user }) => {
       const tournamentProvider = new TournamentProviderPSQL();
       const tournament2 = await tournamentProvider.createTournament(createMockContext(), {
         name: 'testTournament2',
@@ -175,7 +175,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('addTeamMember', () => {
-    ctest('should add team member', async ({ team, user, tournament }) => {
+    test('should add team member', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 
@@ -186,7 +186,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       expect(foundTeam).toEqual(team);
     });
 
-    ctest('should do nothing if we add user to the team twice', async ({ team, user, tournament }) => {
+    test('should do nothing if we add user to the team twice', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 
@@ -201,7 +201,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('removeTeamMember', () => {
-    ctest('should remove existing team member', async ({ team, user, tournament }) => {
+    test('should remove existing team member', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 
@@ -214,7 +214,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     });
 
 
-    ctest('should not fail when removing non team member', async ({ team, user, tournament }) => {
+    test('should not fail when removing non team member', async ({ team, user, tournament }) => {
       const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
 

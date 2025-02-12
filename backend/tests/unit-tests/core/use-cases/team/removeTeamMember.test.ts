@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 import { dropTestDB, initTestDB } from '../../../../utils/psql';
 import { createMockContext } from '../../../../utils/context';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
@@ -50,7 +50,7 @@ async function userFixture({ ctx }: TestFixtures, use: any) {
   await use(user);
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   ctx: contextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
@@ -66,7 +66,7 @@ describe('use-cases/team/addTeamMember', () => {
     await dropTestDB();
   });
 
-  ctest('should remove team member', async ({ ctx, team, user, tournament }) => {
+  test('should remove team member', async ({ ctx, team, user, tournament }) => {
     ctx.providers.team.addTeamMember(ctx, team.id, user.id);
     const result = await removeTeamMember(ctx, team.id, user.id);
     expect(result).toEqual({ memberRemoved: true, teamDeleted: true });
@@ -75,7 +75,7 @@ describe('use-cases/team/addTeamMember', () => {
     expect(foundTeam).toBeNull();
   });
 
-  ctest('should not remove non team members', async ({ ctx, team, user, tournament }) => {
+  test('should not remove non team members', async ({ ctx, team, user, tournament }) => {
     const team2 = await ctx.providers.team.createTeam(createMockContext(), {
       name: 'otherTeam',
       tournamentID: tournament.id,
@@ -89,7 +89,7 @@ describe('use-cases/team/addTeamMember', () => {
     expect(foundTeam.id).toEqual(team2.id);
   });
 
-  ctest('should not delete teams when they still have members', async ({ ctx, team, user, tournament }) => {
+  test('should not delete teams when they still have members', async ({ ctx, team, user, tournament }) => {
     const user2 = await ctx.providers.user.createUser(createMockContext(), {
       username: 'testUser2',
       password: 'mypassword'

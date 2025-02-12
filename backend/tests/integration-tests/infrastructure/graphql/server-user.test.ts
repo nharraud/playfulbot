@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test as baseTest, vi } from 'vitest';
 import { dropTestDB } from '../../../utils/psql';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 import { graphqlFixture, graphqlFixtureType, mockContextFixture } from './fixtures.ts/baseFixtures';
@@ -10,7 +10,7 @@ interface TestFixtures {
   graphql: graphqlFixtureType,
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   ctx: mockContextFixture,
   graphql: graphqlFixture,
 });
@@ -26,13 +26,13 @@ describe('graphql', () => {
   });
 
   describe('Query/authenticatedUser', () => {
-    ctest('should fail if user is not authenticated', async ({ graphql }) => {
+    test('should fail if user is not authenticated', async ({ graphql }) => {
       const response = await graphql.client.query({ operationName: 'authenticatedUser', query: 'query authenticatedUser { authenticatedUser { username }}' });
       expect(response.body.data.authenticatedUser).eql(null);
       expect(response.body.errors[0].extensions.code).eql('FORBIDDEN');
     });
 
-    ctest('should return current user', async ({ graphql }) => {
+    test('should return current user', async ({ graphql }) => {
       await graphql.client.login(userData);
       const response = await graphql.client.query({ operationName: 'authenticatedUser', query: 'query authenticatedUser { authenticatedUser { username }}' });
       expect(response.body.data.authenticatedUser.username).eql(userData.username);

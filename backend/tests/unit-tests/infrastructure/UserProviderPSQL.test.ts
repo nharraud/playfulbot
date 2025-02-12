@@ -1,5 +1,5 @@
 
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../utils/psql';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
@@ -20,7 +20,7 @@ interface TestFixtures {
   user: User
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   user: userFixture
 });
 
@@ -57,13 +57,13 @@ describe('infrastructure/games/UserProviderPSQL', () => {
   });
 
   describe('getUserByName', () => {
-    ctest('should find user by name', async ({ user }) => {
+    test('should find user by name', async ({ user }) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.getUserByName(createMockContext(), 'Alice');
       expect(foundUser).toEqual(user);
     });
 
-    ctest('should return password hash only when requested', async ({ user }) => {
+    test('should return password hash only when requested', async ({ user }) => {
       const provider = new UserProviderPSQL();
       const foundUser1 = await provider.getUserByName(createMockContext(), 'Alice');
       expect(foundUser1.passwordHash).toBeUndefined();
@@ -72,7 +72,7 @@ describe('infrastructure/games/UserProviderPSQL', () => {
       expect(foundUser2.passwordHash).not.toBeUndefined();
     });
 
-    ctest('should return null when no user is found', async ({}) => {
+    test('should return null when no user is found', async ({}) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.getUserByName(createMockContext(), 'Unknown');
       expect(foundUser).toBeNull();
@@ -80,13 +80,13 @@ describe('infrastructure/games/UserProviderPSQL', () => {
   });
 
   describe('getUserByID', () => {
-    ctest('should find user by id', async ({ user }) => {
+    test('should find user by id', async ({ user }) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.getUserByID(createMockContext(), user.id);
       expect(foundUser).toEqual(user);
     });
 
-    ctest('should return null when no user is found', async ({}) => {
+    test('should return null when no user is found', async ({}) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.getUserByID(createMockContext(), randomUUID());
       expect(foundUser).toBeNull();
@@ -94,13 +94,13 @@ describe('infrastructure/games/UserProviderPSQL', () => {
   });
 
   describe('userExists', () => {
-    ctest('should return true when user exists', async ({ user }) => {
+    test('should return true when user exists', async ({ user }) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.userExists(createMockContext(), user.id);
       expect(foundUser).toEqual(true);
     });
 
-    ctest('should return false when user does not exist', async ({}) => {
+    test('should return false when user does not exist', async ({}) => {
       const provider = new UserProviderPSQL();
       const foundUser = await provider.userExists(createMockContext(), randomUUID());
       expect(foundUser).toEqual(false);

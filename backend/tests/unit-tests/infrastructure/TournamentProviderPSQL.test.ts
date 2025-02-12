@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, test } from 'vitest';
+import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
 
 import { dropTestDB, initTestDB } from '../../utils/psql';
 import { TournamentProviderPSQL } from '~playfulbot/infrastructure/providers/TournamentProviderPSQL';
@@ -23,7 +23,7 @@ interface TestFixtures {
   tournament: Tournament,
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   tournament: tournamentFixture,
 });
 
@@ -62,19 +62,19 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
   });
 
   describe('getById', () => {
-    ctest('should find tournament by Id', async ({ tournament }) => {
+    test('should find tournament by Id', async ({ tournament }) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = await provider.getByID(createMockContext(), tournament.id);
       expect(foundTournament).toEqual(tournament);
     });
 
-    ctest('should return null when no tournament is found', async ({}) => {
+    test('should return null when no tournament is found', async ({}) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = await provider.getByID(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toBeNull();
     });
 
-    ctest('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
+    test('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = provider.getByID(createMockContext(), 'unknown');
       await expect(foundTournament).rejects.toThrowError(InvalidArgument);
@@ -82,19 +82,19 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
   });
 
   describe('exists', () => {
-    ctest('should return true when tournament exists', async ({ tournament }) => {
+    test('should return true when tournament exists', async ({ tournament }) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = await provider.exists(createMockContext(), tournament.id);
       expect(foundTournament).toEqual(true);
     });
 
-    ctest('should return falsde when tournament does not exist', async ({}) => {
+    test('should return falsde when tournament does not exist', async ({}) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = await provider.exists(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toEqual(false);
     });
 
-    ctest('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
+    test('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
       const provider = new TournamentProviderPSQL();
       const foundTournament = provider.exists(createMockContext(), 'unknown');
       await expect(foundTournament).rejects.toThrowError(InvalidArgument);
