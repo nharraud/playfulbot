@@ -1,3 +1,4 @@
+import { Team, TeamID } from '~playfulbot/core/entities/Teams';
 import { AuthenticationError, ForbiddenError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
@@ -131,22 +132,21 @@ export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = asyn
   };
 };
 
-// interface TeamMembersQueryArguments {
-//   teamID?: TeamID;
-// }
+interface TeamMembersQueryArguments {
+  teamID?: TeamID;
+}
 
-// export async function teamMembersResolver(
-//   parent: Team | undefined,
-//   args: TeamMembersQueryArguments,
-//   context: ApolloContext
-// ): Promise<gqlTypes.User[]> {
-//   // FIXME: this should run in the same transaction as the parent query
-//   const result = await User.getByTeam(args.teamID || parent?.id, db.default);
-//   return result.map((user) => ({
-//     id: user.id,
-//     username: user.username,
-//   }));
-// }
+export async function teamMembersResolver(
+  parent: Team | undefined,
+  args: TeamMembersQueryArguments,
+  apolloContext: ApolloContext
+): Promise<gqlTypes.User[]> {
+  const result = await apolloContext.ctx.providers.user.getUsersByTeam(apolloContext.ctx, args.teamID || parent?.id);
+  return result.map((user) => ({
+    id: user.id,
+    username: user.username,
+  }));
+}
 
 // export async function teamTournamentResolver(
 //   parent: Team,

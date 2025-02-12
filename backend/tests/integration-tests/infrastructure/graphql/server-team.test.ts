@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test as baseTest, vi } from 'vitest';
 import { createMockContext } from '../../../utils/context';
 import { dropTestDB } from '../../../utils/psql';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
@@ -31,6 +31,12 @@ async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament:
   await use(team);
 }
 
+async function teamMemberFixture({ ctx, team }: { ctx: Context<any>, team: Team }, use: any) {
+  const teamMember = await ctx.providers.user.createUser(createMockContext(), { username: 'teamMember', password: 'otherpass' });
+  ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
+  await use(teamMember);
+}
+
 async function userFixture({ ctx }: { ctx: Context<any> }, use: any) {
   const user = await ctx.providers.user.createUser(createMockContext(), userData);
   await use(user);
@@ -41,14 +47,16 @@ interface TestFixtures {
   graphql: graphqlFixtureType,
   tournament: Tournament,
   team: Team,
+  teamMember: User,
   user: User,
 }
 
-const ctest = test.extend<TestFixtures>({
+const test = baseTest.extend<TestFixtures>({
   ctx: mockContextFixture,
   graphql: graphqlFixture,
   tournament: tournamentFixture,
   team: teamFixture,
+  teamMember: teamMemberFixture,
   user: userFixture,
 });
 
@@ -76,21 +84,30 @@ describe('graphql', () => {
         }
       }`;
 
-    ctest('should fail if user is not authenticated', async ({ tournament, user, graphql }) => {
+    test('should fail if user is not authenticated', async ({ tournament, user, graphql }) => {
       hideErrorLogs();
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
       expect(response.body.data.team).eql(null);
       expect(response.body.errors[0].extensions.code).eql('FORBIDDEN');
     });
 
-    ctest('should return current user team if user is in a team', async ({ ctx, user, team, tournament, graphql }) => {
+    test('should return current user team if user is in a team', async ({ ctx, user, team, teamMember, tournament, graphql }) => {
       ctx.providers.team.addTeamMember(ctx, team.id, user.id);
       await graphql.client.login(userData);
+
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
+
+      expect(response.body.data.team.id).eql(team.id);
       expect(response.body.data.team.name).eql(team.name);
+
+      response.body.data.team.members.sort((a: { username: string }, b: { username: string}) => a.username.localeCompare(b.username));
+      expect(response.body.data.team.members).eql([
+        { username: teamMember.username, id: teamMember.id },
+        { username: user.username, id: user.id },
+      ]);
     });
 
-    ctest('should return UserNotPartOfAnyTeam message if the user is not part of any team', async ({ user, tournament, graphql }) => {
+    test('should return UserNotPartOfAnyTeam message if the user is not part of any team', async ({ user, tournament, graphql }) => {
       await graphql.client.login(userData);
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
       expect(response.body.data.team.message).eql('User is not part of any team in this tournament');
