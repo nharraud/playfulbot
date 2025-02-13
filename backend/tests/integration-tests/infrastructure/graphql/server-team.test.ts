@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test as baseTest, vi } from 'vitest';
-import { createMockContext } from '../../../utils/context';
 import { dropTestDB } from '../../../utils/psql';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 import { graphqlFixture, graphqlFixtureType, mockContextFixture } from './fixtures.ts/baseFixtures';
@@ -12,7 +11,7 @@ const userData = { username: 'testuser', password: 'testpassword' };
 
 
 async function tournamentFixture({ ctx }: { ctx: Context<any> }, use: any) {
-  const tournament = await ctx.providers.tournament.createTournament(createMockContext(), {
+  const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -24,7 +23,7 @@ async function tournamentFixture({ ctx }: { ctx: Context<any> }, use: any) {
 }
 
 async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament: Tournament }, use: any) {
-  const team = await ctx.providers.team.createTeam(createMockContext(), {
+  const team = await ctx.providers.team.createTeam(ctx, {
     name: 'testTeam',
     tournamentID: tournament.id,
   });
@@ -32,13 +31,13 @@ async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament:
 }
 
 async function teamMemberFixture({ ctx, team }: { ctx: Context<any>, team: Team }, use: any) {
-  const teamMember = await ctx.providers.user.createUser(createMockContext(), { username: 'teamMember', password: 'otherpass' });
+  const teamMember = await ctx.providers.user.createUser(ctx, { username: 'teamMember', password: 'otherpass' });
   ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
   await use(teamMember);
 }
 
 async function userFixture({ ctx }: { ctx: Context<any> }, use: any) {
-  const user = await ctx.providers.user.createUser(createMockContext(), userData);
+  const user = await ctx.providers.user.createUser(ctx, userData);
   await use(user);
 }
 
