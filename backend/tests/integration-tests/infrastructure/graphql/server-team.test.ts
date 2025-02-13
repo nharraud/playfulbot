@@ -70,6 +70,7 @@ describe('graphql', () => {
     const query = `
       query GetTeam($userID: ID!, $tournamentID: ID!) {
         team(userID: $userID, tournamentID: $tournamentID) {
+          __typename
           ... on Team {
             id
             name
@@ -115,6 +116,7 @@ describe('graphql', () => {
       await graphql.client.login(userData);
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
       expect(response.body.data.team.message).eql('User is not part of any team in this tournament');
+      expect(response.body.data.team.__typename).eql('UserNotPartOfAnyTeam');
     });
   });
 });
