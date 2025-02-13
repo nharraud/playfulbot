@@ -148,14 +148,13 @@ export async function teamMembersResolver(
   }));
 }
 
-// export async function teamTournamentResolver(
-//   parent: Team,
-//   args: undefined,
-//   context: ApolloContext
-// ): Promise<gqlTypes.Tournament> {
-//   // FIXME: this should run in the same transaction as the parent query
-//   return Tournament.getByTeam(parent.id, db.default);
-// }
+export async function teamTournamentResolver(
+  parent: Team,
+  args: undefined,
+  apolloContext: ApolloContext
+): Promise<gqlTypes.Tournament> {
+  return await apolloContext.ctx.providers.tournament.getByTeam(apolloContext.ctx, parent.id);
+}
 
 // export const joinTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['joinTeam'] = async (
 //   parent,

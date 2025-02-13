@@ -104,18 +104,18 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
     }
   }
 
-  // async getByTeam(ctx: ContextPSQL,teamID: TeamID): Promise<Tournament | null> {
-  //   const data = await ctx.dbOrTx.oneOrNone<DbTournament>(
-  //     'SELECT tournaments.* FROM tournaments JOIN teams ON teams.tournament_id = tournaments.id WHERE teams.id = $[teamID]',
-  //     {
-  //       teamID,
-  //     }
-  //   );
-  //   if (data !== null) {
-  //     return buildTournament(data);
-  //   }
-  //   return null;
-  // }
+  async getByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<Tournament | null> {
+    const data = await ctx.dbOrTx.oneOrNone<DbTournament>(
+      'SELECT tournaments.* FROM tournaments JOIN teams ON teams.tournament_id = tournaments.id WHERE teams.id = $[teamID]',
+      {
+        teamID,
+      }
+    );
+    if (data !== null) {
+      return buildTournament(data);
+    }
+    return null;
+  }
 
   // async getByInvitationLink(
   //   ctx: ContextPSQL,

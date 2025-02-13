@@ -77,6 +77,9 @@ describe('graphql', () => {
               id
               username
             }
+            tournament {
+              id
+            }
           }
           ... on UserNotPartOfAnyTeam {
             message
@@ -105,6 +108,7 @@ describe('graphql', () => {
         { username: teamMember.username, id: teamMember.id },
         { username: user.username, id: user.id },
       ]);
+      expect(response.body.data.team.tournament.id).eql(tournament.id);
     });
 
     test('should return UserNotPartOfAnyTeam message if the user is not part of any team', async ({ user, tournament, graphql }) => {

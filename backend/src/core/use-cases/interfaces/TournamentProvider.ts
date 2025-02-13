@@ -45,7 +45,7 @@ export interface TournamentProvider<Context> {
 
   // getTournamentByID(ctx: Context, id: TournamentID): Promise<Tournament | null>;
 
-  // getTournamentByTeam(ctx: Context, teamID: TeamID): Promise<Tournament | null>;
+  getTournamentByTeam(ctx: Context, teamID: TeamID): Promise<Tournament | null>;
 
   // getTournamentByInvitationLink(
   //   ctx: Context, 

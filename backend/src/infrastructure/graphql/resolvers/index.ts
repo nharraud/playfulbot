@@ -9,7 +9,7 @@ import {
 //   joinTeamResolver,
   teamMembersResolver,
   teamResolver,
-//   teamTournamentResolver,
+  teamTournamentResolver,
 //   updateTeamResolver,
 } from '~playfulbot/infrastructure/graphql/resolvers/team';
 // import { registerUserResolver } from './registration';
@@ -73,7 +73,7 @@ const resolvers: IResolvers = {
   },
   Team: {
     members: teamMembersResolver,
-  //   tournament: teamTournamentResolver,
+    tournament: teamTournamentResolver,
   },
   // Tournament: {
   //   rounds: tournamentRoundsResolver,
