@@ -64,19 +64,19 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
   describe('getById', () => {
     test('should find tournament by Id', async ({ tournament }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getByID(createMockContext(), tournament.id);
+      const foundTournament = await provider.getTournamentByID(createMockContext(), tournament.id);
       expect(foundTournament).toEqual(tournament);
     });
 
     test('should return null when no tournament is found', async ({}) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getByID(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
+      const foundTournament = await provider.getTournamentByID(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toBeNull();
     });
 
     test('should return null error when the string is not an UUID', async ({}) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getByID(createMockContext(), 'unknown');
+      const foundTournament = await provider.getTournamentByID(createMockContext(), 'unknown');
       expect(foundTournament).toBeNull();
     });
   });
@@ -84,19 +84,19 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
   describe('exists', () => {
     test('should return true when tournament exists', async ({ tournament }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.exists(createMockContext(), tournament.id);
+      const foundTournament = await provider.tournamentExists(createMockContext(), tournament.id);
       expect(foundTournament).toEqual(true);
     });
 
     test('should return falsde when tournament does not exist', async ({}) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.exists(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
+      const foundTournament = await provider.tournamentExists(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toEqual(false);
     });
 
     test('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = provider.exists(createMockContext(), 'unknown');
+      const foundTournament = provider.tournamentExists(createMockContext(), 'unknown');
       await expect(foundTournament).rejects.toThrowError(InvalidArgument);
     });
   });

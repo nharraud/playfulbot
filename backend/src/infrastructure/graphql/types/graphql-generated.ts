@@ -35,8 +35,18 @@ export type LoginResult = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createTournament?: Maybe<Tournament>;
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type MutationCreateTournamentArgs = {
+  lastRoundDate: Scalars['Date']['input'];
+  minutesBetweenRounds: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  roundsNumber: Scalars['Int']['input'];
+  startDate: Scalars['Date']['input'];
 };
 
 
@@ -186,6 +196,7 @@ export type ResolversTypes = {
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LoginResult: ResolverTypeWrapper<LoginResult>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -207,6 +218,7 @@ export type ResolversParentTypes = {
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   ForbiddenError: ForbiddenError;
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
   LoginResult: LoginResult;
   Mutation: {};
@@ -245,6 +257,7 @@ export type LoginResultResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 };

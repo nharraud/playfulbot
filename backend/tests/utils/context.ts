@@ -1,11 +1,6 @@
-import { db, TX } from "playfulbot-backend-commons/lib/model/db";
+import { db } from "playfulbot-backend-commons/lib/model/db";
 import { createLogger } from "./logging";
-import { convertError } from "~playfulbot/infrastructure/providers/convertError";
-import { ContextPSQL, ContextPSQLImpl, PartialContextPSQLImpl } from "~playfulbot/infrastructure/providers/ContextPSQL";
-import { UserProviderPSQL } from "~playfulbot/infrastructure/providers/UserProviderPSQL";
-import { TournamentProviderPSQL } from "~playfulbot/infrastructure/providers/TournamentProviderPSQL";
-import { TeamProviderPSQL } from "~playfulbot/infrastructure/providers/TeamProviderPSQL";
-import { TournamentInvitationProviderPSQL } from "~playfulbot/infrastructure/providers/TournamentInvitiationProviderPSQL";
+import { ContextPSQLImpl } from "~playfulbot/infrastructure/providers/ContextPSQL";
 import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/GameDefinitionProvider";
 import { GameDefinitionID } from "playfulbot-config-loader";
 import { BackendGameDefinition } from "playfulbot-game-backend";
@@ -24,7 +19,7 @@ class MockGameDefinitionProvider implements GameDefinitionProvider {
   }
 }
 
-class MockContext extends ContextPSQLImpl<MockContext> {
+class MockContext extends ContextPSQLImpl {
   constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions }: { logger?: Logger, dbOrTx?: DbOrTx, gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>} = {}) {
     super({
       logger, dbOrTx, providers: {

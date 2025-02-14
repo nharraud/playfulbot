@@ -262,13 +262,13 @@ type Mutation {
   login(username: String!, password: String!): LoginResult
   logout: Boolean
 
-#   createTournament(
-#     name: String!,
-#     startDate: Date!,
-#     lastRoundDate: Date!,
-#     roundsNumber: Int!,
-#     minutesBetweenRounds: Int!,
-#   ): Tournament
+  createTournament(
+    name: String!,
+    startDate: Date!,
+    lastRoundDate: Date!,
+    roundsNumber: Int!,
+    minutesBetweenRounds: Int!,
+  ): Tournament
 
 #   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult
 

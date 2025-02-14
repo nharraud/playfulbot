@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/core/entities/Tournaments';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { GameDefinitionID } from 'playfulbot-config-loader';
+import { TeamID } from '~playfulbot/core/entities/Teams';
 
 
 // interface GetAllTournamentsFilters {
@@ -52,7 +53,7 @@ export interface TournamentProvider<Context> {
   //   tournamentInvitationLinkID: TournamentInvitationLinkID
   // ): Promise<Tournament | null>;
 
-  // tournamentExists(id: TournamentID, dbOrTX: DbOrTx): Promise<boolean>;
+  tournamentExists(ctx: Context, id: TournamentID): Promise<boolean>;
 
   // getAllTournaments(
   //   ctx: Context, 

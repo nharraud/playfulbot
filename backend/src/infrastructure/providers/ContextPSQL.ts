@@ -21,6 +21,7 @@ export interface ContextPSQL extends Context<ContextPSQL> {
   convertError: ErrorConverter,
   ctxWithTx: (tx: TX) => ContextPSQL,
   txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
+  readonly dbOrTx: DbOrTx;
   providers: {
     user: UserProvider<any>,
     tournament: TournamentProvider<any>,

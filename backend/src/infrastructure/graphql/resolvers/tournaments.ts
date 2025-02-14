@@ -10,24 +10,25 @@ import {
 } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
-// export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>['createTournament'] =
-//   async (parent, args, ctx) => {
-//     if (!isUserContext(ctx)) {
-//       throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
-//     }
-//     const config = await loadConfig();
-//     const { gameDefinition } = await import(config.games[0]);
-//     return Tournament.create(
-//       args.name,
-//       args.startDate,
-//       args.lastRoundDate,
-//       args.roundsNumber,
-//       args.minutesBetweenRounds,
-//       gameDefinition.name,
-//       ctx.userID,
-//       db.default
-//     );
-//   };
+export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>['createTournament'] =
+  async (parent, args, apolloContext) => {
+    if (!isUserContext(apolloContext)) {
+      throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
+    }
+    // const config = await loadConfig();
+    // const { gameDefinition } = await import(config.games[0]);
+    const gameDefinitions = await apolloContext.ctx.providers.gameDefinitions.getGameDefinitions();
+    const gameDefinition = gameDefinitions.keys().next();
+    return apolloContext.ctx.providers.tournament.createTournament(apolloContext.ctx, {
+        name: args.name,
+        startDate: args.startDate,
+        lastRoundDate: args.lastRoundDate,
+        roundsNumber: args.roundsNumber,
+        minutesBetweenRounds: args.minutesBetweenRounds,
+        gameDefinitionId: gameDefinition.value
+      }
+    );
+  };
 
 export const tournamentResolver: gqlTypes.QueryResolvers<ApolloContext>['tournament'] = async (
   parent,
@@ -37,7 +38,7 @@ export const tournamentResolver: gqlTypes.QueryResolvers<ApolloContext>['tournam
   if (!isUserContext(apolloContext)) {
     throw new ForbiddenError('Only users are allowed to retrieve the current user');
   }
-  const tournament = await apolloContext.ctx.providers.tournament.getByID(apolloContext.ctx, args.tournamentID);
+  const tournament = await apolloContext.ctx.providers.tournament.getTournamentByID(apolloContext.ctx, args.tournamentID);
   if (tournament === null) {
     throw new TournamentNotFoundError();
   }

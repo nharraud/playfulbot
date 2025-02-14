@@ -15,6 +15,7 @@ import { GameDefinitionID } from 'playfulbot-config-loader';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { DEFAULT } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { isUUIDv4 } from './utils';
+import { TeamID } from '~playfulbot/core/entities/Teams';
 
 /* eslint-disable camelcase */
 export interface DbTournament {
@@ -73,7 +74,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
       return buildTournament(data);
   }
 
-  async exists(ctx: ContextPSQL, id: TournamentID): Promise<boolean> {
+  async tournamentExists(ctx: ContextPSQL, id: TournamentID): Promise<boolean> {
     try {
       const result = await ctx.dbOrTx.oneOrNone<{ exists: boolean }>(
         'SELECT EXISTS(SELECT 1 FROM tournaments WHERE id = $[id])',
@@ -87,7 +88,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
     }
   }
 
-  async getByID(ctx: ContextPSQL, id: TournamentID): Promise<Tournament | null> {
+  async getTournamentByID(ctx: ContextPSQL, id: TournamentID): Promise<Tournament | null> {
     if (!isUUIDv4(id)) {
       return null;
     }
@@ -108,7 +109,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
     }
   }
 
-  async getByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<Tournament | null> {
+  async getTournamentByTeam(ctx: ContextPSQL, teamID: TeamID): Promise<Tournament | null> {
     const data = await ctx.dbOrTx.oneOrNone<DbTournament>(
       'SELECT tournaments.* FROM tournaments JOIN teams ON teams.tournament_id = tournaments.id WHERE teams.id = $[teamID]',
       {

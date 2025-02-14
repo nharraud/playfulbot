@@ -14,7 +14,7 @@ import {
 } from '~playfulbot/infrastructure/graphql/resolvers/team';
 // import { registerUserResolver } from './registration';
 import {
-//   createTournamentResolver,
+  createTournamentResolver,
 //   tournamentInvitationIDResolver,
 //   tournamentMyRolesResolver,
   tournamentResolver,
@@ -60,7 +60,7 @@ const resolvers: IResolvers = {
   //   registerUser: registerUserResolver,
     login: loginResolver,
     logout: logoutResolver,
-  //   createTournament: createTournamentResolver,
+    createTournament: createTournamentResolver,
   //   registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
   //   joinTeam: joinTeamResolver,
   //   createTeam: createTeamResolver,
