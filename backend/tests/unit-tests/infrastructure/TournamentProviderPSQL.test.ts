@@ -74,10 +74,10 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
       expect(foundTournament).toBeNull();
     });
 
-    test('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
+    test('should return null error when the string is not an UUID', async ({}) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = provider.getByID(createMockContext(), 'unknown');
-      await expect(foundTournament).rejects.toThrowError(InvalidArgument);
+      const foundTournament = await provider.getByID(createMockContext(), 'unknown');
+      expect(foundTournament).toBeNull();
     });
   });
 

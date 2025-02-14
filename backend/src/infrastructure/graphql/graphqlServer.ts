@@ -158,7 +158,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
           });
         },
       },
-      ApolloTransactionPlugin(),
+      // ApolloTransactionPlugin(),
     ],
   });
   // Ensure we wait for our server to start

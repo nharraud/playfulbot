@@ -49,12 +49,18 @@ export type Query = {
   __typename?: 'Query';
   authenticatedUser?: Maybe<User>;
   team?: Maybe<UserTeamResult>;
+  tournament?: Maybe<Tournament>;
 };
 
 
 export type QueryTeamArgs = {
   tournamentID: Scalars['ID']['input'];
   userID: Scalars['ID']['input'];
+};
+
+
+export type QueryTournamentArgs = {
+  tournamentID: Scalars['ID']['input'];
 };
 
 export type Team = {
@@ -68,7 +74,15 @@ export type Team = {
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  status?: Maybe<TournamentStatus>;
 };
+
+export enum TournamentStatus {
+  Created = 'CREATED',
+  Ended = 'ENDED',
+  Started = 'STARTED'
+}
 
 export type User = {
   __typename?: 'User';
@@ -179,6 +193,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
   Tournament: ResolverTypeWrapper<Tournament>;
+  TournamentStatus: TournamentStatus;
   User: ResolverTypeWrapper<User>;
   UserNotPartOfAnyTeam: ResolverTypeWrapper<UserNotPartOfAnyTeam>;
   UserTeamResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UserTeamResult']>;
@@ -237,6 +252,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'tournamentID' | 'userID'>>;
+  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, 'tournamentID'>>;
 };
 
 export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
@@ -249,6 +265,8 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

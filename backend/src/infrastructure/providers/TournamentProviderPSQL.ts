@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { BackendGameDefinition } from 'playfulbot-game-backend';
-import { ConflictError, InvalidArgument } from '~playfulbot/errors';
+import { ConflictError } from '~playfulbot/errors';
 
 // import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 import { getGameDefinitions } from '~playfulbot/games';
@@ -14,6 +14,7 @@ import { ContextPSQL } from './ContextPSQL';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { DEFAULT } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { isUUIDv4 } from './utils';
 
 /* eslint-disable camelcase */
 export interface DbTournament {
@@ -87,6 +88,9 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   }
 
   async getByID(ctx: ContextPSQL, id: TournamentID): Promise<Tournament | null> {
+    if (!isUUIDv4(id)) {
+      return null;
+    }
     try {
       const data = await ctx.dbOrTx.oneOrNone<DbTournament>(
         'SELECT * FROM tournaments WHERE id = $[id]',

@@ -13,14 +13,14 @@ import {
 //   updateTeamResolver,
 } from '~playfulbot/infrastructure/graphql/resolvers/team';
 // import { registerUserResolver } from './registration';
-// import {
+import {
 //   createTournamentResolver,
 //   tournamentInvitationIDResolver,
 //   tournamentMyRolesResolver,
-//   tournamentResolver,
+  tournamentResolver,
 //   tournamentRoundsResolver,
 //   tournamentTeamsResolver,
-// } from './tournaments';
+} from './tournaments';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 // import { playerGamesResolver } from './playerGames';
@@ -51,7 +51,7 @@ const resolvers: IResolvers = {
   Query: {
     team: teamResolver,
     authenticatedUser: authenticatedUserResolver,
-    // tournament: tournamentResolver,
+    tournament: tournamentResolver,
     // round: roundResolver,
     // tournamentByInvitationLink: tournamentByInvitationLinkResolver,
   } as gqlTypes.QueryResolvers,

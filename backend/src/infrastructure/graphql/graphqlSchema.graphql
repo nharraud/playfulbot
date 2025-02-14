@@ -29,9 +29,9 @@ type User {
   # organizedTournaments: [Tournament!]
 }
 
-# enum TournamentStatus {
-#   CREATED, STARTED, ENDED
-# }
+enum TournamentStatus {
+  CREATED, STARTED, ENDED
+}
 
 # enum TournamentRoleName {
 #   ADMIN
@@ -39,8 +39,8 @@ type User {
 
 type Tournament {
   id: ID!
-  # name: String!
-  # status: TournamentStatus
+  name: String!
+  status: TournamentStatus
   # startDate: Date
   # lastRoundDate: Date
   # firstRoundDate: Date
@@ -247,7 +247,7 @@ type LoginResult {
 # }
 
 type Query {
-  # tournament(tournamentID: ID): Tournament
+  tournament(tournamentID: ID!): Tournament
   # tournamentByInvitationLink(tournamentInvitationLinkID: ID!): Tournament
   # round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
