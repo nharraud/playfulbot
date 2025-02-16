@@ -10,6 +10,7 @@ import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments'
 import { randomUUID } from 'crypto';
 import { User } from '~playfulbot/core/entities/Users';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
+import { TeamNameAlreadyTaken } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 
 async function tournamentFixture({}, use: any) {
   const provider = new TournamentProviderPSQL();
@@ -89,6 +90,25 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
       await expect(teamPromise).rejects.toThrowError('Invalid Team');
     });
+
+    test('should throw an error when team name is too long', async ({ tournament }) => {
+      const provider = new TeamProviderPSQL();
+      const teamPromise = provider.createTeam(createMockContext(), {
+        name: '123456789123456789',
+        tournamentID: tournament.id,
+      });
+      await expect(teamPromise).rejects.toThrowError('Invalid Team');
+    });
+
+    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ tournament, team }) => {
+      const provider = new TeamProviderPSQL();
+      const ctx = createMockContext();
+      const teamPromise =await provider.createTeam(ctx, {
+        name: 'testTeam',
+        tournamentID: tournament.id,
+      });
+      await expect(teamPromise).instanceOf(TeamNameAlreadyTaken);
+    });
   });
 
   
@@ -111,6 +131,19 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
         name: 'a'
       });
       await expect(teamPromise).rejects.toThrowError('Invalid Team');
+    });
+
+    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ tournament, team }) => {
+      const provider = new TeamProviderPSQL();
+      const ctx = createMockContext();
+      await await provider.createTeam(createMockContext(), {
+        name: 'newTeam',
+        tournamentID: tournament.id,
+      });
+      const updatedTeam = await provider.updateTeam(createMockContext(), team.id, {
+        name: 'newTeam'
+      });
+      await expect(updatedTeam).instanceOf(TeamNameAlreadyTaken);
     });
   });
 

@@ -39,11 +39,11 @@ export async function authenticate(user: User, req: express.Request): Promise<JW
   return token;
 }
 
-export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async (
+export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async function loginResolver(
   parent,
   args,
   apolloContext
-) => {
+) {
   const foundUser = await apolloContext.ctx.providers.user.getUserByName(apolloContext.ctx, args.username, true);
 
   if (!foundUser) {

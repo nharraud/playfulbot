@@ -6,6 +6,7 @@ import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProvi
 import { User } from '~playfulbot/core/entities/Users';
 import { randomUUID } from 'crypto';
 import { createMockContext } from '../../utils/context';
+import { UsernameAlreadyTaken } from '~playfulbot/core/use-cases/interfaces/UserProvider';
 
 async function userFixture({}, use: any) {
   const provider = new UserProviderPSQL();
@@ -53,6 +54,24 @@ describe('infrastructure/games/UserProviderPSQL', () => {
         password: 'mypassword'
       });
       await expect(userPromise).rejects.toThrowError('Invalid user');
+    });
+
+    test('should throw an error when username is too long', async () => {
+      const provider = new UserProviderPSQL();
+      const userPromise = provider.createUser(createMockContext(), {
+        username: '123456789123456789',
+        password: 'mypassword'
+      });
+      await expect(userPromise).rejects.toThrowError('Invalid user');
+    });
+
+    test('should return UsernameAlreadyTaken when username is already taken', async ({ user }) => {
+      const provider = new UserProviderPSQL();
+      const userPromise = await provider.createUser(createMockContext(), {
+        username: 'Alice',
+        password: 'mypassword'
+      });
+      await expect(userPromise).instanceOf(UsernameAlreadyTaken);
     });
   });
 

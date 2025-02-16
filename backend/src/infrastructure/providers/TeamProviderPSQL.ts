@@ -1,17 +1,14 @@
-import * as yup from 'yup';
 // import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
 // import { DebugArena } from './DebugArenaPSQL';
 import { Player } from '../../model/Player';
 // import { TournamentInvitation } from '../model/TournamentInvitation';
 // import { Tournament, TournamentID, TournamentStatus } from './TournamentProviderPSQL';
 // import { User, UserID } from './UserProviderPSQL';
-// import { validateSchema, ValidationError } from '../model/validate';
-import { Team } from '~playfulbot/core/entities/Teams';
-import { TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
+import { Team, validateTeamName } from '~playfulbot/core/entities/Teams';
+import { TeamNameAlreadyTaken, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
-import { validateSchema } from '../validateSchema';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { TX } from 'playfulbot-backend-commons/lib/model/db';
@@ -54,11 +51,6 @@ function buildTeam(data: DbTeam): Team {
 //   oldTeamDeleted: boolean;
 // }
 
-// const TeamNameSchema =  yup.string().max(15).min(3).required();
-// const createTeamSchema = yup.object().shape({
-//   name: TeamNameSchema,
-// });
-
 export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
 
   // constructor(readonly validator: Validator) {}
@@ -70,11 +62,11 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       tournamentID: TournamentID,
       id?: TeamID
     }
-  ): Promise<Team> {
-    // // const validationError = await validateSchema(createTeamSchema, team, 'invalid Team');
-    // if (validationError) {
-    //   throw validationError;
-    // }
+  ): Promise<Team | TeamNameAlreadyTaken> {
+    const validationError = validateTeamName(team.name);
+    if (validationError) {
+      throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
+    }
     const query = `
       INSERT INTO teams(id, tournament_id, name)
       VALUES($[id], $[tournamentID], $[name])
@@ -88,8 +80,8 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       
       return buildTeam(data);
   } catch (err) {
-    if (isDatabaseError(err) && err.constraint === 'team_name_check') {
-      throw new ValidationError('Invalid Team', { name: ['team must be at least 3 characters long'] });
+    if (isDatabaseError(err) && err.constraint === 'unique_team_name') {
+      return new TeamNameAlreadyTaken();
     }
     throw err;
   }
@@ -101,13 +93,11 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
     ctx: ContextPSQL, 
     teamID: TeamID,
     patch: TeamPatch
-  ): Promise<Team> {
-    // const validationError = await validateSchema(teamSchema, patch);
-    // if (validationError) {
-    //   return validationError;
-    // }
-
-    // FIXME: validate the patch
+  ): Promise<Team | TeamNameAlreadyTaken> {
+    const validationError = validateTeamName(patch.name);
+    if (validationError) {
+      throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
+    }
     const query = `
       UPDATE teams
       SET name = $[name]
@@ -121,8 +111,8 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       });
       return buildTeam(data);
     } catch (err) {
-      if (isDatabaseError(err) && err.constraint === 'team_name_check') {
-        throw new ValidationError('Invalid Team', { name: ['team must be at least 3 characters long'] });
+      if (isDatabaseError(err) && err.constraint === 'unique_team_name') {
+        return new TeamNameAlreadyTaken();
       }
       throw err;
     }

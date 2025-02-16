@@ -1,3 +1,5 @@
+import { ValidationErrorData } from "../entities/Validation";
+
 export class UnkownError extends Error {
   constructor(message: string, { cause }: { cause: Error }) {
     let finalMessage;
@@ -107,10 +109,11 @@ export class ConflictError extends Error {
 }
 
 export class ValidationError extends Error {
-  constructor(msg: string, errors?: Record<string, string[]>) {
+  constructor(msg: string, errors?: Record<string, ValidationErrorData[]>) {
     super(msg);
     this.validationErrors = errors;
   }
 
-  validationErrors: Record<string, string[]>;
+  // Record where keys are invalid field names, values are lists of error codes explaining why the field value is invalid
+  validationErrors: Record<string, ValidationErrorData[]>;
 }

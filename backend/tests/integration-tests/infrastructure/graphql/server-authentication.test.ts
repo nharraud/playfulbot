@@ -78,6 +78,59 @@ describe('graphql', () => {
   });
 
 
+  describe('Mutation/registerUser', () => {
+    function register(variables: { username: string, password: string }) {
+      return got.post(httpUrl, {
+        json: {
+          query: `
+            mutation registerUser($username: String!, $password: String!) {
+              registerUser(username: $username, password: $password) {
+                ... on LoginResult {
+                  __typename
+                  user { username }
+                  token
+                }
+                ... on Error {
+                  __typename
+                }
+              }
+            }
+          `,
+          operationName: "registerUser",
+          variables
+        }
+      });
+    }
+
+    test('should return the user and token on successful registration', async () => {
+      const newUserData = { username: 'newuser', password: 'newpassword' };
+      const response = await register(newUserData);
+      const body = JSON.parse(response.body);
+      expect(body.data).toMatchObject({
+        registerUser: {
+          token: expect.any(String),
+          user: { username: newUserData.username }
+        }
+      });
+      expect(response.headers).toHaveProperty('set-cookie');
+      expect(response.headers['set-cookie'][0]).match(/^JWTFingerprint=[^;]/);
+    });
+
+    test('should fail registration if another user has the same name', async () => {
+      const response = await register(userData);
+      const body = JSON.parse(response.body);
+      expect(body.data).toMatchObject({ registerUser: { __typename: 'UsernameAlreadyTaken' } });
+      expect(response.headers).not.toHaveProperty('set-cookie');
+    });
+
+    test('should fail registration if username is invalid (too short)', async () => {
+      const response = await register({ username: 't', password: '1234' });
+      const body = JSON.parse(response.body);
+      expect(body.data).toMatchObject({ registerUser: { __typename: 'ValidationError' } });
+      expect(response.headers).not.toHaveProperty('set-cookie');
+    });
+  });
+
   function login(variables: { username: string, password: string }) {
     return got.post(httpUrl, {
       json: {

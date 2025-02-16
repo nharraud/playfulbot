@@ -7,6 +7,13 @@ export interface TeamPatch {
   name?: string;
 }
 
+
+export class TeamNameAlreadyTaken extends Error {
+  constructor() {
+    super('Team name is already taken');
+  }
+}
+
 export interface TeamProvider<Context> {
   createTeam(
     ctx: Context,
@@ -15,9 +22,9 @@ export interface TeamProvider<Context> {
       tournamentID: string,
       id?: TeamID
     }
-  ): Promise<Team>;
+  ): Promise<Team | TeamNameAlreadyTaken>;
 
-  updateTeam(ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team>
+  updateTeam(ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team | TeamNameAlreadyTaken>
 
   getTeamByName(ctx: Context, name: string): Promise<Team | null>
   getTeamByID(ctx: Context, id: TeamID): Promise<Team | null>

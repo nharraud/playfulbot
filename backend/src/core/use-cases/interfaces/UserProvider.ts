@@ -1,6 +1,13 @@
 import { TeamID } from '~playfulbot/core/entities/Teams';
 import { User, UserID } from '~playfulbot/core/entities/Users';
 
+
+export class UsernameAlreadyTaken extends Error {
+  constructor() {
+    super('Username is already taken');
+  }
+}
+
 export interface UserProvider<Context> {
   createUser(
     ctx: Context,
@@ -9,7 +16,7 @@ export interface UserProvider<Context> {
       password: string;
       id?: UserID;
     }
-  ): Promise<User>;
+  ): Promise<User | UsernameAlreadyTaken>;
 
   getUserByName(ctx: Context, username: string, withPassword?: boolean): Promise<User | null>;
 

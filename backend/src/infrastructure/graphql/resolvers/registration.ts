@@ -1,25 +1,38 @@
 import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { authenticate } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
+import { GraphQLError } from 'graphql';
+import { validateUserName } from '~playfulbot/core/entities/Users';
+import { InvalidArgument } from '../../../errors';
+import { UsernameAlreadyTaken } from '~playfulbot/core/use-cases/interfaces/UserProvider';
 
 interface RegisterUserArguments {
   username: string;
   password: string;
 }
 
-export async function registerUserResolver(
+export const registerUserResolver: gqlTypes.MutationResolvers<ApolloContext>['registerUser'] = async function registerUserResolver(
   parent: unknown,
   args: RegisterUserArguments,
-  ctx: ApolloContext
-): Promise<gqlTypes.LoginResult> {
-  const newUser = await ctx.userProvider.createUser(ctx, { username: args.username, password: args.password });
+  apolloContext: ApolloContext
+): Promise<gqlTypes.UserRegistrationResult> {
+  const usernameError = validateUserName(args.username);
+  if (usernameError) {
+    return { __typename: 'ValidationError', message: JSON.stringify({ username: [usernameError] })};
+  }
+  // TODO: validate password complexity. Later replace it with passkey.
+  const createUserResult = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: args.username, password: args.password });
+  if (createUserResult instanceof UsernameAlreadyTaken) {
+    return { __typename: 'UsernameAlreadyTaken', message: 'username already taken'}
+  }
 
-  const token = await authenticate(newUser, ctx.req);
+  const token = await authenticate(createUserResult, apolloContext.req);
   return {
+    __typename: 'LoginResult',
     token,
     user: {
-      id: newUser.id,
-      username: newUser.username,
+      id: createUserResult.id,
+      username: createUserResult.username,
     },
   };
 }

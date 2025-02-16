@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import { DEFAULT, isDatabaseError } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { TeamID } from './TeamProviderPSQL';
-import { User, UserID } from '~playfulbot/core/entities/Users';
+import { User, UserID, validateUserName } from '~playfulbot/core/entities/Users';
 import { ContextPSQL } from './ContextPSQL';
+import { UsernameAlreadyTaken, UserProvider } from '~playfulbot/core/use-cases/interfaces/UserProvider';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
-import { UserProvider } from '~playfulbot/core/use-cases/interfaces/UserProvider';
 
 interface DbUser {
   readonly id: UserID;
@@ -32,7 +32,12 @@ export class UserProviderPSQL implements UserProvider<ContextPSQL> {
       password: string,
       id?: UserID
     }
-  ): Promise<User> {
+  ): Promise<User | UsernameAlreadyTaken> {
+    const validationError = validateUserName(user.username);
+    if (validationError) {
+      throw new ValidationError('Invalid user', { 'user.username': [ validationError ] });
+    }
+
     // Salt round should be at least 12.
     // See https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#bcrypt
     const passwordHash = await bcrypt.hash(user.password, 12);
@@ -43,8 +48,11 @@ export class UserProviderPSQL implements UserProvider<ContextPSQL> {
       const data = await ctx.dbOrTx.one<DbUser>(query, { username: user.username, passwordHash, id: user.id || DEFAULT });
       return buildUser(data);
     } catch (err) {
-      if (isDatabaseError(err) && err.constraint === 'users_username_check') {
-        throw new ValidationError('Invalid user', { username: [ 'username must be at least 3 characters long' ] });
+      if (!isDatabaseError(err)) {
+        throw err;
+      }
+      if (err.constraint === 'users_username_key') {
+        return new UsernameAlreadyTaken();
       }
       throw err;
     }

@@ -6,7 +6,6 @@ import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 // import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
-// import { isValidationError, validationErrorsToGraphQL } from '~playfulbot/model/validate';
 
 // export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
 //   parent,
@@ -153,7 +152,7 @@ export async function teamTournamentResolver(
   args: undefined,
   apolloContext: ApolloContext
 ): Promise<gqlTypes.Tournament> {
-  return await apolloContext.ctx.providers.tournament.getByTeam(apolloContext.ctx, parent.id);
+  return await apolloContext.ctx.providers.tournament.getTournamentByTeam(apolloContext.ctx, parent.id);
 }
 
 // export const joinTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['joinTeam'] = async (

@@ -12,7 +12,7 @@ import {
   teamTournamentResolver,
 //   updateTeamResolver,
 } from '~playfulbot/infrastructure/graphql/resolvers/team';
-// import { registerUserResolver } from './registration';
+import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,
 //   tournamentInvitationIDResolver,
@@ -57,7 +57,7 @@ const resolvers: IResolvers = {
   } as gqlTypes.QueryResolvers,
   Mutation: {
   //   createNewDebugGame: createNewDebugGameResolver,
-  //   registerUser: registerUserResolver,
+    registerUser: registerUserResolver,
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
