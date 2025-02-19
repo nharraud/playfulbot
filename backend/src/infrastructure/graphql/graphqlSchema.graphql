@@ -143,17 +143,17 @@ input TeamInput {
   name: String
 }
 
-# type UpdateTeamSuccess {
-#   team: Team
-# }
+type UpdateTeamSuccess {
+  team: Team
+}
 
-# type UpdateTeamFailure {
-#   errors: [UpdateTeamError!]!
-# }
+type UpdateTeamFailure {
+  errors: [UpdateTeamError!]!
+}
 
-# union UpdateTeamError = ForbiddenError | ValidationError
+union UpdateTeamError = ForbiddenError | ValidationError
 
-# union UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure
+union UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure
 
 
 # #
@@ -283,6 +283,6 @@ type Mutation {
 #   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult
 
   createTeam(tournamentID: ID!, input: TeamInput!, join: Boolean! = true): CreateTeamResult
-#   updateTeam(teamID: ID!, input: TeamInput!): UpdateTeamResult
+  updateTeam(teamID: ID!, input: TeamInput!): UpdateTeamResult
 #   joinTeam(teamID: ID!): JoinTeamResult
 }

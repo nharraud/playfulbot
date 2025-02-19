@@ -30,6 +30,7 @@ export interface TeamProvider<Context> {
   getTeamByName(ctx: Context, name: string): Promise<Team | null>
   getTeamByID(ctx: Context, id: TeamID): Promise<Team | null>
   getTeamByMember(ctx: Context, userID: UserID, tournamentID: TournamentID): Promise<Team | null>
+  isTeamMember(ctx: Context, teamId: TeamID, userId: UserID): Promise<boolean>
 
   addTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean>
   removeTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean>

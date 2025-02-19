@@ -8,7 +8,7 @@ import { User } from '~playfulbot/core/entities/Users';
 import { hideErrorLogs } from './utils/logger';
 
 const userData = { username: 'testuser', password: 'testpassword' };
-
+const teamMemberData = { username: 'teamMember', password: 'otherpass' };
 
 async function tournamentFixture({ ctx }: { ctx: Context<any> }, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
@@ -31,7 +31,7 @@ async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament:
 }
 
 async function teamMemberFixture({ ctx, team }: { ctx: Context<any>, team: Team }, use: any) {
-  const teamMember = await ctx.providers.user.createUser(ctx, { username: 'teamMember', password: 'otherpass' }) as User;
+  const teamMember = await ctx.providers.user.createUser(ctx, teamMemberData) as User;
   ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
   await use(teamMember);
 }
@@ -185,6 +185,65 @@ describe('graphql', () => {
       expect(response.body.data.createTeam.team.members[0].username).eql(user.username);
       const team = await ctx.providers.team.getTeamByID(ctx, response.body.data.createTeam.team.id);
       expect(team.name).eql(response.body.data.createTeam.team.name);
+    });
+  });
+
+
+  describe('Mutation/updateTeam', () => {
+    const query = `
+      mutation updateTeam($teamID: ID!, $input: TeamInput!) {
+        updateTeam(teamID: $teamID, input: $input) {
+          __typename
+          ... on UpdateTeamSuccess {
+            team {
+              id
+              name
+              members {
+                id
+                username
+              }
+              tournament {
+                id
+              }
+            }
+          }
+          ... on UpdateTeamFailure {
+            errors {
+              ... on Error {
+                __typename
+                message
+              }
+            }
+          }
+        }
+      }`;
+
+    test('should fail if user is not authenticated', async ({ team, graphql }) => {
+      hideErrorLogs();
+      const response = await graphql.client.query({ operationName: 'updateTeam', query: query, variables: {
+        teamID: team.id, input: { name: 'newTeam' }
+      } });
+      expect(response.body.data.updateTeam).eql(null);
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    });
+
+    test('should fail if name is invalid', async ({ ctx, team, teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+
+      const response = await graphql.client.query({ operationName: 'updateTeam', query: query, variables: {
+        teamID: team.id, input: { name: 'n' }
+      } });
+      expect(response.body.data.updateTeam.errors[0].__typename).eql('ValidationError');
+    });
+
+    test('should succeed at updating a team', async ({ ctx, team, teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response = await graphql.client.query({ operationName: 'updateTeam', query: query, variables: {
+        teamID: team.id, input: { name: 'newTeam' }
+      } });
+      expect(response.body.data.updateTeam.team.name).eql('newTeam')
+      const updatedTeam = await ctx.providers.team.getTeamByID(ctx, team.id);
+      expect(updatedTeam.name).eql('newTeam');
     });
   });
 });

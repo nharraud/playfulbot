@@ -244,18 +244,18 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
   //   return User.getByTeam(this.id, dbOrTX);
   // }
 
-  // static async isMember(teamID: TeamID, userID: UserID, dbOrTX: DbOrTx): Promise<boolean> {
-  //   const result = await dbOrTX.oneOrNone<{ exists: boolean }>(
-  //     `SELECT EXISTS(
-  //       SELECT 1 FROM team_memberships WHERE team_id = $[teamID] AND user_id = $[userID]
-  //      )`,
-  //     {
-  //       teamID,
-  //       userID,
-  //     }
-  //   );
-  //   return result.exists || false;
-  // }
+  async isTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean> {
+    const result = await ctx.dbOrTx.oneOrNone<{ exists: boolean }>(
+      `SELECT EXISTS(
+        SELECT 1 FROM team_memberships WHERE team_id = $[teamID] AND user_id = $[userID]
+       )`,
+      {
+        teamID,
+        userID,
+      }
+    );
+    return result.exists || false;
+  }
 
   // getTournament(dbOrTX: DbOrTx): Promise<Tournament> {
   //   return Tournament.getByID(this.tournamentID, dbOrTX);

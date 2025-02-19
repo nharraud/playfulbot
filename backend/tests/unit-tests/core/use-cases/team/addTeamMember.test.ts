@@ -34,7 +34,7 @@ function addTeam(ctx: Context<any>, teamName: string, tournamentID: TournamentID
   return ctx.providers.team.createTeam(createMockContext(), {
     name: teamName,
     tournamentID: tournamentID,
-  });
+  }) as Promise<Team>;
 }
 
 async function teamFixture({ ctx, tournament }: TestFixtures, use: any) {

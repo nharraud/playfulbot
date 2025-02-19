@@ -4,6 +4,7 @@ import { AuthenticationError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { toGraphQLError } from './errors';
+import { updateTeam } from '~playfulbot/core/use-cases/team/updateTeam';
 
 export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
   parent,
@@ -43,54 +44,36 @@ export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['crea
   };
 };
 
-// export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
-//   parent,
-//   args,
-//   ctx
-// ) => {
-//   if (!isUserContext(ctx)) {
-//     throw new AuthenticationError(`Only authenticated users are allowed to update teams.`);
-//   }
-//   return db.default.tx(async (tx): Promise<gqlTypes.UpdateTeamResult> => {
-//     if (args.input.name === undefined) {
-//       return {
-//         __typename: 'UpdateTeamFailure',
-//         errors: [
-//           {
-//             __typename: 'ValidationError',
-//             message: 'Update should modify at least one field.',
-//           },
-//         ],
-//       };
-//     }
+export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
+  parent,
+  args,
+  apolloContext
+) => {
+  if (!isUserContext(apolloContext)) {
+    throw new AuthenticationError(`Only authenticated users are allowed to update teams.`);
+  }
 
-//     const isMember = await Team.isMember(args.teamID, ctx.userID, tx);
-//     if (!isMember) {
-//       return {
-//         __typename: 'UpdateTeamFailure',
-//         errors: [
-//           {
-//             __typename: 'ForbiddenError',
-//             message: 'You are not a member of this team. Only team members can modify it.',
-//           },
-//         ],
-//       };
-//     }
+  const teamNameError = validateTeamName(args.input.name);
+  if (teamNameError) {
+    return {
+      __typename: 'UpdateTeamFailure',
+      errors: [{ __typename: 'ValidationError', message: JSON.stringify({ 'input.name': [teamNameError] }) }]
+    } as gqlTypes.UpdateTeamFailure;
+  }
 
-//     const teamOrError = await Team.update(args.teamID, args.input, tx);
-//     if (isValidationError(teamOrError)) {
-//       return {
-//         __typename: 'UpdateTeamFailure',
-//         errors: validationErrorsToGraphQL(teamOrError),
-//       };
-//     }
+  const result = await updateTeam(apolloContext.ctx, { teamId: args.teamID, userId: apolloContext.userID, patch: args.input })
+  if (result instanceof Error) {
+    return {
+      __typename: 'UpdateTeamFailure',
+      errors: [ toGraphQLError(result) ],
+    } as gqlTypes.UpdateTeamFailure;
+  }
 
-//     return {
-//       __typename: 'UpdateTeamSuccess',
-//       team: teamOrError,
-//     };
-//   });
-// };
+  return {
+    __typename: 'UpdateTeamSuccess',
+    team: result,
+  } as gqlTypes.UpdateTeamSuccess;
+};
 
 export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = async (
   parent,

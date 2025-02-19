@@ -254,6 +254,26 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const result = await teamProvider.removeTeamMember(ctx, team.id, user.id);
       expect(result).toEqual(false);
     });
-    
+  });
+
+
+  describe('isTeamMember', () => {
+    test('should return true when user is a team member', async ({ team, user, tournament }) => {
+      const ctx = createMockContext();
+      const teamProvider = new TeamProviderPSQL();
+
+      await teamProvider.addTeamMember(ctx, team.id, user.id);
+
+      const isMember = await teamProvider.isTeamMember(ctx, team.id, user.id);
+      expect(isMember).toEqual(true);
+    });
+
+    test('should return false when user is a team member', async ({ team, user, tournament }) => {
+      const ctx = createMockContext();
+      const teamProvider = new TeamProviderPSQL();
+
+      const isMember = await teamProvider.isTeamMember(ctx, team.id, user.id);
+      expect(isMember).toEqual(false);
+    });
   });
 });
