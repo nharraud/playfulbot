@@ -34,7 +34,7 @@ function addTeam(ctx: Context<any>, teamName: string, tournamentID: TournamentID
   return ctx.providers.team.createTeam(createMockContext(), {
     name: teamName,
     tournamentID: tournamentID,
-  });
+  }) as Promise<Team>;
 }
 
 async function teamFixture({ ctx, tournament }: TestFixtures, use: any) {
@@ -79,7 +79,7 @@ describe('use-cases/team/addTeamMember', () => {
     const team2 = await ctx.providers.team.createTeam(createMockContext(), {
       name: 'otherTeam',
       tournamentID: tournament.id,
-    });
+    }) as Team;
     ctx.providers.team.addTeamMember(ctx, team2.id, user.id);
 
     const result = await removeTeamMember(ctx, team.id, user.id);
@@ -93,7 +93,7 @@ describe('use-cases/team/addTeamMember', () => {
     const user2 = await ctx.providers.user.createUser(createMockContext(), {
       username: 'testUser2',
       password: 'mypassword'
-    });
+    }) as User;
     await ctx.providers.team.addTeamMember(ctx, team.id, user.id);
     await ctx.providers.team.addTeamMember(ctx, team.id, user2.id);
 

@@ -10,7 +10,7 @@ import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments'
 import { randomUUID } from 'crypto';
 import { User } from '~playfulbot/core/entities/Users';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
-import { TeamNameAlreadyTaken } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
+import { TeamNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 
 async function tournamentFixture({}, use: any) {
   const provider = new TournamentProviderPSQL();
@@ -107,7 +107,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
         name: 'testTeam',
         tournamentID: tournament.id,
       });
-      await expect(teamPromise).instanceOf(TeamNameAlreadyTaken);
+      await expect(teamPromise).instanceOf(TeamNameAlreadyTakenError);
     });
   });
 
@@ -143,7 +143,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const updatedTeam = await provider.updateTeam(createMockContext(), team.id, {
         name: 'newTeam'
       });
-      await expect(updatedTeam).instanceOf(TeamNameAlreadyTaken);
+      await expect(updatedTeam).instanceOf(TeamNameAlreadyTakenError);
     });
   });
 

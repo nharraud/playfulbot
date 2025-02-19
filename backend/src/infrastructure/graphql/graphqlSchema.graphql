@@ -139,9 +139,9 @@ union UserRegistrationResult = LoginResult | ValidationError | UsernameAlreadyTa
 # # Update Team Input/Output
 # #
 
-# input TeamInput {
-#   name: String
-# }
+input TeamInput {
+  name: String
+}
 
 # type UpdateTeamSuccess {
 #   team: Team
@@ -159,17 +159,21 @@ union UserRegistrationResult = LoginResult | ValidationError | UsernameAlreadyTa
 # #
 # # Create Team Input/Output
 # #
-# type CreateTeamSuccess {
-#   team: Team
-# }
+type CreateTeamSuccess {
+  team: Team
+}
 
-# type CreateTeamFailure {
-#   errors: [CreateTeamError!]!
-# }
+type CreateTeamFailure {
+  errors: [CreateTeamError!]!
+}
 
-# union CreateTeamError = ForbiddenError | ValidationError
+type TeamNameAlreadyTakenError implements Error {
+  message: String!
+}
 
-# union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
+union CreateTeamError = ForbiddenError | ValidationError | TeamNameAlreadyTakenError
+
+union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 
 
 
@@ -278,7 +282,7 @@ type Mutation {
 
 #   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult
 
-#   createTeam(tournamentID: ID!, input: TeamInput!, join: Boolean! = true): CreateTeamResult
+  createTeam(tournamentID: ID!, input: TeamInput!, join: Boolean! = true): CreateTeamResult
 #   updateTeam(teamID: ID!, input: TeamInput!): UpdateTeamResult
 #   joinTeam(teamID: ID!): JoinTeamResult
 }

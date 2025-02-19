@@ -30,6 +30,22 @@ export interface TournamentInvitationProvider<Context> {
     }
   ): Promise<TournamentInvitation>;
 
+  deleteTournamentInvitation(
+    ctx: Context,
+    params: {
+      tournamentId: TournamentID,
+      userId: UserID,
+    }
+  ): Promise<void>;
+
+  isInvited(
+    ctx: Context,
+    params: {
+      tournamentId: TournamentID,
+      userId: UserID,
+    }
+  ): Promise<boolean>;
+
   // constructor(data: DbTournamentInvitation, tournament?: Tournament) {
   //   this.tournamentID = data.tournament_id;
   //   this.userID = data.user_id;

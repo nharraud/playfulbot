@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, test as baseTest, vi } from 'vitest';
+import { afterEach, describe, expect, test as baseTest } from 'vitest';
 import { dropTestDB } from '../../../utils/psql';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 import { graphqlFixture, graphqlFixtureType, mockContextFixture } from './fixtures.ts/baseFixtures';
-import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments';
+import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { hideErrorLogs } from './utils/logger';
@@ -31,7 +31,7 @@ async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament:
 }
 
 async function teamMemberFixture({ ctx, team }: { ctx: Context<any>, team: Team }, use: any) {
-  const teamMember = await ctx.providers.user.createUser(ctx, { username: 'teamMember', password: 'otherpass' });
+  const teamMember = await ctx.providers.user.createUser(ctx, { username: 'teamMember', password: 'otherpass' }) as User;
   ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
   await use(teamMember);
 }
@@ -91,7 +91,7 @@ describe('graphql', () => {
       hideErrorLogs();
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
       expect(response.body.data.team).eql(null);
-      expect(response.body.errors[0].extensions.code).eql('FORBIDDEN');
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
     });
 
     test('should return current user team if user is in a team', async ({ ctx, user, team, teamMember, tournament, graphql }) => {
@@ -116,6 +116,75 @@ describe('graphql', () => {
       const response = await graphql.client.query({ operationName: 'GetTeam', query: query, variables: { userID: user.id, tournamentID: tournament.id } });
       expect(response.body.data.team.message).eql('User is not part of any team in this tournament');
       expect(response.body.data.team.__typename).eql('UserNotPartOfAnyTeam');
+    });
+  });
+
+
+  describe('Mutation/createTeam', () => {
+    const query = `
+      mutation createTeam($input: TeamInput!, $tournamentID: ID!, $join: Boolean!) {
+        createTeam(tournamentID: $tournamentID, input: $input, join: $join) {
+          __typename
+          ... on CreateTeamSuccess {
+            team {
+              id
+              name
+              members {
+                id
+                username
+              }
+              tournament {
+                id
+              }
+            }
+          }
+          ... on CreateTeamFailure {
+            errors {
+              ... on Error {
+                __typename
+                message
+              }
+            }
+          }
+        }
+      }`;
+
+    test('should fail if user is not authenticated', async ({ tournament, user, graphql }) => {
+      hideErrorLogs();
+      const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
+        tournamentID: tournament.id, input: { name: 'newTeam' }, join: true
+      } });
+      expect(response.body.data.createTeam).eql(null);
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    });
+
+    test('should fail if name is invalid', async ({ ctx, tournament, user, graphql }) => {
+      await graphql.client.login(userData);
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
+        tournamentID: tournament.id, input: { name: 'n' }, join: true
+      } });
+      expect(response.body.data.createTeam.errors[0].__typename).eql('ValidationError');
+    });
+
+    test('should fail if user is not invited and is not part of any team', async ({ ctx, tournament, user, graphql }) => {
+      await graphql.client.login(userData);
+      const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
+        tournamentID: tournament.id, input: { name: 'newTeam' }, join: true
+      } });
+      expect(response.body.data.createTeam.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test('should succeed at creating a team if invited to tournament', async ({ ctx, tournament, user, graphql }) => {
+      await graphql.client.login(userData);
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
+        tournamentID: tournament.id, input: { name: 'newTeam' }, join: true
+      } });
+      expect(response.body.data.createTeam.team.name).eql('newTeam');
+      expect(response.body.data.createTeam.team.members[0].username).eql(user.username);
+      const team = await ctx.providers.team.getTeamByID(ctx, response.body.data.createTeam.team.id);
+      expect(team.name).eql(response.body.data.createTeam.team.name);
     });
   });
 });

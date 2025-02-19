@@ -1,65 +1,47 @@
-import { Team, TeamID } from '~playfulbot/core/entities/Teams';
-import { AuthenticationError, ForbiddenError } from '~playfulbot/errors';
+import { Team, TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
+import { createTeam } from '~playfulbot/core/use-cases/team/createTeam';
+import { AuthenticationError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
-// import { Team, TeamID } from '~playfulbot/infrastructure/TeamsPSQL';
-// import { User } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
-// import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
-import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
+import { toGraphQLError } from './errors';
 
-// export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
-//   parent,
-//   args,
-//   ctx
-// ) => {
-//   if (!isUserContext(ctx)) {
-//     throw new AuthenticationError(`Only authenticated users are allowed to create teams.`);
-//   }
-//   if (args.join !== true) {
-//     return {
-//       __typename: 'CreateTeamFailure',
-//       errors: [
-//         {
-//           __typename: 'ValidationError',
-//           message: 'Empty teams are not yet supported. "join" must be "true"',
-//         },
-//       ],
-//     };
-//   }
+export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
+  parent,
+  args,
+  apolloContext
+) => {
+  if (!isUserContext(apolloContext)) {
+    throw new AuthenticationError('Only authenticated users are allowed to create teams.');
+  }
+  const teamNameError = validateTeamName(args.input.name);
+  if (teamNameError) {
+    return {
+      __typename: 'CreateTeamFailure',
+      errors: [{ __typename: 'ValidationError', message: JSON.stringify({ 'input.name': [teamNameError] }) }]
+    } as gqlTypes.CreateTeamFailure;
+  }
 
-//   return db.default.tx(async (tx): Promise<gqlTypes.CreateTeamResult> => {
-//     const isInvited = await TournamentInvitation.isInvited(args.tournamentID, ctx.userID, tx);
-//     const hasTeam = await Team.hasTeam(ctx.userID, args.tournamentID, tx);
-//     const isOrganizer = await Tournament.isOrganizer(args.tournamentID, ctx.userID, tx);
-//     if (!isInvited && !hasTeam && !isOrganizer) {
-//       return {
-//         __typename: 'CreateTeamFailure',
-//         errors: [
-//           {
-//             __typename: 'ForbiddenError',
-//             message:
-//               'Only tournament invitees, team members and tournament organizers can create new teams.',
-//           },
-//         ],
-//       };
-//     }
+  const teamOrError = await createTeam(apolloContext.ctx, {
+    teamName: args.input.name,
+    userId: apolloContext.userID,
+    tournamentId: args.tournamentID,
+    join: args.join
+  });
 
-//     const teamOrError = await Team.create(args.input.name, args.tournamentID, tx);
-//     if (isValidationError(teamOrError)) {
-//       return {
-//         __typename: 'CreateTeamFailure',
-//         errors: validationErrorsToGraphQL(teamOrError),
-//       };
-//     }
-//     if (args.join) {
-//       await teamOrError.addMember(ctx.userID, tx);
-//     }
-//     return {
-//       __typename: 'CreateTeamSuccess',
-//       team: teamOrError,
-//     };
-//   });
-// };
+  if (teamOrError instanceof Error) {
+    return {
+      __typename: 'CreateTeamFailure',
+      errors: [
+        toGraphQLError(teamOrError),
+      ],
+    } as gqlTypes.CreateTeamFailure;
+  }
+
+  return {
+    __typename: 'CreateTeamSuccess',
+    team: teamOrError,
+  };
+};
 
 // export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
 //   parent,
@@ -116,7 +98,7 @@ export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = asyn
   apolloContext
 ) => {
   if (!isUserContext(apolloContext)) {
-    throw new ForbiddenError('Only Users can ask for memberships.');
+    throw new AuthenticationError('Only Users can ask for memberships.');
   }
   const team = await apolloContext.ctx.providers.team.getTeamByMember(apolloContext.ctx, args.userID, args.tournamentID);
   if (team === null) {

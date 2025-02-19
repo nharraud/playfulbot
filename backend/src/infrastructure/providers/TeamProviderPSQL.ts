@@ -5,7 +5,7 @@ import { Player } from '../../model/Player';
 // import { Tournament, TournamentID, TournamentStatus } from './TournamentProviderPSQL';
 // import { User, UserID } from './UserProviderPSQL';
 import { Team, validateTeamName } from '~playfulbot/core/entities/Teams';
-import { TeamNameAlreadyTaken, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
+import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
@@ -62,7 +62,7 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       tournamentID: TournamentID,
       id?: TeamID
     }
-  ): Promise<Team | TeamNameAlreadyTaken> {
+  ): Promise<Team | TeamNameAlreadyTakenError> {
     const validationError = validateTeamName(team.name);
     if (validationError) {
       throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
@@ -81,7 +81,7 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       return buildTeam(data);
   } catch (err) {
     if (isDatabaseError(err) && err.constraint === 'unique_team_name') {
-      return new TeamNameAlreadyTaken();
+      return new TeamNameAlreadyTakenError();
     }
     throw err;
   }
@@ -93,7 +93,7 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
     ctx: ContextPSQL, 
     teamID: TeamID,
     patch: TeamPatch
-  ): Promise<Team | TeamNameAlreadyTaken> {
+  ): Promise<Team | TeamNameAlreadyTakenError> {
     const validationError = validateTeamName(patch.name);
     if (validationError) {
       throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
@@ -112,7 +112,7 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       return buildTeam(data);
     } catch (err) {
       if (isDatabaseError(err) && err.constraint === 'unique_team_name') {
-        return new TeamNameAlreadyTaken();
+        return new TeamNameAlreadyTakenError();
       }
       throw err;
     }

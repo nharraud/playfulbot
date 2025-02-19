@@ -6,6 +6,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -16,6 +17,20 @@ export type Scalars = {
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
   JSON: { input: any; output: any; }
+};
+
+export type CreateTeamError = ForbiddenError | ValidationError;
+
+export type CreateTeamFailure = {
+  __typename?: 'CreateTeamFailure';
+  errors: Array<CreateTeamError>;
+};
+
+export type CreateTeamResult = CreateTeamFailure | CreateTeamSuccess;
+
+export type CreateTeamSuccess = {
+  __typename?: 'CreateTeamSuccess';
+  team?: Maybe<Team>;
 };
 
 export type Error = {
@@ -35,10 +50,18 @@ export type LoginResult = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createTeam?: Maybe<CreateTeamResult>;
   createTournament?: Maybe<Tournament>;
   login?: Maybe<LoginResult>;
   logout?: Maybe<Scalars['Boolean']['output']>;
   registerUser?: Maybe<UserRegistrationResult>;
+};
+
+
+export type MutationCreateTeamArgs = {
+  input: TeamInput;
+  join?: Scalars['Boolean']['input'];
+  tournamentID: Scalars['ID']['input'];
 };
 
 
@@ -86,6 +109,10 @@ export type Team = {
   members?: Maybe<Array<Maybe<User>>>;
   name: Scalars['String']['output'];
   tournament?: Maybe<Tournament>;
+};
+
+export type TeamInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Tournament = {
@@ -195,6 +222,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  CreateTeamError: ( ForbiddenError ) | ( ValidationError );
+  CreateTeamResult: ( Omit<CreateTeamFailure, 'errors'> & { errors: Array<_RefType['CreateTeamError']> } ) | ( CreateTeamSuccess );
   UserRegistrationResult: ( LoginResult ) | ( UsernameAlreadyTaken ) | ( ValidationError );
   UserTeamResult: ( Team ) | ( UserNotPartOfAnyTeam );
 };
@@ -207,6 +236,10 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CreateTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateTeamError']>;
+  CreateTeamFailure: ResolverTypeWrapper<Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversTypes['CreateTeamError']> }>;
+  CreateTeamResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateTeamResult']>;
+  CreateTeamSuccess: ResolverTypeWrapper<CreateTeamSuccess>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
@@ -218,6 +251,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
+  TeamInput: TeamInput;
   Tournament: ResolverTypeWrapper<Tournament>;
   TournamentStatus: TournamentStatus;
   User: ResolverTypeWrapper<User>;
@@ -231,6 +265,10 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
+  CreateTeamError: ResolversUnionTypes<ResolversParentTypes>['CreateTeamError'];
+  CreateTeamFailure: Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversParentTypes['CreateTeamError']> };
+  CreateTeamResult: ResolversUnionTypes<ResolversParentTypes>['CreateTeamResult'];
+  CreateTeamSuccess: CreateTeamSuccess;
   Date: Scalars['Date']['output'];
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   ForbiddenError: ForbiddenError;
@@ -242,6 +280,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   Team: Team;
+  TeamInput: TeamInput;
   Tournament: Tournament;
   User: User;
   UserNotPartOfAnyTeam: UserNotPartOfAnyTeam;
@@ -249,6 +288,24 @@ export type ResolversParentTypes = {
   UserTeamResult: ResolversUnionTypes<ResolversParentTypes>['UserTeamResult'];
   UsernameAlreadyTaken: UsernameAlreadyTaken;
   ValidationError: ValidationError;
+};
+
+export type CreateTeamErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamError'] = ResolversParentTypes['CreateTeamError']> = {
+  __resolveType: TypeResolveFn<'ForbiddenError' | 'ValidationError', ParentType, ContextType>;
+};
+
+export type CreateTeamFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamFailure'] = ResolversParentTypes['CreateTeamFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['CreateTeamError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateTeamResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamResult'] = ResolversParentTypes['CreateTeamResult']> = {
+  __resolveType: TypeResolveFn<'CreateTeamFailure' | 'CreateTeamSuccess', ParentType, ContextType>;
+};
+
+export type CreateTeamSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamSuccess'] = ResolversParentTypes['CreateTeamSuccess']> = {
+  team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -276,6 +333,7 @@ export type LoginResultResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input' | 'join' | 'tournamentID'>>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -333,6 +391,10 @@ export type ValidationErrorResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type Resolvers<ContextType = any> = {
+  CreateTeamError?: CreateTeamErrorResolvers<ContextType>;
+  CreateTeamFailure?: CreateTeamFailureResolvers<ContextType>;
+  CreateTeamResult?: CreateTeamResultResolvers<ContextType>;
+  CreateTeamSuccess?: CreateTeamSuccessResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Error?: ErrorResolvers<ContextType>;
   ForbiddenError?: ForbiddenErrorResolvers<ContextType>;
