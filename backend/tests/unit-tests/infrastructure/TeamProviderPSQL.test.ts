@@ -11,6 +11,9 @@ import { randomUUID } from 'crypto';
 import { User } from '~playfulbot/core/entities/Users';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { TeamNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
+import { TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
+
+const dummyUUID = '00000000-0000-4000-9000-000000000000';
 
 async function tournamentFixture({}, use: any) {
   const provider = new TournamentProviderPSQL();
@@ -30,7 +33,7 @@ function addTeam(teamName: string, tournamentID: TournamentID): Promise<Team> {
   return provider.createTeam(createMockContext(), {
     name: teamName,
     tournamentID: tournamentID,
-  });
+  }) as Promise<Team>;
 }
 
 async function teamFixture({ tournament }: any, use: any) {
@@ -229,6 +232,22 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toEqual(team);
+    });
+
+    test('should return an error if the team does not exist', async ({ user }) => {
+      const ctx = createMockContext();
+      const teamProvider = new TeamProviderPSQL();
+
+      const result = await teamProvider.addTeamMember(ctx, dummyUUID, user.id);
+      expect(result).toBeInstanceOf(TeamNotFoundError);
+    });
+
+    test('should return an error if the user does not exist', async ({ team }) => {
+      const ctx = createMockContext();
+      const teamProvider = new TeamProviderPSQL();
+
+      const result = await teamProvider.addTeamMember(ctx, team.id, dummyUUID);
+      expect(result).toBeInstanceOf(UserNotFoundError);
     });
   });
 

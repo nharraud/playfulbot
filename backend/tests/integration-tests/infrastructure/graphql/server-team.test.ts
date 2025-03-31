@@ -185,6 +185,8 @@ describe('graphql', () => {
       expect(response.body.data.createTeam.team.members[0].username).eql(user.username);
       const team = await ctx.providers.team.getTeamByID(ctx, response.body.data.createTeam.team.id);
       expect(team.name).eql(response.body.data.createTeam.team.name);
+      const userteam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
+      expect(userteam.id).eql(response.body.data.createTeam.team.id);
     });
   });
 

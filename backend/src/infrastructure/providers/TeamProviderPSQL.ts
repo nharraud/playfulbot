@@ -9,9 +9,8 @@ import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider } from '~playfulbot/
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
-import { ValidationError } from '~playfulbot/core/use-cases/Errors';
+import { TeamNotFoundError, ValidationError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
-import { TX } from 'playfulbot-backend-commons/lib/model/db';
 // import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 // import { Validator } from '~playfulbot/core/use-cases/Validator';
 
@@ -184,7 +183,7 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
   //   return rows.map((row) => new Team(row));
   // }
 
-  async addTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean> {
+  async addTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean | TeamNotFoundError | UserNotFoundError > {
     const insertQuery = `INSERT INTO team_memberships(user_id, team_id)
                          VALUES($[userID], $[teamID])
                          RETURNING true`;
@@ -192,9 +191,15 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       await ctx.dbOrTx.one(insertQuery, { userID, teamID });
       return true;
     } catch (err) {
-      if (isDatabaseError(err) && err.constraint === 'team_memberships_pkey') {
-        // ignore error, the user is already part of this team
-        return false;
+      if (isDatabaseError(err)) {
+        if (err.constraint === 'team_memberships_pkey') {
+          // ignore error, the user is already part of this team
+          return false;
+        } else if (err.constraint === 'team_memberships_team_id_fkey') {
+          return new TeamNotFoundError();
+        } else if (err.constraint === 'team_memberships_user_id_fkey') {
+          return new UserNotFoundError();
+        }
       }
       throw err;
     }

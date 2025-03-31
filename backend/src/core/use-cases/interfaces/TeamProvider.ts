@@ -1,7 +1,7 @@
 import { Team, TeamID } from "~playfulbot/core/entities/Teams";
 import { TournamentID } from "~playfulbot/core/entities/Tournaments";
 import { UserID } from "~playfulbot/core/entities/Users";
-import { ValidationError } from "../Errors";
+import { TeamNotFoundError, UserNotFoundError, ValidationError } from "../Errors";
 
 export interface TeamPatch {
   name?: string;
@@ -32,7 +32,7 @@ export interface TeamProvider<Context> {
   getTeamByMember(ctx: Context, userID: UserID, tournamentID: TournamentID): Promise<Team | null>
   isTeamMember(ctx: Context, teamId: TeamID, userId: UserID): Promise<boolean>
 
-  addTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean>
+  addTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean | TeamNotFoundError | UserNotFoundError>
   removeTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean>
   deleteTeamIfNoMembers(ctx: Context, teamID: TeamID): Promise<boolean>
 };

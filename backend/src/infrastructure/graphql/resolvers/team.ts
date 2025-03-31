@@ -5,6 +5,7 @@ import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { toGraphQLError } from './errors';
 import { updateTeam } from '~playfulbot/core/use-cases/team/updateTeam';
+import { addTeamMember } from '~playfulbot/core/use-cases/team/addTeamMember';
 
 export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
   parent,
@@ -120,39 +121,38 @@ export async function teamTournamentResolver(
   return await apolloContext.ctx.providers.tournament.getTournamentByTeam(apolloContext.ctx, parent.id);
 }
 
-// export const joinTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['joinTeam'] = async (
-//   parent,
-//   args,
-//   ctx
-// ) => {
-//   if (!isUserContext(ctx)) {
-//     throw new AuthenticationError(`Only authenticated users are allowed to create tournaments.`);
-//   }
-//   return db.default.tx(async (tx) => {
-//     const newTeam = await Team.getByID(args.teamID, tx);
-//     if (!newTeam) {
-//       return {
-//         __typename: 'JoinTeamFailure',
-//         errors: [
-//           { __typename: 'TeamNotFoundError', teamID: args.teamID, message: 'Team not found' },
-//         ],
-//       };
-//     }
+export const joinTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['joinTeam'] = async (
+  parent,
+  args,
+  apolloContext
+) => {
+  if (!isUserContext(apolloContext)) {
+    throw new AuthenticationError(`Only authenticated users are allowed to create tournaments.`);
+  }
+  const result = await addTeamMember(apolloContext.ctx, { teamId: args.teamID, userId: apolloContext.userID, checkPermission: true });
+  const newTeam = await Team.getByID(args.teamID, tx);
+  if (!newTeam) {
+    return {
+      __typename: 'JoinTeamFailure',
+      errors: [
+        { __typename: 'TeamNotFoundError', teamID: args.teamID, message: 'Team not found' },
+      ],
+    };
+  }
 
-//     const addMemberResult = await newTeam.addMember(ctx.userID, tx);
-//     // eslint-disable-next-line prefer-destructuring
-//     let oldTeam: gqlTypes.TeamOrDeletedTeam = addMemberResult.oldTeam;
-//     if (addMemberResult.oldTeamDeleted) {
-//       oldTeam = {
-//         __typename: 'DeletedTeam',
-//         teamID: addMemberResult.oldTeam.id,
-//         name: addMemberResult.oldTeam.name,
-//       };
-//     }
-//     return {
-//       __typename: 'JoinTeamSuccess',
-//       oldTeam,
-//       newTeam: await Team.getByID(args.teamID, tx),
-//     };
-//   });
-// };
+  const addMemberResult = await newTeam.addMember(ctx.userID, tx);
+  // eslint-disable-next-line prefer-destructuring
+  let oldTeam: gqlTypes.TeamOrDeletedTeam = addMemberResult.oldTeam;
+  if (addMemberResult.oldTeamDeleted) {
+    oldTeam = {
+      __typename: 'DeletedTeam',
+      teamID: addMemberResult.oldTeam.id,
+      name: addMemberResult.oldTeam.name,
+    };
+  }
+  return {
+    __typename: 'JoinTeamSuccess',
+    oldTeam,
+    newTeam: await Team.getByID(args.teamID, tx),
+  };
+};

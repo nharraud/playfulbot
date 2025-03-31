@@ -6,6 +6,7 @@ import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments'
 import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { addTeamMember } from '~playfulbot/core/use-cases/team/addTeamMember';
+import { TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
 
 interface TestFixtures {
   ctx?: Context<any>,
@@ -13,6 +14,8 @@ interface TestFixtures {
   team?: Team,
   user?: User,
 }
+
+const dummyUUID = '00000000-0000-4000-9000-000000000000';
 
 async function contextFixture({}: TestFixtures, use: any) {
   await use(createMockContext());
@@ -67,7 +70,7 @@ describe('use-cases/team/addTeamMember', () => {
   });
 
   test('should add team member', async ({ctx, team, user, tournament }) => {
-    const result = await addTeamMember(ctx, team.id, user.id);
+    const result = await addTeamMember(ctx, { teamId: team.id, userId: user.id });
     expect(result).toEqual({ oldTeam: null });
 
     const foundTeam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
@@ -75,8 +78,8 @@ describe('use-cases/team/addTeamMember', () => {
   });
 
   test('should do nothing if we add user to the team twice', async ({ ctx, team, user, tournament }) => {
-    await addTeamMember(ctx, team.id, user.id);
-    const result = await addTeamMember(ctx, team.id, user.id);
+    await addTeamMember(ctx, { teamId: team.id, userId: user.id });
+    const result = await addTeamMember(ctx, { teamId: team.id, userId: user.id });
     expect(result).toEqual({ oldTeam: team, oldTeamDeleted: false });
 
     const foundTeam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
@@ -86,11 +89,21 @@ describe('use-cases/team/addTeamMember', () => {
   test('should remove the user from its previous team if there was one', async ({ ctx, team, user, tournament }) => {
     const team2 = await addTeam(ctx, 'testTeam2', tournament.id);
 
-    await addTeamMember(ctx, team.id, user.id);
-    const result = await addTeamMember(ctx, team2.id, user.id);
+    await addTeamMember(ctx, { teamId: team.id, userId: user.id });
+    const result = await addTeamMember(ctx, { teamId: team2.id, userId: user.id });
     expect(result).toEqual({ oldTeam: team, oldTeamDeleted: true });
 
     const foundTeam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
     expect(foundTeam).toEqual(team2);
   });
-});
+
+  test('should return an error if the requested team does not exist', async ({ ctx, user, tournament }) => {
+    const result = await addTeamMember(ctx, { teamId: dummyUUID, userId: user.id, tournamentId: tournament.id });
+    expect(result).toBeInstanceOf(TeamNotFoundError);
+  });
+
+  test('should return an error if the requested user does not exist', async ({ ctx, team, tournament }) => {
+    const result = await addTeamMember(ctx, { teamId: team.id, userId: dummyUUID, tournamentId: tournament.id });
+    expect(result).toBeInstanceOf(UserNotFoundError);
+  });
+})

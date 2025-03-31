@@ -28,7 +28,10 @@ export async function createTeam(
   const teamOrError = await ctx.providers.team.createTeam(ctx, { name: teamName, tournamentID: tournamentId });
 
   if (!(teamOrError instanceof Error) && join) {
-    await addTeamMember(ctx, teamOrError.id, userId, tournamentId);
+    const addTeamResult = await addTeamMember(ctx, { teamId: teamOrError.id, userId: userId, tournamentId: tournamentId });
+    if (addTeamResult instanceof Error) {
+      return addTeamResult;
+    }
   }
 
   return teamOrError;
