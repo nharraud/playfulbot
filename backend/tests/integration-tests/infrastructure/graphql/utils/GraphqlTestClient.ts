@@ -1,48 +1,31 @@
 import got from 'got';
+import { createClient } from 'graphql-ws';
 import { serverConfig } from '~playfulbot/serverConfig';
+import WebSocket from 'ws';
 // import { Client as UrqlClient, ClientOptions, fetchExchange } from '@urql/core';
 
 const wsUrl = `ws://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
 const httpUrl = `http://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
 
-// function login(variables: { username: string, password: string }) {
-//   return got.post(httpUrl, {
-//     json: {
-//       query: `
-//         mutation login($username: String!, $password: String!) {
-//           login(username: $username, password: $password) {
-//             user { username }
-//             token
-//           }
-//         }
-//       `,
-//       operationName: "login",
-//       variables
-//     }
-//   });
-// }
-
 export class GraphqlTestClient {
   #token: string;
   #fingerprint: string;
 
-  constructor(readonly url: string) {
-    //   fetchOptions: () => {
-    //     return {
-    //       headers: {
-    //         authorization: this.#token ? `Bearer ${this.#token}` : '',
-    //         Cookie: this.#fingerprint ? `JWTFingerprint=${this.#fingerprint};` : ''
-    //       },
-    //     };
-    //   },
-    // });
-  }
+  constructor(readonly url: string) {}
 
   #getHeaders() {
     return {
       Cookie: this.#fingerprint ? `JWTFingerprint=${this.#fingerprint};`: '',
       Authorization: this.#token ? `Bearer ${this.#token}` : '',
     }
+  }
+
+  get token() {
+    return this.#token;
+  }
+
+  get fingerprint() {
+    return this.#fingerprint;
   }
 
   async query(params: { operationName: string, query: string, variables?: object }) {
@@ -75,4 +58,21 @@ export class GraphqlTestClient {
       this.#fingerprint = fingerprint;
       this.#token = response.body.data.login.token;
   }
+}
+
+
+function AuthWebSocket(fingerprint: string) {
+  return class AuthWebSocket extends WebSocket {
+    constructor(address: any, protocols: any) {
+      super(address, protocols, {
+        headers: {
+          Cookie: `JWTFingerprint=${fingerprint};`
+        },
+      });
+    }
+  }
+}
+
+export function createGraphqlTestWsClient({ url, fingerprint, token }: { url: string, fingerprint: string, token: string }) {
+  return createClient({ url, webSocketImpl: AuthWebSocket(fingerprint), connectionParams: { authToken: token } });
 }

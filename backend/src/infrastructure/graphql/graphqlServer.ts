@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
 import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
+import { useServer } from 'graphql-ws/use/ws';
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -24,67 +24,22 @@ import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolve
 import { isBotJWToken, isUserJWToken } from 'playfulbot-backend-commons/lib/types/token.js';
 import { Context } from '../../core/use-cases/interfaces/Context';
 import { ApolloContext } from './types/apolloTypes';
-import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
-import { UnkownError } from '~playfulbot/core/use-cases/Errors';
+import { ApolloTransactionPlugin } from './plugins/ApolloTransactionPlugin';
+import { IResolvers } from '@graphql-tools/utils';
+import { SubscribePayload } from 'graphql-ws';
+import { GraphQLError } from 'graphql';
 
-class CancelTransactionError extends Error {
-  constructor() {
-    super('This error is used to cancel the GraphQL transaction after an error happened');
-  }
-}
 
-/**
- * @returns Apollo server plugin which creates a new transaction for each request and stops it when the request ends
- */
-function ApolloTransactionPlugin (): ApolloServerPlugin<ApolloContext> {
-  return {
-    async requestDidStart() {
-      const requestPromise = new DeferredPromise<void>;
-      const txPromise = new DeferredPromise<void>;
-      return {
-        async executionDidStart({ contextValue: { ctx } }) {
-          const { contextReady, transactionPromise } = await ctx.txPromise(requestPromise.promise);
-
-          transactionPromise.then(() => txPromise.resolve())
-            .catch((err) => {
-              if (err instanceof CancelTransactionError) {
-                txPromise.resolve();
-              } else {
-                txPromise.reject(new UnkownError('Transaction failed', err))
-              }
-            });
-
-          await contextReady;
-
-          return {
-            async executionDidEnd(err) {
-              // if `err` is set, `requestPromise` is already rejected by `didEncounterErrors` and it also awaits `txPromise`
-              if (!err) {
-                requestPromise.resolve();
-                await txPromise.promise;
-              }
-            }
-          }
-        },
-        async didEncounterErrors() {
-          requestPromise.reject(new CancelTransactionError());
-          await txPromise.promise;
-        }
-      }
-    },
-  };
-};
-
-export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host }: { port?: number, host?: string } = {}) {
+export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host, resolvers: customResolvers, typeDefs: customTypeDefs }: { port?: number, host?: string, resolvers?: IResolvers<any, any> | IResolvers<any, any>[], typeDefs?: string } = {}) {
   const logger = baseContext.logger.child({ module: __filename, source: 'createGraphqlServer' });
   const app = express();
   const httpServer = http.createServer(app);
 
   // we must convert the file Buffer to a UTF-8 string
-  const typeDefs = readFileSync(join(__dirname, 'graphqlSchema.graphql')).toString('utf-8');
+  const typeDefs = customTypeDefs || readFileSync(join(__dirname, 'graphqlSchema.graphql')).toString('utf-8');
   const schema = makeExecutableSchema({
     typeDefs,
-    resolvers,
+    resolvers: customResolvers || resolvers,
   });
 
   const wsServer = new WebSocketServer({
@@ -124,20 +79,33 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
           ctx.connectionParams.authToken as string,
           cookies.get('JWTFingerprint')
         );
+        let context: ApolloContext;
         if (isUserJWToken(tokenData)) {
-          return {
+          context = {
             ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
             userID: tokenData.userID,
           };
         }
         if (isBotJWToken(tokenData)) {
-          return {
+          context = {
             ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
             ...tokenData,
           };
         }
+        // if (context) {
+        //   await context.ctx.startRootTx();
+          return context;
+        // }
+
         throw new InvalidRequest('Invalid JWToken');
       },
+      // onComplete: async (ctx: ApolloContext, id: string, payload: SubscribePayload) => {
+      //   console.log(payload);
+      //   ctx.ctx.commitRootTx();
+      // },
+      // onError: async (ctx: ApolloContext, id: string, payload: SubscribePayload, errors: readonly GraphQLError[]) => {
+      //   console.log(payload);
+      // }
     },
     wsServer
   );
@@ -158,7 +126,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
           });
         },
       },
-      // ApolloTransactionPlugin(),
+      ApolloTransactionPlugin(),
     ],
   });
   // Ensure we wait for our server to start

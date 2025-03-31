@@ -15,11 +15,19 @@ import { UserProvider } from "~playfulbot/core/use-cases/interfaces/UserProvider
 import { TournamentProvider } from "~playfulbot/core/use-cases/interfaces/TournamentProvider";
 import { TournamentInvitationProvider } from "~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider";
 import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider";
+import { UnkownError } from "~playfulbot/core/use-cases/Errors";
 
+class CancelTransactionError extends Error {
+  constructor() {
+    super('This error is used to cancel the GraphQL transaction after an error happened');
+  }
+}
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
   convertError: ErrorConverter,
-  ctxWithTx: (tx: TX) => ContextPSQL,
+  startRootTx: () => Promise<void>,
+  commitRootTx: () => Promise<void>,
+  rollbackRootTx: (error?: Error) => Promise<void>,
   txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
   readonly dbOrTx: DbOrTx;
   providers: {
@@ -36,6 +44,9 @@ export class ContextPSQLImpl implements ContextPSQL {
   readonly convertError;
   readonly providers: Context<any>['providers'];
   #dbOrTx: DbOrTx;
+  #transactionPromise: Promise<void>;
+  #releaseTransactionPromise: DeferredPromise<void>;
+  #rollbackedRootTx = false;
 
   get dbOrTx() {
     return this.#dbOrTx;
@@ -61,24 +72,40 @@ export class ContextPSQLImpl implements ContextPSQL {
     });
   }
 
-  ctxWithTx(tx: TX) {
-    return new ContextPSQLImpl({
-      ...this,
-      dbOrTx: tx,
-    });
-  }
-
-  async txPromise(releaseTransactionPromise: Promise<void>): Promise<{ contextReady: Promise<void>, transactionPromise: Promise<void> }> {
+  async startRootTx(): Promise<void> {
+    if (this.#transactionPromise) {
+      return;
+    }
     const oldDbOrTx = this.#dbOrTx;
     const contextReady = new DeferredPromise<void>();
-    const transactionPromise = this.#dbOrTx.txIf(async (tx) => {
+    this.#releaseTransactionPromise = new DeferredPromise<void>();
+    this.#transactionPromise = this.#dbOrTx.txIf(async (tx) => {
       this.#dbOrTx = tx;
       contextReady.resolve();
-      await releaseTransactionPromise;
+      await this.#releaseTransactionPromise.promise;
+    }).catch((err) => {
+      if (!(err instanceof CancelTransactionError)) {
+        throw new UnkownError('Transaction failed', err);
+      }
     }).finally(() => {
       this.#dbOrTx = oldDbOrTx;
+      this.#transactionPromise = undefined;
+      this.#releaseTransactionPromise = undefined;
     });
-    return { contextReady: contextReady.promise, transactionPromise }
+    await contextReady.promise;
+  }
+
+  async commitRootTx(): Promise<void> {
+    if (!this.#rollbackedRootTx) {
+      this.#releaseTransactionPromise?.resolve();
+    }
+    await this.#transactionPromise;
+  }
+
+  async rollbackRootTx(error?: Error): Promise<void> {
+    this.#releaseTransactionPromise?.reject(error || new CancelTransactionError());
+    this.#rollbackedRootTx = true;
+    await this.#transactionPromise;
   }
 
   txIf(task: (ctx: ContextPSQL) => Promise<void> | void) {
