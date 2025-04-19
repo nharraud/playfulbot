@@ -26,7 +26,8 @@ export const registerUserResolver: gqlTypes.MutationResolvers<ApolloContext>['re
     return { __typename: 'UsernameAlreadyTaken', message: 'username already taken'}
   }
 
-  const token = await authenticate(createUserResult, apolloContext.req);
+  const { token, fingerprint } = await authenticate(createUserResult);
+  apolloContext.ctx.fingerprint = fingerprint;
   return {
     __typename: 'LoginResult',
     token,

@@ -20,11 +20,12 @@ class MockGameDefinitionProvider implements GameDefinitionProvider {
 }
 
 class MockContext extends ContextPSQLImpl {
-  constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions }: { logger?: Logger, dbOrTx?: DbOrTx, gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>} = {}) {
+  constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions, ...args }: { logger?: Logger, dbOrTx?: DbOrTx, gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>} = {}) {
     super({
       logger, dbOrTx, providers: {
         gameDefinitions: new MockGameDefinitionProvider(gameDefinitions),
-      }
+      },
+      ...args
     });
   }
 }

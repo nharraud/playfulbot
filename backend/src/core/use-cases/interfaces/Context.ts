@@ -11,16 +11,13 @@ export interface Context<FinalContext extends Context<FinalContext>> {
   logger: Logger,
   ctxWithChildLogger: (bindings: Bindings) => FinalContext,
   convertError: ErrorConverter,
-  startRootTx: () => Promise<void>,
-  commitRootTx: () => Promise<void>,
-  rollbackRootTx: (error?: Error) => Promise<void>,
-  // txPromise: (releaseTransactionPromise: Promise<void>) => Promise<{ contextReady: Promise<void>, transactionPromise: Promise<void> }>,
-  txIf: (task: (ctx: FinalContext) => Promise<void> | void) => Promise<void>,
+  txIf: (task: (ctx: FinalContext) => Promise<any> | void) => Promise<any>,
   providers: {
     user: UserProvider<FinalContext>,
     tournament: TournamentProvider<FinalContext>,
     tournamentInvitation: TournamentInvitationProvider<FinalContext>
     team: TeamProvider<FinalContext>
     gameDefinitions: GameDefinitionProvider
-  }
+  },
+  fingerprint?: string | null;
 }

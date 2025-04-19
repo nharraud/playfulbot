@@ -1,11 +1,13 @@
-import Cookies from 'cookies';
-import express from 'express';
+import cookie from 'cookie';
 import http from 'http';
-import { ApolloServer, ApolloServerPlugin } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import cors from 'cors';
-import bodyParser from 'body-parser';
+import type { ExecutionResult } from 'graphql';
+import { createYoga } from 'graphql-yoga';
+import { useGraphQlJit } from '@envelop/graphql-jit';
+import { Plugin as YogaPlugin } from 'graphql-yoga'
+import type { Plugin } from '@envelop/core';
+import { useMaskedErrors } from '@envelop/core';
+import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor';
+
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
 import { WebSocketServer } from 'ws';
@@ -18,22 +20,100 @@ import resolvers from '~playfulbot/infrastructure/graphql/resolvers';
 
 import { serverConfig } from '../../serverConfig';
 import { AuthenticationError, InvalidRequest } from '../../errors';
-// import { validateAuthToken } from './resolvers/authentication';
-// import { isBotJWToken, isUserJWToken } from '../../types/token';
 import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication.js';
 import { isBotJWToken, isUserJWToken } from 'playfulbot-backend-commons/lib/types/token.js';
 import { Context } from '../../core/use-cases/interfaces/Context';
 import { ApolloContext } from './types/apolloTypes';
-import { ApolloTransactionPlugin } from './plugins/ApolloTransactionPlugin';
 import { IResolvers } from '@graphql-tools/utils';
-import { SubscribePayload } from 'graphql-ws';
-import { GraphQLError } from 'graphql';
-
 
 export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host, resolvers: customResolvers, typeDefs: customTypeDefs }: { port?: number, host?: string, resolvers?: IResolvers<any, any> | IResolvers<any, any>[], typeDefs?: string } = {}) {
   const logger = baseContext.logger.child({ module: __filename, source: 'createGraphqlServer' });
-  const app = express();
-  const httpServer = http.createServer(app);
+
+  class TransactionError extends Error {
+    constructor(readonly result: ExecutionResult) {
+      super('transaction error');
+    }
+  }
+
+  const TransactionPlugin: Plugin<ApolloContext> = {
+    onExecute({ args, setExecuteFn, executeFn }) {
+      setExecuteFn(async function executeWithTx() {
+        return args.contextValue.ctx.txIf(async function executeInTx(txCtx) {
+          const result: ExecutionResult = await executeFn({ ...args, contextValue: { ...args.contextValue, ctx: txCtx} });
+          if (result.errors) {
+            throw new TransactionError(result);
+          }
+          for (const response of Object.values(result.data) as any) {
+            if ((response?.__typename as string)?.match(/(Failure|Error)$/)) {
+              throw new TransactionError(result);
+            }
+          }
+          return result;
+        }).catch(err => {
+          if (err instanceof TransactionError) {
+            return err.result;
+          }
+          throw err;
+        });
+      });
+    }
+  }
+
+  type PluginContext = ApolloContext & {
+    req: http.IncomingMessage & { onFingerprintChange: (fingerprint: string) => void},
+    connectionParams?: Readonly<Record<string, unknown>>,
+    fingerprint?: string | null;
+  }
+
+  const ContextPlugin: Plugin<PluginContext> = {
+    async onContextBuilding({ context, extendContext }) {
+      let token = context.connectionParams?.authToken as string | undefined;
+      const authorizationHeader = context.req.headers?.['authorization'];
+      if (!token && authorizationHeader && !Array.isArray(authorizationHeader)) {
+        if (!authorizationHeader.startsWith('Bearer '))
+          throw new AuthenticationError('Unsupported authorization');
+        token = authorizationHeader.split(' ')[1];
+      }
+
+      const cookieStr = context.req.headers?.['cookie'];
+      const finalContext: Context<any> = baseContext.ctxWithChildLogger({ source: 'grapqhl' });
+
+      if (token && cookieStr && !Array.isArray(cookieStr)) {
+        const parsedCookie = cookie.parse(cookieStr);
+        const fingerprint = parsedCookie?.JWTFingerprint;
+        const tokenData = await validateAuthToken(token, fingerprint);
+        if (isUserJWToken(tokenData)) {
+          return extendContext({
+              ctx: finalContext,
+              userID: tokenData.userID
+          });
+        }
+        if (isBotJWToken(tokenData)) {
+          return extendContext({
+            ctx: finalContext,
+            ...tokenData
+          });
+        }
+        throw new Error('Unknown token type');
+      }
+      extendContext({
+        ctx: finalContext
+      });
+    }
+  }
+
+  const RequestContext = (function(): YogaPlugin<PluginContext, PluginContext> {
+    return {
+      onResponse(params) {
+        const { response, serverContext: { ctx } } = params;
+        if (ctx?.fingerprint === null) {
+          response.headers.set('Set-Cookie', cookie.serialize('JWTFingerprint', '', { maxAge: 0 }));
+        } else if (ctx?.fingerprint) {
+          response.headers.set('Set-Cookie', cookie.serialize('JWTFingerprint', ctx.fingerprint, { expires: new Date(Date.now() + 1000*60*60*24*3 /* 3 days */) }));
+        }
+      }
+    }
+  })();
 
   // we must convert the file Buffer to a UTF-8 string
   const typeDefs = customTypeDefs || readFileSync(join(__dirname, 'graphqlSchema.graphql')).toString('utf-8');
@@ -42,15 +122,44 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     resolvers: customResolvers || resolvers,
   });
 
+  const yogaApp = createYoga({
+    graphiql: { subscriptionsProtocol: 'WS' },
+    schema,
+    graphqlEndpoint: '/graphql',
+    plugins: [
+      EnvelopArmorPlugin(),
+      useGraphQlJit(),
+      useMaskedErrors(),
+      TransactionPlugin,
+      ContextPlugin,
+      RequestContext,
+    ],
+    cors: request => {
+      const requestOrigin = request.headers.get('origin')
+      return {
+        origin: requestOrigin,
+        credentials: true,
+        allowedHeaders: ['X-Custom-Header'],
+        methods: ['POST']
+      }
+    }
+  });
+  const httpServer = http.createServer(yogaApp);
+
+
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: '/graphql',
+    path: yogaApp.graphqlEndpoint
   });
-  const serverCleanup = useServer(
-    {
-      schema,
+
+
+  const serverCleanup = useServer({
+      execute: (args: any) => args.rootValue.execute(args),
+      subscribe: (args: any) => args.rootValue.subscribe(args),
+
       onConnect: async (ctx) => {
-        const cookies = new Cookies(ctx.extra.request, null);
+        const parsedCookie = cookie.parse(ctx.extra.request?.headers?.cookie || '');
+        const fingerprint = parsedCookie?.JWTFingerprint;
         if (!ctx.connectionParams?.authToken) {
           throw new AuthenticationError('Missing token.');
         }
@@ -59,7 +168,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
         try {
           tokenData = await validateAuthToken(
             ctx.connectionParams.authToken as string,
-            cookies.get('JWTFingerprint')
+            fingerprint
           );
         } catch (err) {
           baseContext.logger.error('Token validation failed', err);
@@ -70,102 +179,33 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
           throw new InvalidRequest('Invalid JWToken');
         }
       },
-      context: async (ctx, msg, args) => {
-        const cookies = new Cookies(ctx.extra.request, null);
-        if (!ctx.connectionParams?.authToken) {
-          throw new AuthenticationError('Missing token.');
-        }
-        const tokenData = await validateAuthToken(
-          ctx.connectionParams.authToken as string,
-          cookies.get('JWTFingerprint')
-        );
-        let context: ApolloContext;
-        if (isUserJWToken(tokenData)) {
-          context = {
-            ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
-            userID: tokenData.userID,
-          };
-        }
-        if (isBotJWToken(tokenData)) {
-          context = {
-            ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
-            ...tokenData,
-          };
-        }
-        // if (context) {
-        //   await context.ctx.startRootTx();
-          return context;
-        // }
 
-        throw new InvalidRequest('Invalid JWToken');
-      },
-      // onComplete: async (ctx: ApolloContext, id: string, payload: SubscribePayload) => {
-      //   console.log(payload);
-      //   ctx.ctx.commitRootTx();
-      // },
-      // onError: async (ctx: ApolloContext, id: string, payload: SubscribePayload, errors: readonly GraphQLError[]) => {
-      //   console.log(payload);
-      // }
+      onSubscribe: async (ctx, _id, params) => {
+        const { schema, execute, subscribe, contextFactory, parse, validate } = yogaApp.getEnveloped({
+          ...ctx,
+          req: ctx.extra.request,
+          socket: ctx.extra.socket,
+          params
+        })
+  
+        const args = {
+          schema,
+          operationName: params.operationName,
+          document: parse(params.query),
+          variableValues: params.variables,
+          contextValue: await contextFactory(),
+          rootValue: {
+            execute,
+            subscribe
+          }
+        }
+
+        const errors = validate(args.schema, args.document)
+        if (errors.length) return errors
+        return args
+      }
     },
     wsServer
-  );
-
-  const server = new ApolloServer<ApolloContext>({
-    schema,
-    plugins: [
-      // Tell Apollo Server to "drain" this httpServer,
-      // enabling our servers to shut down gracefully.
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-      // Proper shutdown for the WebSocket server.
-      {
-        serverWillStart() {
-          return Promise.resolve({
-            async drainServer() {
-              await serverCleanup.dispose();
-            },
-          });
-        },
-      },
-      ApolloTransactionPlugin(),
-    ],
-  });
-  // Ensure we wait for our server to start
-  await server.start();
-
-  // Set up our Express middleware to handle CORS, body parsing,
-  // and our expressMiddleware function.
-  app.use(
-    '/graphql',
-    cors<cors.CorsRequest>(),
-    bodyParser.json(),
-    expressMiddleware(server, {
-      context: async ({ req }) => {
-        if (req.headers.authorization) {
-          if (!req.headers.authorization.startsWith('Bearer '))
-            throw new AuthenticationError('Unsupported authorization');
-          const token = req.headers.authorization.split(' ')[1];
-
-          const cookies = new Cookies(req, null);
-          const tokenData = await validateAuthToken(token, cookies.get('JWTFingerprint'));
-          if (isUserJWToken(tokenData)) {
-            return Promise.resolve({
-              ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
-              userID: tokenData.userID,
-              req
-            });
-          }
-          if (isBotJWToken(tokenData)) {
-            return Promise.resolve({
-              ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }),
-              ...tokenData,
-              req
-            });
-          }
-          throw new Error('Unknown token type');
-        }
-        return Promise.resolve({ req, ctx: baseContext.ctxWithChildLogger({ source: 'grapqhl' }) });
-      },
-    })
   );
 
   const serverPort = port || serverConfig.GRAPHQL_PORT;

@@ -4,18 +4,16 @@ import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
 import { UserProviderPSQL } from "./UserProviderPSQL";
 import { TournamentProviderPSQL } from "./TournamentProviderPSQL";
 import { createLogger } from "~playfulbot/logging";
-import { db, TX } from "playfulbot-backend-commons/lib/model/db";
+import { db } from "playfulbot-backend-commons/lib/model/db";
 import { convertError } from './convertError';
 import { TeamProviderPSQL } from "./TeamProviderPSQL";
 import { TournamentInvitationProviderPSQL } from "./TournamentInvitiationProviderPSQL";
 import { GameDefinitionProvider } from "~playfulbot/core/use-cases/interfaces/GameDefinitionProvider";
 import { GamedDefinitionProviderEnv } from "./GameDefinitionProviderEnv";
-import { DeferredPromise } from "~playfulbot/utils/DeferredPromise";
 import { UserProvider } from "~playfulbot/core/use-cases/interfaces/UserProvider";
 import { TournamentProvider } from "~playfulbot/core/use-cases/interfaces/TournamentProvider";
 import { TournamentInvitationProvider } from "~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider";
 import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider";
-import { UnkownError } from "~playfulbot/core/use-cases/Errors";
 
 class CancelTransactionError extends Error {
   constructor() {
@@ -25,9 +23,6 @@ class CancelTransactionError extends Error {
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
   convertError: ErrorConverter,
-  startRootTx: () => Promise<void>,
-  commitRootTx: () => Promise<void>,
-  rollbackRootTx: (error?: Error) => Promise<void>,
   txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
   readonly dbOrTx: DbOrTx;
   providers: {
@@ -39,22 +34,26 @@ export interface ContextPSQL extends Context<ContextPSQL> {
   }
 }
 
+class Fingerprint {
+  value?: string | null
+}
+
 export class ContextPSQLImpl implements ContextPSQL {
   readonly logger;
   readonly convertError;
   readonly providers: Context<any>['providers'];
   #dbOrTx: DbOrTx;
-  #transactionPromise: Promise<void>;
-  #releaseTransactionPromise: DeferredPromise<void>;
-  #rollbackedRootTx = false;
+  #fingerprint : Fingerprint
+
 
   get dbOrTx() {
     return this.#dbOrTx;
   }
 
-  constructor({ logger = createLogger(), dbOrTx = db.default, providers }: { logger?: Logger, dbOrTx?: DbOrTx, providers?: Partial<Context<any>['providers']> } = {}) {
+  constructor({ logger = createLogger(), dbOrTx = db.default, providers, fingerprint }: { logger?: Logger, dbOrTx?: DbOrTx, providers?: Partial<Context<any>['providers']>, fingerprint?: Fingerprint } = {}) {
     this.logger = logger;
     this.#dbOrTx = dbOrTx;
+    this.#fingerprint = fingerprint || new Fingerprint();
     this.convertError = convertError;
     this.providers = {
       user: providers.user || new UserProviderPSQL(),
@@ -66,52 +65,26 @@ export class ContextPSQLImpl implements ContextPSQL {
   }
 
   ctxWithChildLogger(bindings: Bindings) {
-    return new ContextPSQLImpl({
+    return new (this.constructor as any)({
       ...this,
+      fingerprint: this.#fingerprint,
+      dbOrTx: this.#dbOrTx,
       logger: this.logger.child(bindings),
     });
   }
 
-  async startRootTx(): Promise<void> {
-    if (this.#transactionPromise) {
-      return;
-    }
-    const oldDbOrTx = this.#dbOrTx;
-    const contextReady = new DeferredPromise<void>();
-    this.#releaseTransactionPromise = new DeferredPromise<void>();
-    this.#transactionPromise = this.#dbOrTx.txIf(async (tx) => {
-      this.#dbOrTx = tx;
-      contextReady.resolve();
-      await this.#releaseTransactionPromise.promise;
-    }).catch((err) => {
-      if (!(err instanceof CancelTransactionError)) {
-        throw new UnkownError('Transaction failed', err);
-      }
-    }).finally(() => {
-      this.#dbOrTx = oldDbOrTx;
-      this.#transactionPromise = undefined;
-      this.#releaseTransactionPromise = undefined;
-    });
-    await contextReady.promise;
-  }
-
-  async commitRootTx(): Promise<void> {
-    if (!this.#rollbackedRootTx) {
-      this.#releaseTransactionPromise?.resolve();
-    }
-    await this.#transactionPromise;
-  }
-
-  async rollbackRootTx(error?: Error): Promise<void> {
-    this.#releaseTransactionPromise?.reject(error || new CancelTransactionError());
-    this.#rollbackedRootTx = true;
-    await this.#transactionPromise;
-  }
-
-  txIf(task: (ctx: ContextPSQL) => Promise<void> | void) {
-    return this.#dbOrTx.txIf(async (tx) => {
+  txIf(task: (ctx: ContextPSQL) => Promise<any> | any) {
+    return this.#dbOrTx.txIf((tx) => {
       // call this.constructor to create subclass's constructor necessary
-      await task(new (this.constructor as any)({ ...this, dbOrTx: tx }));
+      return task(new (this.constructor as any)({ ...this, dbOrTx: tx, fingerprint: this.#fingerprint }));
     });
+  }
+
+  get fingerprint() {
+    return this.#fingerprint.value;
+  }
+
+  set fingerprint(value: string | null) {
+    this.#fingerprint.value = value;
   }
 }

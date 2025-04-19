@@ -105,7 +105,7 @@ describe('graphql/graphqlServer', () => {
         extensions: {
           code: 'INTERNAL_SERVER_ERROR',
         },
-        message: 'expected error',
+        message: 'Unexpected error.',
       });
       const retrievedUser = await ctx.providers.user.getUserByID(ctx, user?.id);
       expect(retrievedUser).toBeNull();
@@ -138,7 +138,7 @@ describe('graphql/graphqlServer', () => {
       expect(retrievedUser).toBeNull();
     });
     
-    test('should rollback transaction if an Failure is returned', async () => {
+    test('should rollback transaction if a Failure is returned', async () => {
       let user: User;
       const resolvers: IResolvers = {
         Query: {},
@@ -193,21 +193,15 @@ describe('graphql/graphqlServer', () => {
     });
   
     test('should not start transaction when request has a syntax error', async () => {
-      let user: User;
-      const transactionSpy = vi.spyOn(ctx, 'startRootTx');
+      const transactionSpy = vi.spyOn(ctx, 'txIf');
       ({ server, httpUrl} = await createGraphqlServer(ctx));
-      let error: HTTPError;
-      try {
-        const response = await got.post(httpUrl, {
-          json: {
-            query: 'mutation act { act }',
-            operationName: "act"
-          }
-        });
-      } catch(err) {
-        error = err as HTTPError;
-      }
-      const body = JSON.parse(error.response.body);
+      const response = await got.post(httpUrl, {
+        json: {
+          query: 'mutation act { act }',
+          operationName: "act"
+        }
+      });
+      const body = JSON.parse(response.body);
       expect(body.errors).toHaveLength(1);
       expect(body.errors[0]).toMatchObject({
         extensions: {
@@ -219,6 +213,25 @@ describe('graphql/graphqlServer', () => {
   });
 
   describe('Websocket requests', () => {
+    const query = `
+      mutation updateTeam($teamID: ID!, $input: TeamInput!) {
+        updateTeam(teamID: $teamID, input: $input) {
+          ... on UpdateTeamSuccess {
+            team {
+              id
+            }
+          }
+          ... on UpdateTeamFailure {
+            __typename
+            errors {
+              ... on Error {
+                message
+              }
+            }
+          }
+        }
+      }
+    `;
     let wsClient: Client;
     const userData = { username: 'testuser', password: 'testpassword' };
 
@@ -230,13 +243,13 @@ describe('graphql/graphqlServer', () => {
       let isFirst = true;
       let user1, user2: User;
       const resolvers: IResolvers = { ...defaultResolvers };
-      resolvers.Query.authenticatedUser = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
+      resolvers.Mutation.updateTeam = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
         if (isFirst) {
           isFirst = false;
           user1 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
           return {
-            __typename: 'User',
-            username: 'Me'
+            __typename: 'UpdateTeamSuccess',
+            team: { id: 'myteam' }
           }
         } else {
           user2 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'def', password: 'b' }) as User;
@@ -251,34 +264,51 @@ describe('graphql/graphqlServer', () => {
       await httpClient.login(userData);
       wsClient = createGraphqlTestWsClient({ url: wsUrl, fingerprint: httpClient.fingerprint, token: httpClient.token });
 
-      const query = 'query authenticatedUser { authenticatedUser { username }}';
-      const results1 = wsClient.iterate({ query });
+      // const query = 'query authenticatedUser { authenticatedUser { username }}';
+      const results1 = wsClient.iterate({ query, variables: { teamID: 'foo', input: { name: 'bar' }} });
       const result1 = await results1.next();
-      expect(result1.value.data.authenticatedUser.username).toEqual('Me');
+      expect(result1.value.data.updateTeam.team.id).toEqual('myteam');
       // Check that the transaction succeeded
       const retrievedUser1 = await ctx.providers.user.getUserByID(ctx, user1.id);
       expect(retrievedUser1).not.toBeNull();
 
-      const results2 = wsClient.iterate({ query });
+      const results2 = wsClient.iterate({ query, variables: { teamID: 'foo', input: { name: 'bar' }} });
       const result2 = await results2.next();
-      expect(result2.value.errors[0].message).toEqual('expected error');
-      // Check that the transaction succeeded
+      expect(result2.value.errors[0].message).toEqual('Unexpected error.');
+      // Check that the transaction failed
       const retrievedUser2 = await ctx.providers.user.getUserByID(ctx, user2.id);
       expect(retrievedUser2).toBeNull();
+    });
 
+    test('websocket should rollback the transation when a Failure is returned', async () => {
+      let user: User;
+      const resolvers: IResolvers = { ...defaultResolvers };
+      resolvers.Mutation.updateTeam = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
+        user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+        return {
+          __typename: 'UpdateTeamFailure',
+          errors: [{ __typename: 'ValidationError', message: 'expected error' }]
+        }
+      };
+      let wsUrl: string;
+      ({ server, wsUrl, httpUrl} = await createGraphqlServer(ctx, { resolvers }));
 
-      
-      // const response = await run();
-      // const body = JSON.parse(response.result.body);
-      // expect(body.errors).toHaveLength(1);
-      // expect(body.errors[0]).toMatchObject({
-      //   extensions: {
-      //     code: 'INTERNAL_SERVER_ERROR',
-      //   },
-      //   message: 'expected error',
-      // });
-      // const retrievedUser = await ctx.providers.user.getUserByID(ctx, user?.id);
-      // expect(retrievedUser).toBeNull();
+      await ctx.providers.user.createUser(ctx, userData);
+      const httpClient = new GraphqlTestClient(httpUrl);
+      await httpClient.login(userData);
+      wsClient = createGraphqlTestWsClient({ url: wsUrl, fingerprint: httpClient.fingerprint, token: httpClient.token });
+
+      const results = wsClient.iterate({ query, variables: { teamID: 'foo', input: { name: 'bar' }} });
+      const result = await results.next();
+      expect(result.value.data).toMatchObject({
+        updateTeam:{
+          __typename: 'UpdateTeamFailure',
+          errors: [{ message: 'expected error' }]
+        }
+      });
+      // Check that the transaction failed
+      const retrievedUser = await ctx.providers.user.getUserByID(ctx, user.id);
+      expect(retrievedUser).toBeNull();
     });
   });
 });

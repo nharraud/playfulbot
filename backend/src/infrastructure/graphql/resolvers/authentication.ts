@@ -6,22 +6,18 @@ import jwt from 'jsonwebtoken';
 
 import bcrypt from 'bcrypt';
 
-import Cookies from 'cookies';
 import express from 'express';
 import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { User } from '~playfulbot/core/entities/Users';
 
-import {
-  UserJWTokenData,
-  JWToken,
-} from '~playfulbot/types/token';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
-import { InvalidRequest, AuthenticationError } from '~playfulbot/errors';
+import { AuthenticationError } from '~playfulbot/errors';
 import { SECRET_KEY } from '~playfulbot/secret';
+import { JWToken, UserJWTokenData } from 'playfulbot-backend-commons/lib/types/token';
 
 const randomBytes = promisify(crypto.randomBytes);
 
-export async function authenticate(user: User, req: express.Request): Promise<JWToken> {
+export async function authenticate(user: User): Promise<{ token: JWToken, fingerprint: string }> {
   const binFingerprint = await randomBytes(50);
   const strFingerprint = binFingerprint.toString('base64');
 
@@ -34,9 +30,7 @@ export async function authenticate(user: User, req: express.Request): Promise<JW
 
   const token = jwt.sign(tokenData, SECRET_KEY);
 
-  const cookies = new Cookies(req, req.res);
-  cookies.set('JWTFingerprint', strFingerprint);
-  return token;
+  return { token, fingerprint: strFingerprint };
 }
 
 export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async function loginResolver(
@@ -54,7 +48,9 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   if (!match) {
     throw new AuthenticationError('Incorrect credentials');
   }
-  const token = await authenticate(foundUser, apolloContext.req);
+  const { token, fingerprint } = await authenticate(foundUser);
+  apolloContext.ctx.fingerprint = fingerprint;
+
   return {
     token,
     user: {
@@ -67,13 +63,8 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
 export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout'] = (
   parent,
   args,
-  ctx
+  apolloContext
 ) => {
-  if (ctx.req === undefined || ctx.req.res === undefined) {
-    throw new InvalidRequest('Logout needs to be done via an HTTPS request, not via a websocket.');
-  }
-
-  const cookies = new Cookies(ctx.req, ctx.req.res);
-  cookies.set('JWTFingerprint');
+  apolloContext.ctx.fingerprint = null;
   return true;
 };
