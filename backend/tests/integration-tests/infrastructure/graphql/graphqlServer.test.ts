@@ -264,7 +264,6 @@ describe('graphql/graphqlServer', () => {
       await httpClient.login(userData);
       wsClient = createGraphqlTestWsClient({ url: wsUrl, fingerprint: httpClient.fingerprint, token: httpClient.token });
 
-      // const query = 'query authenticatedUser { authenticatedUser { username }}';
       const results1 = wsClient.iterate({ query, variables: { teamID: 'foo', input: { name: 'bar' }} });
       const result1 = await results1.next();
       expect(result1.value.data.updateTeam.team.id).toEqual('myteam');
