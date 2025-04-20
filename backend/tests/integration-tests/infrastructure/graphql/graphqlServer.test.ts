@@ -7,7 +7,7 @@ import got from 'got';
 import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { createMockContext } from '../../../utils/context';
 import { IResolvers } from '@graphql-tools/utils';
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import { User } from '~playfulbot/core/entities/Users';
 import { createGraphqlTestWsClient, GraphqlTestClient } from './utils/GraphqlTestClient';
 import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
@@ -91,8 +91,8 @@ describe('graphql/graphqlServer', () => {
       const resolvers: IResolvers = {
         Query: {},
         Mutation: {
-          act: async (parent: unknown, args: any, apolloContext: ApolloContext) => {
-            user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+          act: async (parent: unknown, args: any, graphqlContext: GraphqlContext) => {
+            user = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
             throw new Error('expected error');
           }
         }
@@ -116,8 +116,8 @@ describe('graphql/graphqlServer', () => {
       const resolvers: IResolvers = {
         Query: {},
         Mutation: {
-          act: async (parent: unknown, args: any, apolloContext: ApolloContext) => {
-            user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+          act: async (parent: unknown, args: any, graphqlContext: GraphqlContext) => {
+            user = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
             return {
               __typename: 'MyError',
               message: 'expected error'
@@ -143,8 +143,8 @@ describe('graphql/graphqlServer', () => {
       const resolvers: IResolvers = {
         Query: {},
         Mutation: {
-          act: async (parent: unknown, args: any, apolloContext: ApolloContext) => {
-            user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+          act: async (parent: unknown, args: any, graphqlContext: GraphqlContext) => {
+            user = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
             return {
               __typename: 'MyFailure',
               message: 'expected error'
@@ -170,8 +170,8 @@ describe('graphql/graphqlServer', () => {
       const resolvers: IResolvers = {
         Query: {},
         Mutation: {
-          act: async (parent: unknown, args: any, apolloContext: ApolloContext) => {
-            user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+          act: async (parent: unknown, args: any, graphqlContext: GraphqlContext) => {
+            user = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
             return {
               __typename: 'MySuccess',
               message: 'this is a success'
@@ -242,17 +242,17 @@ describe('graphql/graphqlServer', () => {
     test('websocket should rollback only the transaction of the failing request', async () => {
       let isFirst = true;
       let user1, user2: User;
-      const resolvers: Resolvers<ApolloContext> = { ...defaultResolvers };
-      resolvers.Mutation.updateTeam = async (parent: any, args: any, apolloContext: ApolloContext) => {
+      const resolvers: Resolvers<GraphqlContext> = { ...defaultResolvers };
+      resolvers.Mutation.updateTeam = async (parent: any, args: any, graphqlContext: GraphqlContext) => {
         if (isFirst) {
           isFirst = false;
-          user1 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+          user1 = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
           return {
             __typename: 'UpdateTeamSuccess',
             team: { id: 'myteam', name: 'myteam' }
           }
         } else {
-          user2 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'def', password: 'b' }) as User;
+          user2 = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'def', password: 'b' }) as User;
           throw new Error('expected error');
         }
       };
@@ -281,9 +281,9 @@ describe('graphql/graphqlServer', () => {
 
     test('websocket should rollback the transation when a Failure is returned', async () => {
       let user: User;
-      const resolvers: Resolvers<ApolloContext> = { ...defaultResolvers };
-      resolvers.Mutation.updateTeam = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
-        user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
+      const resolvers: Resolvers<GraphqlContext> = { ...defaultResolvers };
+      resolvers.Mutation.updateTeam = async (parent: unknown, args: any, graphqlContext: GraphqlContext) => {
+        user = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: 'abc', password: 'b' }) as User;
         return {
           __typename: 'UpdateTeamFailure',
           errors: [{ __typename: 'ValidationError', message: 'expected error' }]

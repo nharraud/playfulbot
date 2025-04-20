@@ -3,37 +3,37 @@ import { UserID } from '~playfulbot/core/entities/Users';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 
 
-export type ApolloBaseContext = {
+export type GraphqlBaseContext = {
   ctx: Context<any>
 }
 
-export interface ApolloUnauthenticatedContext extends ApolloBaseContext {
+export interface GraphqlUnauthenticatedContext extends GraphqlBaseContext {
 };
 
-export interface ApolloUserContext extends ApolloBaseContext {
+export interface GraphqlUserContext extends GraphqlBaseContext {
   userID: UserID;
 };
 
-export interface ApolloBotContext extends ApolloBaseContext {
+export interface GraphqlBotContext extends GraphqlBaseContext {
   playerID: PlayerID;
 };
 
-export type ApolloContext = ApolloUserContext | ApolloBotContext | ApolloUnauthenticatedContext;
+export type GraphqlContext = GraphqlUserContext | GraphqlBotContext | GraphqlUnauthenticatedContext;
 
-export function isUserContext(context: ApolloContext): context is ApolloUserContext {
-  return (context as ApolloUserContext).userID !== undefined;
+export function isUserContext(context: GraphqlContext): context is GraphqlUserContext {
+  return (context as GraphqlUserContext).userID !== undefined;
 }
 
-export function isBotContext(context: ApolloContext): context is ApolloBotContext {
-  return (context as ApolloBotContext).playerID !== undefined;
+export function isBotContext(context: GraphqlContext): context is GraphqlBotContext {
+  return (context as GraphqlBotContext).playerID !== undefined;
 }
 
 export function isUnauthenticatedContext(
-  context: ApolloContext
-): context is ApolloUnauthenticatedContext {
+  context: GraphqlContext
+): context is GraphqlUnauthenticatedContext {
   return (
-    (context as ApolloUserContext).userID === undefined &&
-    (context as ApolloBotContext).playerID === undefined
+    (context as GraphqlUserContext).userID === undefined &&
+    (context as GraphqlBotContext).playerID === undefined
   );
 }
 

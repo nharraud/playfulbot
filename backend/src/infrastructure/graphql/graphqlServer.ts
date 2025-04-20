@@ -23,7 +23,7 @@ import { AuthenticationError, InvalidRequest } from '../../errors';
 import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication.js';
 import { isBotJWToken, isUserJWToken } from 'playfulbot-backend-commons/lib/types/token.js';
 import { Context } from '../../core/use-cases/interfaces/Context';
-import { ApolloContext } from './types/apolloTypes';
+import { GraphqlContext } from './types/graphqlTypes';
 import { IResolvers } from '@graphql-tools/utils';
 
 export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host, resolvers: customResolvers, typeDefs: customTypeDefs }: { port?: number, host?: string, resolvers?: IResolvers<any, any> | IResolvers<any, any>[], typeDefs?: string } = {}) {
@@ -35,7 +35,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     }
   }
 
-  const TransactionPlugin: Plugin<ApolloContext> = {
+  const TransactionPlugin: Plugin<GraphqlContext> = {
     onExecute({ args, setExecuteFn, executeFn }) {
       setExecuteFn(async function executeWithTx() {
         return args.contextValue.ctx.txIf(async function executeInTx(txCtx) {
@@ -59,7 +59,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     }
   }
 
-  type PluginContext = ApolloContext & {
+  type PluginContext = GraphqlContext & {
     req: http.IncomingMessage & { onFingerprintChange: (fingerprint: string) => void},
     connectionParams?: Readonly<Record<string, unknown>>,
     fingerprint?: string | null;
@@ -153,7 +153,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
   });
 
 
-  const serverCleanup = useServer({
+  useServer({
       execute: (args: any) => args.rootValue.execute(args),
       subscribe: (args: any) => args.rootValue.subscribe(args),
 

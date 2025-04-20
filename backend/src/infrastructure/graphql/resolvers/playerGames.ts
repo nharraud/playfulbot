@@ -1,13 +1,13 @@
 import { Player } from '~playfulbot/model/Player';
 import { pubsub } from '~playfulbot/pubsub';
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { PlayerNotFoundError } from '~playfulbot/errors';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
 import { PrefixedAsyncIterator } from '~playfulbot/pubsub/PrefixedAsyncIterator';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 
-export const playerGamesResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['playerGames'] = {
+export const playerGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['playerGames'] = {
   subscribe: (model, args, context, info) => {
     const player = Player.getPlayer(args.playerID);
     if (player === undefined) {

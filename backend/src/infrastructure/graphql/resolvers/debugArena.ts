@@ -3,10 +3,10 @@ import { DebugArena } from '~playfulbot/infrastructure/providers/DebugArenaPSQL'
 import { pubsub } from '~playfulbot/pubsub';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
-import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
-export const debugArenaResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['debugArena'] = {
+export const debugArenaResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['debugArena'] = {
   subscribe: async (model, args, context, info) => {
     const arena = DebugArena.getDebugArena(args.userID, args.tournamentID);
     if (arena === undefined) {
@@ -38,7 +38,7 @@ export const debugArenaResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['
   },
 };
 
-export const createNewDebugGameResolver: gqlTypes.MutationResolvers<ApolloContext>['createNewDebugGame'] =
+export const createNewDebugGameResolver: gqlTypes.MutationResolvers<GraphqlContext>['createNewDebugGame'] =
   async (parent, args, ctx) => {
     if (!isUserContext(ctx)) {
       throw new ForbiddenError('Only users are allowed to create games');

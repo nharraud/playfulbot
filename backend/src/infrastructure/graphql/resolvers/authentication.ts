@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import express from 'express';
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import { User } from '~playfulbot/core/entities/Users';
 
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
@@ -33,12 +33,12 @@ export async function authenticate(user: User): Promise<{ token: JWToken, finger
   return { token, fingerprint: strFingerprint };
 }
 
-export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] = async function loginResolver(
+export const loginResolver: gqlTypes.MutationResolvers<GraphqlContext>['login'] = async function loginResolver(
   parent,
   args,
-  apolloContext
+  graphqlContext
 ) {
-  const foundUser = await apolloContext.ctx.providers.user.getUserByName(apolloContext.ctx, args.username, true);
+  const foundUser = await graphqlContext.ctx.providers.user.getUserByName(graphqlContext.ctx, args.username, true);
 
   if (!foundUser) {
     throw new AuthenticationError(`Could not find account: ${args.username}`);
@@ -49,7 +49,7 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
     throw new AuthenticationError('Incorrect credentials');
   }
   const { token, fingerprint } = await authenticate(foundUser);
-  apolloContext.ctx.fingerprint = fingerprint;
+  graphqlContext.ctx.fingerprint = fingerprint;
 
   return {
     token,
@@ -60,11 +60,11 @@ export const loginResolver: gqlTypes.MutationResolvers<ApolloContext>['login'] =
   };
 };
 
-export const logoutResolver: gqlTypes.MutationResolvers<ApolloContext>['logout'] = (
+export const logoutResolver: gqlTypes.MutationResolvers<GraphqlContext>['logout'] = (
   parent,
   args,
-  apolloContext
+  graphqlContext
 ) => {
-  apolloContext.ctx.fingerprint = null;
+  graphqlContext.ctx.fingerprint = null;
   return true;
 };

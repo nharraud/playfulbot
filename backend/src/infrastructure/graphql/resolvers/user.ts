@@ -1,4 +1,4 @@
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import { User } from '~playfulbot/core/entities/Users';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { db } from '~playfulbot/model/db';
@@ -9,7 +9,7 @@ import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 export async function userTeamsResolver(
   parent: User,
   args: undefined,
-  context: ApolloContext
+  context: GraphqlContext
 ): Promise<gqlTypes.Team[]> {
   // FIXME: this should run in the same transaction as the parent query
   return Team.getAll({ memberID: parent.id }, db.default);
@@ -18,7 +18,7 @@ export async function userTeamsResolver(
 export function userTournamentInvitationsResolver(
   parent: User,
   args: undefined,
-  context: ApolloContext
+  context: GraphqlContext
 ): Promise<gqlTypes.TournamentInvitation[]> {
   // FIXME: this should run in the same transaction as the parent query
   // return Tournament.getAll({ invitedUserID: parent.id }, db.default);
@@ -30,7 +30,7 @@ export function userTournamentInvitationsResolver(
 export function userOrganizedTournamentsResolver(
   parent: User,
   args: undefined,
-  context: ApolloContext
+  context: GraphqlContext
 ): Promise<gqlTypes.Tournament[]> {
   // FIXME: this should run in the same transaction as the parent query
   return Tournament.getAll({ organizingUserID: parent.id }, db.default) as any as Promise<

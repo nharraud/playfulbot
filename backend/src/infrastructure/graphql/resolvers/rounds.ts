@@ -1,14 +1,14 @@
 import { db } from '~playfulbot/model/db';
 import { Round } from '~playfulbot/model/Round';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
-import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import { RoundNotFoundError } from '~playfulbot/errors';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
 export async function roundTeamPointsResolver(
   parent: Round,
   args: gqlTypes.TournamentRoundsArgs,
-  ctx: ApolloContext
+  ctx: GraphqlContext
 ): Promise<number | undefined> {
   if (!isUserContext(ctx)) {
     return undefined;
@@ -23,7 +23,7 @@ export async function roundTeamPointsResolver(
   });
 }
 
-export const roundResolver: gqlTypes.QueryResolvers<ApolloContext>['round'] = async (
+export const roundResolver: gqlTypes.QueryResolvers<GraphqlContext>['round'] = async (
   parent,
   args,
   ctx
@@ -38,7 +38,7 @@ export const roundResolver: gqlTypes.QueryResolvers<ApolloContext>['round'] = as
 export async function roundTeamGamesResolver(
   parent: Round,
   args: gqlTypes.RoundTeamGamesArgs,
-  context: ApolloContext
+  context: GraphqlContext
 ): Promise<gqlTypes.Round[]> {
   return parent.getGamesFromParticipatingTeam(args.teamID, db.default);
 }

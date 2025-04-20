@@ -3,14 +3,14 @@ import { TournamentNotFoundError, ForbiddenError, BotsForbiddenError } from '~pl
 // import { Round } from '~playfulbot/model/Round';
 // import { TournamentRoleName } from '~playfulbot/model/TournamentRole';
 import {
-  ApolloContext,
+  GraphqlContext,
   isBotContext,
   isUnauthenticatedContext,
   isUserContext,
-} from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+} from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 
-export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>['createTournament'] =
+export const createTournamentResolver: gqlTypes.MutationResolvers<GraphqlContext>['createTournament'] =
   async (parent, args, apolloContext) => {
     if (!isUserContext(apolloContext)) {
       throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
@@ -30,7 +30,7 @@ export const createTournamentResolver: gqlTypes.MutationResolvers<ApolloContext>
     );
   };
 
-export const tournamentResolver: gqlTypes.QueryResolvers<ApolloContext>['tournament'] = async (
+export const tournamentResolver: gqlTypes.QueryResolvers<GraphqlContext>['tournament'] = async (
   parent,
   args,
   apolloContext

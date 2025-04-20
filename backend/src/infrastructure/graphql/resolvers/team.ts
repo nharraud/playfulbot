@@ -1,17 +1,17 @@
 import { TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
 import { createTeam } from '~playfulbot/core/use-cases/team/createTeam';
 import { AuthenticationError } from '~playfulbot/errors';
-import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { toGraphQLError } from './errors';
 import { updateTeam } from '~playfulbot/core/use-cases/team/updateTeam';
 
-export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['createTeam'] = async (
+export const createTeamResolver: gqlTypes.MutationResolvers<GraphqlContext>['createTeam'] = async (
   parent,
   args,
-  apolloContext
+  graphqlContext
 ) => {
-  if (!isUserContext(apolloContext)) {
+  if (!isUserContext(graphqlContext)) {
     throw new AuthenticationError('Only authenticated users are allowed to create teams.');
   }
   const teamNameError = validateTeamName(args.input.name);
@@ -22,9 +22,9 @@ export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['crea
     } as gqlTypes.CreateTeamFailure;
   }
 
-  const teamOrError = await createTeam(apolloContext.ctx, {
+  const teamOrError = await createTeam(graphqlContext.ctx, {
     teamName: args.input.name,
-    userId: apolloContext.userID,
+    userId: graphqlContext.userID,
     tournamentId: args.tournamentID,
     join: args.join
   });
@@ -44,12 +44,12 @@ export const createTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['crea
   };
 };
 
-export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['updateTeam'] = async (
+export const updateTeamResolver: gqlTypes.MutationResolvers<GraphqlContext>['updateTeam'] = async (
   parent,
   args,
-  apolloContext
+  graphqlContext
 ) => {
-  if (!isUserContext(apolloContext)) {
+  if (!isUserContext(graphqlContext)) {
     throw new AuthenticationError(`Only authenticated users are allowed to update teams.`);
   }
 
@@ -61,7 +61,7 @@ export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['upda
     } as gqlTypes.UpdateTeamFailure;
   }
 
-  const result = await updateTeam(apolloContext.ctx, { teamId: args.teamID, userId: apolloContext.userID, patch: args.input })
+  const result = await updateTeam(graphqlContext.ctx, { teamId: args.teamID, userId: graphqlContext.userID, patch: args.input })
   if (result instanceof Error) {
     return {
       __typename: 'UpdateTeamFailure',
@@ -75,15 +75,15 @@ export const updateTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['upda
   } as gqlTypes.UpdateTeamSuccess;
 };
 
-export const teamResolver: gqlTypes.QueryResolvers<ApolloContext>['team'] = async (
+export const teamResolver: gqlTypes.QueryResolvers<GraphqlContext>['team'] = async (
   parent,
   args,
-  apolloContext
+  graphqlContext
 ) => {
-  if (!isUserContext(apolloContext)) {
+  if (!isUserContext(graphqlContext)) {
     throw new AuthenticationError('Only Users can ask for memberships.');
   }
-  const team = await apolloContext.ctx.providers.team.getTeamByMember(apolloContext.ctx, args.userID, args.tournamentID);
+  const team = await graphqlContext.ctx.providers.team.getTeamByMember(graphqlContext.ctx, args.userID, args.tournamentID);
   if (team === null) {
     return {
       __typename: 'UserNotPartOfAnyTeam',
@@ -103,9 +103,9 @@ interface TeamMembersQueryArguments {
 export async function teamMembersResolver(
   parent: gqlTypes.Team,
   args: TeamMembersQueryArguments,
-  apolloContext: ApolloContext
+  graphqlContext: GraphqlContext
 ): Promise<gqlTypes.User[]> {
-  const result = await apolloContext.ctx.providers.user.getUsersByTeam(apolloContext.ctx, args.teamID || parent?.id);
+  const result = await graphqlContext.ctx.providers.user.getUsersByTeam(graphqlContext.ctx, args.teamID || parent?.id);
   return result.map((user) => ({
     id: user.id,
     username: user.username,
@@ -115,9 +115,9 @@ export async function teamMembersResolver(
 export async function teamTournamentResolver(
   parent: gqlTypes.Team,
   args: {},
-  apolloContext: ApolloContext
+  graphqlContext: GraphqlContext
 ): Promise<gqlTypes.Tournament> {
-  return await apolloContext.ctx.providers.tournament.getTournamentByTeam(apolloContext.ctx, parent.id);
+  return await graphqlContext.ctx.providers.tournament.getTournamentByTeam(graphqlContext.ctx, parent.id);
 }
 
 // export const joinTeamResolver: gqlTypes.MutationResolvers<ApolloContext>['joinTeam'] = async (

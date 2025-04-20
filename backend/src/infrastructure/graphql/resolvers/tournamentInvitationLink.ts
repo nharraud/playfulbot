@@ -4,14 +4,14 @@ import { TournamentInvitation } from '~playfulbot/model/TournamentInvitation';
 import { TournamentInvitationLink } from '~playfulbot/model/TournamentInvitationLink';
 import { Tournament } from '~playfulbot/infrastructure/TournamentsProviderPSQL';
 import {
-  ApolloContext,
+  GraphqlContext,
   isUnauthenticatedContext,
   isUserContext,
-} from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+} from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { RegisterTournamentInvitationResult } from '~playfulbot/infrastructure/graphql/types/graphql';
 
-export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<ApolloContext>['tournamentByInvitationLink'] =
+export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<GraphqlContext>['tournamentByInvitationLink'] =
   async (parent, args, ctx) => {
     const tournament = await Tournament.getByInvitationLink(
       args.tournamentInvitationLinkID,
@@ -29,7 +29,7 @@ export const tournamentByInvitationLinkResolver: gqlTypes.QueryResolvers<ApolloC
     return tournament;
   };
 
-export const registerTournamentInvitationLinkResolver: gqlTypes.MutationResolvers<ApolloContext>['registerTournamentInvitationLink'] =
+export const registerTournamentInvitationLinkResolver: gqlTypes.MutationResolvers<GraphqlContext>['registerTournamentInvitationLink'] =
   async (parent, args, ctx) => {
     if (!isUserContext(ctx)) {
       throw new AuthenticationError(

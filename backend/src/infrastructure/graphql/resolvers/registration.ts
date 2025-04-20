@@ -1,4 +1,4 @@
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import { authenticate } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { GraphQLError } from 'graphql';
@@ -11,10 +11,10 @@ interface RegisterUserArguments {
   password: string;
 }
 
-export const registerUserResolver: gqlTypes.MutationResolvers<ApolloContext>['registerUser'] = async function registerUserResolver(
+export const registerUserResolver: gqlTypes.MutationResolvers<GraphqlContext>['registerUser'] = async function registerUserResolver(
   parent: unknown,
   args: RegisterUserArguments,
-  apolloContext: ApolloContext
+  apolloContext: GraphqlContext
 ): Promise<gqlTypes.UserRegistrationResult> {
   const usernameError = validateUserName(args.username);
   if (usernameError) {

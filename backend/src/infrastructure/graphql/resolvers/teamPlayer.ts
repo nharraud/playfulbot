@@ -1,5 +1,5 @@
 import { pubsub } from '~playfulbot/pubsub';
-import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
+import { GraphqlContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { TeamNotFoundError } from '~playfulbot/errors';
 import { Team } from '~playfulbot/infrastructure/TeamsPSQL';
@@ -7,7 +7,7 @@ import { db } from '~playfulbot/model/db';
 import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
 import { PrefixedAsyncIterator } from '~playfulbot/pubsub/PrefixedAsyncIterator';
 
-export const teamPlayerResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['teamPlayer'] = {
+export const teamPlayerResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['teamPlayer'] = {
   subscribe: (model, args, context, info) =>
     db.default.tx(async (tx) => {
       const team = await Team.getByID(args.teamID, tx);
