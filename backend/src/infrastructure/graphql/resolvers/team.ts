@@ -1,4 +1,4 @@
-import { Team, TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
+import { TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
 import { createTeam } from '~playfulbot/core/use-cases/team/createTeam';
 import { AuthenticationError } from '~playfulbot/errors';
 import { ApolloContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
@@ -101,7 +101,7 @@ interface TeamMembersQueryArguments {
 }
 
 export async function teamMembersResolver(
-  parent: Team | undefined,
+  parent: gqlTypes.Team,
   args: TeamMembersQueryArguments,
   apolloContext: ApolloContext
 ): Promise<gqlTypes.User[]> {
@@ -113,8 +113,8 @@ export async function teamMembersResolver(
 }
 
 export async function teamTournamentResolver(
-  parent: Team,
-  args: undefined,
+  parent: gqlTypes.Team,
+  args: {},
   apolloContext: ApolloContext
 ): Promise<gqlTypes.Tournament> {
   return await apolloContext.ctx.providers.tournament.getTournamentByTeam(apolloContext.ctx, parent.id);

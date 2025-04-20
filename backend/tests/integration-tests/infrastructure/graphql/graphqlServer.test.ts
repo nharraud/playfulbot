@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, beforeAll, describe, expect, test, vi, afterAll } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { createGraphqlServer } from '~playfulbot/infrastructure/graphql/graphqlServer';
 import http from 'http';
 import { Client } from 'graphql-ws';
-import got, { HTTPError } from 'got';
+import got from 'got';
 
 import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { createMockContext } from '../../../utils/context';
@@ -10,9 +10,9 @@ import { IResolvers } from '@graphql-tools/utils';
 import { ApolloContext } from '~playfulbot/infrastructure/graphql/types/apolloTypes';
 import { User } from '~playfulbot/core/entities/Users';
 import { createGraphqlTestWsClient, GraphqlTestClient } from './utils/GraphqlTestClient';
-import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
 import { default as defaultResolvers } from '~playfulbot/infrastructure/graphql/resolvers';
+import { Resolvers } from '~playfulbot/infrastructure/graphql/types/graphql-generated';
 
 const typeDefs = `
   type MyFailure {
@@ -242,14 +242,14 @@ describe('graphql/graphqlServer', () => {
     test('websocket should rollback only the transaction of the failing request', async () => {
       let isFirst = true;
       let user1, user2: User;
-      const resolvers: IResolvers = { ...defaultResolvers };
-      resolvers.Mutation.updateTeam = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
+      const resolvers: Resolvers<ApolloContext> = { ...defaultResolvers };
+      resolvers.Mutation.updateTeam = async (parent: any, args: any, apolloContext: ApolloContext) => {
         if (isFirst) {
           isFirst = false;
           user1 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
           return {
             __typename: 'UpdateTeamSuccess',
-            team: { id: 'myteam' }
+            team: { id: 'myteam', name: 'myteam' }
           }
         } else {
           user2 = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'def', password: 'b' }) as User;
@@ -268,7 +268,7 @@ describe('graphql/graphqlServer', () => {
       const result1 = await results1.next();
       expect(result1.value.data.updateTeam.team.id).toEqual('myteam');
       // Check that the transaction succeeded
-      const retrievedUser1 = await ctx.providers.user.getUserByID(ctx, user1.id);
+      const retrievedUser1 = await ctx.providers.user.getUserByID(ctx, (user1 as User).id);
       expect(retrievedUser1).not.toBeNull();
 
       const results2 = wsClient.iterate({ query, variables: { teamID: 'foo', input: { name: 'bar' }} });
@@ -281,7 +281,7 @@ describe('graphql/graphqlServer', () => {
 
     test('websocket should rollback the transation when a Failure is returned', async () => {
       let user: User;
-      const resolvers: IResolvers = { ...defaultResolvers };
+      const resolvers: Resolvers<ApolloContext> = { ...defaultResolvers };
       resolvers.Mutation.updateTeam = async (parent: unknown, args: any, apolloContext: ApolloContext) => {
         user = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: 'abc', password: 'b' }) as User;
         return {

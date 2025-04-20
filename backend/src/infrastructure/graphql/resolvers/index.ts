@@ -25,6 +25,7 @@ import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 // import { playerGamesResolver } from './playerGames';
 import { DateScalar } from './scalars/DateScalar';
+import { ApolloContext } from '../types/apolloTypes';
 // import { teamPlayerResolver } from './teamPlayer';
 // import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 // import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
@@ -42,7 +43,7 @@ import { DateScalar } from './scalars/DateScalar';
 //   tournamentInvitationInviteeResolver,
 // } from './tournamentInvitation';
 
-const resolvers: IResolvers = {
+const resolvers: gqlTypes.Resolvers<ApolloContext> = {
   // Subscription: {
   //   playerGames: playerGamesResolver,
   //   debugArena: debugArenaResolver,
