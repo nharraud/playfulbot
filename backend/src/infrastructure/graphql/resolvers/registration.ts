@@ -14,20 +14,20 @@ interface RegisterUserArguments {
 export const registerUserResolver: gqlTypes.MutationResolvers<GraphqlContext>['registerUser'] = async function registerUserResolver(
   parent: unknown,
   args: RegisterUserArguments,
-  apolloContext: GraphqlContext
+  graphqlContext: GraphqlContext
 ): Promise<gqlTypes.UserRegistrationResult> {
   const usernameError = validateUserName(args.username);
   if (usernameError) {
     return { __typename: 'ValidationError', message: JSON.stringify({ username: [usernameError] })};
   }
   // TODO: validate password complexity. Later replace it with passkey.
-  const createUserResult = await apolloContext.ctx.providers.user.createUser(apolloContext.ctx, { username: args.username, password: args.password });
+  const createUserResult = await graphqlContext.ctx.providers.user.createUser(graphqlContext.ctx, { username: args.username, password: args.password });
   if (createUserResult instanceof UsernameAlreadyTaken) {
     return { __typename: 'UsernameAlreadyTaken', message: 'username already taken'}
   }
 
   const { token, fingerprint } = await authenticate(createUserResult);
-  apolloContext.ctx.fingerprint = fingerprint;
+  graphqlContext.ctx.fingerprint = fingerprint;
   return {
     __typename: 'LoginResult',
     token,
