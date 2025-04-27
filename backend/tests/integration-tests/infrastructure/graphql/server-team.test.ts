@@ -9,6 +9,8 @@ import { hideErrorLogs } from './utils/logger';
 
 const userData = { username: 'testuser', password: 'testpassword' };
 const teamMemberData = { username: 'teamMember', password: 'otherpass' };
+const team2Member1Data = { username: 'team2Member1', password: 'otherpass' };
+const team2Member2Data = { username: 'team2Member2', password: 'otherpass' };
 
 async function tournamentFixture({ ctx }: { ctx: Context<any> }, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
@@ -30,10 +32,28 @@ async function teamFixture({ ctx, tournament }: { ctx: Context<any>, tournament:
   await use(team);
 }
 
+async function team2Fixture({ ctx, tournament }: { ctx: Context<any>, tournament: Tournament }, use: any) {
+  const team = await ctx.providers.team.createTeam(ctx, {
+    name: 'testTeam2',
+    tournamentID: tournament.id,
+  });
+  await use(team);
+}
+
 async function teamMemberFixture({ ctx, team }: { ctx: Context<any>, team: Team }, use: any) {
   const teamMember = await ctx.providers.user.createUser(ctx, teamMemberData) as User;
   ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
   await use(teamMember);
+}
+
+async function team2MembersFixture({ ctx, team2 }: { ctx: Context<any>, team2: Team }, use: any) {
+  const teamMembers = await Promise.all([
+    ctx.providers.user.createUser(ctx, team2Member1Data) as Promise<User>,
+    ctx.providers.user.createUser(ctx, team2Member2Data) as Promise<User>,
+  ]);
+  ctx.providers.team.addTeamMember(ctx, team2.id, teamMembers[0].id);
+  ctx.providers.team.addTeamMember(ctx, team2.id, teamMembers[1].id);
+  await use(teamMembers);
 }
 
 async function userFixture({ ctx }: { ctx: Context<any> }, use: any) {
@@ -46,7 +66,9 @@ interface TestFixtures {
   graphql: graphqlFixtureType,
   tournament: Tournament,
   team: Team,
+  team2: Team,
   teamMember: User,
+  team2Members: User[],
   user: User,
 }
 
@@ -55,7 +77,9 @@ const test = baseTest.extend<TestFixtures>({
   graphql: graphqlFixture,
   tournament: tournamentFixture,
   team: teamFixture,
+  team2: team2Fixture,
   teamMember: teamMemberFixture,
+  team2Members: team2MembersFixture,
   user: userFixture,
 });
 
@@ -167,6 +191,15 @@ describe('graphql', () => {
       expect(response.body.data.createTeam.errors[0].__typename).eql('ValidationError');
     });
 
+    test('should fail if name is already taken', async ({ ctx, tournament, user, graphql, team }) => {
+      await graphql.client.login(userData);
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
+        tournamentID: tournament.id, input: { name: team.name }, join: true
+      } });
+      expect(response.body.data.createTeam.errors[0].__typename).eql('TeamNameAlreadyTakenError');
+    });
+
     test('should fail if user is not invited and is not part of any team', async ({ ctx, tournament, user, graphql }) => {
       await graphql.client.login(userData);
       const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
@@ -185,6 +218,8 @@ describe('graphql', () => {
       expect(response.body.data.createTeam.team.members[0].username).eql(user.username);
       const team = await ctx.providers.team.getTeamByID(ctx, response.body.data.createTeam.team.id);
       expect(team.name).eql(response.body.data.createTeam.team.name);
+      const userteam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
+      expect(userteam.id).eql(response.body.data.createTeam.team.id);
     });
   });
 
@@ -236,6 +271,15 @@ describe('graphql', () => {
       expect(response.body.data.updateTeam.errors[0].__typename).eql('ValidationError');
     });
 
+    test('should fail if name is already taken', async ({ ctx, team, team2, teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+
+      const response = await graphql.client.query({ operationName: 'updateTeam', query: query, variables: {
+        teamID: team.id, input: { name: team2.name }
+      } });
+      expect(response.body.data.updateTeam.errors[0].__typename).eql('TeamNameAlreadyTakenError');
+    });
+
     test('should succeed at updating a team', async ({ ctx, team, teamMember, graphql }) => {
       await graphql.client.login(teamMemberData);
       const response = await graphql.client.query({ operationName: 'updateTeam', query: query, variables: {
@@ -244,6 +288,114 @@ describe('graphql', () => {
       expect(response.body.data.updateTeam.team.name).eql('newTeam')
       const updatedTeam = await ctx.providers.team.getTeamByID(ctx, team.id);
       expect(updatedTeam.name).eql('newTeam');
+    });
+  });
+
+
+  describe('Mutation/joinTeam', () => {
+    const query = `
+    mutation joinTeam($teamID: ID!) {
+      joinTeam(teamID: $teamID) {
+        __typename
+        ... on JoinTeamSuccess {
+          oldTeam {
+            __typename
+            ... on Team {
+              id
+              name
+              members {
+                id
+                username
+              }
+            }
+            ... on DeletedTeam {
+              id
+              name
+            }
+          }
+          newTeam {
+            id
+            name
+            members {
+              id
+              username
+            }
+            tournament {
+              id
+            }
+          }
+        }
+        ... on JoinTeamFailure {
+          errors {
+            ... on Error {
+              __typename
+              message
+            }
+          }
+        }
+      }
+    }`;
+
+    test('should fail if user is not authenticated', async ({ team, teamMember, graphql }) => {
+      hideErrorLogs();
+      const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
+        teamID: team.id
+      } });
+      expect(response.body.data.joinTeam).eql(null);
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    });
+
+    test('should fail if user is not invited and is not part of any team', async ({ user, team, teamMember, graphql }) => {
+      await graphql.client.login(userData);
+      const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
+        teamID: team.id
+      } });
+      expect(response.body.data.joinTeam.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test('should succeed at joining a team if invited to tournament and has no team', async ({ ctx, tournament, user, team, teamMember, graphql }) => {
+      await graphql.client.login(userData);
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
+        teamID: team.id
+      } });
+      expect(response.body.data.joinTeam.newTeam.name).eql(team.name);
+      expect(response.body.data.joinTeam.newTeam.members).toHaveLength(2);
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: teamMember.id, username: teamMember.username });
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: user.id, username: user.username });
+      expect(response.body.data.joinTeam.oldTeam).toBeNull();
+      const userteam = await ctx.providers.team.getTeamByMember(ctx, user.id, tournament.id);
+      expect(userteam.id).eql(response.body.data.joinTeam.newTeam.id);
+    });
+
+    test('should succeed at joining a team if already in another team having other members', async ({ ctx, tournament, team, teamMember, team2, team2Members, graphql }) => {
+      await graphql.client.login(team2Member1Data);
+      const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
+        teamID: team.id
+      } });
+      expect(response.body.data.joinTeam.newTeam.name).eql(team.name);
+      expect(response.body.data.joinTeam.newTeam.members).toHaveLength(2);
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: teamMember.id, username: teamMember.username });
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: team2Members[0].id, username: team2Members[0].username });
+      expect(response.body.data.joinTeam.oldTeam).toMatchObject({ __typename: 'Team', id: team2.id, name: team2.name });
+      expect(response.body.data.joinTeam.oldTeam.members).eql([{ id: team2Members[1].id, username: team2Members[1].username }]);
+      const userteam = await ctx.providers.team.getTeamByMember(ctx, team2Members[0].id, tournament.id);
+      expect(userteam.id).eql(response.body.data.joinTeam.newTeam.id);
+    });
+
+    test('should succeed at joining a team if already in another team having NO other members', async ({ ctx, tournament, team, teamMember, team2, team2Members, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
+        teamID: team2.id
+      } });
+      expect(response.body.data.joinTeam.newTeam.name).eql(team2.name);
+      expect(response.body.data.joinTeam.newTeam.members).toHaveLength(3);
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: teamMember.id, username: teamMember.username });
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: team2Members[0].id, username: team2Members[0].username });
+      expect(response.body.data.joinTeam.newTeam.members).toContainEqual({ id: team2Members[1].id, username: team2Members[1].username });
+      expect(response.body.data.joinTeam.oldTeam).toMatchObject({ __typename: 'DeletedTeam', id: team.id, name: team.name });
+      const userteam = await ctx.providers.team.getTeamByMember(ctx, teamMember.id, tournament.id);
+      expect(userteam.id).eql(response.body.data.joinTeam.newTeam.id);
     });
   });
 });

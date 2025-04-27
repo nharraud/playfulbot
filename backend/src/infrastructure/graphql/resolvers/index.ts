@@ -6,7 +6,7 @@ import { loginResolver, logoutResolver } from '~playfulbot/infrastructure/graphq
 import { authenticatedUserResolver } from '~playfulbot/infrastructure/graphql/resolvers/authenticatedUser';
 import {
   createTeamResolver,
-//   joinTeamResolver,
+  joinTeamResolver,
   teamMembersResolver,
   teamResolver,
   teamTournamentResolver,
@@ -63,7 +63,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
     logout: logoutResolver,
     createTournament: createTournamentResolver,
   //   registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
-  //   joinTeam: joinTeamResolver,
+    joinTeam: joinTeamResolver,
     createTeam: createTeamResolver,
     updateTeam: updateTeamResolver,
   } as gqlTypes.MutationResolvers,
