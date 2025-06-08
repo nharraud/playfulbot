@@ -106,11 +106,11 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     test('should return TeamNameAlreadyTaken when team name is already taken', async ({ tournament, team }) => {
       const provider = new TeamProviderPSQL();
       const ctx = createMockContext();
-      const teamPromise =await provider.createTeam(ctx, {
+      const teamResponse = await provider.createTeam(ctx, {
         name: 'testTeam',
         tournamentID: tournament.id,
       });
-      await expect(teamPromise).instanceOf(TeamNameAlreadyTakenError);
+      await expect(teamResponse).instanceOf(TeamNameAlreadyTakenError);
     });
   });
 
