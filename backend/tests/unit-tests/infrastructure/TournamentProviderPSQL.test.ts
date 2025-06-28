@@ -5,10 +5,12 @@ import { TournamentProviderPSQL } from '~playfulbot/infrastructure/providers/Tou
 import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { createMockContext } from '../../utils/context';
 import { InvalidArgument } from '~playfulbot/core/use-cases/Errors';
+import { mockContextFixture } from 'tests/utils/fixtures';
+import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
 
-async function tournamentFixture({}, use: any) {
+async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const provider = new TournamentProviderPSQL();
-  const tournament = await provider.createTournament(createMockContext(), {
+  const tournament = await provider.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -20,26 +22,25 @@ async function tournamentFixture({}, use: any) {
 }
 
 interface TestFixtures {
+  ctx: ContextPSQL,
   tournament: Tournament,
 }
 
 const test = baseTest.extend<TestFixtures>({
+  ctx: mockContextFixture,
   tournament: tournamentFixture,
 });
 
 describe('infrastructure/games/TournamentProviderPLSQL', () => {
-  beforeEach(async () => {
-    await initTestDB();
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 
   describe('createTournament', () => {
-    test('should create tournament', async () => {
+    test('should create tournament', async ({ ctx }) => {
       const provider = new TournamentProviderPSQL();
-      const tournament = await provider.createTournament(createMockContext(), {
+      const tournament = await provider.createTournament(ctx, {
         name: 'testTournament',
         gameDefinitionId: 'testGame',
         lastRoundDate: '2024-01-02T00:00:00+00',
@@ -62,41 +63,41 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
   });
 
   describe('getById', () => {
-    test('should find tournament by Id', async ({ tournament }) => {
+    test('should find tournament by Id', async ({ ctx, tournament }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getTournamentByID(createMockContext(), tournament.id);
+      const foundTournament = await provider.getTournamentByID(ctx, tournament.id);
       expect(foundTournament).toEqual(tournament);
     });
 
-    test('should return null when no tournament is found', async ({}) => {
+    test('should return null when no tournament is found', async ({ ctx }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getTournamentByID(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
+      const foundTournament = await provider.getTournamentByID(ctx, '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toBeNull();
     });
 
-    test('should return null error when the string is not an UUID', async ({}) => {
+    test('should return null error when the string is not an UUID', async ({ ctx }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.getTournamentByID(createMockContext(), 'unknown');
+      const foundTournament = await provider.getTournamentByID(ctx, 'unknown');
       expect(foundTournament).toBeNull();
     });
   });
 
   describe('exists', () => {
-    test('should return true when tournament exists', async ({ tournament }) => {
+    test('should return true when tournament exists', async ({ ctx, tournament }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.tournamentExists(createMockContext(), tournament.id);
+      const foundTournament = await provider.tournamentExists(ctx, tournament.id);
       expect(foundTournament).toEqual(true);
     });
 
-    test('should return falsde when tournament does not exist', async ({}) => {
+    test('should return falsde when tournament does not exist', async ({ ctx }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = await provider.tournamentExists(createMockContext(), '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
+      const foundTournament = await provider.tournamentExists(ctx, '8f926101-f99e-48cd-ba0e-cbfb256ccaf4');
       expect(foundTournament).toEqual(false);
     });
 
-    test('should throw InvalidArgument error when the string is not an UUID', async ({}) => {
+    test('should throw InvalidArgument error when the string is not an UUID', async ({ ctx }) => {
       const provider = new TournamentProviderPSQL();
-      const foundTournament = provider.tournamentExists(createMockContext(), 'unknown');
+      const foundTournament = provider.tournamentExists(ctx, 'unknown');
       await expect(foundTournament).rejects.toThrowError(InvalidArgument);
     });
   });

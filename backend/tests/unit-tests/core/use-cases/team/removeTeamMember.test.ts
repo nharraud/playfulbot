@@ -6,6 +6,7 @@ import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments'
 import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { removeTeamMember } from '~playfulbot/core/use-cases/team/removeTeamMember';
+import { mockContextFixture } from 'tests/utils/fixtures';
 
 interface TestFixtures {
   ctx?: Context<any>,
@@ -14,12 +15,8 @@ interface TestFixtures {
   user?: User,
 }
 
-async function contextFixture({}: TestFixtures, use: any) {
-  await use(createMockContext());
-}
-
 async function tournamentFixture({ ctx } : TestFixtures, use: any) {
-  const tournament = await ctx.providers.tournament.createTournament(createMockContext(), {
+  const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -31,7 +28,7 @@ async function tournamentFixture({ ctx } : TestFixtures, use: any) {
 }
 
 function addTeam(ctx: Context<any>, teamName: string, tournamentID: TournamentID): Promise<Team> {
-  return ctx.providers.team.createTeam(createMockContext(), {
+  return ctx.providers.team.createTeam(ctx, {
     name: teamName,
     tournamentID: tournamentID,
   }) as Promise<Team>;
@@ -43,7 +40,7 @@ async function teamFixture({ ctx, tournament }: TestFixtures, use: any) {
 }
 
 async function userFixture({ ctx }: TestFixtures, use: any) {
-  const user = await ctx.providers.user.createUser(createMockContext(), {
+  const user = await ctx.providers.user.createUser(ctx, {
     username: 'testUser',
     password: 'mypassword'
   });
@@ -51,18 +48,15 @@ async function userFixture({ ctx }: TestFixtures, use: any) {
 }
 
 const test = baseTest.extend<TestFixtures>({
-  ctx: contextFixture,
+  ctx: mockContextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
   user: userFixture,
 });
 
 describe('use-cases/team/addTeamMember', () => {
-  beforeEach(async () => {
-    await initTestDB()
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 
@@ -76,7 +70,7 @@ describe('use-cases/team/addTeamMember', () => {
   });
 
   test('should not remove non team members', async ({ ctx, team, user, tournament }) => {
-    const team2 = await ctx.providers.team.createTeam(createMockContext(), {
+    const team2 = await ctx.providers.team.createTeam(ctx, {
       name: 'otherTeam',
       tournamentID: tournament.id,
     }) as Team;
@@ -90,7 +84,7 @@ describe('use-cases/team/addTeamMember', () => {
   });
 
   test('should not delete teams when they still have members', async ({ ctx, team, user, tournament }) => {
-    const user2 = await ctx.providers.user.createUser(createMockContext(), {
+    const user2 = await ctx.providers.user.createUser(ctx, {
       username: 'testUser2',
       password: 'mypassword'
     }) as User;

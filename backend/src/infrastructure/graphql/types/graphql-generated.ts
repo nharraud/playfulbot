@@ -19,6 +19,13 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type Arena = {
+  __typename?: 'Arena';
+  game?: Maybe<Scalars['ID']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type CreateTeamError = ForbiddenError | TeamNameAlreadyTakenError | ValidationError;
 
 export type CreateTeamFailure = {
@@ -36,7 +43,7 @@ export type CreateTeamSuccess = {
 export type DeletedTeam = {
   __typename?: 'DeletedTeam';
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type Error = {
@@ -71,6 +78,7 @@ export type LoginResult = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createNewDebugGame?: Maybe<Scalars['Boolean']['output']>;
   createTeam?: Maybe<CreateTeamResult>;
   createTournament?: Maybe<Tournament>;
   joinTeam?: Maybe<JoinTeamResult>;
@@ -78,6 +86,11 @@ export type Mutation = {
   logout?: Maybe<Scalars['Boolean']['output']>;
   registerUser?: Maybe<UserRegistrationResult>;
   updateTeam?: Maybe<UpdateTeamResult>;
+};
+
+
+export type MutationCreateNewDebugGameArgs = {
+  arenaID: Scalars['ID']['input'];
 };
 
 
@@ -135,6 +148,16 @@ export type QueryTeamArgs = {
 
 export type QueryTournamentArgs = {
   tournamentID: Scalars['ID']['input'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  arena?: Maybe<Arena>;
+};
+
+
+export type SubscriptionArenaArgs = {
+  arenaID: Scalars['ID']['input'];
 };
 
 export type Team = {
@@ -301,6 +324,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Arena: ResolverTypeWrapper<Arena>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateTeamError']>;
   CreateTeamFailure: ResolverTypeWrapper<Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversTypes['CreateTeamError']> }>;
@@ -321,6 +345,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   Team: ResolverTypeWrapper<Team>;
   TeamInput: TeamInput;
   TeamNameAlreadyTakenError: ResolverTypeWrapper<TeamNameAlreadyTakenError>;
@@ -342,6 +367,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Arena: Arena;
   Boolean: Scalars['Boolean']['output'];
   CreateTeamError: ResolversUnionTypes<ResolversParentTypes>['CreateTeamError'];
   CreateTeamFailure: Omit<CreateTeamFailure, 'errors'> & { errors: Array<ResolversParentTypes['CreateTeamError']> };
@@ -362,6 +388,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
+  Subscription: {};
   Team: Team;
   TeamInput: TeamInput;
   TeamNameAlreadyTakenError: TeamNameAlreadyTakenError;
@@ -378,6 +405,13 @@ export type ResolversParentTypes = {
   UserTeamResult: ResolversUnionTypes<ResolversParentTypes>['UserTeamResult'];
   UsernameAlreadyTaken: UsernameAlreadyTaken;
   ValidationError: ValidationError;
+};
+
+export type ArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Arena'] = ResolversParentTypes['Arena']> = {
+  game?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CreateTeamErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamError'] = ResolversParentTypes['CreateTeamError']> = {
@@ -404,7 +438,7 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type DeletedTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeletedTeam'] = ResolversParentTypes['DeletedTeam']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -448,6 +482,7 @@ export type LoginResultResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createNewDebugGame?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCreateNewDebugGameArgs, 'arenaID'>>;
   createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input' | 'join' | 'tournamentID'>>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
   joinTeam?: Resolver<Maybe<ResolversTypes['JoinTeamResult']>, ParentType, ContextType, RequireFields<MutationJoinTeamArgs, 'teamID'>>;
@@ -461,6 +496,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'tournamentID' | 'userID'>>;
   tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, 'tournamentID'>>;
+};
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  arena?: SubscriptionResolver<Maybe<ResolversTypes['Arena']>, "arena", ParentType, ContextType, RequireFields<SubscriptionArenaArgs, 'arenaID'>>;
 };
 
 export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
@@ -541,6 +580,7 @@ export type ValidationErrorResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type Resolvers<ContextType = any> = {
+  Arena?: ArenaResolvers<ContextType>;
   CreateTeamError?: CreateTeamErrorResolvers<ContextType>;
   CreateTeamFailure?: CreateTeamFailureResolvers<ContextType>;
   CreateTeamResult?: CreateTeamResultResolvers<ContextType>;
@@ -557,6 +597,7 @@ export type Resolvers<ContextType = any> = {
   LoginResult?: LoginResultResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TeamNameAlreadyTakenError?: TeamNameAlreadyTakenErrorResolvers<ContextType>;
   TeamNotFoundError?: TeamNotFoundErrorResolvers<ContextType>;

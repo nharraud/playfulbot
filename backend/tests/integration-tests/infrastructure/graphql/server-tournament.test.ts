@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, test as baseTest, vi } from 'v
 import { v4 as uuidv4 } from 'uuid';
 import { dropTestDB } from '../../../utils/psql';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
-import { graphqlFixture, graphqlFixtureType, mockContextFixture } from './fixtures.ts/baseFixtures';
+import { graphqlFixture, graphqlFixtureType } from './fixtures/baseFixtures';
+import { mockContextFixture } from '../../../utils/fixtures';
 import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { User } from '~playfulbot/core/entities/Users';
 
@@ -40,8 +41,9 @@ const test = baseTest.extend<TestFixtures>({
 });
 
 describe('graphql', () => {
-  afterEach<TestFixtures>(async ({ graphql }) => {
+  afterEach<TestFixtures>(async ({ ctx, graphql }) => {
     await graphql.server?.close();
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 

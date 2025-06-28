@@ -7,12 +7,14 @@ import WebSocket from 'ws';
 import { createMockContext } from '../../../utils/context';
 import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { hideErrorLogs } from './utils/logger';
+import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
 
 describe('graphql', () => {
   let client: Client;
   let server: http.Server;
   let wsUrl: string;
   let httpUrl: string;
+  let ctx: ContextPSQL;
   const userData = { username: 'testuser', password: 'testpassword' };
 
   afterAll(() => {
@@ -21,7 +23,7 @@ describe('graphql', () => {
 
   beforeEach(async () => {
     await initTestDB();
-    const ctx = createMockContext();
+    ctx = await createMockContext();
     ({ server, wsUrl, httpUrl} = await createGraphqlServer(ctx));
     await ctx.providers.user.createUser(ctx, userData);
   });
@@ -34,6 +36,7 @@ describe('graphql', () => {
   afterEach(async () => {
     client?.terminate();
     await server?.close();
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 

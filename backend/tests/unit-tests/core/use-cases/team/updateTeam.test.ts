@@ -9,21 +9,18 @@ import { createTeam } from '~playfulbot/core/use-cases/team/createTeam';
 import { TeamNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ForbiddenError, ValidationError } from '~playfulbot/core/use-cases/Errors';
 import { updateTeam } from '~playfulbot/core/use-cases/team/updateTeam';
+import { mockContextFixture } from 'tests/utils/fixtures';
 
 interface TestFixtures {
-  ctx?: Context<any>,
-  tournament?: Tournament,
-  team?: Team,
-  user?: User,
-  teamMember?: User,
+  ctx: Context<any>,
+  tournament: Tournament,
+  team: Team,
+  user: User,
+  teamMember: User,
 }
 
-async function contextFixture({}: TestFixtures, use: any) {
-  await use(createMockContext());
-}
-
-async function tournamentFixture({ ctx } : TestFixtures, use: any) {
-  const tournament = await ctx.providers.tournament.createTournament(createMockContext(), {
+async function tournamentFixture({ ctx } : Omit<TestFixtures, 'tournament'>, use: any) {
+  const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -34,24 +31,24 @@ async function tournamentFixture({ ctx } : TestFixtures, use: any) {
   await use(tournament);
 }
 
-async function teamFixture({ ctx, tournament }: TestFixtures, use: any) {
-  const team = await ctx.providers.team.createTeam(createMockContext(), {
+async function teamFixture({ ctx, tournament }: Omit<TestFixtures, 'team'>, use: any) {
+  const team = await ctx.providers.team.createTeam(ctx, {
     name: 'testTeam',
     tournamentID: tournament.id,
   });
   await use(team);
 }
 
-async function userFixture({ ctx }: TestFixtures, use: any) {
-  const user = await ctx.providers.user.createUser(createMockContext(), {
+async function userFixture({ ctx }: Omit<TestFixtures, 'user'>, use: any) {
+  const user = await ctx.providers.user.createUser(ctx, {
     username: 'testUser',
     password: 'mypassword'
   });
   await use(user);
 }
 
-async function teamMemberFixture({ ctx, team }: TestFixtures, use: any) {
-  const user = await ctx.providers.user.createUser(createMockContext(), {
+async function teamMemberFixture({ ctx, team }: Omit<TestFixtures, 'teamMember'>, use: any) {
+  const user = await ctx.providers.user.createUser(ctx, {
     username: 'teamMemer',
     password: 'otherpassword'
   }) as User;
@@ -63,7 +60,7 @@ async function teamMemberFixture({ ctx, team }: TestFixtures, use: any) {
 }
 
 const test = baseTest.extend<TestFixtures>({
-  ctx: contextFixture,
+  ctx: mockContextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
   user: userFixture,
@@ -71,11 +68,8 @@ const test = baseTest.extend<TestFixtures>({
 });
 
 describe('use-cases/team/updateTeam', () => {
-  beforeEach(async () => {
-    await initTestDB()
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 

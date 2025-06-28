@@ -14,23 +14,23 @@ import { UserProvider } from "~playfulbot/core/use-cases/interfaces/UserProvider
 import { TournamentProvider } from "~playfulbot/core/use-cases/interfaces/TournamentProvider";
 import { TournamentInvitationProvider } from "~playfulbot/core/use-cases/interfaces/TournamentInvitiationProvider";
 import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider";
+import { ArenaProviderPSQL } from "./ArenaProviderPSQL";
+import { GameRepository } from "~playfulbot/core/use-cases/interfaces/GameRepository";
+import { ArenaProvider } from "~playfulbot/core/use-cases/interfaces/ArenaProvider";
 
-class CancelTransactionError extends Error {
-  constructor() {
-    super('This error is used to cancel the GraphQL transaction after an error happened');
-  }
-}
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
   convertError: ErrorConverter,
   txIf: (task: (ctx: ContextPSQL) => Promise<void> | void) => Promise<void>,
   readonly dbOrTx: DbOrTx;
   providers: {
+    arena: ArenaProvider<any>,
     user: UserProvider<any>,
     tournament: TournamentProvider<any>,
     tournamentInvitation: TournamentInvitationProvider<any>,
     team: TeamProvider<any>,
     gameDefinitions: GameDefinitionProvider,
+    gameRepository: GameRepository,
   }
 }
 
@@ -56,11 +56,13 @@ export class ContextPSQLImpl implements ContextPSQL {
     this.#fingerprint = fingerprint || new Fingerprint();
     this.convertError = convertError;
     this.providers = {
+      arena: providers.arena || new ArenaProviderPSQL(),
+      gameDefinitions: providers.gameDefinitions || new GamedDefinitionProviderEnv(),
+      gameRepository: providers.gameRepository,
       user: providers.user || new UserProviderPSQL(),
+      team: providers.team || new TeamProviderPSQL(),
       tournament: providers.tournament || new TournamentProviderPSQL(),
       tournamentInvitation: providers.tournamentInvitation || new TournamentInvitationProviderPSQL(),
-      team: providers.team || new TeamProviderPSQL(),
-      gameDefinitions: providers.gameDefinitions || new GamedDefinitionProviderEnv(),
     };
   }
 

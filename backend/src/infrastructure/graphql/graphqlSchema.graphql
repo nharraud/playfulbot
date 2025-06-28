@@ -214,10 +214,11 @@ union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 
 # union LivePlayer = Player | PlayerConnection
 
-# type DebugArena {
-#   id: ID
-#   game: ID
-# }
+type Arena {
+  id: ID
+  name: String
+  game: ID
+}
 
 # type PlayerGames {
 #   playerID: ID
@@ -249,12 +250,12 @@ union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 #   winners: [Team]
 # }
 
-# type Subscription {
+type Subscription {
 #   game(gameID: ID!): LiveGame
-#   debugArena(userID: ID!, tournamentID: ID!): DebugArena
+  arena(arenaID: ID!): Arena
 #   playerGames(playerID: ID!): LivePlayerGames
 #   teamPlayer(teamID: ID!): LivePlayer
-# }
+}
 
 type Query {
   tournament(tournamentID: ID!): Tournament
@@ -266,7 +267,7 @@ type Query {
 
 type Mutation {
 #   play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
-#   createNewDebugGame(tournamentID: ID!, userID: ID!): Boolean
+  createNewDebugGame(arenaID: ID!): Boolean
 
   registerUser(username: String!, password: String!): UserRegistrationResult
   login(username: String!, password: String!): LoginResult

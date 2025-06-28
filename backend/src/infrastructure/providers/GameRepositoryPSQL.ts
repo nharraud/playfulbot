@@ -4,7 +4,7 @@ import pg from 'pg-promise/typescript/pg-subset';
 import { DB } from 'playfulbot-backend-commons/lib/model/db/index';
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
-import { DebugArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
+import { ArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
 import { GameRef, GameRefWithDate } from '~playfulbot/core/use-cases/interfaces/GameRef';
 import { GameRepository } from '~playfulbot/core/use-cases/interfaces/GameRepository';
 import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
@@ -17,7 +17,7 @@ import { CombinedAsyncIterator } from '~playfulbot/pubsub/CombinedAsyncIterator'
 type GameNotification = {
   id: string,
   started_at: string,
-  arena?: string,
+  arena_id?: string,
   players: PlayerAssignment[],
   runner_id: GameRunnerId,
 }
@@ -54,8 +54,8 @@ export class GameRepositoryPSQL implements GameRepository {
           return;
         }
         const gameNotification = JSON.parse(data.payload) as GameNotification;
-        if (gameNotification.arena && data.channel === `arena_${gameNotification.arena}`) {
-          const arenaStreams = await this.#arenasStreams.get(gameNotification.arena);
+        if (gameNotification.arena_id && data.channel === `arena_${gameNotification.arena_id}`) {
+          const arenaStreams = await this.#arenasStreams.get(gameNotification.arena_id);
           for (const stream of arenaStreams || []) {
             stream?.push({
               gameId: gameNotification.id,
@@ -81,7 +81,7 @@ export class GameRepositoryPSQL implements GameRepository {
     return Boolean(this.#playerStreams.get(playerId));
   }
 
-  isListeningOnArenaGames(arenaId: DebugArenaID): Boolean {
+  isListeningOnArenaGames(arenaId: ArenaID): Boolean {
     return Boolean(this.#arenasStreams.get(arenaId));
   }
 
@@ -97,13 +97,13 @@ export class GameRepositoryPSQL implements GameRepository {
     await this.#connection.done();
   }
 
-  async addGame({ gameDefId, players, arena }: { gameDefId: string, players: PlayerAssignment[], arena?: DebugArenaID }): Promise<GameRef> {
+  async addGame({ gameDefId, players, arenaId }: { gameDefId: string, players: PlayerAssignment[], arenaId?: ArenaID }): Promise<GameRef> {
     const gameId = randomUUID();
 
     const addGameRequest = `
-      INSERT INTO games(id, game_def_id, players, arena) VALUES($[gameId], $[gameDefId], $[players]::jsonb, $[arena]);
+      INSERT INTO games(id, game_def_id, players, arena_id) VALUES($[gameId], $[gameDefId], $[players]::jsonb, $[arenaId]);
     `;
-    await this.#db.oneOrNone<void>(addGameRequest, { gameId, gameDefId, players: JSON.stringify(players), arena });
+    await this.#db.oneOrNone<void>(addGameRequest, { gameId, gameDefId, players: JSON.stringify(players), arenaId });
     return { gameId };
   }
 
@@ -127,9 +127,9 @@ export class GameRepositoryPSQL implements GameRepository {
    * @param arenaId
    * @returns The game reference or undefined if no game has been created yet
    */
-  async getArenaLatestGame(arenaId: DebugArenaID): Promise<GameRefWithDate | undefined> {
-    const addArenaRequest = 'SELECT games.id, games.runner_id, games.started_at FROM games JOIN arena ON games.arena = arena.id WHERE arena.id = $[arenaId] ORDER BY started_at DESC LIMIT 1;';
-    const result = await this.#db.oneOrNone<{ id: GameID, started_at: string, runner_id: GameRunnerId }>(addArenaRequest, { arenaId });
+  async getArenaLatestGame(arenaId: ArenaID): Promise<GameRefWithDate | undefined> {
+    const request = 'SELECT games.id, games.runner_id, games.started_at FROM games JOIN arenas ON games.arena_id = arenas.id WHERE arenas.id = $[arenaId] ORDER BY started_at DESC LIMIT 1;';
+    const result = await this.#db.oneOrNone<{ id: GameID, started_at: string, runner_id: GameRunnerId }>(request, { arenaId });
     if (result) {
       return {
         gameId: result.id,
@@ -144,12 +144,12 @@ export class GameRepositoryPSQL implements GameRepository {
     return this.#streamChannel(channel, playerId, this.#playerStreams);
   }
 
-  async #streamArenaGameChanges(arenaId: DebugArenaID): Promise<AsyncIterable<VersionedGameRef>> {
+  async #streamArenaGameChanges(arenaId: ArenaID): Promise<AsyncIterable<VersionedGameRef>> {
     const channel = `arena_${arenaId}`;
     return this.#streamChannel(channel, arenaId, this.#arenasStreams);
   }
 
-  async streamArenaGames(arenaId: DebugArenaID): Promise<AsyncIterable<GameRef>> {
+  async streamArenaGames(arenaId: ArenaID): Promise<AsyncIterable<GameRef>> {
     // Stream first the game changes to not miss any game
     const arenaChanges = await this.#streamArenaGameChanges(arenaId);
 

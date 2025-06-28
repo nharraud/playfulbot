@@ -4,7 +4,7 @@ import { Player } from '../../model/Player';
 // import { TournamentInvitation } from '../model/TournamentInvitation';
 // import { Tournament, TournamentID, TournamentStatus } from './TournamentProviderPSQL';
 // import { User, UserID } from './UserProviderPSQL';
-import { Team, validateTeamName } from '~playfulbot/core/entities/Teams';
+import { Team, TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
 import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
@@ -13,8 +13,6 @@ import { TeamNotFoundError, ValidationError, UserNotFoundError } from '~playfulb
 import { UserID } from '~playfulbot/core/entities/Users';
 // import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 // import { Validator } from '~playfulbot/core/use-cases/Validator';
-
-export type TeamID = string;
 
 /* eslint-disable camelcase */
 export interface DbTeam {

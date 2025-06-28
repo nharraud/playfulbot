@@ -1,10 +1,9 @@
 
-import { beforeEach, afterEach, describe, expect, test as baseTest } from 'vitest';
+import { afterEach, describe, expect, test as baseTest } from 'vitest';
 
-import { dropTestDB, initTestDB } from '../../utils/psql';
+import { dropTestDB } from '../../utils/psql';
 import { TeamProviderPSQL } from '~playfulbot/infrastructure/providers/TeamProviderPSQL';
 import { Team } from '~playfulbot/core/entities/Teams';
-import { createMockContext } from '../../utils/context';
 import { TournamentProviderPSQL } from '~playfulbot/infrastructure/providers/TournamentProviderPSQL';
 import { Tournament, TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { randomUUID } from 'crypto';
@@ -12,12 +11,14 @@ import { User } from '~playfulbot/core/entities/Users';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { TeamNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
+import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
+import { mockContextFixture } from 'tests/utils/fixtures';
 
 const dummyUUID = '00000000-0000-4000-9000-000000000000';
 
-async function tournamentFixture({}, use: any) {
+async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const provider = new TournamentProviderPSQL();
-  const tournament = await provider.createTournament(createMockContext(), {
+  const tournament = await provider.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -28,22 +29,22 @@ async function tournamentFixture({}, use: any) {
   await use(tournament);
 }
 
-function addTeam(teamName: string, tournamentID: TournamentID): Promise<Team> {
+async function addTeam(ctx: ContextPSQL, teamName: string, tournamentID: TournamentID): Promise<Team> {
   const provider = new TeamProviderPSQL();
-  return provider.createTeam(createMockContext(), {
+  return provider.createTeam(ctx, {
     name: teamName,
     tournamentID: tournamentID,
   }) as Promise<Team>;
 }
 
-async function teamFixture({ tournament }: any, use: any) {
-  const team = await addTeam('testTeam', tournament.id);
+async function teamFixture({ ctx, tournament }: Omit<TestFixtures, 'team'>, use: any) {
+  const team = await addTeam(ctx, 'testTeam', tournament.id);
   await use(team);
 }
 
-async function userFixture({}: any, use: any) {
+async function userFixture({ ctx }: Omit<TestFixtures, 'user'>, use: any) {
   const provider = new UserProviderPSQL();
-  const user = await provider.createUser(createMockContext(), {
+  const user = await provider.createUser(ctx, {
     username: 'testUser',
     password: 'mypassword'
   });
@@ -51,30 +52,29 @@ async function userFixture({}: any, use: any) {
 }
 
 interface TestFixtures {
+  ctx: ContextPSQL,
   tournament: Tournament,
   team: Team,
   user: User,
 }
 
 const test = baseTest.extend<TestFixtures>({
+  ctx: mockContextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
   user: userFixture,
 });
 
 describe('infrastructure/games/TeamProviderPSQL', () => {
-  beforeEach(async () => {
-    await initTestDB();
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 
   describe('createTeam', () => {
-    test('should create a team', async ({ tournament }) => {
+    test('should create a team', async ({ ctx, tournament }) => {
       const provider = new TeamProviderPSQL();
-      const team = await provider.createTeam(createMockContext(), {
+      const team = await provider.createTeam(ctx, {
         name: 'testTeam2',
         tournamentID: tournament.id,
       });
@@ -85,27 +85,26 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
 
-    test('should throw an error when team name is too short', async ({ tournament }) => {
+    test('should throw an error when team name is too short', async ({ ctx, tournament }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.createTeam(createMockContext(), {
+      const teamPromise = provider.createTeam(ctx, {
         name: 't',
         tournamentID: tournament.id,
       });
       await expect(teamPromise).rejects.toThrowError('Invalid Team');
     });
 
-    test('should throw an error when team name is too long', async ({ tournament }) => {
+    test('should throw an error when team name is too long', async ({ ctx, tournament }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.createTeam(createMockContext(), {
+      const teamPromise = provider.createTeam(ctx, {
         name: '123456789123456789',
         tournamentID: tournament.id,
       });
       await expect(teamPromise).rejects.toThrowError('Invalid Team');
     });
 
-    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ tournament, team }) => {
+    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ ctx, tournament, team }) => {
       const provider = new TeamProviderPSQL();
-      const ctx = createMockContext();
       const teamResponse = await provider.createTeam(ctx, {
         name: 'testTeam',
         tournamentID: tournament.id,
@@ -116,9 +115,9 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
   
   describe('updateTeam', () => {
-    test('should update the team', async ({ tournament, team }) => {
+    test('should update the team', async ({ ctx, tournament, team }) => {
       const provider = new TeamProviderPSQL();
-      const updatedTeam = await provider.updateTeam(createMockContext(), team.id, {
+      const updatedTeam = await provider.updateTeam(ctx, team.id, {
         name: 'updatedTeamName'
       });
       expect(updatedTeam).toEqual({
@@ -128,22 +127,21 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
 
-    test('should throw an error when team name is too short', async ({ team }) => {
+    test('should throw an error when team name is too short', async ({ ctx, team }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.updateTeam(createMockContext(), team.id, {
+      const teamPromise = provider.updateTeam(ctx, team.id, {
         name: 'a'
       });
       await expect(teamPromise).rejects.toThrowError('Invalid Team');
     });
 
-    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ tournament, team }) => {
+    test('should return TeamNameAlreadyTaken when team name is already taken', async ({ ctx, tournament, team }) => {
       const provider = new TeamProviderPSQL();
-      const ctx = createMockContext();
-      await await provider.createTeam(createMockContext(), {
+      await await provider.createTeam(ctx, {
         name: 'newTeam',
         tournamentID: tournament.id,
       });
-      const updatedTeam = await provider.updateTeam(createMockContext(), team.id, {
+      const updatedTeam = await provider.updateTeam(ctx, team.id, {
         name: 'newTeam'
       });
       await expect(updatedTeam).instanceOf(TeamNameAlreadyTakenError);
@@ -152,47 +150,46 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('getByName', () => {
-    test('should find team by name', async ({ team }) => {
+    test('should find team by name', async ({ ctx, team }) => {
       const provider = new TeamProviderPSQL();
-      const foundTeam = await provider.getTeamByName(createMockContext(), 'testTeam');
+      const foundTeam = await provider.getTeamByName(ctx, 'testTeam');
       expect(foundTeam).toEqual(team);
     });
 
-    test('should return null when no user is found', async ({}) => {
+    test('should return null when no user is found', async ({ ctx }) => {
       const provider = new TeamProviderPSQL();
-      const foundTeam = await provider.getTeamByName(createMockContext(), 'Unknown');
+      const foundTeam = await provider.getTeamByName(ctx, 'Unknown');
       expect(foundTeam).toBeNull();
     });
   });
 
 
   describe('getTeamByID', () => {
-    test('should find Team by id', async ({ team }) => {
+    test('should find Team by id', async ({ ctx, team }) => {
       const provider = new TeamProviderPSQL();
-      const foundTeam = await provider.getTeamByID(createMockContext(), team.id);
+      const foundTeam = await provider.getTeamByID(ctx, team.id);
       expect(foundTeam).toEqual(team);
     });
 
-    test('should return null when no Team is found', async ({}) => {
+    test('should return null when no Team is found', async ({ ctx }) => {
       const provider = new TeamProviderPSQL();
-      const foundTeam = await provider.getTeamByID(createMockContext(), randomUUID());
+      const foundTeam = await provider.getTeamByID(ctx, randomUUID());
       expect(foundTeam).toBeNull();
     });
   });
 
 
   describe('getTeamByMember', () => {
-    test('should retrun null when the user is not in any team', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should retrun null when the user is not in any team', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toBeNull();
     });
 
-    test('should retrun null when the user is not in any team of this tournament', async ({ team, tournament, user }) => {
+    test('should retrun null when the user is not in any team of this tournament', async ({ ctx, team, tournament, user }) => {
       const tournamentProvider = new TournamentProviderPSQL();
-      const tournament2 = await tournamentProvider.createTournament(createMockContext(), {
+      const tournament2 = await tournamentProvider.createTournament(ctx, {
         name: 'testTournament2',
         gameDefinitionId: 'testGame',
         lastRoundDate: '2024-01-02T00:00:00+00',
@@ -201,7 +198,6 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
         startDate: '2024-01-01T00:00:00+00',
       });
 
-      const ctx = createMockContext();
       const teamProvider = new TeamProviderPSQL();
       await teamProvider.addTeamMember(ctx, team.id, user.id);
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament2.id);
@@ -211,8 +207,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('addTeamMember', () => {
-    test('should add team member', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should add team member', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const result = await teamProvider.addTeamMember(ctx, team.id, user.id);
@@ -222,8 +217,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       expect(foundTeam).toEqual(team);
     });
 
-    test('should do nothing if we add user to the team twice', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should do nothing if we add user to the team twice', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       await teamProvider.addTeamMember(ctx, team.id, user.id);
@@ -234,16 +228,14 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       expect(foundTeam).toEqual(team);
     });
 
-    test('should return an error if the team does not exist', async ({ user }) => {
-      const ctx = createMockContext();
+    test('should return an error if the team does not exist', async ({ ctx, user }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const result = await teamProvider.addTeamMember(ctx, dummyUUID, user.id);
       expect(result).toBeInstanceOf(TeamNotFoundError);
     });
 
-    test('should return an error if the user does not exist', async ({ team }) => {
-      const ctx = createMockContext();
+    test('should return an error if the user does not exist', async ({ ctx, team }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const result = await teamProvider.addTeamMember(ctx, team.id, dummyUUID);
@@ -253,8 +245,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('removeTeamMember', () => {
-    test('should remove existing team member', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should remove existing team member', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       await teamProvider.addTeamMember(ctx, team.id, user.id);
@@ -266,8 +257,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     });
 
 
-    test('should not fail when removing non team member', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should not fail when removing non team member', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const result = await teamProvider.removeTeamMember(ctx, team.id, user.id);
@@ -277,8 +267,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('isTeamMember', () => {
-    test('should return true when user is a team member', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should return true when user is a team member', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       await teamProvider.addTeamMember(ctx, team.id, user.id);
@@ -287,8 +276,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       expect(isMember).toEqual(true);
     });
 
-    test('should return false when user is a team member', async ({ team, user, tournament }) => {
-      const ctx = createMockContext();
+    test('should return false when user is a team member', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const isMember = await teamProvider.isTeamMember(ctx, team.id, user.id);

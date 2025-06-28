@@ -66,8 +66,11 @@ CREATE TABLE game_runners (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY
 );
 
-CREATE TABLE arena (
-  id VARCHAR(73) PRIMARY KEY
+CREATE TABLE arenas (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  team_id uuid NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
+  name VARCHAR(36) NOT NULL,
+  UNIQUE (team_id, name)
 );
 
 CREATE TYPE game_status AS ENUM ('pending', 'started', 'ended');
@@ -78,7 +81,7 @@ CREATE TABLE games (
   game_def_id VARCHAR(36) NOT NULL,
   players JSONB NOT NULL,
   runner_id uuid REFERENCES game_runners(id) ON DELETE SET NULL,
-  arena VARCHAR(73) NULL REFERENCES arena(id) ON DELETE CASCADE,
+  arena_id uuid NULL REFERENCES arenas(id) ON DELETE CASCADE,
   status game_status DEFAULT 'pending'
 );
 
@@ -121,9 +124,9 @@ BEGIN
 
     serialized_game := row_to_json(selected_game)::text;
 
-    IF selected_game.arena IS NOT NULL THEN
+    IF selected_game.arena_id IS NOT NULL THEN
       -- Send a NOTIFY message to the arena channel with the game.
-      PERFORM pg_notify('arena_' || selected_game.arena, serialized_game);
+      PERFORM pg_notify('arena_' || selected_game.arena_id, serialized_game);
     END IF;
 
     -- Send a NOTIFY message to each player channel with the game.

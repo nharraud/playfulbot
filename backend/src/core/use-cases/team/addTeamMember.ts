@@ -68,12 +68,5 @@ export async function addTeamMember(
     ctx.providers.tournamentInvitation.deleteTournamentInvitation(ctx, { tournamentId, userId });
   }
 
-
-  // FIXME
-  //   if (oldTeam === null) {
-  //     const tournament = await this.getTournament(dbOrTX);
-  //     const gameDefinition = await tournament.getGameDefinition();
-  //     await DebugArena.createDebugArena(userID, this.tournamentID, gameDefinition);
-  //   }
   return { oldTeam, oldTeamDeleted: oldTeamRemoval?.teamDeleted };
 }

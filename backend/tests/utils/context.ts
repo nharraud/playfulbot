@@ -7,6 +7,8 @@ import { BackendGameDefinition } from "playfulbot-game-backend";
 import { mockGameDefinition } from "./mockGameDefinition";
 import { Logger } from "pino";
 import { DbOrTx } from "playfulbot-backend-commons/lib/model/db/helpers";
+import { GameRepositoryPSQL } from "~playfulbot/infrastructure/providers/GameRepositoryPSQL";
+import { GameRepository } from "~playfulbot/core/use-cases/interfaces/GameRepository";
 
 class MockGameDefinitionProvider implements GameDefinitionProvider {
   #gameDefinitions:  Map<GameDefinitionID, BackendGameDefinition>;
@@ -19,17 +21,26 @@ class MockGameDefinitionProvider implements GameDefinitionProvider {
   }
 }
 
+type MockContextConstructorParams = {
+  logger?: Logger,
+  dbOrTx?: DbOrTx,
+  gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>,
+  gameRepository: GameRepository,
+};
+
 class MockContext extends ContextPSQLImpl {
-  constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions, ...args }: { logger?: Logger, dbOrTx?: DbOrTx, gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition>} = {}) {
+  constructor({ logger = createLogger(), dbOrTx = db.default, gameDefinitions, gameRepository, ...args }: MockContextConstructorParams) {
     super({
       logger, dbOrTx, providers: {
         gameDefinitions: new MockGameDefinitionProvider(gameDefinitions),
+        gameRepository: gameRepository,
       },
       ...args
     });
   }
 }
 
-export function createMockContext(params : { gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition> } = {}) {
-  return new MockContext({ gameDefinitions: params?.gameDefinitions });
+export async function createMockContext(params : { gameDefinitions?: Map<GameDefinitionID, BackendGameDefinition> } = {}) {
+  const gameRepository = await GameRepositoryPSQL.createRepository(db.default);
+  return new MockContext({ gameDefinitions: params?.gameDefinitions, gameRepository });
 };

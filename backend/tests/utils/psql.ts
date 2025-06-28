@@ -1,7 +1,7 @@
 import { createDB, dropDB } from 'playfulbot-backend-commons/lib/model/db/db_admin';
 import { config } from 'playfulbot-backend-commons/lib/model/db/config';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
-import { DebugArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
+import { GameRunnerId } from '~playfulbot/core/entities/base-types';
 import { GameID } from 'playfulbot-game';
 import { randomUUID } from 'crypto';
 
@@ -16,11 +16,6 @@ export async function initTestDB() {
 export async function dropTestDB() {
   await dropDB();
   config.DATABASE_NAME = OLD_DATABASE_NAME;
-}
-
-export function createArena(arenaId: DebugArenaID): Promise<void> {
-    const addArenaRequest = 'INSERT INTO arena(id) VALUES($[arenaId]);';
-    return db.default.oneOrNone<void>(addArenaRequest, { arenaId });
 }
 
 interface DBGame {

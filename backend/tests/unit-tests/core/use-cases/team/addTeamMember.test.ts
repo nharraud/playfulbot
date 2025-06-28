@@ -7,6 +7,7 @@ import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { addTeamMember } from '~playfulbot/core/use-cases/team/addTeamMember';
 import { TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
+import { mockContextFixture } from 'tests/utils/fixtures';
 
 interface TestFixtures {
   ctx?: Context<any>,
@@ -17,12 +18,8 @@ interface TestFixtures {
 
 const dummyUUID = '00000000-0000-4000-9000-000000000000';
 
-async function contextFixture({}: TestFixtures, use: any) {
-  await use(createMockContext());
-}
-
 async function tournamentFixture({ ctx } : TestFixtures, use: any) {
-  const tournament = await ctx.providers.tournament.createTournament(createMockContext(), {
+  const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
     lastRoundDate: '2024-01-02T00:00:00+00',
@@ -33,8 +30,8 @@ async function tournamentFixture({ ctx } : TestFixtures, use: any) {
   await use(tournament);
 }
 
-function addTeam(ctx: Context<any>, teamName: string, tournamentID: TournamentID): Promise<Team> {
-  return ctx.providers.team.createTeam(createMockContext(), {
+async function addTeam(ctx: Context<any>, teamName: string, tournamentID: TournamentID): Promise<Team> {
+  return ctx.providers.team.createTeam(ctx, {
     name: teamName,
     tournamentID: tournamentID,
   }) as Promise<Team>;
@@ -46,7 +43,7 @@ async function teamFixture({ ctx, tournament }: TestFixtures, use: any) {
 }
 
 async function userFixture({ ctx }: TestFixtures, use: any) {
-  const user = await ctx.providers.user.createUser(createMockContext(), {
+  const user = await ctx.providers.user.createUser(ctx, {
     username: 'testUser',
     password: 'mypassword'
   });
@@ -54,18 +51,15 @@ async function userFixture({ ctx }: TestFixtures, use: any) {
 }
 
 const test = baseTest.extend<TestFixtures>({
-  ctx: contextFixture,
+  ctx: mockContextFixture,
   tournament: tournamentFixture,
   team: teamFixture,
   user: userFixture,
 });
 
 describe('use-cases/team/addTeamMember', () => {
-  beforeEach(async () => {
-    await initTestDB()
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   });
 

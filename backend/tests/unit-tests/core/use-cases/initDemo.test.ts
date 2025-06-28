@@ -3,26 +3,21 @@ import { dropTestDB, initTestDB } from '../../../utils/psql';
 import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 import { createMockContext } from '../../../utils/context';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
+import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
+import { mockContextFixture } from 'tests/utils/fixtures';
 
 
 interface TestFixtures {
-  ctx: Context<any>,
-}
-
-async function contextFixture({}, use: any) {
-  await use(createMockContext());
+  ctx: ContextPSQL,
 }
 
 const test = baseTest.extend<TestFixtures>({
-  ctx: contextFixture,
+  ctx: mockContextFixture,
 });
 
 describe('use-cases/initDemo', () => {
-  beforeEach(async () => {
-    await initTestDB()
-  });
-
-  afterEach(async () => {
+  afterEach<TestFixtures>(async ({ ctx }) => {
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
   })
 

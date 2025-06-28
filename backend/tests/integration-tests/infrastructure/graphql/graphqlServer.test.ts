@@ -40,12 +40,13 @@ describe('graphql/graphqlServer', () => {
 
   beforeEach(async () => {
     await initTestDB();
-    ctx = createMockContext();
+    ctx = await createMockContext();
   });
 
   afterEach(async () => {
     // client?.terminate();
     await server?.close();
+    await ctx.providers.gameRepository.close();
     await dropTestDB();
     vi.restoreAllMocks();
   });
