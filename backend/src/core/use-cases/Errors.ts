@@ -85,7 +85,7 @@ export class InvalidArgument extends Error {
 }
 
 export class ForbiddenError extends Error {
-  name: 'ForbiddenError' = 'ForbiddenError';
+  readonly name = 'ForbiddenError';
   constructor(message: string) {
     super(message);
   }
@@ -97,12 +97,6 @@ export class BotsForbiddenError extends ForbiddenError {
   }
 }
 
-export class AuthenticationError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
 export class ConflictError extends Error {
   constructor(message: string) {
     super(message);
@@ -110,7 +104,7 @@ export class ConflictError extends Error {
 }
 
 export class ValidationError extends Error {
-  name: 'ValidationError' = 'ValidationError';
+  readonly name = 'ValidationError';
   constructor(msg: string, errors?: Record<string, ValidationErrorData[]>) {
     super(msg);
     this.validationErrors = errors;

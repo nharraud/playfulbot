@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto';
 import { User } from '~playfulbot/core/entities/Users';
 import { UserProviderPSQL } from '~playfulbot/infrastructure/providers/UserProviderPSQL';
 import { TeamNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
-import { TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
+import { TeamNotFoundError, UserNotFoundError, ValidationError } from '~playfulbot/core/use-cases/Errors';
 import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
 import { mockContextFixture } from 'tests/utils/fixtures';
 
@@ -87,20 +87,22 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
     test('should throw an error when team name is too short', async ({ ctx, tournament }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.createTeam(ctx, {
+      const result = await provider.createTeam(ctx, {
         name: 't',
         tournamentID: tournament.id,
       });
-      await expect(teamPromise).rejects.toThrowError('Invalid Team');
+      expect(result).to.be.instanceOf(ValidationError);
+      expect((result as ValidationError).message).toEqual('Invalid Team');
     });
 
     test('should throw an error when team name is too long', async ({ ctx, tournament }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.createTeam(ctx, {
+      const result = await provider.createTeam(ctx, {
         name: '123456789123456789',
         tournamentID: tournament.id,
       });
-      await expect(teamPromise).rejects.toThrowError('Invalid Team');
+      expect(result).to.be.instanceOf(ValidationError);
+      expect((result as ValidationError).message).toEqual('Invalid Team');
     });
 
     test('should return TeamNameAlreadyTaken when team name is already taken', async ({ ctx, tournament, team }) => {
@@ -129,10 +131,11 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
     test('should throw an error when team name is too short', async ({ ctx, team }) => {
       const provider = new TeamProviderPSQL();
-      const teamPromise = provider.updateTeam(ctx, team.id, {
+      const result = await provider.updateTeam(ctx, team.id, {
         name: 'a'
       });
-      await expect(teamPromise).rejects.toThrowError('Invalid Team');
+      expect(result).to.be.instanceOf(ValidationError);
+      expect((result as ValidationError).message).toEqual('Invalid Team');
     });
 
     test('should return TeamNameAlreadyTaken when team name is already taken', async ({ ctx, tournament, team }) => {
@@ -281,6 +284,37 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
       const isMember = await teamProvider.isTeamMember(ctx, team.id, user.id);
       expect(isMember).toEqual(false);
+    });
+  });
+
+  describe('countTeamMembers', () => {
+    test('should count team members when there are team members', async ({ ctx, team }) => {
+      const user1 = await ctx.providers.user.createUser(ctx, {
+        username: 'user1',
+        password: 'mypassword'
+      }) as User;
+      const user2 = await ctx.providers.user.createUser(ctx, {
+        username: 'user2',
+        password: 'mypassword'
+      }) as User;
+      const provider = new TeamProviderPSQL();
+      await provider.addTeamMember(ctx, team.id, user1.id);
+      await provider.addTeamMember(ctx, team.id, user2.id);
+
+      const membersCount = await provider.countTeamMembers(ctx, team.id);
+      expect(membersCount).toEqual(2);
+    });
+
+    test('should return 0 when there are no team members', async ({ ctx, team }) => {
+      const provider = new TeamProviderPSQL();
+      const membersCount = await provider.countTeamMembers(ctx, team.id);
+      expect(membersCount).toEqual(0);
+    });
+
+    test('should return 0 when the team does not exist', async ({ ctx, team }) => {
+      const provider = new TeamProviderPSQL();
+      const membersCount = await provider.countTeamMembers(ctx, '00000000-0000-0000-0000-000000000000');
+      expect(membersCount).toEqual(0);
     });
   });
 });

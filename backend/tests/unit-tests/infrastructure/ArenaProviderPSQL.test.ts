@@ -92,4 +92,32 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
   });
+
+  describe('countArenas', () => {
+    test('should count arenas when there are arenas', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const createdArena = await provider.createArena(ctx, {
+        teamId: team.id,
+        name: 'testArena'
+      }) as Arena;
+      const createdArena2 = await provider.createArena(ctx, {
+        teamId: team.id,
+        name: 'testArena2'
+      }) as Arena;
+      const arenasCount = await provider.countArenas(ctx, team.id);
+      expect(arenasCount).toEqual(2);
+    });
+
+    test('should return 0 when there are no arenas', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const arenasCount = await provider.countArenas(ctx, team.id);
+      expect(arenasCount).toEqual(0);
+    });
+
+    test('should return 0 when the team does not exist', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const arenasCount = await provider.countArenas(ctx, '00000000-0000-0000-0000-000000000000');
+      expect(arenasCount).toEqual(0);
+    });
+  });
 });

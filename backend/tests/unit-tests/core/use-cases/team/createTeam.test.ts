@@ -109,6 +109,13 @@ describe('use-cases/team/createTeam', () => {
     expect(returnedTeam).toBeInstanceOf(TeamNameAlreadyTakenError);
   });
 
+  test('should fail if we create a team with a an invalid name', async ({ ctx, team, invitedUser, tournament }) => {
+    const returnedTeam = await createTeam(ctx, {
+      teamName: '', userId: invitedUser.id, tournamentId: tournament.id, join: true
+    });
+    expect(returnedTeam).toBeInstanceOf(ValidationError);
+  });
+
   test('should fail if the user is neither invited nor part of an existing team', async ({ ctx, team, user, tournament }) => {
     const returnedTeam = await createTeam(ctx, {
       teamName: team.name, userId: user.id, tournamentId: tournament.id, join: true

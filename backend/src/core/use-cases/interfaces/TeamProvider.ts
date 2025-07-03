@@ -23,9 +23,9 @@ export interface TeamProvider<Context> {
       tournamentID: string,
       id?: TeamID
     }
-  ): Promise<Team | TeamNameAlreadyTakenError>;
+  ): Promise<Team | TeamNameAlreadyTakenError | ValidationError>;
 
-  updateTeam(ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team | TeamNameAlreadyTakenError>
+  updateTeam(ctx: Context, teamID: TeamID, patch: TeamPatch): Promise<Team | TeamNameAlreadyTakenError | ValidationError>
 
   getTeamByName(ctx: Context, name: string): Promise<Team | null>
   getTeamByID(ctx: Context, id: TeamID): Promise<Team | null>
@@ -35,4 +35,6 @@ export interface TeamProvider<Context> {
   addTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean | TeamNotFoundError | UserNotFoundError>
   removeTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean>
   deleteTeamIfNoMembers(ctx: Context, teamID: TeamID): Promise<boolean>
+
+  countTeamMembers(ctx: Context, teamID: TeamID): Promise<number>
 };

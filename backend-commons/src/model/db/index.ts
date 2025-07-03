@@ -1,9 +1,10 @@
 import pgPromise, { IInitOptions, IDatabase, IMain } from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
 import { config } from './config';
-import { fixTimeParsing } from './fixTimeParsing';
+import { fixTimeParsing, fixIntParsing } from './fixSQLTypeParsing';
 
 fixTimeParsing();
+fixIntParsing();
 
 export type DB = IDatabase<unknown>;
 export type TX = pgPromise.ITask<unknown>;

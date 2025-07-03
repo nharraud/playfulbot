@@ -72,3 +72,11 @@ export function isDatabaseError(obj: any): obj is PGDatabaseError {
 }
 
 export type DatabaseError = PGDatabaseError;
+
+export function bigIntToNumber(value: BigInt): number {
+  // @ts-ignore
+  if (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER) {
+    throw new Error(`Can\'t convert ${value} to Number`);
+  }
+  return parseInt(value as any);
+}

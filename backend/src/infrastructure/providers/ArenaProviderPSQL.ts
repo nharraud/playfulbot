@@ -3,12 +3,13 @@
 import { db } from 'playfulbot-backend-commons/lib/model/db/index';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { UserID } from '~playfulbot/core/entities/Users';
-import { Arena } from '~playfulbot/core/entities/Arena';
+import { Arena, validateArenaName } from '~playfulbot/core/entities/Arena';
 import { ArenaNameAlreadyTakenError, ArenaProvider } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { ArenaID } from '~playfulbot/core/entities/base-types';
-import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { bigIntToNumber, DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { TeamID } from '~playfulbot/core/entities/Teams';
+import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 
 
 /* eslint-disable camelcase */
@@ -35,7 +36,12 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
       teamId: TeamID,
       name: string,
       id?: ArenaID
-    }): Promise<Arena | ArenaNameAlreadyTakenError> {
+    }): Promise<Arena | ArenaNameAlreadyTakenError | ValidationError> {
+
+    const validationError = validateArenaName(arena.name);
+    if (validationError) {
+      return new ValidationError('Invalid Arena', { 'arena.name': [ validationError ] });
+    }
     const addArenaRequest = 'INSERT INTO arenas(id, team_id, name) VALUES($[id], $[teamId], $[name]) RETURNING *;';
     try {
       const data = await ctx.dbOrTx.one<DbArena>(addArenaRequest, {
@@ -59,6 +65,13 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
       return null;
     }
     return buildArena(data);
+  }
+
+  async countArenas(ctx: ContextPSQL, teamId: TeamID): Promise<number> {
+    const result = await ctx.dbOrTx.one<{ count: BigInt }>('SELECT COUNT(*) FROM arenas WHERE team_id = $[teamId]', {
+      teamId,
+    });
+    return bigIntToNumber(result.count);
   }
 
   deleteArena(ctx: ContextPSQL, id: TeamID): Promise<boolean> {

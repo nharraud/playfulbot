@@ -1,11 +1,19 @@
 import { Arena } from '../../entities/Arena';
 import { TeamID } from '~playfulbot/core/entities/Teams';
 import { ArenaID } from '~playfulbot/core/entities/base-types';
+import { ValidationError } from '../Errors';
 
 export class ArenaNameAlreadyTakenError extends Error {
-  name = 'ArenaNameAlreadyTakenError';
+  readonly name = 'ArenaNameAlreadyTakenError';
   constructor() {
     super('Arena name is already taken');
+  }
+}
+
+export class MaxArenaReachedError extends Error {
+  readonly name = 'MaxArenaReachedError';
+  constructor() {
+    super('Maximum number of arenas reached');
   }
 }
 
@@ -14,7 +22,8 @@ export interface ArenaProvider<Context> {
       teamId: TeamID,
       name: string,
       id?: ArenaID
-  }): Promise<Arena | ArenaNameAlreadyTakenError>;
+  }): Promise<Arena | ArenaNameAlreadyTakenError | ValidationError>;
   getArena(ctx: Context, id: ArenaID): Promise<Arena | null>;
+  countArenas(ctx: Context, teamId: TeamID): Promise<number>;
   deleteArena(ctx: Context, id: ArenaID): Promise<boolean>;
 }

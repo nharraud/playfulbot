@@ -16,3 +16,8 @@ export function fixTimeParsing(): void {
   types.setTypeParser(1114, (stringValue) => stringValue.replace(' ', 'T'));
   types.setTypeParser(1184, (stringValue) => stringValue.replace(' ', 'T'));
 }
+
+export function fixIntParsing(): void {
+  // BIGINT | BIGSERIAL (ex: COUNT result)
+  types.setTypeParser(20, BigInt);
+}

@@ -176,6 +176,29 @@ union CreateTeamError = ForbiddenError | ValidationError | TeamNameAlreadyTakenE
 union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 
 
+# #
+# # Create Arena Input/Output
+# #
+type CreateArenaSuccess {
+  arena: Arena
+}
+
+type CreateArenaFailure {
+  errors: [CreateArenaError!]!
+}
+
+type ArenaNameAlreadyTakenError implements Error {
+  message: String!
+}
+
+type MaxArenaReachedError implements Error {
+  message: String!
+}
+
+union CreateArenaError = ForbiddenError | ArenaNameAlreadyTakenError | MaxArenaReachedError | ValidationError
+
+union CreateArenaResult = CreateArenaSuccess | CreateArenaFailure
+
 
 # type Game {
 #   id: ID
@@ -217,7 +240,7 @@ union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 type Arena {
   id: ID
   name: String
-  game: ID
+  team: Team
 }
 
 # type PlayerGames {
@@ -267,7 +290,8 @@ type Query {
 
 type Mutation {
 #   play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
-  createNewDebugGame(arenaID: ID!): Boolean
+  createNewArenaGame(arenaID: ID!): Boolean
+  createArena(teamID: ID!, name: String!): CreateArenaResult
 
   registerUser(username: String!, password: String!): UserRegistrationResult
   login(username: String!, password: String!): LoginResult

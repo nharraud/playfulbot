@@ -104,6 +104,14 @@ describe('use-cases/team/updateTeam', () => {
     expect(currentTeam).toEqual(team);
   });
 
+  test('should fail if we create a team with a name already taken', async ({ ctx, team, teamMember, user, tournament }) => {
+    const result = await updateTeam(ctx, { teamId: team.id, userId: teamMember.id, patch: { name: '' }});
+    expect(result).toBeInstanceOf(ValidationError);
+    // check that the team didn't change
+    const currentTeam = await ctx.providers.team.getTeamByID(ctx, team.id);
+    expect(currentTeam).toEqual(team);
+  });
+
   test('should fail if the patch is empty', async ({ ctx, team, teamMember }) => {
     const result = await updateTeam(ctx, { teamId: team.id, userId: teamMember.id, patch: {}});
     expect(result).toBeInstanceOf(ValidationError);

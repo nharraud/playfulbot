@@ -11,6 +11,7 @@ export default defineConfig({
     globals: true,
     alias: {
       '~playfulbot/': new URL('./src/', import.meta.url).pathname,
+      'tests/': new URL('./tests/', import.meta.url).pathname,
       // See https://github.com/vitejs/vite/issues/7879
       // https://github.com/graphql/graphql-js/issues/2801#issuecomment-1846206543
       'graphql': 'graphql/index.js',

@@ -8,7 +8,7 @@ import { Team, TeamID, validateTeamName } from '~playfulbot/core/entities/Teams'
 import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
-import { DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { bigIntToNumber, DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { TeamNotFoundError, ValidationError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
 // import { ValidationError } from '~playfulbot/core/use-cases/Errors';
@@ -59,10 +59,10 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       tournamentID: TournamentID,
       id?: TeamID
     }
-  ): Promise<Team | TeamNameAlreadyTakenError> {
+  ): Promise<Team | TeamNameAlreadyTakenError | ValidationError> {
     const validationError = validateTeamName(team.name);
     if (validationError) {
-      throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
+      return new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
     }
     const query = `
       INSERT INTO teams(id, tournament_id, name)
@@ -90,10 +90,10 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
     ctx: ContextPSQL, 
     teamID: TeamID,
     patch: TeamPatch
-  ): Promise<Team | TeamNameAlreadyTakenError> {
+  ): Promise<Team | TeamNameAlreadyTakenError | ValidationError> {
     const validationError = validateTeamName(patch.name);
     if (validationError) {
-      throw new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
+      return new ValidationError('Invalid Team', { 'team.name': [ validationError ] });
     }
     const query = `
       UPDATE teams
@@ -221,6 +221,20 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
         teamID,
       });
     return memberRemoved?.bool || false;
+  }
+
+  /**
+   * Count the number of members in a team
+   * @param ctx
+   * @param teamID ID of the team.
+   * @returns number of team members
+   */
+  async countTeamMembers(ctx: ContextPSQL, teamID: TeamID): Promise<number> {
+    const countMemberQuery = 'SELECT COUNT(*) FROM team_memberships WHERE team_id = $[teamID]';
+    const result = await ctx.dbOrTx.one<{ count: BigInt }>(countMemberQuery, {
+        teamID,
+      });
+    return bigIntToNumber(result.count);
   }
 
 
