@@ -200,6 +200,28 @@ union CreateArenaError = ForbiddenError | ArenaNameAlreadyTakenError | MaxArenaR
 union CreateArenaResult = CreateArenaSuccess | CreateArenaFailure
 
 
+
+# #
+# # Create Arena Game Input/Output
+# #
+type CreateArenaGameSuccess {
+  gameID: String!
+}
+
+type CreateArenaGameFailure {
+  errors: [CreateArenaGameError!]!
+}
+
+type ArenaNotFoundError implements Error {
+  message: String!
+  arenaID: ID
+}
+
+union CreateArenaGameError = ForbiddenError | ArenaNotFoundError
+
+union CreateArenaGameResult = CreateArenaGameSuccess | CreateArenaGameFailure
+
+
 # type Game {
 #   id: ID
 #   version: Int
@@ -290,7 +312,7 @@ type Query {
 
 type Mutation {
 #   play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
-  createNewArenaGame(arenaID: ID!): Boolean
+  createArenaGame(arenaID: ID!): CreateArenaGameResult
   createArena(teamID: ID!, name: String!): CreateArenaResult
 
   registerUser(username: String!, password: String!): UserRegistrationResult

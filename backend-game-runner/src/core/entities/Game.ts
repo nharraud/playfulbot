@@ -11,6 +11,8 @@ export interface PlayerAssignment {
   playerID: PlayerID;
 }
 
+export type GameStatus = 'pending' | 'started' | 'ended';
+
 export class Game {
   readonly id: GameID;
 

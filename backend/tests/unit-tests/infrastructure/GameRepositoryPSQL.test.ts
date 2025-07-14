@@ -5,18 +5,19 @@ import { mockContextFixture } from '../../utils/fixtures';
 import { GameRepositoryPSQL } from '~playfulbot/infrastructure/providers/GameRepositoryPSQL';
 import { PSQLGameRunnerMock } from '../../utils/PSQLGameRunnerMock';
 import { db } from 'playfulbot-backend-commons/lib/model/db';
-import { GameRef } from '~playfulbot/core/use-cases/interfaces/GameRef';
+import { GameRef } from '~playfulbot/core/entities/GameRef';
 import { Arena } from '~playfulbot/core/entities/Arena';
 import { Context } from '~playfulbot/core/use-cases/interfaces/Context';
 import { User } from '~playfulbot/core/entities/Users';
 import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { Team } from '~playfulbot/core/entities/Teams';
+import { Game } from '~playfulbot/core/entities/Game';
 
 async function gameRepositoryFixture({ ctx }: Omit<TestFixtures, 'gameRepository'>, use: any) {     
   await use(ctx.providers.gameRepository);
 }
 
-async function arenaFixture({ ctx }: Omit<TestFixtures, 'arena'>, use: any) {
+async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
@@ -26,10 +27,19 @@ async function arenaFixture({ ctx }: Omit<TestFixtures, 'arena'>, use: any) {
     startDate: '2024-01-01T00:00:00+00',
   }) as Tournament;
 
+  use(tournament);
+}
+
+async function teamFixture({ ctx, tournament }: Omit<TestFixtures, 'team'>, use: any) {
   const team = await ctx.providers.team.createTeam(ctx, {
     name: 'testTeam',
     tournamentID: tournament.id
   }) as Team;
+
+  use(team);
+}
+
+async function arenaFixture({ ctx, team }: Omit<TestFixtures, 'arena'>, use: any) {
   // const user = await ctx.providers.user.createUser(ctx, {
   //   username: 'testUser',
   //   password: 'mypassword'
@@ -38,16 +48,30 @@ async function arenaFixture({ ctx }: Omit<TestFixtures, 'arena'>, use: any) {
   await use(arena);
 }
 
+async function gameRefFixture({ gameRepository, arena }: Omit<TestFixtures, 'gameRef'>, use: any) {
+  const gameRef = await gameRepository.addGame({
+    gameDefId: 'foo', players: [{ playerID: '42' }], arenaId: arena.id
+  }) as GameRef;
+
+  await use(gameRef);
+}
+
 interface TestFixtures {
   ctx: Context<any>,
   gameRepository: GameRepositoryPSQL,
+  tournament: Tournament,
+  team: Team,
   arena: Arena,
+  gameRef: GameRef
 }
 
 const test = baseTest.extend<TestFixtures>({
   ctx: mockContextFixture,
   gameRepository: gameRepositoryFixture,
+  tournament: tournamentFixture,
+  team: teamFixture,
   arena: arenaFixture,
+  gameRef: gameRefFixture,
 });
 
 describe('infrastructure/GameRepositoryPLSQL', () => {
@@ -69,26 +93,59 @@ describe('infrastructure/GameRepositoryPLSQL', () => {
 
   test('should init and stop', async ({ gameRepository }) => {});
 
-  test('should add game', async ({ gameRepository }) => {
-    const gamePromise = gameRepository.addGame({gameDefId: 'foo', players: [{ playerID: '42' }]});
-    const runner = await PSQLGameRunnerMock.create();
-    const fetchedGame = await runner.fetchGame();
-    await expect(gamePromise).resolves.toEqual({ gameId: fetchedGame.id });
-    expect(fetchedGame).toMatchObject({
-      game_def_id: 'foo',
-      players: [{ playerID: '42' }]
+  describe('addGame', () => {
+    test('should add game', async ({ gameRepository }) => {
+      const gamePromise = gameRepository.addGame({gameDefId: 'foo', players: [{ playerID: '42' }]});
+      const runner = await PSQLGameRunnerMock.create();
+      const fetchedGame = await runner.fetchGame();
+      await expect(gamePromise).resolves.toEqual({ gameId: fetchedGame.id });
+      expect(fetchedGame).toMatchObject({
+        game_def_id: 'foo',
+        players: [{ playerID: '42' }]
+      });
     });
-  });
 
-  test('should set game arena', async ({ arena, gameRepository }) => {
-    const gamePromise = gameRepository.addGame({gameDefId: 'foo', players: [{ playerID: '42' }], arenaId: arena.id });
-    const runner = await PSQLGameRunnerMock.create();
-    const fetchedGame = await runner.fetchGame();
-    await expect(gamePromise).resolves.toEqual({ gameId: fetchedGame.id });
-    expect(fetchedGame).toMatchObject({
-      game_def_id: 'foo',
-      players: [{ playerID: '42' }],
-      arena_id: arena.id,
+    test('should set game arena', async ({ arena, gameRepository }) => {
+      const gamePromise = gameRepository.addGame({gameDefId: 'foo', players: [{ playerID: '42' }], arenaId: arena.id });
+      const runner = await PSQLGameRunnerMock.create();
+      const fetchedGame = await runner.fetchGame();
+      await expect(gamePromise).resolves.toEqual({ gameId: fetchedGame.id });
+      expect(fetchedGame).toMatchObject({
+        game_def_id: 'foo',
+        players: [{ playerID: '42' }],
+        arena_id: arena.id,
+      });
+    });
+  })
+
+  describe('cancelGame', () => {
+    test('should return false when the game does not exist', async ({ gameRepository }) => {
+      const result = await gameRepository.cancelGame('00000000-0000-0000-0000-000000000000');
+      expect(result).toEqual(false);
+    });
+
+    test('should return false when the game is already ended', async ({ gameRepository, gameRef }) => {
+      await gameRepository.cancelGame(gameRef.gameId);
+      const result = await gameRepository.cancelGame(gameRef.gameId);
+      expect(result).toEqual(false);
+    });
+
+    test('should cancel game if no runner fetched it', async ({ gameRepository, gameRef }) => {
+      const result = await gameRepository.cancelGame(gameRef.gameId);
+      expect(result).toEqual(true);
+      const game = await gameRepository.getFullGame(gameRef.gameId);
+      expect(game.status).toEqual('ended');
+      expect(game.cancelled).toEqual(true);
+    });
+
+    test('should cancel game if a runner fetched it', async ({ gameRepository, gameRef }) => {
+      const runner = await PSQLGameRunnerMock.create();
+      await runner.fetchGame();
+      const result = await gameRepository.cancelGame(gameRef.gameId);
+      expect(result).toEqual(true);
+      const game = await gameRepository.getFullGame(gameRef.gameId);
+      expect(game.status).toEqual('ended');
+      expect(game.cancelled).toEqual(true);
     });
   });
 

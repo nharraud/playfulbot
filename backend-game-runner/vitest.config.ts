@@ -14,6 +14,7 @@ export default defineConfig({
       // See https://github.com/vitejs/vite/issues/7879
       // https://github.com/graphql/graphql-js/issues/2801#issuecomment-1846206543
       'graphql': 'graphql/index.js',
+      'tests/': new URL('./tests/', import.meta.url).pathname,
     },
     setupFiles: 'dotenv-flow/config',
     exclude:[

@@ -31,11 +31,31 @@ export type ArenaNameAlreadyTakenError = Error & {
   message: Scalars['String']['output'];
 };
 
+export type ArenaNotFoundError = Error & {
+  __typename?: 'ArenaNotFoundError';
+  arenaID?: Maybe<Scalars['ID']['output']>;
+  message: Scalars['String']['output'];
+};
+
 export type CreateArenaError = ArenaNameAlreadyTakenError | ForbiddenError | MaxArenaReachedError | ValidationError;
 
 export type CreateArenaFailure = {
   __typename?: 'CreateArenaFailure';
   errors: Array<CreateArenaError>;
+};
+
+export type CreateArenaGameError = ArenaNotFoundError | ForbiddenError;
+
+export type CreateArenaGameFailure = {
+  __typename?: 'CreateArenaGameFailure';
+  errors: Array<CreateArenaGameError>;
+};
+
+export type CreateArenaGameResult = CreateArenaGameFailure | CreateArenaGameSuccess;
+
+export type CreateArenaGameSuccess = {
+  __typename?: 'CreateArenaGameSuccess';
+  gameID: Scalars['String']['output'];
 };
 
 export type CreateArenaResult = CreateArenaFailure | CreateArenaSuccess;
@@ -103,7 +123,7 @@ export type MaxArenaReachedError = Error & {
 export type Mutation = {
   __typename?: 'Mutation';
   createArena?: Maybe<CreateArenaResult>;
-  createNewArenaGame?: Maybe<Scalars['Boolean']['output']>;
+  createArenaGame?: Maybe<CreateArenaGameResult>;
   createTeam?: Maybe<CreateTeamResult>;
   createTournament?: Maybe<Tournament>;
   joinTeam?: Maybe<JoinTeamResult>;
@@ -120,7 +140,7 @@ export type MutationCreateArenaArgs = {
 };
 
 
-export type MutationCreateNewArenaGameArgs = {
+export type MutationCreateArenaGameArgs = {
   arenaID: Scalars['ID']['input'];
 };
 
@@ -338,6 +358,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   CreateArenaError: ( ArenaNameAlreadyTakenError ) | ( ForbiddenError ) | ( MaxArenaReachedError ) | ( ValidationError );
+  CreateArenaGameError: ( ArenaNotFoundError ) | ( ForbiddenError );
+  CreateArenaGameResult: ( Omit<CreateArenaGameFailure, 'errors'> & { errors: Array<_RefType['CreateArenaGameError']> } ) | ( CreateArenaGameSuccess );
   CreateArenaResult: ( Omit<CreateArenaFailure, 'errors'> & { errors: Array<_RefType['CreateArenaError']> } ) | ( CreateArenaSuccess );
   CreateTeamError: ( ForbiddenError ) | ( TeamNameAlreadyTakenError ) | ( ValidationError );
   CreateTeamResult: ( Omit<CreateTeamFailure, 'errors'> & { errors: Array<_RefType['CreateTeamError']> } ) | ( CreateTeamSuccess );
@@ -352,16 +374,21 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Error: ( ArenaNameAlreadyTakenError ) | ( ForbiddenError ) | ( MaxArenaReachedError ) | ( TeamNameAlreadyTakenError ) | ( TeamNotFoundError ) | ( UsernameAlreadyTaken ) | ( ValidationError );
+  Error: ( ArenaNameAlreadyTakenError ) | ( ArenaNotFoundError ) | ( ForbiddenError ) | ( MaxArenaReachedError ) | ( TeamNameAlreadyTakenError ) | ( TeamNotFoundError ) | ( UsernameAlreadyTaken ) | ( ValidationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Arena: ResolverTypeWrapper<Arena>;
   ArenaNameAlreadyTakenError: ResolverTypeWrapper<ArenaNameAlreadyTakenError>;
+  ArenaNotFoundError: ResolverTypeWrapper<ArenaNotFoundError>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateArenaError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateArenaError']>;
   CreateArenaFailure: ResolverTypeWrapper<Omit<CreateArenaFailure, 'errors'> & { errors: Array<ResolversTypes['CreateArenaError']> }>;
+  CreateArenaGameError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateArenaGameError']>;
+  CreateArenaGameFailure: ResolverTypeWrapper<Omit<CreateArenaGameFailure, 'errors'> & { errors: Array<ResolversTypes['CreateArenaGameError']> }>;
+  CreateArenaGameResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateArenaGameResult']>;
+  CreateArenaGameSuccess: ResolverTypeWrapper<CreateArenaGameSuccess>;
   CreateArenaResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateArenaResult']>;
   CreateArenaSuccess: ResolverTypeWrapper<CreateArenaSuccess>;
   CreateTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateTeamError']>;
@@ -408,9 +435,14 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Arena: Arena;
   ArenaNameAlreadyTakenError: ArenaNameAlreadyTakenError;
+  ArenaNotFoundError: ArenaNotFoundError;
   Boolean: Scalars['Boolean']['output'];
   CreateArenaError: ResolversUnionTypes<ResolversParentTypes>['CreateArenaError'];
   CreateArenaFailure: Omit<CreateArenaFailure, 'errors'> & { errors: Array<ResolversParentTypes['CreateArenaError']> };
+  CreateArenaGameError: ResolversUnionTypes<ResolversParentTypes>['CreateArenaGameError'];
+  CreateArenaGameFailure: Omit<CreateArenaGameFailure, 'errors'> & { errors: Array<ResolversParentTypes['CreateArenaGameError']> };
+  CreateArenaGameResult: ResolversUnionTypes<ResolversParentTypes>['CreateArenaGameResult'];
+  CreateArenaGameSuccess: CreateArenaGameSuccess;
   CreateArenaResult: ResolversUnionTypes<ResolversParentTypes>['CreateArenaResult'];
   CreateArenaSuccess: CreateArenaSuccess;
   CreateTeamError: ResolversUnionTypes<ResolversParentTypes>['CreateTeamError'];
@@ -464,12 +496,36 @@ export type ArenaNameAlreadyTakenErrorResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ArenaNotFoundErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ArenaNotFoundError'] = ResolversParentTypes['ArenaNotFoundError']> = {
+  arenaID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreateArenaErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaError'] = ResolversParentTypes['CreateArenaError']> = {
   __resolveType: TypeResolveFn<'ArenaNameAlreadyTakenError' | 'ForbiddenError' | 'MaxArenaReachedError' | 'ValidationError', ParentType, ContextType>;
 };
 
 export type CreateArenaFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaFailure'] = ResolversParentTypes['CreateArenaFailure']> = {
   errors?: Resolver<Array<ResolversTypes['CreateArenaError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateArenaGameErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaGameError'] = ResolversParentTypes['CreateArenaGameError']> = {
+  __resolveType: TypeResolveFn<'ArenaNotFoundError' | 'ForbiddenError', ParentType, ContextType>;
+};
+
+export type CreateArenaGameFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaGameFailure'] = ResolversParentTypes['CreateArenaGameFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['CreateArenaGameError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateArenaGameResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaGameResult'] = ResolversParentTypes['CreateArenaGameResult']> = {
+  __resolveType: TypeResolveFn<'CreateArenaGameFailure' | 'CreateArenaGameSuccess', ParentType, ContextType>;
+};
+
+export type CreateArenaGameSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaGameSuccess'] = ResolversParentTypes['CreateArenaGameSuccess']> = {
+  gameID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -511,7 +567,7 @@ export type DeletedTeamResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
-  __resolveType: TypeResolveFn<'ArenaNameAlreadyTakenError' | 'ForbiddenError' | 'MaxArenaReachedError' | 'TeamNameAlreadyTakenError' | 'TeamNotFoundError' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ArenaNameAlreadyTakenError' | 'ArenaNotFoundError' | 'ForbiddenError' | 'MaxArenaReachedError' | 'TeamNameAlreadyTakenError' | 'TeamNotFoundError' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
@@ -556,7 +612,7 @@ export type MaxArenaReachedErrorResolvers<ContextType = any, ParentType extends 
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createArena?: Resolver<Maybe<ResolversTypes['CreateArenaResult']>, ParentType, ContextType, RequireFields<MutationCreateArenaArgs, 'name' | 'teamID'>>;
-  createNewArenaGame?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationCreateNewArenaGameArgs, 'arenaID'>>;
+  createArenaGame?: Resolver<Maybe<ResolversTypes['CreateArenaGameResult']>, ParentType, ContextType, RequireFields<MutationCreateArenaGameArgs, 'arenaID'>>;
   createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input' | 'join' | 'tournamentID'>>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
   joinTeam?: Resolver<Maybe<ResolversTypes['JoinTeamResult']>, ParentType, ContextType, RequireFields<MutationJoinTeamArgs, 'teamID'>>;
@@ -656,8 +712,13 @@ export type ValidationErrorResolvers<ContextType = any, ParentType extends Resol
 export type Resolvers<ContextType = any> = {
   Arena?: ArenaResolvers<ContextType>;
   ArenaNameAlreadyTakenError?: ArenaNameAlreadyTakenErrorResolvers<ContextType>;
+  ArenaNotFoundError?: ArenaNotFoundErrorResolvers<ContextType>;
   CreateArenaError?: CreateArenaErrorResolvers<ContextType>;
   CreateArenaFailure?: CreateArenaFailureResolvers<ContextType>;
+  CreateArenaGameError?: CreateArenaGameErrorResolvers<ContextType>;
+  CreateArenaGameFailure?: CreateArenaGameFailureResolvers<ContextType>;
+  CreateArenaGameResult?: CreateArenaGameResultResolvers<ContextType>;
+  CreateArenaGameSuccess?: CreateArenaGameSuccessResolvers<ContextType>;
   CreateArenaResult?: CreateArenaResultResolvers<ContextType>;
   CreateArenaSuccess?: CreateArenaSuccessResolvers<ContextType>;
   CreateTeamError?: CreateTeamErrorResolvers<ContextType>;

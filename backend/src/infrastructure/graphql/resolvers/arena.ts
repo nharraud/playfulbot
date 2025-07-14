@@ -10,6 +10,7 @@ import { toGraphQLError } from './errors';
 import { Arena } from '~playfulbot/core/entities/Arena';
 import { MaxArenaReachedError } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { AuthenticationError } from '~playfulbot/errors';
+import { createArenaGame } from '~playfulbot/core/use-cases/arena/createArenaGame';
 
 // export const arenaResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arena'] = {
 //   subscribe: async (model, args, context, info) => {
@@ -43,19 +44,28 @@ import { AuthenticationError } from '~playfulbot/errors';
 //   },
 // };
 
-// export const createNewArenaGameResolver: gqlTypes.MutationResolvers<GraphqlContext>['createNewArenaGame'] = async (
-//     parent,
-//     args,
-//     graphqlContext
-// ) => {
-//     if (!isUserContext(graphqlContext)) {
-//       throw new ForbiddenError('Only users are allowed to create games');
-//     }
-    
-//     const arena = DebugArena.getDebugArena(graphqlContext.userID, args.tournamentID);
-//     await arena.createNewGame();
-//     return true;
-// };
+export const createArenaGameResolver: gqlTypes.MutationResolvers<GraphqlContext>['createArenaGame'] = async (
+    parent,
+    args,
+    graphqlContext
+) => {
+    if (!isUserContext(graphqlContext)) {
+      throw new AuthenticationError('Only users are allowed to create games')
+    }
+
+    const result = await createArenaGame(graphqlContext.ctx, { userId: graphqlContext.userID, arenaId: args.arenaID });
+
+    if (result instanceof Error) {
+      return {
+        __typename: 'CreateArenaGameFailure',
+        errors: [toGraphQLError(result)],
+      };
+    }
+    return {
+      __typename: 'CreateArenaGameSuccess',
+      gameID: result.gameId
+    };
+};
 
 export const createArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['createArena'] = async (
     parent,
@@ -63,7 +73,7 @@ export const createArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['cr
     graphqlContext
 ) => {
     if (!isUserContext(graphqlContext)) {
-      throw new AuthenticationError('Only users are allowed to create games')
+      throw new AuthenticationError('Only users are allowed to create arenas')
     }
     
     const result = await createArena(graphqlContext.ctx, { teamId: args.teamID, userId: graphqlContext.userID, arenaName: args.name });

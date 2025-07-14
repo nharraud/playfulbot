@@ -1,3 +1,4 @@
+import { ArenaID } from "../entities/base-types";
 import { ValidationErrorData } from "../entities/Validation";
 
 export class UnkownError extends Error {
@@ -48,9 +49,11 @@ export class UserNotFoundError extends NotFoundError {
   }
 }
 
-export class DebugArenaNotFoundError extends NotFoundError {
-  constructor() {
-    super('Debug arena not found');
+export class ArenaNotFoundError extends NotFoundError {
+  readonly name = 'ArenaNotFoundError';
+  constructor(readonly arenaId: ArenaID) {
+    super('Arena not found');
+    
   }
 }
 

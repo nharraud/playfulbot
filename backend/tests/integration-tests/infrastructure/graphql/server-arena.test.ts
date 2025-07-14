@@ -7,11 +7,13 @@ import { Tournament } from '~playfulbot/core/entities/Tournaments';
 import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { hideErrorLogs } from './utils/logger';
+import { Arena } from '~playfulbot/core/entities/Arena';
 
 const userData = { username: 'testuser', password: 'testpassword' };
 const teamMemberData = { username: 'teamMember', password: 'otherpass' };
 const teamMember2Data = { username: 'teamMember2', password: 'otherpass' };
 const nonTeamMemberData = { username: 'nonTeamMember', password: 'otherpass' };
+const differentTeamMemberData = { username: 'diffTeamMember', password: 'otherpass' };
 
 async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
@@ -53,6 +55,24 @@ async function nonTeamMemberFixture({ ctx }: Omit<TestFixtures, 'nonTeamMember'>
   await use(user);
 }
 
+async function differentTeamMemberFixture({ ctx, tournament }: Omit<TestFixtures, 'differentTeamMember'>, use: any) {
+  const team = await ctx.providers.team.createTeam(ctx, {
+    name: 'testTeam2',
+    tournamentID: tournament.id,
+  }) as Team;
+  const teamMember = await ctx.providers.user.createUser(ctx, differentTeamMemberData) as User;
+  ctx.providers.team.addTeamMember(ctx, team.id, teamMember.id);
+  await use(teamMember);
+}
+
+async function arenaFixture({ ctx, team }: Omit<TestFixtures, 'arena'>, use: any) {
+  const arena = await ctx.providers.arena.createArena(ctx, {
+    name: 'testArena',
+    teamId: team.id
+  });
+  await use(arena);
+}
+
 interface TestFixtures {
   ctx: Context<any>,
   graphql: graphqlFixtureType,
@@ -61,6 +81,8 @@ interface TestFixtures {
   teamMember: User,
   teamMember2: User,
   nonTeamMember: User,
+  differentTeamMember: User,
+  arena: Arena,
 }
 
 const test = baseTest.extend<TestFixtures>({
@@ -71,6 +93,8 @@ const test = baseTest.extend<TestFixtures>({
   teamMember: teamMemberFixture,
   teamMember2: teamMember2Fixture,
   nonTeamMember: nonTeamMemberFixture,
+  differentTeamMember: differentTeamMemberFixture,
+  arena: arenaFixture,
 });
 
 describe('graphql', () => {
@@ -154,6 +178,80 @@ describe('graphql', () => {
       // expect(response.body.data.createArena.team.members[0].username).eql(user.username);
       const arena = await ctx.providers.arena.getArena(ctx, response.body.data.createArena.arena.id);
       expect(arena.name).eql(response.body.data.createArena.arena.name);
+    });
+  });
+
+  describe('Mutation/createArenaGame', () => {
+    const query = `
+      mutation createArenaGame($arenaID: ID!) {
+        createArenaGame(arenaID: $arenaID) {
+          __typename
+          ... on CreateArenaGameSuccess {
+            gameID
+          }
+          ... on CreateArenaGameFailure {
+            errors {
+              ... on Error {
+                __typename
+                message
+              }
+            }
+          }
+        }
+      }`;
+
+    test('should fail if user is not authenticated', async ({ arena, graphql }) => {
+      hideErrorLogs();
+      const response = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.createArenaGame).eql(null);
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    });
+
+    test('should fail if user is not part of a team', async ({ arena, nonTeamMember, graphql }) => {
+      await graphql.client.login(nonTeamMemberData);
+      const response = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.createArenaGame.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test('should fail if user is not part the arena\'s team', async ({ arena, differentTeamMember, graphql }) => {
+      await graphql.client.login(differentTeamMemberData);
+      const response = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.createArenaGame.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test('should succeed at creating a game', async ({ ctx, arena, teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      const gameId = response.body.data.createArenaGame.gameID;
+      const game = await ctx.providers.gameRepository.getFullGame(gameId);
+      expect(game.arenaId).toEqual(arena.id);
+    });
+
+    test('should cancel previous game', async ({ ctx, arena, teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response1 = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      const response2 = await graphql.client.query({ operationName: 'createArenaGame', query: query, variables: {
+        arenaID: arena.id
+      } });
+      const game1Id = response1.body.data.createArenaGame.gameID;
+      const game1 = await ctx.providers.gameRepository.getFullGame(game1Id);
+      expect(game1.arenaId).toEqual(arena.id);
+      expect(game1.cancelled).toEqual(true);
+
+      const game2Id = response2.body.data.createArenaGame.gameID;
+      const game2 = await ctx.providers.gameRepository.getFullGame(game2Id);
+      expect(game2.arenaId).toEqual(arena.id);
+      expect(game2.cancelled).toEqual(false);
     });
   });
 });

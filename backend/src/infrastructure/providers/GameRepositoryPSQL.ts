@@ -5,7 +5,7 @@ import { DB } from 'playfulbot-backend-commons/lib/model/db/index';
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
 import { ArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
-import { GameRef, GameRefWithDate } from '~playfulbot/core/use-cases/interfaces/GameRef';
+import { GameRef, GameRefWithDate } from '~playfulbot/core/entities/GameRef';
 import { GameRepository } from '~playfulbot/core/use-cases/interfaces/GameRepository';
 import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
 import { VersionedAsyncIterator } from 'mem-pubsub/lib/VersionedAsyncIterator';
@@ -13,6 +13,8 @@ import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator'
 import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
 import { PlayerID } from '~playfulbot/core/entities/Players';
 import { CombinedAsyncIterator } from '~playfulbot/pubsub/CombinedAsyncIterator';
+import { Game, GameStatus } from '~playfulbot/core/entities/Game';
+import { GameDefinitionID } from 'playfulbot-config-loader';
 
 type GameNotification = {
   id: string,
@@ -27,6 +29,34 @@ interface VersionedGameRef extends GameRef {
   runnerId?: GameRunnerId,
   version: string,
 };
+
+
+/* eslint-disable camelcase */
+export interface DbGame {
+  id: GameID;
+  game_def_id: GameDefinitionID,
+  started_at: string;
+  players: PlayerAssignment[],
+  arena_id?: string,
+  runner_id?: GameRunnerId,
+  status: GameStatus,
+  cancelled: boolean,
+}
+/* eslint-enable */
+
+function buildGame(data: DbGame): Game {
+  const result: Game = {
+    gameId: data.id,
+    gameDefId: data.game_def_id,
+    startedAt: data.started_at,
+    players: data.players,
+    arenaId: data.arena_id,
+    runnerId: data.runner_id,
+    status: data.status,
+    cancelled: data.cancelled,
+  };
+  return result;
+}
 
 /**
  * GameRepository based on PostgreSQL. When we add games, the game runner servers fetch the game and notify
@@ -105,6 +135,19 @@ export class GameRepositoryPSQL implements GameRepository {
     `;
     await this.#db.oneOrNone<void>(addGameRequest, { gameId, gameDefId, players: JSON.stringify(players), arenaId });
     return { gameId };
+  }
+
+  async getFullGame(gameId: GameID): Promise<Game> {
+    // FIXME: limit retrieved columns
+    const getGameRequest = `SELECT * from games WHERE id = $[gameId];`;
+    const result = await this.#db.oneOrNone<DbGame>(getGameRequest, { gameId });
+    return buildGame(result);
+  }
+
+  async cancelGame(gameId: GameID): Promise<boolean> {
+    const cancelGameRequest = `SELECT * from cancel_game($[gameId]);`;
+    const result = await this.#db.one<{ cancel_game: boolean }>(cancelGameRequest, { gameId });
+    return result.cancel_game;
   }
 
   /**

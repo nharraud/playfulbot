@@ -1,5 +1,5 @@
 import { RunningGameRepository } from "~game-runner/core/entities/RunningGameRepository";
-import { GameProvider } from "./GameProvider";
+import { GameCancelled, GameProvider, StopListeningHandler as StopListeningGameNotificationHandler } from "./GameProvider";
 import { Game } from "~game-runner/core/entities/Game";
 
 
@@ -17,6 +17,7 @@ export class GameScheduler {
   readonly gameProvider: GameProvider;
   readonly gameRepository: RunningGameRepository;
   #status: 'running' | 'stopping' | 'stopped';
+  #stopListeningGameNotifications: StopListeningGameNotificationHandler;
 
   constructor(gameProvider: GameProvider, gameRepository: RunningGameRepository, config: GameSchedulerConfig) {
     this.gameProvider = gameProvider;
@@ -37,6 +38,7 @@ export class GameScheduler {
   async stop(cancel: Boolean = false): Promise<void> {
     this.#status = 'stopping';
     const games =  this.gameRepository.list();
+    this.#stopListeningGameNotifications?.();
     if (cancel) {
       for (const game of games) {
         game.cancel();
@@ -55,6 +57,12 @@ export class GameScheduler {
       throw new InvalidGameSchedulerState('Cannot schedule games when the scheduler is stopping');
     }
     this.#status = 'running';
+    this.#stopListeningGameNotifications = this.gameProvider.onNotification(async (notification) => {
+      if (notification instanceof GameCancelled) {
+        const game = this.gameRepository.get(notification.gameId);
+        game?.cancel();
+      }
+    });
     while (this.#status === 'running') {
       if (this.gameRepository.nbGames < this.config.maxGames) {
         const gameConfig = await this.gameProvider.fetchGame();

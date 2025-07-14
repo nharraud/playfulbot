@@ -82,7 +82,8 @@ CREATE TABLE games (
   players JSONB NOT NULL,
   runner_id uuid REFERENCES game_runners(id) ON DELETE SET NULL,
   arena_id uuid NULL REFERENCES arenas(id) ON DELETE CASCADE,
-  status game_status DEFAULT 'pending'
+  status game_status DEFAULT 'pending',
+  cancelled BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE INDEX games_players 
@@ -113,6 +114,7 @@ BEGIN
           SELECT id
           FROM games
           WHERE runner_id IS NULL
+          AND status = 'pending'
           FOR UPDATE SKIP LOCKED
           LIMIT 1
       ) RETURNING * INTO selected_game;
@@ -137,6 +139,39 @@ BEGIN
     END LOOP;
 
     RETURN selected_game;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TYPE cancelled_game_type AS (
+  id uuid,
+  runner_id uuid,
+  status game_status,
+  cancelled boolean
+);
+
+CREATE FUNCTION cancel_game(game_id uuid) RETURNS boolean AS $$
+DECLARE
+    cancelled_game cancelled_game_type;
+    serialized_game TEXT;
+BEGIN
+    UPDATE games
+      SET status = 'ended', cancelled = true
+      WHERE id = game_id
+      AND status != 'ended'
+      RETURNING id, runner_id, status, cancelled INTO cancelled_game;
+
+    IF cancelled_game IS NULL THEN
+        -- No game was found
+      RETURN false;
+    END IF;
+
+    serialized_game := row_to_json(cancelled_game)::text;
+
+    IF cancelled_game.runner_id IS NOT NULL THEN
+      PERFORM pg_notify('runner_' || cancelled_game.runner_id, serialized_game);
+    END IF;
+
+    RETURN true;
 END;
 $$ LANGUAGE plpgsql;
 

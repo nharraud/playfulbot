@@ -17,9 +17,13 @@ export default defineConfig({
       'graphql': 'graphql/index.js',
     },
     setupFiles: 'dotenv-flow/config',
+    include:[
+      'tests/**',
+    ],
     exclude:[
-      ...configDefaults.exclude, 
-      'build/**'
+      ...configDefaults.exclude,
+      'build/**',
+      'src/**'
     ],
     restoreMocks: true,
   },

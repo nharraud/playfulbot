@@ -3,7 +3,7 @@ import { GameAction, GameActionHandler } from 'playfulbot-game-backend';
 import { GameState } from 'playfulbot-game';
 import { Game, PlayerAssignment } from '~game-runner/core/entities/Game';
 import { GameScheduler } from '~game-runner/core/use-cases/game-scheduling/GameScheduler';
-import { GameConfig, GameProvider } from '~game-runner/core/use-cases/game-scheduling/GameProvider';
+import { GameCancelled, GameConfig, GameNotificationListener, GameProvider, StopListeningHandler } from '~game-runner/core/use-cases/game-scheduling/GameProvider';
 import { RunningGameRepositoryInMemory } from '~game-runner/infrastructure/games/RunningGameRepositoryInMemory';
 import { afterEach } from 'node:test';
 import { DeferredPromise } from 'playfulbot-backend-commons/lib/utils';
@@ -46,9 +46,15 @@ describe('core/entities/game', () => {
 
   class BasicGameProvider implements GameProvider {
     counter = 0;
+    listeners: GameNotificationListener[] = [];
     fetchGame(): Promise<GameConfig> {
         return Promise.resolve({ id: `testGame${++this.counter}`, gameDefinition: basicGameDefinition, players });
     }
+    onNotification(listener: GameNotificationListener): StopListeningHandler {
+      this.listeners.push(listener);
+      return () => {};
+    }
+    async close() {}
   }
 
   class TestGameRepository extends RunningGameRepositoryInMemory {
@@ -90,6 +96,7 @@ describe('core/entities/game', () => {
 
   afterEach(async () => {
     await gameScheduler.stop(true);
+    await gameProvider.close();
   })
 
   test('should not be running status when not started or stopping', async () => {
@@ -120,6 +127,16 @@ describe('core/entities/game', () => {
     for (const game of gameRepository.list()) {
       expect(game.cancelled).toBe(true);
     }
+  });
+
+  test('should cancel games when a GameCancelled notification arrives', async () => {
+    gameScheduler.start();
+    await gameRepository.waitForGameCount(2);
+    expect(gameProvider.listeners).toHaveLength(1);
+    await gameProvider.listeners[0](new GameCancelled('testGame1'));
+    expect(gameRepository.get('testGame1').cancelled).toEqual(true);
+    expect(gameRepository.get('testGame2').cancelled).toEqual(false);
+    await gameScheduler.stop(true);
   });
 
   test('should return to status "stopped" when all games are finished', async () => {
