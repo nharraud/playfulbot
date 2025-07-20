@@ -226,7 +226,7 @@ union CreateArenaGameResult = CreateArenaGameSuccess | CreateArenaGameFailure
 # #
 type GameRef {
   gameID: String!
-  runner_url: String!
+  graphqlUrl: String!
 }
 
 type ArenaGamesFailure {

@@ -146,9 +146,9 @@ export async function createGraphqlServer(deps: Dependencies, { port, host }: { 
   );
 
   const serverPort = port || serverConfig.GRAPHQL_PORT;
-  const serverHost = host || serverConfig.BACKEND_HOST;
+  const serverHost = host || serverConfig.GRAPHQL_HOST;
   return new Promise<http.Server>((resolve) =>
-    httpServer.listen({ port: serverPort }, () => {
+    httpServer.listen({ host: serverHost, port: serverPort }, () => {
       logger.info(
         `🚀 Server ready at http://${serverHost}:${serverPort}/graphql`
       );

@@ -51,7 +51,7 @@ const basicGameDefinition = { name: 'TestGame', actionHandler: changeNumberHandl
 describe('graphql', () => {
   let client: Client;
   let server: http.Server;
-  let url = `ws://${serverConfig.BACKEND_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
+  let url = `ws://${serverConfig.GRAPHQL_HOST}:${serverConfig.GRAPHQL_PORT}/graphql`;
   let gameRepository = new RunningGameRepositoryInMemory();
 
   beforeAll(async () => {

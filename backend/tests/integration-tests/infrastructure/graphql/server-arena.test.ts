@@ -264,6 +264,7 @@ describe('graphql', () => {
           __typename
           ... on GameRef {
             gameID
+            graphqlUrl
           }
           ... on ArenaGamesFailure {
             errors {
@@ -337,7 +338,8 @@ describe('graphql', () => {
 
     test('should stream games', async ({ ctx, arena, teamMember, graphql }) => {
       const wsClient = await graphql.createWsClient(teamMemberData);
-      const runner = await PSQLGameRunnerMock.create();
+      const runner1 = await PSQLGameRunnerMock.create();
+      const runner2 = await PSQLGameRunnerMock.create();
       
       const stream = await wsClient.iterate({ query: query, variables: {
         arenaID: arena.id
@@ -347,19 +349,20 @@ describe('graphql', () => {
         arenaID: arena.id
       } });
       const game1Id = createResponse1.body.data.createArenaGame.gameID;
-      const fetchedGame1 = await runner.fetchGame();
+      await runner1.fetchGame();
 
       const createResponse2 = await graphql.client.query({ operationName: 'createArenaGame', query: createQuery, variables: {
         arenaID: arena.id
       } });
       const game2Id = createResponse2.body.data.createArenaGame.gameID;
-      const fetchedGame2 = await runner.fetchGame();
+      await runner2.fetchGame();
 
       const game1 = await stream.next();
       expect(game1.value.data).toMatchObject({
         arenaGames: {
           '__typename': 'GameRef',
           gameID: game1Id,
+          graphqlUrl: runner1.graphqlUrl,
         }
       });
 
@@ -368,6 +371,7 @@ describe('graphql', () => {
         arenaGames: {
           '__typename': 'GameRef',
           gameID: game2Id,
+          graphqlUrl: runner2.graphqlUrl,
         }
       });
     });

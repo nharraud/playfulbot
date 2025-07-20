@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { db } from 'playfulbot-backend-commons/lib/model/db/index';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
 
@@ -9,12 +10,21 @@ interface GameRow {
 
 export class PSQLGameRunnerMock {
   #runnerID: string | undefined;
+  readonly grpcUrl;
+  readonly graphqlUrl;
 
-  private constructor() {}
+  private constructor() {
+    const uuid = randomUUID()
+    this.grpcUrl = `test-grpc-url-${uuid}:4242`
+    this.graphqlUrl = `test-graphql-url-${uuid}:4242`
+  }
 
   #init() {
     return db.default.tx(async (tx) => {
-      const response = await tx.one<{id: string}>('INSERT INTO game_runners DEFAULT VALUES RETURNING id');
+      const response = await tx.one<{id: string}>(
+        'INSERT INTO game_runners(graphql_url, grpc_url) VALUES($[graphqlUrl], $[grpcUrl]) RETURNING id',
+        { grpcUrl: this.grpcUrl, graphqlUrl: this.graphqlUrl }
+      );
       this.#runnerID = response.id;
     });
   }

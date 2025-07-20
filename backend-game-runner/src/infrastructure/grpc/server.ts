@@ -188,12 +188,12 @@ function getServer(): grpc.Server {
   return server;
 }
 
-export function startServer(): void {
-  let grpcPort = 5000;
+export function startServer({ host = 'localhost', port = 5000 }: { host?: string, port?: number } = {}): { url: string } {
+  let grpcPort = port;
   if (process.env.GRPC_PORT) {
     grpcPort = parseInt(process.env.GRPC_PORT, 10);
   }
-  let grpcHost = 'localhost';
+  let grpcHost = host;
   if (process.env.GRPC_HOST) {
     grpcHost = process.env.GRPC_HOST;
   }
@@ -218,4 +218,5 @@ export function startServer(): void {
       server.start();
     }
   });
+  return { url };
 }

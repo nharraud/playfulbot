@@ -4,6 +4,7 @@ import { BackendGameDefinition } from "playfulbot-game-backend";
 import { PlayerAssignment } from "~game-runner/core/entities/Game";
 import pgPromise from 'pg-promise';
 import pg from 'pg-promise/typescript/pg-subset';
+import { serverConfig } from "~game-runner/serverConfig";
 
 interface GameRow {
   id: string,
@@ -27,14 +28,21 @@ export class PSQLGameProvider implements GameProvider {
   #connection: pgPromise.IConnected<unknown, pg.IClient>;
   #listeners: Array<GameNotificationListener> = [];
   #closed: boolean = false;
+  readonly #graphqlUrl: string;
+  readonly #grpcUrl: string;
 
-  constructor(gameDefinitionsProvider: GameDefinitionsProvider) {
+  constructor({ gameDefinitionsProvider, graphqlUrl, grpcUrl}: { gameDefinitionsProvider: GameDefinitionsProvider, graphqlUrl?: string, grpcUrl?: string }) {
     this.#gameDefinitionsProvider = gameDefinitionsProvider;
+    this.#graphqlUrl = graphqlUrl || serverConfig.EXPOSED_GRAPHQL_URL;
+    this.#grpcUrl = grpcUrl || serverConfig.EXPOSED_GRPC_URL;
   }
 
   async init() {
     await db.default.tx(async (tx) => {
-      const response = await tx.one<{id: string}>('INSERT INTO game_runners DEFAULT VALUES RETURNING id');
+      const response = await tx.one<{id: string}>(
+        'INSERT INTO game_runners(graphql_url, grpc_url) VALUES ($[graphqlUrl], $[grpcUrl]) RETURNING id',
+        { graphqlUrl: this.#graphqlUrl, grpcUrl: this.#grpcUrl }
+      );
       this.#runnerID = response.id;
     });
     

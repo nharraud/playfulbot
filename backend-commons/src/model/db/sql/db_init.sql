@@ -63,7 +63,9 @@ CREATE TABLE round_players (
  */
 
 CREATE TABLE game_runners (
-  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  graphql_url VARCHAR(150) NOT NULL,
+  grpc_url VARCHAR(150) NOT NULL
 );
 
 CREATE TABLE arenas (

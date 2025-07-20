@@ -25,11 +25,10 @@ export const arenaGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>[
       errorStream.complete();
       return errorStream;
     }
-    return new TransformAsyncIterator(result[Symbol.asyncIterator](), (game: GameRef) => ({
+    return new TransformAsyncIterator(result[Symbol.asyncIterator](), async (game: GameRef) => ({
       __typename: 'GameRef',
       gameID: game.gameId,
-      // FIXME fix runner url
-      runner_url: ''
+      graphqlUrl: (await graphqlContext.ctx.providers.gameRepository.getRunnerInfo(game.runnerId)).graphqlUrl,
     } as gqlTypes.GameRef));
 
   },

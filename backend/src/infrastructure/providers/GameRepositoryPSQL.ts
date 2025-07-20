@@ -15,6 +15,8 @@ import { PlayerID } from '~playfulbot/core/entities/Players';
 import { CombinedAsyncIterator } from 'mem-pubsub/lib/CombinedAsyncIterator';
 import { Game, GameStatus } from '~playfulbot/core/entities/Game';
 import { GameDefinitionID } from 'playfulbot-config-loader';
+import { MemCache } from '~playfulbot/utils/MemCache';
+import { RunnerInfo } from '~playfulbot/core/use-cases/interfaces/RunnerInfo';
 
 type GameNotification = {
   id: string,
@@ -58,6 +60,23 @@ function buildGame(data: DbGame): Game {
   return result;
 }
 
+/* eslint-disable camelcase */
+export interface DbRunner {
+  id: GameRunnerId,
+  graphql_url: string,
+  grpc_url: string,
+}
+/* eslint-enable */
+
+function buildRunnerInfo(data: DbRunner): RunnerInfo {
+  const result: RunnerInfo = {
+    id: data.id,
+    graphqlUrl: data.graphql_url,
+    grpcUrl: data.grpc_url,
+  };
+  return result;
+}
+
 /**
  * GameRepository based on PostgreSQL. When we add games, the game runner servers fetch the game and notify
  * every backend server which listens for Debug Arena changes and Player games changes.
@@ -69,6 +88,7 @@ export class GameRepositoryPSQL implements GameRepository {
   #playerStreams = new Map<GameID, Promise<AsyncStream<GameRef>[]>>();
   #db: DB;
   #closingPromises: Array<Promise<any>> = [];
+  readonly #runnerInfoCache = new MemCache<GameRunnerId, RunnerInfo>();
 
   private constructor(db: DB) {
     this.#db = db;
@@ -125,6 +145,7 @@ export class GameRepositoryPSQL implements GameRepository {
     this.#closed = true;
     await Promise.allSettled(this.#closingPromises);
     await this.#connection.done();
+    this.#runnerInfoCache.startCleaning();
   }
 
   async addGame({ gameDefId, players, arenaId }: { gameDefId: string, players: PlayerAssignment[], arenaId?: ArenaID }): Promise<GameRef> {
@@ -271,5 +292,19 @@ export class GameRepositoryPSQL implements GameRepository {
       }
     });
     return stream;
+  }
+
+  async getRunnerInfo(runnerId: GameRunnerId): Promise<RunnerInfo | undefined> {
+    const cachedInfo = this.#runnerInfoCache.get(runnerId);
+    if (cachedInfo) {
+      return cachedInfo;
+    }
+    const request = 'SELECT game_runners.id, game_runners.graphql_url, game_runners.grpc_url FROM game_runners WHERE game_runners.id = $[runnerId];';
+    const result = await this.#db.oneOrNone<DbRunner>(request, { runnerId });
+    if (result) {
+      const retrievedInfo = buildRunnerInfo(result);
+      this.#runnerInfoCache.set(runnerId, retrievedInfo);
+      return retrievedInfo;
+    }
   }
 }

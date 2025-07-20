@@ -8,17 +8,24 @@ import { RunningGameRepositoryInMemory } from './infrastructure/games/RunningGam
 import { GameScheduler } from './core/use-cases/game-scheduling/GameScheduler';
 import { PSQLGameProvider } from './infrastructure/games/PSQLGameProvider';
 import { getGameDefinitions } from './infrastructure/games/gameDefinitions';
+import { serverConfig } from './serverConfig';
+import { AddressInfo } from 'net';
 
 async function main() {
   validateSecretKey();
 
   const gameRepository = new RunningGameRepositoryInMemory();
 
-  await createGraphqlServer({ gameRepository });
-  startGrpcServer();
+  const graphqlServer = await createGraphqlServer({ gameRepository }, { host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRAPHQL_PORT });
+  const graphqlAddress = graphqlServer.address() as AddressInfo;
+  const { url: grpcUrl } = startGrpcServer({ host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRPC_PORT });
 
   const gameDefinitions = await getGameDefinitions();
-  const gameProvider = new PSQLGameProvider(gameDefId => Promise.resolve(gameDefinitions.get(gameDefId)));
+  const gameProvider = new PSQLGameProvider({
+    gameDefinitionsProvider: gameDefId => Promise.resolve(gameDefinitions.get(gameDefId)),
+    graphqlUrl: serverConfig.EXPOSED_GRAPHQL_URL || `${graphqlAddress.address}:${graphqlAddress.port}`,
+    grpcUrl: serverConfig.EXPOSED_GRPC_URL || grpcUrl,
+  });
   const gameScheduler = new GameScheduler(gameProvider, gameRepository, { maxGames: 1 });
   await gameScheduler.start();
 }

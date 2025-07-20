@@ -23,7 +23,7 @@ describe('infrastructure/games/PSQLGameProvider', () => {
     const psqlGameRepository = new PSQLGameRepository();
     const addedGame = { gameDefId: 'testGame', players: [{ playerID: randomUUID() }, { playerID: randomUUID() }]};
     const res = await psqlGameRepository.addGame(addedGame);
-    const psqlGameProvider = new PSQLGameProvider(gameDefProvider);
+    const psqlGameProvider = new PSQLGameProvider({ gameDefinitionsProvider: gameDefProvider });
     const retrievedGame = await psqlGameProvider.fetchGame();
     expect(retrievedGame).to.eql({
       id: res,
@@ -37,7 +37,7 @@ describe('infrastructure/games/PSQLGameProvider', () => {
     const psqlGameRepository = new PSQLGameRepository();
     const addedGame = { gameDefId: 'testGame', players: [{ playerID: randomUUID() }, { playerID: randomUUID() }]};
     const res = await psqlGameRepository.addGame(addedGame);
-    const psqlGameProvider = new PSQLGameProvider(gameDefProvider);
+    const psqlGameProvider = new PSQLGameProvider({ gameDefinitionsProvider: gameDefProvider });
     const retrievedGame = await psqlGameProvider.fetchGame();
 
     const cancelledGamePromise = new DeferredPromise<GameNotification>;
