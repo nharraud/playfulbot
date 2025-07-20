@@ -8,6 +8,7 @@ import { Team } from '~playfulbot/core/entities/Teams';
 import { User } from '~playfulbot/core/entities/Users';
 import { hideErrorLogs } from './utils/logger';
 import { Arena } from '~playfulbot/core/entities/Arena';
+import { PSQLGameRunnerMock } from 'tests/utils/PSQLGameRunnerMock';
 
 const userData = { username: 'testuser', password: 'testpassword' };
 const teamMemberData = { username: 'teamMember', password: 'otherpass' };
@@ -252,6 +253,123 @@ describe('graphql', () => {
       const game2 = await ctx.providers.gameRepository.getFullGame(game2Id);
       expect(game2.arenaId).toEqual(arena.id);
       expect(game2.cancelled).toEqual(false);
+    });
+  });
+
+
+  describe('Subscription/arenaGames', () => {
+    const query = `
+      subscription arenaGames($arenaID: ID!) {
+        arenaGames(arenaID: $arenaID) {
+          __typename
+          ... on GameRef {
+            gameID
+          }
+          ... on ArenaGamesFailure {
+            errors {
+              ... on Error {
+                __typename
+                message
+              }
+            }
+          }
+        }
+      }`;
+    
+    
+  const createQuery = `
+    mutation createArenaGame($arenaID: ID!) {
+      createArenaGame(arenaID: $arenaID) {
+        __typename
+        ... on CreateArenaGameSuccess {
+          gameID
+        }
+        ... on CreateArenaGameFailure {
+          errors {
+            ... on Error {
+              __typename
+              message
+            }
+          }
+        }
+      }
+    }`;
+
+    // test('should fail if user is not authenticated', async ({ arena, graphql }) => {
+    //   hideErrorLogs();
+    //   const response = await graphql.client.query({ operationName: 'arenaGames', query: query, variables: {
+    //     arenaID: arena.id
+    //   } });
+    //   expect(response.body.data.createArenaGame).eql(null);
+    //   expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    // });
+
+    test('should fail if user is not part of a team', async ({ arena, nonTeamMember, graphql }) => {
+      const wsClient = await graphql.createWsClient(nonTeamMemberData);
+      const stream = await wsClient.iterate({ query: query, variables: {
+        arenaID: arena.id
+      } });
+      const result: Array<any> = [];
+      for await(const item of stream) {
+        result.push(item);
+      };
+      expect(result).toHaveLength(1);
+      expect(result[0].data.arenaGames.errors[0].__typename).toEqual('ForbiddenError');
+      // const result1 = await results.next();
+      // expect(result1.value.data.arenaGames.errors[0].__typename).eql('ForbiddenError');
+      // const result2 = await results.next();
+      // expect(result2.done).toEqual(true);
+    });
+
+    test('should fail if user is not part the arena\'s team', async ({ arena, differentTeamMember, graphql }) => {
+      const wsClient = await graphql.createWsClient(differentTeamMemberData);
+      const stream = await wsClient.iterate({ query: query, variables: {
+        arenaID: arena.id
+      } });
+      const result: Array<any> = [];
+      for await(const item of stream) {
+        result.push(item);
+      };
+      expect(result).toHaveLength(1);
+      expect(result[0].data.arenaGames.errors[0].__typename).toEqual('ForbiddenError');
+    });
+
+
+    test('should stream games', async ({ ctx, arena, teamMember, graphql }) => {
+      const wsClient = await graphql.createWsClient(teamMemberData);
+      const runner = await PSQLGameRunnerMock.create();
+      
+      const stream = await wsClient.iterate({ query: query, variables: {
+        arenaID: arena.id
+      } });
+
+      const createResponse1 = await graphql.client.query({ operationName: 'createArenaGame', query: createQuery, variables: {
+        arenaID: arena.id
+      } });
+      const game1Id = createResponse1.body.data.createArenaGame.gameID;
+      const fetchedGame1 = await runner.fetchGame();
+
+      const createResponse2 = await graphql.client.query({ operationName: 'createArenaGame', query: createQuery, variables: {
+        arenaID: arena.id
+      } });
+      const game2Id = createResponse2.body.data.createArenaGame.gameID;
+      const fetchedGame2 = await runner.fetchGame();
+
+      const game1 = await stream.next();
+      expect(game1.value.data).toMatchObject({
+        arenaGames: {
+          '__typename': 'GameRef',
+          gameID: game1Id,
+        }
+      });
+
+      const game2 = await stream.next();
+      expect(game2.value.data).toMatchObject({
+        arenaGames: {
+          '__typename': 'GameRef',
+          gameID: game2Id,
+        }
+      });
     });
   });
 });

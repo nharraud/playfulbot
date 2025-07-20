@@ -1,5 +1,5 @@
 import got from 'got';
-import { createClient } from 'graphql-ws';
+import { createClient, } from 'graphql-ws';
 import { serverConfig } from '~playfulbot/serverConfig';
 import WebSocket from 'ws';
 // import { Client as UrqlClient, ClientOptions, fetchExchange } from '@urql/core';

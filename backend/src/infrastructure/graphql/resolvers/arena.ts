@@ -1,48 +1,42 @@
-// import { AuthenticationError, DebugArenaNotFoundError, ForbiddenError } from '~playfulbot/errors';
-// import { DebugArena } from '~playfulbot/infrastructure/providers/ArenaProviderPSQL';
-import { pubsub } from '~playfulbot/pubsub';
-import { TransformAsyncIterator } from '~playfulbot/pubsub/TransformedAsyncIterator';
-import { VersionedAsyncIterator } from '~playfulbot/pubsub/VersionedAsyncIterator';
 import { GraphqlContext, isUserContext } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { createArena } from '~playfulbot/core/use-cases/arena/createArena';
 import { toGraphQLError } from './errors';
-import { Arena } from '~playfulbot/core/entities/Arena';
-import { MaxArenaReachedError } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { AuthenticationError } from '~playfulbot/errors';
 import { createArenaGame } from '~playfulbot/core/use-cases/arena/createArenaGame';
+import { streamArenaGames } from '~playfulbot/core/use-cases/arena/streamArenaGames';
+import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
+import { GameRef } from '~playfulbot/core/entities/GameRef';
+import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator';
 
-// export const arenaResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arena'] = {
-//   subscribe: async (model, args, context, info) => {
-//     const arena = DebugArena.getDebugArena(args.userID, args.tournamentID);
-//     if (arena === undefined) {
-//       throw new DebugArenaNotFoundError();
-//     }
-//     const iterator = pubsub.listen('DEBUG_GAME', arena.id);
+export const arenaGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arenaGames'] = {
+  subscribe: async (model, args, graphqlContext, info) => {
+    if (!isUserContext(graphqlContext)) {
+      throw new AuthenticationError('Only users are allowed to create games')
+    }
+    const result = await streamArenaGames(graphqlContext.ctx, { arenaId: args.arenaID, userId: graphqlContext.userID })
 
-//     const versionedIterator = new VersionedAsyncIterator(iterator, () => {
-//       const currentArena = DebugArena.getDebugArena(args.userID, args.tournamentID);
-//       if (currentArena === undefined) {
-//         throw new DebugArenaNotFoundError();
-//       }
-//       return Promise.resolve({
-//         id: currentArena.id,
-//         gameID: currentArena.game?.id,
-//         version: currentArena.version,
-//       });
-//     });
+    if (result instanceof Error) {
+      const errorStream = new AsyncStream<gqlTypes.ArenaGamesFailure>();
+      errorStream.push({
+        __typename: 'ArenaGamesFailure',
+        errors: [toGraphQLError(result)],
+      });
+      errorStream.complete();
+      return errorStream;
+    }
+    return new TransformAsyncIterator(result[Symbol.asyncIterator](), (game: GameRef) => ({
+      __typename: 'GameRef',
+      gameID: game.gameId,
+      // FIXME fix runner url
+      runner_url: ''
+    } as gqlTypes.GameRef));
 
-//     return Promise.resolve(
-//       new TransformAsyncIterator(versionedIterator, (message) => ({
-//         debugArena: {
-//           id: arena.id,
-//           game: message.gameID,
-//           version: message.version,
-//         },
-//       }))
-//     );
-//   },
-// };
+  },
+  resolve: (value: any) => {
+    return value;
+  }
+};
 
 export const createArenaGameResolver: gqlTypes.MutationResolvers<GraphqlContext>['createArenaGame'] = async (
     parent,

@@ -12,7 +12,7 @@ import { VersionedAsyncIterator } from 'mem-pubsub/lib/VersionedAsyncIterator';
 import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator'
 import { DeferredPromise } from '~playfulbot/utils/DeferredPromise';
 import { PlayerID } from '~playfulbot/core/entities/Players';
-import { CombinedAsyncIterator } from '~playfulbot/pubsub/CombinedAsyncIterator';
+import { CombinedAsyncIterator } from 'mem-pubsub/lib/CombinedAsyncIterator';
 import { Game, GameStatus } from '~playfulbot/core/entities/Game';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 

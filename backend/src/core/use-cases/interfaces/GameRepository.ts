@@ -10,6 +10,5 @@ export interface GameRepository {
   getFullGame(gameId: GameID): Promise<Game>;
   getArenaLatestGame(arenaId: ArenaID): Promise<GameRefWithDate | undefined>;
   close(): Promise<void>;
-  // stopGame({ gameId }: { gameId: GameID }): Promise<void>;
-  // listenToPlayerGame({ playerID }: { playerID: PlayerID }): AsyncIterator<GameID>;
+  streamArenaGames(arenaId: ArenaID): Promise<AsyncIterable<GameRef>>
 }

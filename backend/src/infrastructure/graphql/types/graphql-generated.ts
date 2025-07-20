@@ -26,6 +26,21 @@ export type Arena = {
   team?: Maybe<Team>;
 };
 
+export type ArenaGamesError = ArenaNotFoundError | ForbiddenError;
+
+export type ArenaGamesFailure = {
+  __typename?: 'ArenaGamesFailure';
+  errors: Array<ArenaGamesError>;
+};
+
+export type ArenaGamesResult = ArenaGamesFailure | GameRef;
+
+export type ArenaGamesSuccess = {
+  __typename?: 'ArenaGamesSuccess';
+  gameID: Scalars['String']['output'];
+  runner_url: Scalars['String']['output'];
+};
+
 export type ArenaNameAlreadyTakenError = Error & {
   __typename?: 'ArenaNameAlreadyTakenError';
   message: Scalars['String']['output'];
@@ -92,6 +107,12 @@ export type Error = {
 export type ForbiddenError = Error & {
   __typename?: 'ForbiddenError';
   message: Scalars['String']['output'];
+};
+
+export type GameRef = {
+  __typename?: 'GameRef';
+  gameID: Scalars['String']['output'];
+  runner_url: Scalars['String']['output'];
 };
 
 export type JoinTeamError = ForbiddenError | TeamNotFoundError;
@@ -203,11 +224,11 @@ export type QueryTournamentArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  arena?: Maybe<Arena>;
+  arenaGames?: Maybe<ArenaGamesResult>;
 };
 
 
-export type SubscriptionArenaArgs = {
+export type SubscriptionArenaGamesArgs = {
   arenaID: Scalars['ID']['input'];
 };
 
@@ -357,6 +378,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
+  ArenaGamesError: ( ArenaNotFoundError ) | ( ForbiddenError );
+  ArenaGamesResult: ( Omit<ArenaGamesFailure, 'errors'> & { errors: Array<_RefType['ArenaGamesError']> } ) | ( GameRef );
   CreateArenaError: ( ArenaNameAlreadyTakenError ) | ( ForbiddenError ) | ( MaxArenaReachedError ) | ( ValidationError );
   CreateArenaGameError: ( ArenaNotFoundError ) | ( ForbiddenError );
   CreateArenaGameResult: ( Omit<CreateArenaGameFailure, 'errors'> & { errors: Array<_RefType['CreateArenaGameError']> } ) | ( CreateArenaGameSuccess );
@@ -380,6 +403,10 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Arena: ResolverTypeWrapper<Arena>;
+  ArenaGamesError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['ArenaGamesError']>;
+  ArenaGamesFailure: ResolverTypeWrapper<Omit<ArenaGamesFailure, 'errors'> & { errors: Array<ResolversTypes['ArenaGamesError']> }>;
+  ArenaGamesResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['ArenaGamesResult']>;
+  ArenaGamesSuccess: ResolverTypeWrapper<ArenaGamesSuccess>;
   ArenaNameAlreadyTakenError: ResolverTypeWrapper<ArenaNameAlreadyTakenError>;
   ArenaNotFoundError: ResolverTypeWrapper<ArenaNotFoundError>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -399,6 +426,7 @@ export type ResolversTypes = {
   DeletedTeam: ResolverTypeWrapper<DeletedTeam>;
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
+  GameRef: ResolverTypeWrapper<GameRef>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
@@ -434,6 +462,10 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Arena: Arena;
+  ArenaGamesError: ResolversUnionTypes<ResolversParentTypes>['ArenaGamesError'];
+  ArenaGamesFailure: Omit<ArenaGamesFailure, 'errors'> & { errors: Array<ResolversParentTypes['ArenaGamesError']> };
+  ArenaGamesResult: ResolversUnionTypes<ResolversParentTypes>['ArenaGamesResult'];
+  ArenaGamesSuccess: ArenaGamesSuccess;
   ArenaNameAlreadyTakenError: ArenaNameAlreadyTakenError;
   ArenaNotFoundError: ArenaNotFoundError;
   Boolean: Scalars['Boolean']['output'];
@@ -453,6 +485,7 @@ export type ResolversParentTypes = {
   DeletedTeam: DeletedTeam;
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   ForbiddenError: ForbiddenError;
+  GameRef: GameRef;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
@@ -488,6 +521,25 @@ export type ArenaResolvers<ContextType = any, ParentType extends ResolversParent
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ArenaGamesErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ArenaGamesError'] = ResolversParentTypes['ArenaGamesError']> = {
+  __resolveType: TypeResolveFn<'ArenaNotFoundError' | 'ForbiddenError', ParentType, ContextType>;
+};
+
+export type ArenaGamesFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['ArenaGamesFailure'] = ResolversParentTypes['ArenaGamesFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['ArenaGamesError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ArenaGamesResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ArenaGamesResult'] = ResolversParentTypes['ArenaGamesResult']> = {
+  __resolveType: TypeResolveFn<'ArenaGamesFailure' | 'GameRef', ParentType, ContextType>;
+};
+
+export type ArenaGamesSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['ArenaGamesSuccess'] = ResolversParentTypes['ArenaGamesSuccess']> = {
+  gameID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  runner_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -576,6 +628,12 @@ export type ForbiddenErrorResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type GameRefResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameRef'] = ResolversParentTypes['GameRef']> = {
+  gameID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  runner_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -629,7 +687,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  arena?: SubscriptionResolver<Maybe<ResolversTypes['Arena']>, "arena", ParentType, ContextType, RequireFields<SubscriptionArenaArgs, 'arenaID'>>;
+  arenaGames?: SubscriptionResolver<Maybe<ResolversTypes['ArenaGamesResult']>, "arenaGames", ParentType, ContextType, RequireFields<SubscriptionArenaGamesArgs, 'arenaID'>>;
 };
 
 export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
@@ -711,6 +769,10 @@ export type ValidationErrorResolvers<ContextType = any, ParentType extends Resol
 
 export type Resolvers<ContextType = any> = {
   Arena?: ArenaResolvers<ContextType>;
+  ArenaGamesError?: ArenaGamesErrorResolvers<ContextType>;
+  ArenaGamesFailure?: ArenaGamesFailureResolvers<ContextType>;
+  ArenaGamesResult?: ArenaGamesResultResolvers<ContextType>;
+  ArenaGamesSuccess?: ArenaGamesSuccessResolvers<ContextType>;
   ArenaNameAlreadyTakenError?: ArenaNameAlreadyTakenErrorResolvers<ContextType>;
   ArenaNotFoundError?: ArenaNotFoundErrorResolvers<ContextType>;
   CreateArenaError?: CreateArenaErrorResolvers<ContextType>;
@@ -729,6 +791,7 @@ export type Resolvers<ContextType = any> = {
   DeletedTeam?: DeletedTeamResolvers<ContextType>;
   Error?: ErrorResolvers<ContextType>;
   ForbiddenError?: ForbiddenErrorResolvers<ContextType>;
+  GameRef?: GameRefResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JoinTeamError?: JoinTeamErrorResolvers<ContextType>;
   JoinTeamFailure?: JoinTeamFailureResolvers<ContextType>;

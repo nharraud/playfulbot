@@ -221,6 +221,22 @@ union CreateArenaGameError = ForbiddenError | ArenaNotFoundError
 
 union CreateArenaGameResult = CreateArenaGameSuccess | CreateArenaGameFailure
 
+# #
+# # Stream Arena Game Input/Output
+# #
+type GameRef {
+  gameID: String!
+  runner_url: String!
+}
+
+type ArenaGamesFailure {
+  errors: [ArenaGamesError!]!
+}
+
+union ArenaGamesError = ForbiddenError | ArenaNotFoundError
+
+union ArenaGamesResult = GameRef | ArenaGamesFailure
+
 
 # type Game {
 #   id: ID
@@ -265,6 +281,10 @@ type Arena {
   team: Team
 }
 
+
+# #
+# # Player Games
+# #
 # type PlayerGames {
 #   playerID: ID
 #   games: [ID]
@@ -296,9 +316,8 @@ type Arena {
 # }
 
 type Subscription {
-#   game(gameID: ID!): LiveGame
-  arena(arenaID: ID!): Arena
-#   playerGames(playerID: ID!): LivePlayerGames
+  arenaGames(arenaID: ID!): ArenaGamesResult
+  # playerGames(playerID: ID!): LivePlayerGames
 #   teamPlayer(teamID: ID!): LivePlayer
 }
 
@@ -311,7 +330,6 @@ type Query {
 }
 
 type Mutation {
-#   play(gameID: ID!, playerID: ID!, data: JSON!): Boolean
   createArenaGame(arenaID: ID!): CreateArenaGameResult
   createArena(teamID: ID!, name: String!): CreateArenaResult
 
