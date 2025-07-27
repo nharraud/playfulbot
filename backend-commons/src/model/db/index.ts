@@ -11,7 +11,7 @@ export type TX = pgPromise.ITask<unknown>;
 
 const dbPGP = pgPromise();
 
-class Database {
+export class Database {
   private _db: DB;
   private _adminDB: DB;
 

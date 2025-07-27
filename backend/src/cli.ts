@@ -1,32 +1,30 @@
 import { Command } from 'commander';
 import { createGraphqlServer } from '~playfulbot/infrastructure/graphql/graphqlServer';
-import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
+// import { startServer as startGrpcServer } from '~playfulbot/grpc/server';
 import { createDB, dropDB } from 'playfulbot-backend-commons/lib/model/db/db_admin';
 
-import { db } from 'playfulbot-backend-commons/lib/model/db';
+import { Database } from 'playfulbot-backend-commons/lib/model/db';
 import { initDemo } from '~playfulbot/core/use-cases/initDemo';
-import { handleRestart } from './model/handleRestart';
-import { scheduler } from './scheduling/Scheduler';
+// import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';
-import { ContextPSQL, ContextPSQLImpl } from './infrastructure/providers/ContextPSQL';
+import { Context } from './core/use-cases/interfaces/Context';
 
-async function closeConnections() {
+async function closeConnections(db: Database) {
   await db.disconnectDefault();
 }
 
-async function execute(argv: string[]): Promise<void> {
+async function execute(createCtx: () => Promise<Context<Context<any>>>, db: Database, argv: string[]): Promise<void> {
   const program = new Command();
-  const context = new ContextPSQLImpl().ctxWithChildLogger({ module: __filename });
 
   program
     .command('serve')
     .description('Start the backend server')
     .action(async () => {
+      const ctx = (await createCtx()).ctxWithChildLogger({ module: __filename });
       validateSecretKey();
-      await handleRestart();
-      await createGraphqlServer<ContextPSQL>(context);
-      startGrpcServer();
-      await scheduler.start();
+      await createGraphqlServer<Context<any>>(ctx);
+      // startGrpcServer();
+      // await scheduler.start();
     });
 
   program
@@ -36,7 +34,7 @@ async function execute(argv: string[]): Promise<void> {
       try {
         await createDB();
       } finally {
-        await closeConnections();
+        await closeConnections(db);
       }
     });
 
@@ -47,7 +45,7 @@ async function execute(argv: string[]): Promise<void> {
       try {
         await dropDB();
       } finally {
-        await closeConnections();
+        await closeConnections(db);
       }
     });
 
@@ -55,11 +53,12 @@ async function execute(argv: string[]): Promise<void> {
     .command('load-demo')
     .description('Initialize the database with demo data')
     .action(async () => {
-      // await db.admin.loadDemo();
+      const ctx = (await createCtx()).ctxWithChildLogger({ module: __filename });
       try {
-        await initDemo(context);
+        await initDemo(ctx, { gameDefinitionId: process.env.DEMO_GAME_ID });
+        await ctx.providers.gameRepository.close();
       } finally {
-        await closeConnections();
+        await closeConnections(db);
       }
     });
 

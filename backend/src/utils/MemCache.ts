@@ -6,13 +6,14 @@ export class MemCache<KEY, VALUE> {
   readonly #accessedKeys = new Set<KEY>();
   readonly #cleanTimeoutMs = 5000;
   #isCleaning = true;
+  #timeout: NodeJS.Timeout;
 
   constructor(readonly cleanTimeoutMs = 5000) {
     this.startCleaning();
   }
 
   startCleaning() {
-      setTimeout(() => {
+      this.#timeout = setTimeout(() => {
           if (!this.#isCleaning) {
             return;
           }
@@ -23,6 +24,7 @@ export class MemCache<KEY, VALUE> {
 
   stopCleaning() {
     this.#isCleaning = false;
+    clearTimeout(this.#timeout);
   }
 
   clean() {

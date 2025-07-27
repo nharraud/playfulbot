@@ -145,7 +145,7 @@ export class GameRepositoryPSQL implements GameRepository {
     this.#closed = true;
     await Promise.allSettled(this.#closingPromises);
     await this.#connection.done();
-    this.#runnerInfoCache.startCleaning();
+    this.#runnerInfoCache.stopCleaning();
   }
 
   async addGame({ gameDefId, players, arenaId }: { gameDefId: string, players: PlayerAssignment[], arenaId?: ArenaID }): Promise<GameRef> {

@@ -1,4 +1,4 @@
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 import http from 'http';
 import type { ExecutionResult } from 'graphql';
 import { createYoga } from 'graphql-yoga';

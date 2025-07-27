@@ -23,6 +23,7 @@ function numberToHexString(nb: number, length: number) {
 }
 
 async function createTeams(ctx: Context<any>, nbTeam: number, tournamentId: TournamentID) {
+  ctx.logger.info('Creating teams');
   const teams = Array.from({ length: nbTeam }, (_, idx) => {
     const teamNB = numberToHexString(idx, 12);
     // const team = await Team.create(
@@ -38,6 +39,7 @@ async function createTeams(ctx: Context<any>, nbTeam: number, tournamentId: Tour
 
 
 async function createTeamMembers(ctx: Context<any>, nbUsers: number, teams: Team[]) {
+  ctx.logger.info('Creating team members');
   const users = Array.from({ length: nbUsers }, async (_, idx) => {
     const userNB = numberToHexString(idx, 12);
     const teamIdx = idx % 10;
@@ -56,11 +58,19 @@ async function createTeamMembers(ctx: Context<any>, nbUsers: number, teams: Team
 }
 
 export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: GameDefinitionID }): Promise<void> {
+  ctx = (await ctx.ctxWithChildLogger({ module: __filename }));
+  ctx.logger.info('Start initializing demo');
   await ctx.txIf(async (txCtx) => {
+    ctx.logger.info('Creating admin user');
     const admin = await txCtx.providers.user.createUser(txCtx, {
       username: 'zeus', password: 'password', id: 'ACEE0000-0000-0000-0000-000000000000'
     });
+
+    ctx.logger.info('Creating tournament');
     const gameDefinition = await getGameDefinition(ctx, params.gameDefinitionId);
+    if (!gameDefinition) {
+      throw new Error('Invalid GameDefinitionId');
+    }
     const now = DateTime.now();
     const tournamentStart = now.minus({ hours: 2, minutes: 58 });
     const tournamentEnd = now.plus({ hours: 2, minutes: 2 });
@@ -80,6 +90,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
 
     const users = await createTeamMembers(txCtx, 20, teams);
 
+    ctx.logger.info('Creating invited user');
     const invitedUser = await txCtx.providers.user.createUser(
       txCtx, {
         username: `userInvited`,
@@ -88,6 +99,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
       }
     );
 
+    ctx.logger.info('Creating tournament invitation');
     await txCtx.providers.tournamentInvitation.createTournamentInvitation(txCtx, {
       tournamentId: tournament.id, userId: invitedUser.id
     });
@@ -124,5 +136,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     //   ],
     //   tx
     // );
+
+  ctx.logger.info('End initializing demo');
   });
 }
