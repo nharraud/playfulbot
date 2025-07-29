@@ -281,6 +281,7 @@ export type UpdateTeamSuccess = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID']['output'];
+  teams?: Maybe<Array<Maybe<Team>>>;
   username: Scalars['String']['output'];
 };
 
@@ -726,6 +727,7 @@ export type UpdateTeamSuccessResolvers<ContextType = any, ParentType extends Res
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

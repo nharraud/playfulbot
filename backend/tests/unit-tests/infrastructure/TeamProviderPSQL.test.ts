@@ -16,16 +16,18 @@ import { mockContextFixture } from 'tests/utils/fixtures';
 
 const dummyUUID = '00000000-0000-4000-9000-000000000000';
 
+const tournamentData = {
+  name: 'testTournament',
+  gameDefinitionId: 'testGame',
+  lastRoundDate: '2024-01-02T00:00:00+00',
+  minutesBetweenRounds: 60,
+  roundsNumber: 10,
+  startDate: '2024-01-01T00:00:00+00',
+};
+
 async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const provider = new TournamentProviderPSQL();
-  const tournament = await provider.createTournament(ctx, {
-    name: 'testTournament',
-    gameDefinitionId: 'testGame',
-    lastRoundDate: '2024-01-02T00:00:00+00',
-    minutesBetweenRounds: 60,
-    roundsNumber: 10,
-    startDate: '2024-01-01T00:00:00+00',
-  });
+  const tournament = await provider.createTournament(ctx, tournamentData);
   await use(tournament);
 }
 
@@ -183,14 +185,14 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
 
 
   describe('getTeamByMember', () => {
-    test('should retrun null when the user is not in any team', async ({ ctx, team, user, tournament }) => {
+    test('should return null when the user is not in any team', async ({ ctx, team, user, tournament }) => {
       const teamProvider = new TeamProviderPSQL();
 
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament.id);
       expect(foundTeam).toBeNull();
     });
 
-    test('should retrun null when the user is not in any team of this tournament', async ({ ctx, team, tournament, user }) => {
+    test('should return null when the user is not in any team of this tournament', async ({ ctx, team, tournament, user }) => {
       const tournamentProvider = new TournamentProviderPSQL();
       const tournament2 = await tournamentProvider.createTournament(ctx, {
         name: 'testTournament2',
@@ -205,6 +207,30 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       await teamProvider.addTeamMember(ctx, team.id, user.id);
       const foundTeam = await teamProvider.getTeamByMember(ctx, user.id, tournament2.id);
       expect(foundTeam).toBeNull();
+    });
+  });
+
+
+  describe('getAll', () => {
+    test('should return an empty list when the user is not in any team', async ({ ctx, team, user }) => {
+      const teamProvider = new TeamProviderPSQL();
+
+      const foundTeams = await teamProvider.getAll(ctx, { memberID: user.id });
+      expect(foundTeams).toEqual([]);
+    });
+
+    test('should return the list of teams when the user is part of multiple teams', async ({ ctx, team, user, tournament }) => {
+      const teamProvider = new TeamProviderPSQL();
+      const tournament2 = await ctx.providers.tournament.createTournament(ctx, { ...tournamentData, name: 'testTournament2' });
+      const tournament3 = await ctx.providers.tournament.createTournament(ctx, { ...tournamentData, name: 'testTournament3' });
+      const team2 = await addTeam(ctx, 'testTeam2', tournament2.id);
+      const team3 = await addTeam(ctx, 'testTeam3', tournament3.id);
+      await teamProvider.addTeamMember(ctx, team.id, user.id);
+      await teamProvider.addTeamMember(ctx, team2.id, user.id);
+
+      const foundTeams = await teamProvider.getAll(ctx, { memberID: user.id });
+      foundTeams.sort((t1, t2) => t1.name.localeCompare(t2.name))
+      expect(foundTeams).toEqual([team, team2]);
     });
   });
 

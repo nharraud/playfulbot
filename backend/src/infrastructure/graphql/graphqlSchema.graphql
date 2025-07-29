@@ -24,7 +24,7 @@ type ValidationError implements Error {
 type User {
   id: ID!
   username: String!
-  # teams: [Team]
+  teams: [Team]
   # tournamentInvitations: [TournamentInvitation!]
   # organizedTournaments: [Tournament!]
 }
@@ -293,9 +293,15 @@ type Arena {
 # type NewPlayerGames {
 #   games: [ID]
 # }
+
+# type LivePlayerGamesFailure {
+#   errors: [LivePlayerGamesError!]!
+# }
+
+# union LivePlayerGamesError = ForbiddenError | PlayerNotFoundError
 # # Note that there won't be any event for removed player's
 # # games as querying the games is enought to know their status.
-# union LivePlayerGames = PlayerGames | NewPlayerGames
+# union LivePlayerGames = PlayerGames | NewPlayerGames | LivePlayerGamesFailure
 
 # enum RoundStatus {
 #   CREATED, STARTED, ENDED

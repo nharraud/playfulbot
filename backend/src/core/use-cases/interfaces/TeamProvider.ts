@@ -15,6 +15,12 @@ export class TeamNameAlreadyTakenError extends Error {
   }
 }
 
+export interface TeamsSearchOptions {
+  // tournamentStatus?: TournamentStatus;
+  // tournamentID?: TournamentID;
+  memberID?: UserID;
+}
+
 export interface TeamProvider<Context> {
   createTeam(
     ctx: Context,
@@ -30,6 +36,7 @@ export interface TeamProvider<Context> {
   getTeamByName(ctx: Context, name: string): Promise<Team | null>
   getTeamByID(ctx: Context, id: TeamID): Promise<Team | null>
   getTeamByMember(ctx: Context, userID: UserID, tournamentID: TournamentID): Promise<Team | null>
+  getAll(ctx: Context, filters: TeamsSearchOptions): Promise<Team[]>
   isTeamMember(ctx: Context, teamId: TeamID, userId: UserID): Promise<boolean>
 
   addTeamMember(ctx: Context, teamID: TeamID, userID: UserID): Promise<boolean | TeamNotFoundError | UserNotFoundError>

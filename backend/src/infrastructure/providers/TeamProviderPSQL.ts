@@ -5,10 +5,10 @@ import { Player } from '../../model/Player';
 // import { Tournament, TournamentID, TournamentStatus } from './TournamentProviderPSQL';
 // import { User, UserID } from './UserProviderPSQL';
 import { Team, TeamID, validateTeamName } from '~playfulbot/core/entities/Teams';
-import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
+import { TeamNameAlreadyTakenError, TeamPatch, TeamProvider, TeamsSearchOptions } from '~playfulbot/core/use-cases/interfaces/TeamProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { TournamentID } from '~playfulbot/core/entities/Tournaments';
-import { bigIntToNumber, DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { bigIntToNumber, DEFAULT, isDatabaseError, QueryBuilder } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { TeamNotFoundError, ValidationError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
 // import { ValidationError } from '~playfulbot/core/use-cases/Errors';
@@ -31,11 +31,6 @@ function buildTeam(data: DbTeam): Team {
   return result;
 }
 
-// export interface TeamsSearchOptions {
-//   tournamentStatus?: TournamentStatus;
-//   tournamentID?: TournamentID;
-//   memberID?: UserID;
-// }
 
 // export interface RemoveTeamMemberResult {
 //   memberRemoved: boolean;
@@ -156,30 +151,30 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
     return buildTeam(data);
   }
 
-  // static async getAll(filters: TeamsSearchOptions, dbOrTX: DbOrTx): Promise<Team[]> {
-  //   const queryBuilder = new QueryBuilder(
-  //     'SELECT teams.* FROM teams JOIN tournaments ON teams.tournament_id = tournaments.id'
-  //   );
+  async getAll(ctx: ContextPSQL, filters: TeamsSearchOptions): Promise<Team[]> {
+    const queryBuilder = new QueryBuilder(
+      'SELECT teams.* FROM teams'
+    );
 
-  //   if (filters.tournamentID) {
-  //     queryBuilder.where('tournaments.id = $[tournamentID]');
-  //     queryBuilder.orderBy('teams.name', 'ASC');
-  //   } else {
-  //     queryBuilder.orderBy('tournaments.start_date', 'DESC');
-  //   }
+    // if (filters.tournamentID) {
+    //   queryBuilder.where('tournaments.id = $[tournamentID]');
+    //   queryBuilder.orderBy('teams.name', 'ASC');
+    // } else {
+    //   queryBuilder.orderBy('tournaments.start_date', 'DESC');
+    // }
 
-  //   if (filters.memberID) {
-  //     queryBuilder.join('JOIN team_memberships ON teams.id = team_memberships.team_id');
-  //     queryBuilder.where('team_memberships.user_id = $[memberID]');
-  //   }
+    if (filters.memberID) {
+      queryBuilder.join('JOIN team_memberships ON teams.id = team_memberships.team_id');
+      queryBuilder.where('team_memberships.user_id = $[memberID]');
+    }
 
-  //   if (filters.tournamentStatus) {
-  //     queryBuilder.where('tournaments.status = $[tournamentStatus]');
-  //   }
+    // if (filters.tournamentStatus) {
+    //   queryBuilder.where('tournaments.status = $[tournamentStatus]');
+    // }
 
-  //   const rows = await dbOrTX.manyOrNone<DbTeam>(queryBuilder.query, filters);
-  //   return rows.map((row) => new Team(row));
-  // }
+    const rows = await ctx.dbOrTx.manyOrNone<DbTeam>(queryBuilder.query, filters);
+    return rows.map((row) => buildTeam(row));
+  }
 
   async addTeamMember(ctx: ContextPSQL, teamID: TeamID, userID: UserID): Promise<boolean | TeamNotFoundError | UserNotFoundError > {
     const insertQuery = `INSERT INTO team_memberships(user_id, team_id)

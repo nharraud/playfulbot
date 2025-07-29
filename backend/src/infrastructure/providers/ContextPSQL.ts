@@ -17,6 +17,7 @@ import { TeamProvider } from "~playfulbot/core/use-cases/interfaces/TeamProvider
 import { ArenaProviderPSQL } from "./ArenaProviderPSQL";
 import { GameRepository } from "~playfulbot/core/use-cases/interfaces/GameRepository";
 import { ArenaProvider } from "~playfulbot/core/use-cases/interfaces/ArenaProvider";
+import { UserID } from "~playfulbot/core/entities/Users";
 
 export interface ContextPSQL extends Context<ContextPSQL> {
   logger: Logger,
@@ -40,6 +41,7 @@ class Fingerprint {
 
 export class ContextPSQLImpl implements ContextPSQL {
   readonly logger;
+  readonly requestingUserId: UserID | undefined;
   readonly convertError;
   readonly providers: Context<any>['providers'];
   #dbOrTx: DbOrTx;
@@ -50,10 +52,11 @@ export class ContextPSQLImpl implements ContextPSQL {
     return this.#dbOrTx;
   }
 
-  constructor({ logger = createLogger(), dbOrTx = db.default, providers, fingerprint }: { logger?: Logger, dbOrTx?: DbOrTx, providers?: Partial<Context<any>['providers']>, fingerprint?: Fingerprint } = {}) {
+  constructor({ requestingUserId, logger = createLogger(), dbOrTx = db.default, providers, fingerprint }: { requestingUserId?: UserID, logger?: Logger, dbOrTx?: DbOrTx, providers?: Partial<Context<any>['providers']>, fingerprint?: Fingerprint } = {}) {
     this.logger = logger;
     this.#dbOrTx = dbOrTx;
     this.#fingerprint = fingerprint || new Fingerprint();
+    this.requestingUserId = requestingUserId;
     this.convertError = convertError;
     this.providers = {
       arena: providers.arena || new ArenaProviderPSQL(),
@@ -72,6 +75,15 @@ export class ContextPSQLImpl implements ContextPSQL {
       fingerprint: this.#fingerprint,
       dbOrTx: this.#dbOrTx,
       logger: this.logger.child(bindings),
+    });
+  }
+
+  ctxWithRequestingUserId(requestingUserId: UserID): Context<ContextPSQL> {
+    return new (this.constructor as any)({
+      ...this,
+      requestingUserId,
+      fingerprint: this.#fingerprint,
+      dbOrTx: this.#dbOrTx,
     });
   }
 

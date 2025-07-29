@@ -83,8 +83,9 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
         const fingerprint = parsedCookie?.JWTFingerprint;
         const tokenData = await validateAuthToken(token, fingerprint);
         if (isUserJWToken(tokenData)) {
+          const doubleFinalContext = finalContext.ctxWithRequestingUserId(tokenData.userID);
           return extendContext({
-              ctx: finalContext,
+              ctx: doubleFinalContext,
               userID: tokenData.userID
           });
         }

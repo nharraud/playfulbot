@@ -30,11 +30,11 @@ import { createArenaGameResolver, createArenaResolver, arenaGamesResolver } from
 // import { teamPlayerResolver } from './teamPlayer';
 // import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 // import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
-// import {
+import {
 //   userOrganizedTournamentsResolver,
-//   userTeamsResolver,
+  userTeamsResolver,
 //   userTournamentInvitationsResolver,
-// } from './user';
+} from './user';
 // import {
 //   registerTournamentInvitationLinkResolver,
 //   tournamentByInvitationLinkResolver,
@@ -72,7 +72,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
     createArenaGame: createArenaGameResolver,
   } as gqlTypes.MutationResolvers,
   User: {
-    // teams: userTeamsResolver,
+    teams: userTeamsResolver,
     // tournamentInvitations: userTournamentInvitationsResolver,
     // organizedTournaments: userOrganizedTournamentsResolver,
   },
