@@ -6,6 +6,8 @@ services:
     environment:
       POSTGRES_PASSWORD: dev-password
       POSTGRES_USER: playfulbot_backend
+      TZ: 'GMT'
+      PGTZ: 'GMT'
   nginx:
     build: ./nginx
     extra_hosts:

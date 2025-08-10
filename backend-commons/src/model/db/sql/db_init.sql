@@ -14,8 +14,8 @@ CREATE TABLE tournaments (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   name VARCHAR(15) NOT NULL,
   status tournament_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp with time zone NOT NULL,
-  last_round_date timestamp with time zone NOT NULL,
+  start_date timestamp NOT NULL,
+  last_round_date timestamp NOT NULL,
   rounds_number smallint NOT NULL CHECK (rounds_number > 1),
   minutes_between_rounds smallint NOT NULL,
   game_definition_id VARCHAR(70) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TYPE round_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
 CREATE TABLE rounds (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   status round_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp with time zone NOT NULL,
+  start_date timestamp NOT NULL,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE
 );
 

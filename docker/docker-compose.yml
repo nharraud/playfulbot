@@ -1,8 +1,11 @@
 services:
   db:
-    image: postgres:13
+    image: postgres:17
     ports:
       - "5432"
+    environment:
+      TZ: 'GMT'
+      PGTZ: 'GMT'
   playfulbot-backend:
     build:
       context: ..
