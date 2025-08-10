@@ -1,5 +1,6 @@
 import { GraphQLScalarType, Kind } from 'graphql';
 import { DateTime } from 'luxon';
+import { isString } from '~playfulbot/utils/types';
 
 export const DateScalar = new GraphQLScalarType<DateTime, string>({
   name: 'Date',
@@ -7,6 +8,9 @@ export const DateScalar = new GraphQLScalarType<DateTime, string>({
   serialize(value) {
     if (value instanceof DateTime) {
       return value.toISO();
+    } else 
+    if (isString(value)) {
+      return value.toString();
     }
     throw new Error(`Unexpected type ${typeof value}`);
   },
