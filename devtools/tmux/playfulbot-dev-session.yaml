@@ -27,7 +27,7 @@ windows:
       - shell_command:
           - printf '\033]2;%s\033\\' 'docker' 
           - cd ./docker/dev
-          - docker-compose up
+          - docker compose up
       - shell_command:
           - printf '\033]2;%s\033\\' 'playfulbot-game' 
           - cd packages/playfulbot-game
