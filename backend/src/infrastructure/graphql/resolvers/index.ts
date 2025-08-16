@@ -33,16 +33,16 @@ import { createArenaGameResolver, createArenaResolver, arenaGamesResolver } from
 import {
 //   userOrganizedTournamentsResolver,
   userTeamsResolver,
-//   userTournamentInvitationsResolver,
+  userTournamentInvitationsResolver,
 } from './user';
 // import {
 //   registerTournamentInvitationLinkResolver,
 //   tournamentByInvitationLinkResolver,
 // } from './tournamentInvitationLink';
-// import {
-//   tournamentInvitationTournamentResolver,
-//   tournamentInvitationInviteeResolver,
-// } from './tournamentInvitation';
+import {
+  tournamentInvitationTournamentResolver,
+  tournamentInvitationInviteeResolver,
+} from './tournamentInvitation';
 
 const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   Subscription: {
@@ -73,7 +73,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   } as gqlTypes.MutationResolvers,
   User: {
     teams: userTeamsResolver,
-    // tournamentInvitations: userTournamentInvitationsResolver,
+    tournamentInvitations: userTournamentInvitationsResolver,
     // organizedTournaments: userOrganizedTournamentsResolver,
   },
   Team: {
@@ -94,10 +94,10 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   //   winners: gameSummaryWinnersResolver,
   //   losers: gameSummaryLosersResolver,
   // },
-  // TournamentInvitation: {
-  //   tournament: tournamentInvitationTournamentResolver,
-  //   invitee: tournamentInvitationInviteeResolver,
-  // },
+  TournamentInvitation: {
+    tournament: tournamentInvitationTournamentResolver,
+    invitee: tournamentInvitationInviteeResolver,
+  },
   JSON: GraphQLJSON,
   Date: DateScalar,
 };

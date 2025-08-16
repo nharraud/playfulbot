@@ -14,7 +14,7 @@ export async function createTeam(
     return new ValidationError('Empty teams are not yet supported. "join" must be "true"');
   }
 
-  const isInvited = await ctx.providers.tournamentInvitation.isInvited(ctx, { tournamentId, userId });
+  const isInvited = await ctx.providers.tournamentInvitation.isInvited(ctx, { tournamentId, inviteeId: userId });
   const hasTeam = await ctx.providers.team.getTeamByMember(ctx, userId, tournamentId);
   // FIXME: add support for createTeam permission
   // const isOrganizer = await  ctx.providers.tournament.isOrganizer(args.tournamentID, ctx.userID, tx);

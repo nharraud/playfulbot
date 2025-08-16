@@ -75,6 +75,7 @@ describe('use-cases/arena/createArena', () => {
   });
 
   test('should create arena if user is part of a team', async ({ctx, teamMember, team, tournament }) => {
+    ctx.requestingUserId = teamMember.id;
     const returnedArena = await createArena(ctx, {
       arenaName: 'newArena', userId: teamMember.id, teamId: team.id
     }) as Arena;

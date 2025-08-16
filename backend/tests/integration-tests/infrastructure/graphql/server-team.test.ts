@@ -186,7 +186,7 @@ describe('graphql', () => {
 
     test('should fail if name is invalid', async ({ ctx, tournament, user, graphql }) => {
       await graphql.client.login(userData);
-      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, inviteeId: user.id });
       const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
         tournamentID: tournament.id, input: { name: 'n' }, join: true
       } });
@@ -195,7 +195,7 @@ describe('graphql', () => {
 
     test('should fail if name is already taken', async ({ ctx, tournament, user, graphql, team }) => {
       await graphql.client.login(userData);
-      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, inviteeId: user.id });
       const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
         tournamentID: tournament.id, input: { name: team.name }, join: true
       } });
@@ -212,7 +212,7 @@ describe('graphql', () => {
 
     test('should succeed at creating a team if invited to tournament', async ({ ctx, tournament, user, graphql }) => {
       await graphql.client.login(userData);
-      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, inviteeId: user.id });
       const response = await graphql.client.query({ operationName: 'createTeam', query: query, variables: {
         tournamentID: tournament.id, input: { name: 'newTeam' }, join: true
       } });
@@ -357,7 +357,7 @@ describe('graphql', () => {
 
     test('should succeed at joining a team if invited to tournament and has no team', async ({ ctx, tournament, user, team, teamMember, graphql }) => {
       await graphql.client.login(userData);
-      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+      await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, inviteeId: user.id });
       const response = await graphql.client.query({ operationName: 'joinTeam', query, variables: {
         teamID: team.id
       } });

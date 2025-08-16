@@ -25,7 +25,7 @@ type User {
   id: ID!
   username: String!
   teams: [Team]
-  # tournamentInvitations: [TournamentInvitation!]
+  tournamentInvitations: [TournamentInvitation!]
   # organizedTournaments: [Tournament!]
 }
 
@@ -55,11 +55,11 @@ type Tournament {
   # invitationLinkID: ID
 }
 
-# type TournamentInvitation {
-#   id: ID
-#   tournament: Tournament
-#   invitee: User
-# }
+type TournamentInvitation {
+  tournament: Tournament
+  invitee: User
+  sentAt: Date
+}
 
 type Team {
   id: ID!

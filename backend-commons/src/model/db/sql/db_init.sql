@@ -225,6 +225,7 @@ CREATE TABLE tournament_invitation_links (
 
 CREATE TABLE tournament_invitations (
   tournament_id uuid REFERENCES tournaments (id) ON DELETE CASCADE,
-  user_id uuid REFERENCES users (id) ON DELETE CASCADE,
-  PRIMARY KEY (tournament_id, user_id)
+  invitee_id uuid REFERENCES users (id) ON DELETE CASCADE,
+  sent_at timestamp NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (tournament_id, invitee_id)
 );

@@ -14,14 +14,14 @@ async function canJoinTeam(
   ctx: Context<any>,
   { userId, tournamentId }: { userId: UserID, tournamentId: TournamentID }
 ): Promise<{ error?: ForbiddenError, isInvited?: boolean }> {
-  const isInvited = await ctx.providers.tournamentInvitation.isInvited(ctx, { tournamentId, userId });
+  const isInvited = await ctx.providers.tournamentInvitation.isInvited(ctx, { tournamentId, inviteeId: userId });
   const hasTeam = await ctx.providers.team.getTeamByMember(ctx, userId, tournamentId);
   // FIXME
   // const isOrganizer = await  ctx.providers.tournament.isOrganizer(args.tournamentID, ctx.userID, tx);
   if (!isInvited && !hasTeam
     //  && !isOrganizer
     ) {
-      return { error: new ForbiddenError('Only tournament invitees, members of other teams and tournament organizers can create join teams.') };
+      return { error: new ForbiddenError('Only tournament invitees, members of other teams and tournament organizers can join teams.') };
   }
   return { isInvited };
 }
@@ -65,7 +65,7 @@ export async function addTeamMember(
   }
 
   if (isInvited !== false) {
-    ctx.providers.tournamentInvitation.deleteTournamentInvitation(ctx, { tournamentId, userId });
+    ctx.providers.tournamentInvitation.deleteTournamentInvitation(ctx, { tournamentId, inviteeId: userId });
   }
 
   return { oldTeam, oldTeamDeleted: oldTeamRemoval?.teamDeleted };

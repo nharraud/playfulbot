@@ -50,7 +50,7 @@ async function userFixture({ ctx }: TestFixtures, use: any) {
 async function invitedUserFixture({ ctx, user, tournament }: TestFixtures, use: any) {
   await ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, {
     tournamentId: tournament.id,
-    userId: user.id,
+    inviteeId: user.id,
   });
   await use(user);
 }

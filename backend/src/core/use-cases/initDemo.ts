@@ -32,7 +32,7 @@ async function createTeams(ctx: Context<any>, nbTeam: number, tournamentId: Tour
         name: `team ${idx}`,
         tournamentID: tournamentId,
         id: `FEAB0000-0000-0000-0000-${teamNB}`
-    });
+    }) as Promise<Team>;
   });
   return Promise.all(teams);
 }
@@ -50,7 +50,7 @@ async function createTeamMembers(ctx: Context<any>, nbUsers: number, teams: Team
         password: `pass${idx}`,
         id: `ACEB0000-0000-0000-0000-${userNB}`
       }
-    );
+    ) as User;
     await ctx.providers.team.addTeamMember(ctx, teams[teamIdx].id, user.id);
     ctx.logger.info(`user ${user.id} created`);
   });
@@ -97,11 +97,11 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
         password: `password`,
         id: `ACEB0001-0000-0000-0000-000000000000`
       }
-    );
+    ) as User;
 
     ctx.logger.info('Creating tournament invitation');
     await txCtx.providers.tournamentInvitation.createTournamentInvitation(txCtx, {
-      tournamentId: tournament.id, userId: invitedUser.id
+      tournamentId: tournament.id, inviteeId: invitedUser.id
     });
 
     // await tournament.start(tx);

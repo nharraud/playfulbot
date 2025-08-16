@@ -43,20 +43,20 @@ describe('infrastructure/games/TournamentProviderPLSQL', () => {
       const tournament = await provider.createTournament(ctx, {
         name: 'testTournament',
         gameDefinitionId: 'testGame',
-        lastRoundDate: '2024-01-02T00:00:00+00',
+        lastRoundDate: '2024-01-02T00:00:00',
         minutesBetweenRounds: 60,
         roundsNumber: 10,
-        startDate: '2024-01-01T00:00:00+00',
+        startDate: '2024-01-01T00:00:00',
       });
       expect({ a: tournament.id }).toEqual({ a: expect.any(String) });
       expect(tournament).toMatchObject({
         id: expect.any(String),
         name: 'testTournament',
         gameDefinitionId: 'testGame',
-        lastRoundDate: '2024-01-02T00:00:00+00',
+        lastRoundDate: '2024-01-02T00:00:00',
         minutesBetweenRounds: 60,
         roundsNumber: 10,
-        startDate: '2024-01-01T00:00:00+00',
+        startDate: '2024-01-01T00:00:00',
         status: "CREATED",
       });
     });

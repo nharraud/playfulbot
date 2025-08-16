@@ -93,7 +93,7 @@ describe('use-cases/team/updateTeam', () => {
   });
 
   test('should fail if we create a team with a name already taken', async ({ ctx, team, teamMember, user, tournament }) => {
-    ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, userId: user.id });
+    ctx.providers.tournamentInvitation.createTournamentInvitation(ctx, { tournamentId: tournament.id, inviteeId: user.id });
     await createTeam(ctx, {
       teamName: 'otherTeam', userId: user.id, tournamentId: tournament.id, join: true
     });
