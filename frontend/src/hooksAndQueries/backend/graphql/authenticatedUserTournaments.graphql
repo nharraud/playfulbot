@@ -8,24 +8,23 @@ query authenticatedUserTournaments {
       tournament {
         id,
         name,
-        lastRoundDate,
+        # lastRoundDate,
         status,
       }
     }
     tournamentInvitations {
-      id
       tournament {
         id,
         name,
-        lastRoundDate,
+        # lastRoundDate,
         status,
       }
     }
-    organizedTournaments {
-      id,
-      name,
-      lastRoundDate,
-      status,
-    }
+    # organizedTournaments {
+    #   id,
+    #   name,
+    #   lastRoundDate,
+    #   status,
+    # }
   }
 }

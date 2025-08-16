@@ -1,6 +1,6 @@
-import * as gqlTypes from './graphql-generated';
+import * as gqlTypes from './backend/graphql-generated';
 
-export * from './graphql-generated';
+export * from './backend/graphql-generated';
 
 export type UserID = string;
 export type TournamentID = string;

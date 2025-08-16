@@ -7,7 +7,7 @@ import { Paper, Theme } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuBar from '../MenuBar/MenuBar';
-import { useTournamentByInvitationLinkQuery } from '../../types/graphql-generated';
+import { useTournamentByInvitationLinkQuery } from '../../types/backend/graphql-generated';
 import { UserContext } from '../../UserContext';
 
 const useStyles = makeStyles((theme: Theme) =>

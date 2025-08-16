@@ -17,13 +17,13 @@ import Registration from './ui/Registration';
 
 import { client } from './apolloConfig';
 
-import TournamentPage from './ui/Tournament/TournamentPage';
-import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
+// import TournamentPage from './ui/Tournament/TournamentPage';
+// import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
 import { UserContextProvider } from './UserContext';
 import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { AuthenticationRequired } from './AuthenticationRequired';
-import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
+// import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -106,21 +106,23 @@ function App() {
                     <Route path="/register">
                       <Registration />
                     </Route>
-
+{/*
                     <Route path="/tournament_invitation/:tournamentInvitationLinkID">
                       <TournamentInvitationPage />
                     </Route>
-
+*/}
                     <AuthenticationRequired>
                       <Route exact path="/home">
                         <UserHomePage />
                       </Route>
+                      {/*
                       <Route path="/tournament/:tournamentID">
                         <TournamentPage />
                       </Route>
                       <Route path="/create_tournament">
                         <TournamentCreationPage />
                       </Route>
+                      */}
                     </AuthenticationRequired>
                   </Switch>
                 </Router>

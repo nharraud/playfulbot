@@ -1,11 +1,11 @@
 import * as cookie from 'cookie';
 import http from 'http';
-import type { ExecutionResult } from 'graphql';
+import { GraphQLError, type ExecutionResult } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 import { useGraphQlJit } from '@envelop/graphql-jit';
 import { Plugin as YogaPlugin } from 'graphql-yoga'
 import type { Plugin } from '@envelop/core';
-import { useMaskedErrors } from '@envelop/core';
+import { isGraphQLError, useMaskedErrors } from '@envelop/core';
 import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor';
 
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -123,6 +123,14 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     resolvers: customResolvers || resolvers,
   });
 
+  function customFormatError(err: any) {
+    logger.error(err, 'Masking error');
+    if (isGraphQLError(err)) {
+      return new GraphQLError('Internal Error.')
+    }
+    return err;
+  }
+
   const yogaApp = createYoga({
     graphiql: { subscriptionsProtocol: 'WS' },
     schema,
@@ -130,7 +138,7 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
     plugins: [
       EnvelopArmorPlugin(),
       useGraphQlJit(),
-      useMaskedErrors(),
+      useMaskedErrors({ maskError: customFormatError }),
       TransactionPlugin,
       ContextPlugin,
       RequestContext,

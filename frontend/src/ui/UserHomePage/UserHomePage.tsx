@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import MenuBar from '../MenuBar/MenuBar';
 import {
   useAuthenticatedUserTournamentsQuery,
-  useRegisterTournamentInvitationLinkMutation,
+  // useRegisterTournamentInvitationLinkMutation,
 } from '../../types/graphql';
 import { TournamentsList } from './TournamentsList';
 
@@ -54,8 +54,8 @@ export function UserHomePage() {
   } = useAuthenticatedUserTournamentsQuery();
 
   const history = useHistory();
-  const [registerTournamentInvitation, tournamentInvitationResult] =
-    useRegisterTournamentInvitationLinkMutation();
+  // const [registerTournamentInvitation, tournamentInvitationResult] =
+  //   useRegisterTournamentInvitationLinkMutation();
   const query = useURIQuery();
   const tournamentInvitationLinkID = query.get('tournament_invitation');
   useEffect(() => {
@@ -64,26 +64,26 @@ export function UserHomePage() {
       history.replace({
         search: query.toString(),
       });
-      registerTournamentInvitation({
-        variables: { tournamentInvitationLinkID },
-      });
+      // registerTournamentInvitation({
+      //   variables: { tournamentInvitationLinkID },
+      // });
     }
   }, [
     tournamentInvitationLinkID,
     query,
     history,
-    registerTournamentInvitation,
+    // registerTournamentInvitation,
     refetchUserTournaments,
   ]);
 
   const [invitationProcessed, setInvitationProcessed] = useState(false);
   useEffect(() => {
-    if (tournamentInvitationResult.data && !invitationProcessed) {
-      setInvitationProcessed(true);
-      refetchUserTournaments();
-    }
+    // if (tournamentInvitationResult.data && !invitationProcessed) {
+    //   setInvitationProcessed(true);
+    //   refetchUserTournaments();
+    // }
   }, [
-    tournamentInvitationResult.data,
+    // tournamentInvitationResult.data,
     invitationProcessed,
     setInvitationProcessed,
     refetchUserTournaments,
@@ -95,7 +95,7 @@ export function UserHomePage() {
   const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
     (invitation) => invitation.tournament
   );
-  const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
+  // const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
 
   return (
     <div className={classes.root}>
@@ -123,9 +123,9 @@ export function UserHomePage() {
         <div className={classes.column}>
           <TournamentsList title="Tournaments you joined" tournaments={jointedTournaments} />
         </div>
-        <div className={classes.column}>
+        {/* <div className={classes.column}>
           <TournamentsList title="Tournaments you organize" tournaments={organizedTournaments} />
-        </div>
+        </div> */}
       </div>
     </div>
   );
