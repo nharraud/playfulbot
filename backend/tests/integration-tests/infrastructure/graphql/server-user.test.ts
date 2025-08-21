@@ -8,6 +8,7 @@ import { User } from '~playfulbot/core/entities/Users';
 import { Team } from '~playfulbot/core/entities/Teams';
 import { TournamentInvitation } from '~playfulbot/core/entities/TournamentInvitation';
 import { range } from '~playfulbot/utils/arrays';
+import { TournamentRole } from '~playfulbot/core/entities/TournamentRole';
 
 const userData = { username: 'testuser', password: 'testpassword' };
 const user2Data = { username: 'testuser2', password: 'testpassword' };
@@ -172,6 +173,41 @@ describe('graphql', () => {
               id: tournaments[3].id,
               name: tournaments[3].name,
             },
+          }]
+        }
+      });
+  
+    });
+
+  });
+
+  describe('Query/User.organizedTournaments', () => {
+    test('should return user\'s organized tournaments', async ({ ctx, graphql, user, tournaments }) => {
+      await ctx.providers.tournament.changeTournamentRole(ctx, {
+        role: TournamentRole.Organizer, tournamentId: tournaments[0].id, userId: user.id
+      });
+      await ctx.providers.tournament.changeTournamentRole(ctx, {
+        role: TournamentRole.Organizer, tournamentId: tournaments[2].id, userId: user.id
+      });
+
+      await graphql.client.login(userData);
+  
+      const response = await graphql.client.query({ operationName: 'authenticatedUser', query: `
+        query authenticatedUser { authenticatedUser { username, organizedTournaments { id, name, myRole } }}
+      ` });
+      expect(response.body.data).toEqual({
+        authenticatedUser: {
+          username: user.username,
+          organizedTournaments: [
+          {
+            id: tournaments[0].id,
+            name: tournaments[0].name,
+            myRole: 'ORGANIZER',
+          },
+          {
+            id: tournaments[2].id,
+            name: tournaments[2].name,
+            myRole: 'ORGANIZER',
           }]
         }
       });

@@ -48,7 +48,7 @@
     "luxon": "^3.5.0",
     "mem-pubsub": "file:../packages/mem-pubsub",
     "pg": "^8.5.1",
-    "pg-promise": "^11.9.1",
+    "pg-promise": "^11.15.0",
     "pino": "^6.11.0",
     "pino-pretty": "^4.7.1",
     "playfulbot-backend-commons": "file:../backend-commons",

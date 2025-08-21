@@ -95,7 +95,7 @@ export function UserHomePage() {
   const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
     (invitation) => invitation.tournament
   );
-  // const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
+  const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
 
   return (
     <div className={classes.root}>
@@ -123,9 +123,9 @@ export function UserHomePage() {
         <div className={classes.column}>
           <TournamentsList title="Tournaments you joined" tournaments={jointedTournaments} />
         </div>
-        {/* <div className={classes.column}>
+        <div className={classes.column}>
           <TournamentsList title="Tournaments you organize" tournaments={organizedTournaments} />
-        </div> */}
+        </div>
       </div>
     </div>
   );

@@ -26,16 +26,16 @@ type User {
   username: String!
   teams: [Team]
   tournamentInvitations: [TournamentInvitation!]
-  # organizedTournaments: [Tournament!]
+  organizedTournaments: [Tournament!]
 }
 
 enum TournamentStatus {
   CREATED, STARTED, ENDED
 }
 
-# enum TournamentRoleName {
-#   ADMIN
-# }
+enum TournamentRole {
+  ORGANIZER
+}
 
 type Tournament {
   id: ID!
@@ -50,7 +50,7 @@ type Tournament {
 
   # rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
 
-  # myRole: TournamentRoleName
+  myRole: TournamentRole
 
   # invitationLinkID: ID
 }

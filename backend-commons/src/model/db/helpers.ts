@@ -10,12 +10,31 @@ export const DEFAULT = {
 
 export type DbOrTx = IBaseProtocol<unknown>;
 
+
+export function sanitizeValueFromValueSet<T>(value: T, allowedValues: T[], defaultValue: T): T {
+  if (!allowedValues.includes(value)) {
+    return defaultValue;
+  }
+  return value;
+}
+
+export function sanitizeNumber(value: any, { min = 0, max }: { min?: number, max?: number }, defaultValue: number): number {
+  if (
+      (!(value instanceof Number) && typeof value !== 'number') ||
+      value.valueOf() < (min || 0) || value.valueOf() > max
+    ) {
+    return defaultValue
+  }
+  return value.valueOf() as number;
+}
+
 export class QueryBuilder {
   private readonly startQuery;
   private readonly filters = new Array<string>();
   private readonly joins = new Array<string>();
-  private order: string = undefined;
+  private _order: string = undefined;
   private _limit: string = undefined;
+  private _offset: string = undefined;
 
   constructor(query: string) {
     this.startQuery = query;
@@ -31,13 +50,29 @@ export class QueryBuilder {
     return this;
   }
 
-  orderBy(column: string, direction: 'ASC' | 'DESC' = 'ASC'): this {
-    this.order = ` ORDER BY ${column} ${direction}`;
+  orderBy(
+    { column, allowed, defaultColumn, direction = 'ASC' }:
+      { column: string, allowed: string[], defaultColumn: string, direction: 'ASC' | 'DESC' }
+  ): this {
+    direction = sanitizeValueFromValueSet(direction, ['ASC', 'DESC'], 'ASC');
+    column = sanitizeValueFromValueSet(column, allowed, defaultColumn);
+
+    this._order = ` ORDER BY ${column} ${direction}`;
     return this;
   }
 
-  limit(key: string): this {
-    this._limit = ` LIMIT $[${key}]`;
+  limit(
+    { limit, max, defaultLimit }:
+      { limit: number, max: number, defaultLimit: number }
+  ): this {
+    limit = sanitizeNumber(limit, { max }, defaultLimit);
+    this._limit = ` LIMIT ${limit}`;
+    return this;
+  }
+
+  offset(offset: number): this {
+    offset = sanitizeNumber(offset, { max: 100000 }, 0);
+    this._offset = ` OFFSET ${offset}`;
     return this;
   }
 
@@ -57,11 +92,14 @@ export class QueryBuilder {
         result += ` AND ${filter}`;
       }
     }
-    if (this.order) {
-      result += this.order;
+    if (this._order) {
+      result += this._order;
     }
     if (this._limit) {
       result += this._limit;
+    }
+    if (this._offset) {
+      result += this._offset;
     }
     return result;
   }

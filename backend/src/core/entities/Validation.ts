@@ -18,3 +18,15 @@ export function expectString(value: any, { min, max }: { min?: number, max?: num
     return { error: VALIDATION_ERROR_CODE.TOO_LONG, expected: `< ${max}` }
   }
 }
+
+export function expectNumber(value: any, { min, max }: { min?: number, max?: number }): ValidationErrorData {
+  if (!(value instanceof Number) && typeof value !== 'number') {
+    return { error: VALIDATION_ERROR_CODE.INVALID_TYPE, expected: 'NUMBER' };
+  }
+  if (value.valueOf() < min) {
+    return { error: VALIDATION_ERROR_CODE.TOO_SHORT, expected: `> ${min}` }
+  }
+  if (value.valueOf() > max) {
+    return { error: VALIDATION_ERROR_CODE.TOO_LONG, expected: `< ${max}` }
+  }
+}

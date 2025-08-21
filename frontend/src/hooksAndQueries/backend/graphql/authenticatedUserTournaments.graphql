@@ -20,11 +20,11 @@ query authenticatedUserTournaments {
         status,
       }
     }
-    # organizedTournaments {
-    #   id,
-    #   name,
-    #   lastRoundDate,
-    #   status,
-    # }
+    organizedTournaments {
+      id,
+      name,
+      # lastRoundDate,
+      status,
+    }
   }
 }

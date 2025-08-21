@@ -125,8 +125,8 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
 
   function customFormatError(err: any) {
     logger.error(err, 'Masking error');
-    if (isGraphQLError(err)) {
-      return new GraphQLError('Internal Error.')
+    if (!isGraphQLError(err)) {
+      return new GraphQLError('Unexpected error.')
     }
     return err;
   }

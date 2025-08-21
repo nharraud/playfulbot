@@ -9,15 +9,18 @@ import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/core/ent
 import { UserID } from '~playfulbot/core/entities/Users';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { TeamID } from '~playfulbot/core/entities/Teams';
+import { TournamentRole } from '~playfulbot/core/entities/TournamentRole';
 
 
-// interface GetAllTournamentsFilters {
-//   status?: TournamentStatus;
-//   startingAfter?: string;
-//   startingBefore?: string;
-//   invitedUserID?: UserID;
-//   organizingUserID?: UserID;
-// }
+export interface GetAllTournamentsFilters {
+  // status?: TournamentStatus;
+  // startingAfter?: string;
+  // startingBefore?: string;
+  // invitedUserID?: UserID;
+  userRole?: { userId: UserID, role: TournamentRole }
+}
+
+export type GetAllTournamentsOrderings = 'name';
 
 // function computeFirstRoundDate(
 //   lastRoundDate: DateTime,
@@ -48,6 +51,22 @@ export interface TournamentProvider<Context> {
 
   getTournamentByTeam(ctx: Context, teamID: TeamID): Promise<Tournament | null>;
 
+  getUserRole(ctx: Context, params: { tournamentId: TournamentID, userId: UserID }): Promise<TournamentRole | null>;
+
+  /**
+   * Add or remove role for a given tournament and user.
+   * Providing a null role means unsetting any role the user might have had
+   */
+  changeTournamentRole(ctx: Context, params: { tournamentId: TournamentID, userId: UserID, role: TournamentRole | null }):
+    Promise<void>;
+
+  /**
+   * Retrieve a set of tournaments for a given user and a role.
+   * If no role is provided, every tournament where the user has a role are returned.
+   */
+  // getTournamentsByRole(ctx: Context, params: { userId: UserID, role: TournamentRole | undefined }):
+  //   Promise<{ tournament: Tournament, role: TournamentRole }[]>;
+
   // getTournamentByInvitationLink(
   //   ctx: Context, 
   //   tournamentInvitationLinkID: TournamentInvitationLinkID
@@ -55,10 +74,15 @@ export interface TournamentProvider<Context> {
 
   tournamentExists(ctx: Context, id: TournamentID): Promise<boolean>;
 
-  // getAllTournaments(
-  //   ctx: Context, 
-  //   filters: GetAllTournamentsFilters
-  // ): Promise<Tournament[]>;
+  getAllTournaments(
+    ctx: Context,
+    params: {
+      filters?: GetAllTournamentsFilters,
+      limit?: number,
+      offset?: number,
+      order?: { field: GetAllTournamentsOrderings, direction: 'ASC' | 'DESC' }
+    }
+  ): Promise<Tournament[]>;
 
   // isTournamentOrganizer(
   //   ctx: Context, 
@@ -84,5 +108,4 @@ export interface TournamentProvider<Context> {
 
   // addRole(ctx: Context, userID: UserID, role: TournamentRoleName): Promise<void>;
 
-  // getUserRole(ctx: Context, userID: UserID): Promise<TournamentRoleName | null>;
 }

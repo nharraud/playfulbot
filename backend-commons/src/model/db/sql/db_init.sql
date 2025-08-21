@@ -12,7 +12,7 @@ CREATE TYPE tournament_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
 
 CREATE TABLE tournaments (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  name VARCHAR(15) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   status tournament_status NOT NULL DEFAULT 'CREATED',
   start_date timestamp NOT NULL,
   last_round_date timestamp NOT NULL,
@@ -207,7 +207,7 @@ CREATE TABLE playing_teams (
 );
 
 
-CREATE TYPE tournament_role_name AS ENUM ('ADMIN');
+CREATE TYPE tournament_role_name AS ENUM ('ORGANIZER');
 
 CREATE TABLE tournament_roles (
   tournament_id uuid REFERENCES tournaments (id) ON DELETE CASCADE,

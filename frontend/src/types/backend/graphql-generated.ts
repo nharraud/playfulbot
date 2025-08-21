@@ -254,6 +254,7 @@ export type TeamOrDeletedTeam = DeletedTeam | Team;
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID']['output'];
+  myRole?: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
   status?: Maybe<TournamentStatus>;
 };
@@ -264,6 +265,10 @@ export type TournamentInvitation = {
   sentAt?: Maybe<Scalars['Date']['output']>;
   tournament?: Maybe<Tournament>;
 };
+
+export enum TournamentRole {
+  Organizer = 'ORGANIZER'
+}
 
 export enum TournamentStatus {
   Created = 'CREATED',
@@ -288,6 +293,7 @@ export type UpdateTeamSuccess = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID']['output'];
+  organizedTournaments?: Maybe<Array<Tournament>>;
   teams?: Maybe<Array<Maybe<Team>>>;
   tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
   username: Scalars['String']['output'];
@@ -320,7 +326,7 @@ export type GetAuthenticatedUserQuery = { __typename?: 'Query', authenticatedUse
 export type AuthenticatedUserTournamentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AuthenticatedUserTournamentsQuery = { __typename?: 'Query', authenticatedUser?: { __typename?: 'User', id: string, username: string, teams?: Array<{ __typename?: 'Team', id: string, name: string, tournament?: { __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null } | null } | null> | null, tournamentInvitations?: Array<{ __typename?: 'TournamentInvitation', tournament?: { __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null } | null }> | null } | null };
+export type AuthenticatedUserTournamentsQuery = { __typename?: 'Query', authenticatedUser?: { __typename?: 'User', id: string, username: string, teams?: Array<{ __typename?: 'Team', id: string, name: string, tournament?: { __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null } | null } | null> | null, tournamentInvitations?: Array<{ __typename?: 'TournamentInvitation', tournament?: { __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null } | null }> | null, organizedTournaments?: Array<{ __typename?: 'Tournament', id: string, name: string, status?: TournamentStatus | null }> | null } | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -396,6 +402,11 @@ export const AuthenticatedUserTournamentsDocument = gql`
         name
         status
       }
+    }
+    organizedTournaments {
+      id
+      name
+      status
     }
   }
 }

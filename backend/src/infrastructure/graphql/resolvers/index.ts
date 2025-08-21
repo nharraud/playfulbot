@@ -16,7 +16,7 @@ import { registerUserResolver } from './registration';
 import {
   createTournamentResolver,
 //   tournamentInvitationIDResolver,
-//   tournamentMyRolesResolver,
+  tournamentMyRolesResolver,
   tournamentResolver,
 //   tournamentRoundsResolver,
 //   tournamentTeamsResolver,
@@ -31,7 +31,7 @@ import { createArenaGameResolver, createArenaResolver, arenaGamesResolver } from
 // import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 // import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
 import {
-//   userOrganizedTournamentsResolver,
+  userOrganizedTournamentsResolver,
   userTeamsResolver,
   userTournamentInvitationsResolver,
 } from './user';
@@ -74,18 +74,18 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   User: {
     teams: userTeamsResolver,
     tournamentInvitations: userTournamentInvitationsResolver,
-    // organizedTournaments: userOrganizedTournamentsResolver,
+    organizedTournaments: userOrganizedTournamentsResolver,
   },
   Team: {
     members: teamMembersResolver,
     tournament: teamTournamentResolver,
   },
-  // Tournament: {
+  Tournament: {
   //   rounds: tournamentRoundsResolver,
   //   invitationLinkID: tournamentInvitationIDResolver,
-  //   myRole: tournamentMyRolesResolver,
+    myRole: tournamentMyRolesResolver,
   //   teams: tournamentTeamsResolver,
-  // },
+  },
   // Round: {
   //   teamPoints: roundTeamPointsResolver,
   //   teamGames: roundTeamGamesResolver,

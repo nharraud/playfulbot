@@ -9,25 +9,31 @@ import {
   isUserContext,
 } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
+import { createTournament } from '~playfulbot/core/use-cases/tournament/createTournament';
+import { validateTournamentName } from '~playfulbot/core/entities/Tournaments';
 
 export const createTournamentResolver: gqlTypes.MutationResolvers<GraphqlContext>['createTournament'] =
   async (parent, args, apolloContext) => {
     if (!isUserContext(apolloContext)) {
       throw new ForbiddenError(`Only authenticated users are allowed to create tournaments.`);
     }
-    // const config = await loadConfig();
-    // const { gameDefinition } = await import(config.games[0]);
-    const gameDefinitions = await apolloContext.ctx.providers.gameDefinitions.getGameDefinitions();
-    const gameDefinition = gameDefinitions.keys().next();
-    return apolloContext.ctx.providers.tournament.createTournament(apolloContext.ctx, {
-        name: args.name,
-        startDate: args.startDate,
-        lastRoundDate: args.lastRoundDate,
-        roundsNumber: args.roundsNumber,
-        minutesBetweenRounds: args.minutesBetweenRounds,
-        gameDefinitionId: gameDefinition.value
-      }
-    );
+
+    // FIXME: validate parameters
+    // const tournamentNameError = validateTournamentName(args.name);
+    // if (tournamentNameError) {
+    //   return {
+    //     __typename: 'CreateTournamentFailure',
+    //     errors: [{ __typename: 'ValidationError', message: JSON.stringify({ 'input.name': [tournamentNameError] }) }]
+    //   } as gqlTypes.CreateTournamentFailure;
+    // }
+
+    return createTournament(apolloContext.ctx, {
+      tournamentName: args.name,
+      lastRoundDate: args.lastRoundDate,
+      minutesBetweenRounds: args.minutesBetweenRounds,
+      roundsNumber: args.roundsNumber,
+      startDate: args.startDate
+    });
   };
 
 export const tournamentResolver: gqlTypes.QueryResolvers<GraphqlContext>['tournament'] = async (
@@ -95,18 +101,14 @@ export const tournamentResolver: gqlTypes.QueryResolvers<GraphqlContext>['tourna
 //   });
 // }
 
-// export async function tournamentMyRolesResolver(
-//   parent: Tournament,
-//   args: undefined,
-//   ctx: ApolloContext
-// ): Promise<gqlTypes.TournamentRoleName> {
-//   if (isBotContext(ctx)) {
-//     throw new BotsForbiddenError();
-//   }
-//   if (isUnauthenticatedContext(ctx)) {
-//     return null;
-//   }
-
-//   const result = await parent.getUserRole(ctx.userID, db.default);
-//   return result;
-// }
+export const tournamentMyRolesResolver: gqlTypes.TournamentResolvers<GraphqlContext>['myRole'] = async (
+  tournament,
+  args,
+  apolloContext
+) => {
+  if (!isUserContext(apolloContext)) {
+    throw new ForbiddenError('Only users are allowed to retrieve the user role');
+  }
+  const userId = apolloContext.ctx.requestingUserId;
+  return apolloContext.ctx.providers.tournament.getUserRole(apolloContext.ctx, { tournamentId: tournament.id, userId } );
+};

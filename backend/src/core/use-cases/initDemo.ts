@@ -4,6 +4,7 @@ import { User } from '~playfulbot/core/entities/Users';
 import { Context } from './interfaces/Context';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { TournamentID } from '../entities/Tournaments';
+import { TournamentRole } from '../entities/TournamentRole';
 
 async function getGameDefinition(ctx: Context<any>, gameDefinitionId: GameDefinitionID ) {
   const gameDefinitions = await ctx.providers.gameDefinitions.getGameDefinitions();
@@ -64,7 +65,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     ctx.logger.info('Creating admin user');
     const admin = await txCtx.providers.user.createUser(txCtx, {
       username: 'zeus', password: 'password', id: 'ACEE0000-0000-0000-0000-000000000000'
-    });
+    }) as User;
 
     ctx.logger.info('Creating tournament');
     const gameDefinition = await getGameDefinition(ctx, params.gameDefinitionId);
@@ -84,6 +85,9 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
       gameDefinitionId: gameDefinition.name,
       // admin.id,
       id: 'F00FABE0-0000-0000-0000-000000000001',
+    });
+    txCtx.providers.tournament.changeTournamentRole(txCtx, {
+      tournamentId: tournament.id, userId: admin.id, role: TournamentRole.Organizer
     });
 
     const teams = await createTeams(txCtx, 10, tournament.id);

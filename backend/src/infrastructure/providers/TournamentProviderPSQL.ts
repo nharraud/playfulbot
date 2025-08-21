@@ -6,16 +6,16 @@ import { ConflictError } from '~playfulbot/errors';
 import { getGameDefinitions } from '~playfulbot/games';
 import { TournamentInvitationLink, TournamentInvitationLinkID } from '../../model/TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from '../../model/Round';
-import { TournamentRoleName } from '../../model/TournamentRole';
 import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';
-import { TournamentProvider } from '~playfulbot/core/use-cases/interfaces/TournamentProvider';
+import { GetAllTournamentsFilters, GetAllTournamentsOrderings, TournamentProvider } from '~playfulbot/core/use-cases/interfaces/TournamentProvider';
 import { Tournament, TournamentID, TournamentStatus } from '~playfulbot/core/entities/Tournaments';
 import { ContextPSQL } from './ContextPSQL';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { UserID } from '~playfulbot/core/entities/Users';
-import { DEFAULT } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { DEFAULT, QueryBuilder } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { isUUIDv4 } from './utils';
 import { TeamID } from '~playfulbot/core/entities/Teams';
+import { TournamentRole } from '~playfulbot/core/entities/TournamentRole';
 
 /* eslint-disable camelcase */
 export interface DbTournament {
@@ -122,6 +122,47 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
     return null;
   }
 
+  async changeTournamentRole(ctx: ContextPSQL, params: {
+    tournamentId: TournamentID, userId: UserID, role: TournamentRole | null
+  }): Promise<void> {
+    if (params.role === null) {
+      return ctx.dbOrTx.none(
+        'DELETE FROM tournament_roles WHERE user_id = $[userId] AND tournament_id = $[tournamentId]',
+        {
+          tournamentId: params.tournamentId,
+          userId: params.userId
+        }
+      );
+    }
+    return ctx.dbOrTx.none(
+      `INSERT INTO tournament_roles(tournament_id, user_id, role) VALUES($[tournamentId], $[userId], $[role])
+       ON CONFLICT (tournament_id, user_id) DO UPDATE SET role = excluded.role`,
+      {
+        tournamentId: params.tournamentId,
+        userId: params.userId,
+        role: params.role,
+      }
+    );
+  }
+
+
+  // async getTournamentsByRole(ctx: ContextPSQL, params: {
+  //   userId: UserID, role: TournamentRole | undefined
+  // }): Promise<{ tournament: Tournament, role: TournamentRole }[]> {
+
+  // }
+
+  async getUserRole(ctx: ContextPSQL, params: { tournamentId: TournamentID, userId: UserID }): Promise<TournamentRole | null> {
+    const result = await ctx.dbOrTx.oneOrNone<{ role: TournamentRole }>(
+      'SELECT role FROM tournament_roles WHERE tournament_id = $[tournamentId] AND user_id = $[userId]',
+      {
+        tournamentId: params.tournamentId,
+        userId: params.userId,
+      }
+    );
+    return result?.role || null;
+  }
+
   // async getByInvitationLink(
   //   ctx: ContextPSQL,
   //   tournamentInvitationLinkID: TournamentInvitationLinkID
@@ -148,31 +189,39 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   //   }
   // }
 
-  // async getAll(
-  //   filters: GetAllTournamentsFilters = {},
-  //   dbOrTX: DbOrTx
-  // ): Promise<Tournament[]> {
-  //   const queryBuilder = new QueryBuilder('SELECT tournaments.* FROM tournaments');
-  //   if (filters.startingAfter) {
-  //     queryBuilder.where('$[startingAfter] <= start_date');
-  //   }
-  //   if (filters.startingBefore) {
-  //     queryBuilder.where('start_date <= $[startingBefore]');
-  //   }
-  //   if (filters.status) {
-  //     queryBuilder.where('status = $[status]');
-  //   }
-  //   if (filters.invitedUserID) {
-  //     queryBuilder.join('JOIN tournament_invitations ON teams.tournament_id = tournaments.id');
-  //     queryBuilder.where('tournament_invitations.user_id = $[invitedUserID]');
-  //   }
-  //   if (filters.organizingUserID) {
-  //     queryBuilder.join('JOIN tournament_roles ON tournament_roles.tournament_id = tournaments.id');
-  //     queryBuilder.where('tournament_roles.user_id = $[organizingUserID]');
-  //   }
-  //   const rows = await dbOrTX.manyOrNone<DbTournament>(queryBuilder.query, filters);
-  //   return rows.map((row) => new Tournament(row));
-  // }
+  async getAllTournaments(
+    ctx: ContextPSQL,
+    { filters = {}, limit = 50, offset = 0, order = { field: 'name', direction: 'ASC' } }:
+      Parameters<TournamentProvider<any>['getAllTournaments']>[1] = {}
+  ): Promise<Tournament[]> {
+    const variables = {} as any;
+    const queryBuilder = new QueryBuilder('SELECT tournaments.* FROM tournaments');
+    queryBuilder.orderBy({ column: 'name', allowed: ['name'], defaultColumn: 'name', direction: order.direction });
+    queryBuilder.limit({ limit, max: 1000, defaultLimit: 100 });
+    queryBuilder.offset(offset);
+
+    // if (filters.startingAfter) {
+    //   queryBuilder.where('$[startingAfter] <= start_date');
+    // }
+    // if (filters.startingBefore) {
+    //   queryBuilder.where('start_date <= $[startingBefore]');
+    // }
+    // if (filters.status) {
+    //   queryBuilder.where('status = $[status]');
+    // }
+    // if (filters.invitedUserID) {
+    //   queryBuilder.join('JOIN tournament_invitations ON teams.tournament_id = tournaments.id');
+    //   queryBuilder.where('tournament_invitations.user_id = $[invitedUserID]');
+    // }
+    if (filters.userRole && filters.userRole.role && filters.userRole.userId) {
+      queryBuilder.join('JOIN tournament_roles ON tournament_roles.tournament_id = tournaments.id');
+      queryBuilder.where('tournament_roles.user_id = $[userId] AND tournament_roles.role = $[role]');
+      variables.role = filters.userRole.role;
+      variables.userId = filters.userRole.userId;
+    }
+    const rows = await ctx.dbOrTx.manyOrNone<DbTournament>(queryBuilder.query, variables);
+    return rows.map((row) => buildTournament(row));
+  }
 
   // static async isOrganizer(
   //   tournamentID: TournamentID,
@@ -269,27 +318,4 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   //   return links[0];
   // }
 
-  // async addRole(userID: UserID, role: TournamentRoleName, dbOrTX: DbOrTx): Promise<void> {
-  //   await dbOrTX.one<{ bool: boolean }>(
-  //     `INSERT INTO tournament_roles(tournament_id, user_id, role)
-  //      VALUES($[tournamentID], $[userID], $[role])
-  //      RETURNING true`,
-  //     {
-  //       tournamentID: this.id,
-  //       userID,
-  //       role,
-  //     }
-  //   );
-  // }
-
-  // async getUserRole(userID: UserID, dbOrTX: DbOrTx): Promise<TournamentRoleName | null> {
-  //   const result = await dbOrTX.oneOrNone<{ role: TournamentRoleName }>(
-  //     'SELECT role FROM tournament_roles WHERE tournament_id = $[id] AND user_id = $[userID]',
-  //     {
-  //       id: this.id,
-  //       userID,
-  //     }
-  //   );
-  //   return result?.role || null;
-  // }
 }

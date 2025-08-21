@@ -254,6 +254,7 @@ export type TeamOrDeletedTeam = DeletedTeam | Team;
 export type Tournament = {
   __typename?: 'Tournament';
   id: Scalars['ID']['output'];
+  myRole?: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
   status?: Maybe<TournamentStatus>;
 };
@@ -264,6 +265,10 @@ export type TournamentInvitation = {
   sentAt?: Maybe<Scalars['Date']['output']>;
   tournament?: Maybe<Tournament>;
 };
+
+export enum TournamentRole {
+  Organizer = 'ORGANIZER'
+}
 
 export enum TournamentStatus {
   Created = 'CREATED',
@@ -288,6 +293,7 @@ export type UpdateTeamSuccess = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID']['output'];
+  organizedTournaments?: Maybe<Array<Tournament>>;
   teams?: Maybe<Array<Maybe<Team>>>;
   tournamentInvitations?: Maybe<Array<TournamentInvitation>>;
   username: Scalars['String']['output'];
@@ -449,6 +455,7 @@ export type ResolversTypes = {
   TeamOrDeletedTeam: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['TeamOrDeletedTeam']>;
   Tournament: ResolverTypeWrapper<Tournament>;
   TournamentInvitation: ResolverTypeWrapper<TournamentInvitation>;
+  TournamentRole: TournamentRole;
   TournamentStatus: TournamentStatus;
   UpdateTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['UpdateTeamError']>;
   UpdateTeamFailure: ResolverTypeWrapper<Omit<UpdateTeamFailure, 'errors'> & { errors: Array<ResolversTypes['UpdateTeamError']> }>;
@@ -712,6 +719,7 @@ export type TeamOrDeletedTeamResolvers<ContextType = any, ParentType extends Res
 
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  myRole?: Resolver<Maybe<ResolversTypes['TournamentRole']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -744,6 +752,7 @@ export type UpdateTeamSuccessResolvers<ContextType = any, ParentType extends Res
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organizedTournaments?: Resolver<Maybe<Array<ResolversTypes['Tournament']>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   tournamentInvitations?: Resolver<Maybe<Array<ResolversTypes['TournamentInvitation']>>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
