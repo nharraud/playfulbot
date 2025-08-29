@@ -10,7 +10,7 @@ import CompetitionIcon from '@mui/icons-material/EmojiEvents';
 import TestIcon from '@mui/icons-material/SlowMotionVideo';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useTournament } from 'src/hooksAndQueries/useTournament';
-import { TournamentStatus } from 'src/types/graphql-generated';
+import { TournamentStatus } from 'src/types/backend/graphql-generated';
 import useTeam from 'src/hooksAndQueries/useTeam';
 import LoadingWidget from '../Loading';
 import CompetitionSubPage from './competition/CompetitionSubPage';

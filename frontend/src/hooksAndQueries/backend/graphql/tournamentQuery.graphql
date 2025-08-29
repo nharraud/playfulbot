@@ -1,0 +1,14 @@
+query tournament($tournamentID: ID!) {
+    tournament(tournamentID: $tournamentID) {
+      id
+      name
+      # status
+      # startDate
+      # firstRoundDate
+      # lastRoundDate
+      # roundsNumber
+      # minutesBetweenRounds
+      myRole
+      # invitationLinkID
+    }
+}

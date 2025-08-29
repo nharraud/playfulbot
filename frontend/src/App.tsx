@@ -17,7 +17,7 @@ import Registration from './ui/Registration';
 
 import { client } from './apolloConfig';
 
-// import TournamentPage from './ui/Tournament/TournamentPage';
+import TournamentPage from './ui/Tournament/TournamentPage';
 // import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
 import { UserContextProvider } from './UserContext';
@@ -115,10 +115,10 @@ function App() {
                       <Route exact path="/home">
                         <UserHomePage />
                       </Route>
-                      {/*
                       <Route path="/tournament/:tournamentID">
                         <TournamentPage />
                       </Route>
+                      {/* 
                       <Route path="/create_tournament">
                         <TournamentCreationPage />
                       </Route>

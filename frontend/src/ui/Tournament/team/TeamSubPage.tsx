@@ -5,7 +5,7 @@ import { TournamentQuery } from 'src/types/graphql';
 import useTeam from 'src/hooksAndQueries/useTeam';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoadingWidget from '../../Loading';
-import { TournamentRoleName } from '../../../types/graphql';
+import { TournamentRole } from '../../../types/backend/graphql-generated';
 import AllTeamsTab from './AllTeamsTab';
 import YourTeamTab from './YourTeamTab';
 import TournamentSubPage from '../components/TournamentSubPage';
@@ -35,7 +35,7 @@ export default function TeamSubPage(props: TeamSubPageProps) {
 
   const { team, userNotPartOfAnyTeam, loading, error, refetch } = useTeam(props.tournament.id);
 
-  const isAdmin = props.tournament.myRole === TournamentRoleName.Admin;
+  const isOrganizer = props.tournament.myRole === TournamentRole.Organizer;
 
   const handleJoinSuccess = useCallback(() => {
     refetch();
@@ -50,7 +50,7 @@ export default function TeamSubPage(props: TeamSubPageProps) {
   }
 
   let inviteComp;
-  if (isAdmin) {
+  if (isOrganizer) {
     inviteComp = (
       <>
         <Button
