@@ -84,7 +84,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
       minutesBetweenRounds: 30,
       gameDefinitionId: gameDefinition.name,
       // admin.id,
-      id: 'F00FABE0-0000-0000-0000-000000000001',
+      id: 'F00FABE0-0000-4000-a000-000000000001',
     });
     txCtx.providers.tournament.changeTournamentRole(txCtx, {
       tournamentId: tournament.id, userId: admin.id, role: TournamentRole.Organizer
@@ -99,7 +99,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
       txCtx, {
         username: `userInvited`,
         password: `password`,
-        id: `ACEB0001-0000-0000-0000-000000000000`
+        id: `ACEB0001-0000-4000-a000-f00000000000`
       }
     ) as User;
 

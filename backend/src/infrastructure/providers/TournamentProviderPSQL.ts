@@ -13,7 +13,7 @@ import { ContextPSQL } from './ContextPSQL';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { UserID } from '~playfulbot/core/entities/Users';
 import { DEFAULT, QueryBuilder } from 'playfulbot-backend-commons/lib/model/db/helpers';
-import { isUUIDv4 } from './utils';
+import { isUUID } from './utils';
 import { TeamID } from '~playfulbot/core/entities/Teams';
 import { TournamentRole } from '~playfulbot/core/entities/TournamentRole';
 
@@ -89,7 +89,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   }
 
   async getTournamentByID(ctx: ContextPSQL, id: TournamentID): Promise<Tournament | null> {
-    if (!isUUIDv4(id)) {
+    if (!isUUID(id)) {
       return null;
     }
     try {
@@ -214,7 +214,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
     //   queryBuilder.where('tournament_invitations.user_id = $[invitedUserID]');
     // }
     if (filters.userRole && filters.userRole.role && filters.userRole.userId) {
-      queryBuilder.join('JOIN tournament_roles ON tournament_roles.tournament_id = tournaments.id');
+      queryBuilder.join('tournament_roles ON tournament_roles.tournament_id = tournaments.id');
       queryBuilder.where('tournament_roles.user_id = $[userId] AND tournament_roles.role = $[role]');
       variables.role = filters.userRole.role;
       variables.userId = filters.userRole.userId;

@@ -52,10 +52,12 @@ export class QueryBuilder {
 
   orderBy(
     { column, allowed, defaultColumn, direction = 'ASC' }:
-      { column: string, allowed: string[], defaultColumn: string, direction: 'ASC' | 'DESC' }
+      { column: string, allowed?: string[], defaultColumn?: string, direction: 'ASC' | 'DESC' }
   ): this {
     direction = sanitizeValueFromValueSet(direction, ['ASC', 'DESC'], 'ASC');
-    column = sanitizeValueFromValueSet(column, allowed, defaultColumn);
+    if (allowed) {
+      column = sanitizeValueFromValueSet(column, allowed, defaultColumn);
+    }
 
     this._order = ` ORDER BY ${column} ${direction}`;
     return this;
@@ -80,7 +82,7 @@ export class QueryBuilder {
     let result = this.startQuery;
 
     for (const join of this.joins) {
-      result += ' ' + join;
+      result += ' JOIN ' + join;
     }
 
     let firstFilter = true;

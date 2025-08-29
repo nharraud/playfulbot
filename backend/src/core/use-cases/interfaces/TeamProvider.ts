@@ -17,7 +17,7 @@ export class TeamNameAlreadyTakenError extends Error {
 
 export interface TeamsSearchOptions {
   // tournamentStatus?: TournamentStatus;
-  // tournamentID?: TournamentID;
+  tournamentID?: TournamentID;
   memberID?: UserID;
 }
 

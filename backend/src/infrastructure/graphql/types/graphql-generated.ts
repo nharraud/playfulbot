@@ -257,6 +257,7 @@ export type Tournament = {
   myRole?: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
   status?: Maybe<TournamentStatus>;
+  teams?: Maybe<Array<Maybe<Team>>>;
 };
 
 export type TournamentInvitation = {
@@ -722,6 +723,7 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
   myRole?: Resolver<Maybe<ResolversTypes['TournamentRole']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
+  teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

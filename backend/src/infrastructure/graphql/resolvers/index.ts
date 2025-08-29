@@ -19,7 +19,7 @@ import {
   tournamentMyRolesResolver,
   tournamentResolver,
 //   tournamentRoundsResolver,
-//   tournamentTeamsResolver,
+  tournamentTeamsResolver,
 } from './tournaments';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
@@ -84,7 +84,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   //   rounds: tournamentRoundsResolver,
   //   invitationLinkID: tournamentInvitationIDResolver,
     myRole: tournamentMyRolesResolver,
-  //   teams: tournamentTeamsResolver,
+    teams: tournamentTeamsResolver,
   },
   // Round: {
   //   teamPoints: roundTeamPointsResolver,

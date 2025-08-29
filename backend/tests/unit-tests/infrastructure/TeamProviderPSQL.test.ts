@@ -232,6 +232,24 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       foundTeams.sort((t1, t2) => t1.name.localeCompare(t2.name))
       expect(foundTeams).toEqual([team, team2]);
     });
+
+    test('should return an empty list when the tournament has no teams', async ({ ctx, tournament, user }) => {
+      const teamProvider = new TeamProviderPSQL();
+
+      const foundTeams = await teamProvider.getAll(ctx, { tournamentID: tournament.id });
+      expect(foundTeams).toEqual([]);
+    });
+
+    test('should return the list of teams when the tournament has multiple teams', async ({ ctx, team, user, tournament }) => {
+      const teamProvider = new TeamProviderPSQL();
+      const tournament2 = await ctx.providers.tournament.createTournament(ctx, { ...tournamentData, name: 'testTournament2' });
+      const team2 = await addTeam(ctx, 'testTeam2', tournament.id);
+      const team3 = await addTeam(ctx, 'testTeam3', tournament2.id);
+
+      const foundTeams = await teamProvider.getAll(ctx, { tournamentID: tournament.id });
+      foundTeams.sort((t1, t2) => t1.name.localeCompare(t2.name))
+      expect(foundTeams).toEqual([team, team2]);
+    });
   });
 
 

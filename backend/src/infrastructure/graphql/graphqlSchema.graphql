@@ -46,7 +46,7 @@ type Tournament {
   # firstRoundDate: Date
   # roundsNumber: Int
   # minutesBetweenRounds: Int
-  # teams: [Team]
+  teams: [Team]
 
   # rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
 

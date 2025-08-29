@@ -156,15 +156,17 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
       'SELECT teams.* FROM teams'
     );
 
-    // if (filters.tournamentID) {
-    //   queryBuilder.where('tournaments.id = $[tournamentID]');
-    //   queryBuilder.orderBy('teams.name', 'ASC');
-    // } else {
-    //   queryBuilder.orderBy('tournaments.start_date', 'DESC');
+    if (filters.tournamentID) {
+      queryBuilder.join('tournaments ON teams.tournament_id = tournaments.id');
+      queryBuilder.where('tournaments.id = $[tournamentID]');
+      queryBuilder.orderBy({ column: 'teams.name', direction: 'ASC' });
+    }
+    // else {
+    //   queryBuilder.orderBy({ column: 'tournaments.start_date', direction: 'DESC' });
     // }
 
     if (filters.memberID) {
-      queryBuilder.join('JOIN team_memberships ON teams.id = team_memberships.team_id');
+      queryBuilder.join('team_memberships ON teams.id = team_memberships.team_id');
       queryBuilder.where('team_memberships.user_id = $[memberID]');
     }
 
