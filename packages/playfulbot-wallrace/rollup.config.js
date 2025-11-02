@@ -4,7 +4,14 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import postcss from "rollup-plugin-postcss";
 
-const packageJson = require("./package.json");
+// const packageJson = require("./package.json");
+
+import { readFile } from 'fs/promises';
+const packageJson = JSON.parse(
+  await readFile(
+    new URL('./package.json', import.meta.url)
+  )
+);
 
 export default {
   input: "src/index.ts",

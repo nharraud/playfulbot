@@ -10,45 +10,46 @@ import Button from '@mui/material/Button';
 import { UserContext } from 'src/UserContext';
 import Divider from '@mui/material/Divider';
 import { Link } from 'react-router-dom';
-import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/authenticatedUser';
+import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/backend/graphql/authenticatedUser';
 import MenuBar from './MenuBar/MenuBar';
+import cssCls from './Login.module.css';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      // flexGrow: 1,
-    },
-    left: {
-      backgroundColor: 'black',
-    },
-    formBox: {
-      marginTop: theme.spacing(10),
-    },
-    form: {
-      padding: theme.spacing(5),
-      paddingBottom: theme.spacing(3),
-      textAlign: 'left',
-    },
-    formGrid: {
-      margin: 'auto',
-    },
-    formTitle: {
-      paddingBottom: theme.spacing(3),
-      textAlign: 'center',
-    },
-    formButtons: {
-      marginTop: theme.spacing(1),
-    },
-    loginButton: {
-      width: '100%',
-    },
-    registerButton: {
-      backgroundColor: theme.palette.success.main,
-      color: theme.palette.getContrastText(theme.palette.success.main),
-    },
-    registerButtonContainer: {
-      padding: theme.spacing(3),
-    },
+    // root: {
+    //   // flexGrow: 1,
+    // },
+    // left: {
+    //   backgroundColor: 'black',
+    // },
+    // formBox: {
+    //   marginTop: theme.spacing(10),
+    // },
+    // form: {
+    //   padding: theme.spacing(5),
+    //   paddingBottom: theme.spacing(3),
+    //   textAlign: 'left',
+    // },
+    // formGrid: {
+    //   margin: 'auto',
+    // },
+    // formTitle: {
+    //   paddingBottom: theme.spacing(3),
+    //   textAlign: 'center',
+    // },
+    // formButtons: {
+    //   marginTop: theme.spacing(1),
+    // },
+    // loginButton: {
+    //   width: '100%',
+    // },
+    // registerButton: {
+    //   backgroundColor: theme.palette.success.main,
+    //   color: theme.palette.getContrastText(theme.palette.success.main),
+    // },
+    // registerButtonContainer: {
+    //   padding: theme.spacing(3),
+    // },
   })
 );
 
@@ -68,9 +69,9 @@ export default function Login(props) {
 
   return <>
     <MenuBar />
-    <div className={classes.root}>
+    <div className={cssCls.login}>
       {result.error ? JSON.stringify(result.error) : null}
-      <Grid container xs={12} spacing={3} direction="row" justifyContent="center">
+      <div className={cssCls.panel}>
         <Grid item xs={4}>
           <Paper className={classes.formBox} elevation={3}>
             <form className={classes.form} noValidate autoComplete="off" onSubmit={submitLogin}>
@@ -128,7 +129,7 @@ export default function Login(props) {
             </div>
           </Paper>
         </Grid>
-      </Grid>
+      </div>
     </div>
   </>;
 }

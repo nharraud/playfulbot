@@ -12,3 +12,15 @@ projects:
                 - "typescript"
                 - "typescript-operations"
                 - "typescript-react-apollo"
+  game-runner:
+    overwrite: true
+    schema: "../backend-game-runner/src/infrastructure/graphql/graphqlSchema.graphql"
+    documents: "src/hooksAndQueries/game-runner/graphql/**/*.graphql"
+    extensions:
+        codegen:
+          generates:
+            src/types/game-runner/graphql-generated.ts:
+              plugins:
+                - "typescript"
+                - "typescript-operations"
+                - "typescript-react-apollo"

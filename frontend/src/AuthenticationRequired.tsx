@@ -1,13 +1,22 @@
 import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { UserContext } from './UserContext';
 
-export function AuthenticationRequired(props) {
+// export function AuthenticationRequired(props) {
+//   const { authenticated } = useContext(UserContext);
+//   const navigate = useNavigate();
+//   if (authenticated) {
+//     console.log('authenticated', props.children)
+//     return props.children;
+//   }
+//   navigate('/login');
+//   return <div />;
+// }
+
+export function authenticationRequired() {
   const { authenticated } = useContext(UserContext);
-  const history = useHistory();
-  if (authenticated) {
-    return props.children;
+  const navigate = useNavigate();
+  if (!authenticated) {
+    navigate('/login');
   }
-  history.push('/login');
-  return <div />;
 }

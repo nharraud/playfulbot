@@ -1,5 +1,5 @@
 import React from 'react';
-import { Canvas } from '@react-three/fiber';
+// import { Canvas } from '@react-three/fiber';
 import { GameRendererProps } from 'playfulbot-game-frontend';
 import { Game } from './Game';
 import { WallRaceGameState } from '../../types';
@@ -13,18 +13,18 @@ export function GameCanvas(props: GameCanvasProps) {
   if (props?.gameState !== undefined) {
     game = (<Game {...props} />)
   }
-  return (
-  <Canvas
-    orthographic
-    camera={{
-      position: [0, 0, 4],
-      near: 0.1,
-      far: 5,
-  }}
-  >
-    <color attach="background" args={[0,0,0]} />
-    <ambientLight/>
-    { game }
-  </Canvas>
+  return (<div/>
+  // <Canvas
+  //   orthographic
+  //   camera={{
+  //     position: [0, 0, 4],
+  //     near: 0.1,
+  //     far: 5,
+  // }}
+  // >
+  //   <color attach="background" args={[0,0,0]} />
+  //   <ambientLight/>
+  //   { game }
+  // </Canvas>
   );
 }

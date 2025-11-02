@@ -1,28 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Team, useCreateTeamMutation, useUpdateTeamMutation } from 'src/types/graphql-generated';
+import {
+  Team
+} from 'src/types/backend/graphql/graphql';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Alert } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { TournamentID } from 'src/types/graphql';
+import { useCreateTeam, useUpdateTeam } from 'src/hooksAndQueries/backend/graphql/team';
 
 const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    [theme.breakpoints.up('sm')]: {
-      width: '50%',
-    },
-    [theme.breakpoints.down('xl')]: {
-      width: '100%',
-    },
-    margin: '1rem',
-  },
+  // dialogPaper: {
+  //   [theme.breakpoints.up('sm')]: {
+  //     width: '50%',
+  //   },
+  //   [theme.breakpoints.down('xl')]: {
+  //     width: '100%',
+  //   },
+  //   margin: '1rem',
+  // },
 }));
 
 interface TeamCreateOrEditDialogProps {
@@ -53,7 +56,7 @@ function TeamCreateOrEditDialog({
   onSubmit,
 }: TeamCreateOrEditDialogProps) {
   const classes = useStyles();
-  const { register, handleSubmit, errors, reset } = useForm<Inputs>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<Inputs>({
     resolver: yupResolver(schema),
     defaultValues: team,
   });
@@ -78,7 +81,7 @@ function TeamCreateOrEditDialog({
         <DialogContent>
           {alert}
           <TextField
-            inputRef={register}
+            { ...register('name') }
             autoFocus
             margin="dense"
             id="name"
@@ -86,8 +89,8 @@ function TeamCreateOrEditDialog({
             label="Team name"
             type="text"
             fullWidth
-            error={errors.name !== undefined}
-            helperText={errors.name?.message}
+            error={errors?.name !== undefined}
+            helperText={errors?.name?.message}
           />
         </DialogContent>
         <DialogActions>
@@ -110,34 +113,30 @@ export interface TeamCreateDialogProps {
 }
 
 export function TeamCreateDialog({ tournamentID, open, handleClose }: TeamCreateDialogProps) {
-  const [alert, setAlert] = useState(undefined);
+  const [alert, setAlert] = useState<ReactElement<any, any> | undefined>(undefined);
   useEffect(() => {
     if (open) {
       setAlert(undefined);
     }
   }, [setAlert, open]);
 
-  const [createTeam] = useCreateTeamMutation({
-    onCompleted: (data) => {
-      if (data?.createTeam?.__typename === 'CreateTeamSuccess') {
-        handleClose(data.createTeam.team);
-      } else if (data?.createTeam?.__typename === 'CreateTeamFailure') {
-        setAlert(
-          <Alert severity="error">
-            An unexpected error occured: {data.createTeam.errors[0].message}
-          </Alert>
-        );
-      }
-    },
-  });
+  const createTeam = useCreateTeam();
 
   const onSubmit = async (data: Inputs) => {
     createTeam({
-      variables: {
-        tournamentID,
-        input: { name: data.name },
-      },
-    });
+      tournamentID,
+      input: { name: data.name },
+    }).then(response => {
+      if (response?.__typename === 'CreateTeamSuccess') {
+        handleClose(response.team);
+      } else if (response?.__typename === 'CreateTeamFailure') {
+        setAlert(
+          <Alert severity="error">
+            An unexpected error occured: {response.errors[0].message}
+          </Alert>
+        );
+      }
+  });
   };
 
   return (
@@ -159,33 +158,29 @@ export interface TeamEditDialogProps {
 }
 
 export function TeamEditDialog({ team, open, handleClose }: TeamEditDialogProps) {
-  const [alert, setAlert] = useState(undefined);
+  const [alert, setAlert] = useState<ReactElement<any, any> | undefined>(undefined);
   useEffect(() => {
     if (open) {
       setAlert(undefined);
     }
   }, [setAlert, open]);
 
-  const [updateTeam] = useUpdateTeamMutation({
-    onCompleted: (data) => {
-      if (data?.updateTeam?.__typename === 'UpdateTeamSuccess') {
-        handleClose(data.updateTeam.team);
-      } else if (data?.updateTeam?.__typename === 'UpdateTeamFailure') {
-        setAlert(
-          <Alert severity="error">
-            An unexpected error occured: {data.updateTeam.errors[0].message}
-          </Alert>
-        );
-      }
-    },
-  });
+  const updateTeam = useUpdateTeam();
 
   const onSubmit = async (data: Inputs) => {
     updateTeam({
-      variables: {
-        teamID: team.id,
-        input: { name: data.name },
-      },
+      teamID: team.id,
+      input: { name: data.name },
+    }).then(response => {
+      if (response?.__typename === 'UpdateTeamSuccess') {
+        handleClose(response.team);
+      } else if (response?.__typename === 'UpdateTeamFailure') {
+        setAlert(
+          <Alert severity="error">
+            An unexpected error occured: {response.errors[0].message}
+          </Alert>
+        );
+      }
     });
   };
 

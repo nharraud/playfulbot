@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { apolloCache } from 'src/apolloCache';
+import { apolloCache } from 'src/infrastructure/graphql/apolloCache';
 import { usePrevious } from './usePrevious';
 
 /**

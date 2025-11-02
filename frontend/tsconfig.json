@@ -24,7 +24,8 @@
     "paths": {
       "src/*": ["./src/*"],
       "playfulbot-config": ["./src/declarations.d.ts"],
-    }
+    },
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "include": [
     "src"

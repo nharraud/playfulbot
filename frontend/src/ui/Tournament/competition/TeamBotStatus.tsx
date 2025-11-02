@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Paper, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Tournament } from 'src/types/graphql-generated';
-import useTeam from 'src/hooksAndQueries/useTeam';
+import useTeam from 'src/hooksAndQueries/backend/graphql/team';
 import { useTeamPlayer } from 'src/hooksAndQueries/useTeamPlayer';
 import CopyToClipboardButton from 'src/utils/CopyToClipboardButton';
 

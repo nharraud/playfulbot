@@ -9,7 +9,7 @@ import { Tournament } from 'src/types/graphql';
 
 import { useGameController } from 'src/hooksAndQueries/useGameController';
 import { gameDefinition } from 'playfulbot-config';
-import useDebugGame from '../../hooksAndQueries/useGame';
+import useDebugGame from '../../hooksAndQueries/backend/graphql/useArenaGame';
 import DebugBottomDrawer from './DebugDrawer/DebugDrawer';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface DebugProps {
   tournament: Tournament | undefined;
+  arenaId: string;
 }
 
 export default function Debug(props: DebugProps) {

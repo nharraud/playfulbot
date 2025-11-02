@@ -1,16 +1,17 @@
 import React, { useCallback } from 'react';
 import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import { TeamID, TournamentID, useJoinTeamMutation } from 'src/types/graphql';
-import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
-import { useTournamentTeamsQuery } from '../../../types/graphql';
+import { TeamID, TournamentID } from 'src/types/graphql';
+import { useAuthenticatedUser } from 'src/hooksAndQueries/backend/graphql/authenticatedUser';
 import TeamCard from './TeamCard';
 import CreateTeamCard from './CreateTeamCard';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { joinTeamMutation, tournamentTeamsQuery } from 'src/hooksAndQueries/backend/graphql/team';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(3),
-  },
+  // root: {
+  //   padding: theme.spacing(3),
+  // },
 }));
 
 interface AllTeamsTabProps {
@@ -20,9 +21,9 @@ interface AllTeamsTabProps {
 
 export default function AllTeamsTab(props: AllTeamsTabProps) {
   const classes = useStyles();
-  const { data: tournamentTeams } = useTournamentTeamsQuery({
+  const { data: tournamentTeams } = useQuery(tournamentTeamsQuery, {
     variables: {
-      tournamentID: props.tournamentID,
+      tournamentID: props.tournamentID as string,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -30,7 +31,7 @@ export default function AllTeamsTab(props: AllTeamsTabProps) {
 
   let content;
 
-  const [joinTeam, joinResult] = useJoinTeamMutation({
+  const [joinTeam, joinResult] = useMutation(joinTeamMutation, {
     onCompleted: () => props.onJoinSuccess(),
   });
 
@@ -44,17 +45,17 @@ export default function AllTeamsTab(props: AllTeamsTabProps) {
   );
 
   if (tournamentTeams && authenticatedUser) {
-    const userTeam = tournamentTeams.tournament.teams.find(
-      (team) => team.members.findIndex((member) => member.id === authenticatedUser.id) !== -1
+    const userTeam = tournamentTeams.tournament?.teams?.find(
+      (team) => team?.members?.findIndex((member) => member?.id === authenticatedUser.id) !== -1
     );
 
-    let otherTeams = tournamentTeams.tournament.teams;
+    let otherTeams = tournamentTeams?.tournament?.teams;
     if (userTeam) {
-      otherTeams = otherTeams.filter((team) => team.id !== userTeam.id);
+      otherTeams = otherTeams?.filter((team) => team?.id !== userTeam.id);
     }
 
-    content = otherTeams.map((team) => (
-      <Grid item xs={6} md={3} lg={2} key={team.id}>
+    content = otherTeams?.map((team) => (
+      <Grid item xs={6} md={3} lg={2} key={team?.id}>
         <TeamCard team={team} onJoin={handleJoin} />
       </Grid>
     ));

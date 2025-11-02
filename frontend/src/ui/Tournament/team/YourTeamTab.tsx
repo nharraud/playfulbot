@@ -2,46 +2,46 @@ import React, { useCallback } from 'react';
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { TournamentID } from 'src/types/graphql';
-import useTeam from 'src/hooksAndQueries/useTeam';
+import { useTeam } from 'src/hooksAndQueries/backend/graphql/team';
 import EditIcon from '@mui/icons-material/Edit';
 import { TeamEditDialog } from './TeamEditDialog';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: theme.spacing(3),
-  },
-  teamContainer: {
-    padding: theme.spacing(5),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(2),
-  },
-  teamNameContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-  teamName: {
-    flex: '1 1 auto',
-    paddingLeft: '2rem',
-    paddingRight: '0.7rem',
-  },
-  editIcon: {
-    flex: '0 0 auto',
-    marginLeft: 'auto',
-    fontSize: '1.3rem',
-    color: theme.palette.grey[400],
-  },
-  subtitle: {
-    textAlign: 'center',
-  },
-  membersList: {},
-  memberItem: {
-    textAlign: 'center',
-  },
+  // root: {
+  //   width: '100%',
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   justifyContent: 'center',
+  //   padding: theme.spacing(3),
+  // },
+  // teamContainer: {
+  //   padding: theme.spacing(5),
+  //   paddingTop: theme.spacing(3),
+  //   paddingBottom: theme.spacing(2),
+  // },
+  // teamNameContainer: {
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   marginBottom: theme.spacing(2),
+  // },
+  // teamName: {
+  //   flex: '1 1 auto',
+  //   paddingLeft: '2rem',
+  //   paddingRight: '0.7rem',
+  // },
+  // editIcon: {
+  //   flex: '0 0 auto',
+  //   marginLeft: 'auto',
+  //   fontSize: '1.3rem',
+  //   color: theme.palette.grey[400],
+  // },
+  // subtitle: {
+  //   textAlign: 'center',
+  // },
+  // membersList: {},
+  // memberItem: {
+  //   textAlign: 'center',
+  // },
 }));
 
 interface YourTeamTabProps {

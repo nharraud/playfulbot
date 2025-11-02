@@ -7,45 +7,45 @@ import gameImage from '../../assets/images/game.png';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flex: '1 1 auto',
-      minHeight: '0',
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: 'black',
-    },
-    pitchRow: {
-      flex: '1 1 auto',
-      minHeight: '0',
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    arrowRow: {
-      flex: '0 0 auto',
-    },
-    imgContainer: {
-      flex: '1 1 0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-    },
-    pitchContainer: {
-      flex: '1 1 0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-    },
-    gameImg: {
-      maxWidth: '100%',
-      maxHeight: '100%',
-      padding: theme.spacing(2),
-    },
-    pitch: {
-      maxWidth: '20em',
-    },
-    arrow: {
-      fontSize: 30,
-    },
+  //   root: {
+  //     flex: '1 1 auto',
+  //     minHeight: '0',
+  //     display: 'flex',
+  //     flexDirection: 'column',
+  //     backgroundColor: 'black',
+  //   },
+  //   pitchRow: {
+  //     flex: '1 1 auto',
+  //     minHeight: '0',
+  //     display: 'flex',
+  //     flexDirection: 'row',
+  //   },
+  //   arrowRow: {
+  //     flex: '0 0 auto',
+  //   },
+  //   imgContainer: {
+  //     flex: '1 1 0',
+  //     display: 'flex',
+  //     alignItems: 'center',
+  //     justifyContent: 'space-around',
+  //   },
+  //   pitchContainer: {
+  //     flex: '1 1 0',
+  //     display: 'flex',
+  //     alignItems: 'center',
+  //     justifyContent: 'space-around',
+  //   },
+  //   gameImg: {
+  //     maxWidth: '100%',
+  //     maxHeight: '100%',
+  //     padding: theme.spacing(2),
+  //   },
+  //   pitch: {
+  //     maxWidth: '20em',
+  //   },
+  //   arrow: {
+  //     fontSize: 30,
+  //   },
   })
 );
 

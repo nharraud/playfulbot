@@ -5,12 +5,12 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      padding: theme.spacing(1),
-      paddingTop: theme.spacing(2),
-      paddingBottom: theme.spacing(2),
-      backgroundColor: theme.palette.background.default,
-    },
+    // root: {
+    //   padding: theme.spacing(1),
+    //   paddingTop: theme.spacing(2),
+    //   paddingBottom: theme.spacing(2),
+    //   backgroundColor: theme.palette.background.default,
+    // },
   })
 );
 

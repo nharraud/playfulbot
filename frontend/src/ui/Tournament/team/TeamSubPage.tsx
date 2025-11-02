@@ -2,23 +2,23 @@ import React, { useCallback, useState } from 'react';
 import { Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { TournamentQuery } from 'src/types/graphql';
-import useTeam from 'src/hooksAndQueries/useTeam';
+import { useTeam } from 'src/hooksAndQueries/backend/graphql/team';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoadingWidget from '../../Loading';
-import { TournamentRole } from '../../../types/backend/graphql-generated';
+import { TournamentRole } from '../../../types/backend/graphql/graphql';
 import AllTeamsTab from './AllTeamsTab';
 import YourTeamTab from './YourTeamTab';
 import TournamentSubPage from '../components/TournamentSubPage';
 import { TeamInviteDialog } from './TeamInviteDialog';
 
 const useStyles = makeStyles((theme) => ({
-  inviteButton: {
-    color: theme.palette.getContrastText(theme.palette.success.main),
-    backgroundColor: theme.palette.success.main,
-    '&:hover': {
-      backgroundColor: theme.palette.success.dark,
-    },
-  },
+  // inviteButton: {
+  //   color: theme.palette.getContrastText(theme.palette.success.main),
+  //   backgroundColor: theme.palette.success.main,
+  //   '&:hover': {
+  //     backgroundColor: theme.palette.success.dark,
+  //   },
+  // },
 }));
 
 interface TeamSubPageProps {

@@ -14,31 +14,31 @@ import { TeamID, UserID } from 'src/types/graphql';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  content: {
-    textAlign: 'center',
-    paddingBottom: theme.spacing(1),
-    flex: '1 1 auto',
-  },
-  title: {},
-  member: {
-    textAlign: 'center',
-  },
-  actions: {
-    flex: '0 0 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingBottom: theme.spacing(2),
-  },
-  joinButton: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
-  },
+  // root: {
+  //   height: '100%',
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  // },
+  // content: {
+  //   textAlign: 'center',
+  //   paddingBottom: theme.spacing(1),
+  //   flex: '1 1 auto',
+  // },
+  // title: {},
+  // member: {
+  //   textAlign: 'center',
+  // },
+  // actions: {
+  //   flex: '0 0 auto',
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   justifyContent: 'center',
+  //   paddingBottom: theme.spacing(2),
+  // },
+  // joinButton: {
+  //   backgroundColor: theme.palette.success.main,
+  //   color: theme.palette.getContrastText(theme.palette.success.main),
+  // },
 }));
 
 interface TeamCardProps {

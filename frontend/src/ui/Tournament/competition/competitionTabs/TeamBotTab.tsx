@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import useTeam from 'src/hooksAndQueries/useTeam';
+import useTeam from 'src/hooksAndQueries/backend/graphql/team';
 import { useTeamPlayer } from 'src/hooksAndQueries/useTeamPlayer';
 import { Tournament } from 'src/types/graphql-generated';
 import CopyToClipboardButton from 'src/utils/CopyToClipboardButton';

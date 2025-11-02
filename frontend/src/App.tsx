@@ -1,41 +1,45 @@
 import React from 'react';
 
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router';
 
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, Theme, StyledEngineProvider, createTheme, adaptV4Theme } from '@mui/material/styles';
+import { ThemeProvider, Theme, StyledEngineProvider, createTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 
 import LuxonUtils from '@date-io/luxon';
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import logo from './logo.svg';
 import './App.css';
 import Login from './ui/Login';
-import Registration from './ui/Registration';
-
-import { client } from './apolloConfig';
+// import Registration from './ui/Registration';
 
 import TournamentPage from './ui/Tournament/TournamentPage';
 // import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
 import { UserContextProvider } from './UserContext';
 import { UserHomePage } from './ui/UserHomePage/UserHomePage';
-import { AuthenticationRequired } from './AuthenticationRequired';
+import { authenticationRequired } from './AuthenticationRequired';
+import { BackendClientProvider } from './infrastructure/graphql/GraphqlClientProviders';
 // import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+// declare module '@mui/styles/defaultTheme' {
+//   // eslint-disable-next-line @typescript-eslint/no-empty-interface
+//   interface DefaultTheme extends Theme {}
+// }
+
+
+
+// declare module '@mui/styles/defaultTheme' {
+//   // eslint-disable-next-line @typescript-eslint/no-empty-interface
+//   interface DefaultTheme extends Theme {}
+// }
+
+declare module '@mui/styles' {
   interface DefaultTheme extends Theme {}
 }
 
-
-
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 
 declare module '@mui/material/styles/createPalette' {
@@ -49,7 +53,7 @@ declare module '@mui/material/styles/createPalette' {
   }
 }
 
-const theme = createTheme(adaptV4Theme({
+const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -84,11 +88,12 @@ const theme = createTheme(adaptV4Theme({
       fontWeight: 400,
     },
   },
-}));
+});
 
 function App() {
   return (
-    <ApolloProvider client={client}>
+    // <ApolloProvider client={client}>
+    <BackendClientProvider>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -96,42 +101,33 @@ function App() {
             <div className="App">
               <UserContextProvider>
                 <Router>
-                  <Switch>
-                    <Route exact path="/">
-                      <LandingPage />
-                    </Route>
-                    <Route path="/login">
-                      <Login />
-                    </Route>
-                    <Route path="/register">
-                      <Registration />
-                    </Route>
+                  <Routes>
+                    <Route exact path="/" element={ <LandingPage />}/>
+                    <Route path="/login" element={<Login />}/>
+                    {/* <Route path="/register" element={<Registration />}/> */}
 {/*
                     <Route path="/tournament_invitation/:tournamentInvitationLinkID">
                       <TournamentInvitationPage />
                     </Route>
 */}
-                    <AuthenticationRequired>
-                      <Route exact path="/home">
-                        <UserHomePage />
-                      </Route>
-                      <Route path="/tournament/:tournamentID">
-                        <TournamentPage />
-                      </Route>
+                    {/* <Route element={<AuthenticationRequired/>}> */}
+                      <Route path="/home" loader={authenticationRequired} element={<UserHomePage />}/>
+                      <Route path="/tournament/:tournamentID/*" loader={authenticationRequired} element={<TournamentPage />}/>
                       {/* 
                       <Route path="/create_tournament">
                         <TournamentCreationPage />
                       </Route>
                       */}
-                    </AuthenticationRequired>
-                  </Switch>
+                    {/* </Route> */}
+                  </Routes>
                 </Router>
               </UserContextProvider>
             </div>
           </LocalizationProvider>
         </ThemeProvider>
       </StyledEngineProvider>
-    </ApolloProvider>
+
+    </BackendClientProvider>
   );
 }
 

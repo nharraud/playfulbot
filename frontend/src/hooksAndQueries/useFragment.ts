@@ -1,5 +1,5 @@
 import { DataProxy, OperationVariables } from '@apollo/client';
-import { client } from '../apolloConfig';
+import { client } from '../infrastructure/graphql/useGraphqlClient';
 import { useGraphqlCacheLock } from './useGraphqlCacheLock';
 
 type readFragmentOptions<T = any, TVariables = OperationVariables> = DataProxy.Fragment<

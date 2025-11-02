@@ -1,0 +1,10 @@
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  .panel {
+    margin: 2em;
+    padding: 3em;
+  }
+}

@@ -8,6 +8,7 @@ import { streamArenaGames } from '~playfulbot/core/use-cases/arena/streamArenaGa
 import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
 import { GameRef } from '~playfulbot/core/entities/GameRef';
 import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator';
+import { getArena } from '~playfulbot/core/use-cases/arena/getArena';
 
 export const arenaGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arenaGames'] = {
   subscribe: async (model, args, graphqlContext, info) => {
@@ -79,6 +80,30 @@ export const createArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['cr
     }
     return {
       __typename: 'CreateArenaSuccess',
+      arena: result
+    };
+};
+
+
+export const getArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['getArena'] = async (
+    parent,
+    args,
+    graphqlContext
+) => {
+    if (!isUserContext(graphqlContext)) {
+      throw new AuthenticationError('Only users are allowed to create games')
+    }
+
+    const result = await getArena(graphqlContext.ctx, args.arenaID);
+
+    if (result instanceof Error) {
+      return {
+        __typename: 'GetArenaFailure',
+        errors: [toGraphQLError(result)],
+      };
+    }
+    return {
+      __typename: 'GetArenaSuccess',
       arena: result
     };
 };

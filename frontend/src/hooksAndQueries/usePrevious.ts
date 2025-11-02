@@ -6,8 +6,8 @@ import { useEffect, useRef } from 'react';
  * @param value new value to store.
  * @returns previously stored value.
  */
-export function usePrevious<TYPE>(value: TYPE): TYPE {
-  const ref = useRef<TYPE>();
+export function usePrevious<TYPE>(value: TYPE): TYPE | undefined {
+  const ref = useRef<TYPE>(undefined);
   useEffect(() => {
     ref.current = value;
   });

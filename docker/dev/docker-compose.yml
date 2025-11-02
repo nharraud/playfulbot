@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17
+    image: postgres:18
     ports:
       - "127.0.0.1:5432:5432"
     environment:
@@ -12,9 +12,11 @@ services:
     build: ./nginx
     extra_hosts:
       - "backend:host-gateway"
+      - "game_runner:host-gateway"
       - "frontend:host-gateway"
     ports:
       - "127.0.0.1:80:80"
       - "127.0.0.1:443:443"
+      - "127.0.0.1:4401:4401"
     volumes:
       - ./ssl:/playfulbot/ssl

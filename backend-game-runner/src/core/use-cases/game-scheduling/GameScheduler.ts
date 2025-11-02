@@ -66,8 +66,12 @@ export class GameScheduler {
     while (this.#status === 'running') {
       if (this.gameRepository.nbGames < this.config.maxGames) {
         const gameConfig = await this.gameProvider.fetchGame();
-        const game = new Game(gameConfig.id, gameConfig.gameDefinition, gameConfig.players);
-        this.gameRepository.add(game);
+        if (gameConfig.id) {
+          const game = new Game(gameConfig.id, gameConfig.gameDefinition, gameConfig.players);
+          this.gameRepository.add(game);
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       } else {
         await Promise.any(this.gameRepository.list().map(game => game.gameEndPromise));
         const games = this.gameRepository.list();

@@ -2,11 +2,13 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { DocumentNode } from 'graphql';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
-  OperationVariables,
+  OperationVariables
+} from '@apollo/client';
+import {
   SubscriptionHookOptions,
   SubscriptionResult as ApolloSubscriptionResult,
-  useApolloClient,
-} from '@apollo/client';
+  useApolloClient
+} from '@apollo/client/react';
 import { usePrevious } from './usePrevious';
 
 export const subscriptionReconnectListeners = new Array<() => void>();
@@ -17,7 +19,7 @@ export function useRestartingSubscription<TData = any, TVariables = OperationVar
 ): ApolloSubscriptionResult<TData> {
   const [result, setResult] = useState<ApolloSubscriptionResult<TData>>({ loading: false });
   const client = useApolloClient();
-  const subscriptionRef = useRef<ZenObservable.Subscription>();
+  const subscriptionRef = useRef<ZenObservable.Subscription>(undefined);
   const unsubscribe = useCallback(() => {
     if (subscriptionRef.current) {
       subscriptionRef.current.unsubscribe();

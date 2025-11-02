@@ -17,6 +17,12 @@ export class MaxArenaReachedError extends Error {
   }
 }
 
+export interface ArenasSearchOptions {
+  teamID?: TeamID;
+}
+
+export type GetAllArenasOrderings = 'name';
+
 export interface ArenaProvider<Context> {
   createArena(ctx: Context, arena: {
       teamId: TeamID,
@@ -26,4 +32,9 @@ export interface ArenaProvider<Context> {
   getArena(ctx: Context, id: ArenaID): Promise<Arena | null>;
   countArenas(ctx: Context, teamId: TeamID): Promise<number>;
   deleteArena(ctx: Context, id: ArenaID): Promise<boolean>;
+  getAll(ctx: Context, params: {
+      filters?: ArenasSearchOptions,
+      order?: { field: GetAllArenasOrderings, direction: 'ASC' | 'DESC' }
+    }
+  ): Promise<Arena[]>
 }

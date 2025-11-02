@@ -10,6 +10,8 @@ import { mockContextFixture } from '../../utils/fixtures';
 import { ArenaNameAlreadyTakenError } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { ContextPSQL } from '~playfulbot/infrastructure/providers/ContextPSQL';
 
+const dummyUUID = '00000000-0000-4000-9000-000000000000';
+
 async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
@@ -48,8 +50,8 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     await dropTestDB();
   });
 
-  describe('createDebugArena', () => {
-    test('should create a debugArena', async ({ ctx, team }) => {
+  describe('createArena', () => {
+    test('should create an Arena', async ({ ctx, team }) => {
       const provider = new ArenaProviderPSQL();
       const arena = await provider.createArena(ctx, {
         teamId: team.id,
@@ -62,7 +64,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       });
     });
 
-    test('should return an error if debugArena name exists', async ({ ctx, team }) => {
+    test('should return an error if Arena name exists', async ({ ctx, team }) => {
       const provider = new ArenaProviderPSQL();
       await provider.createArena(ctx, {
         teamId: team.id,
@@ -76,7 +78,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     });
   });
 
-  describe('getDebugArena', () => {
+  describe('getArena', () => {
     test('should get a debugArena', async ({ ctx, team }) => {
       const provider = new ArenaProviderPSQL();
       const createdArena = await provider.createArena(ctx, {
@@ -118,6 +120,34 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const provider = new ArenaProviderPSQL();
       const arenasCount = await provider.countArenas(ctx, '00000000-0000-0000-0000-000000000000');
       expect(arenasCount).toEqual(0);
+    });
+  });
+
+  describe('getAll', () => {
+    test('should return an empty list when the team has no arena', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const fetchedArenas = await provider.getAll(ctx, { filters: { teamID: team.id } });
+      expect(fetchedArenas).toEqual([]);
+    });
+  
+    test('should get all Arenas', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const arenas = await Promise.all(
+        [0,1,2,3].map(idx => 
+          provider.createArena(ctx, {
+          teamId: team.id,
+          name: `testArena${idx}`
+          })
+        )
+      );
+      const fetchedArenas = await provider.getAll(ctx, { filters: { teamID: team.id } });
+      expect(fetchedArenas).toEqual(arenas);
+    });
+
+    test('should return no Arena when the team id does not exist', async ({ ctx }) => {
+      const provider = new ArenaProviderPSQL();
+      const fetchedArenas = await provider.getAll(ctx, { filters: { teamID: dummyUUID } });
+      expect(fetchedArenas).toEqual([]);
     });
   });
 });

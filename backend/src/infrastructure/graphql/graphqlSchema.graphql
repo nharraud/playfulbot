@@ -65,6 +65,7 @@ type Team {
   id: ID!
   name: String!
   members: [User]
+  arenas: [Arena]
   tournament: Tournament
 }
 
@@ -200,6 +201,27 @@ union CreateArenaError = ForbiddenError | ArenaNameAlreadyTakenError | MaxArenaR
 union CreateArenaResult = CreateArenaSuccess | CreateArenaFailure
 
 
+# #
+# # Get Arena Input/Output
+# #
+type GetArenaSuccess {
+  arena: Arena
+}
+
+type GetArenaFailure {
+  errors: [GetArenaError!]!
+}
+
+type ArenaNotFoundError implements Error {
+  message: String!
+  arenaID: ID
+}
+
+union GetArenaError = ForbiddenError | ArenaNotFoundError
+
+union GetArenaResult = GetArenaSuccess | GetArenaFailure
+
+
 
 # #
 # # Create Arena Game Input/Output
@@ -210,11 +232,6 @@ type CreateArenaGameSuccess {
 
 type CreateArenaGameFailure {
   errors: [CreateArenaGameError!]!
-}
-
-type ArenaNotFoundError implements Error {
-  message: String!
-  arenaID: ID
 }
 
 union CreateArenaGameError = ForbiddenError | ArenaNotFoundError
@@ -232,6 +249,9 @@ type GameRef {
 type ArenaGamesFailure {
   errors: [ArenaGamesError!]!
 }
+# type NoGame {
+#   reason: String!
+# }
 
 union ArenaGamesError = ForbiddenError | ArenaNotFoundError
 
@@ -338,6 +358,7 @@ type Query {
 type Mutation {
   createArenaGame(arenaID: ID!): CreateArenaGameResult
   createArena(teamID: ID!, name: String!): CreateArenaResult
+  getArena(arenaID: ID!): GetArenaResult
 
   registerUser(username: String!, password: String!): UserRegistrationResult
   login(username: String!, password: String!): LoginResult

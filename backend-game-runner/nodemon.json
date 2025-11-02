@@ -1,5 +1,5 @@
 {
   "execMap": {
-    "ts": "node --import tsx/esm --import tsconfig-paths/register.js"
+    "ts": "node --import=tsx --import tsconfig-paths/register.js"
   }
 }

@@ -7,6 +7,7 @@ import { authenticatedUserResolver } from '~playfulbot/infrastructure/graphql/re
 import {
   createTeamResolver,
   joinTeamResolver,
+  teamArenasResolver,
   teamMembersResolver,
   teamResolver,
   teamTournamentResolver,
@@ -26,7 +27,7 @@ import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { playerGamesResolver } from './playerGames';
 import { DateScalar } from './scalars/DateScalar';
 import { GraphqlContext } from '../types/graphqlTypes';
-import { createArenaGameResolver, createArenaResolver, arenaGamesResolver } from './arena';
+import { createArenaGameResolver, createArenaResolver, getArenaResolver, arenaGamesResolver } from './arena';
 // import { teamPlayerResolver } from './teamPlayer';
 // import { roundResolver, roundTeamGamesResolver, roundTeamPointsResolver } from './rounds';
 // import { gameSummaryLosersResolver, gameSummaryWinnersResolver } from './gameSummary';
@@ -78,6 +79,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
   },
   Team: {
     members: teamMembersResolver,
+    arenas: teamArenasResolver,
     tournament: teamTournamentResolver,
   },
   Tournament: {

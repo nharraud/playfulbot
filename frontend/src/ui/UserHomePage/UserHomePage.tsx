@@ -1,59 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { Theme, Typography, Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-import { useAuthenticatedUser } from 'src/hooksAndQueries/authenticatedUser';
+// import makeStyles from '@mui/styles/makeStyles';
+// import createStyles from '@mui/styles/createStyles';
+import { useAuthenticatedUser } from 'src/hooksAndQueries/backend/graphql/authenticatedUser';
 import { useURIQuery } from 'src/utils/router/useURIQuery';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import MenuBar from '../MenuBar/MenuBar';
-import {
-  useAuthenticatedUserTournamentsQuery,
-  // useRegisterTournamentInvitationLinkMutation,
-} from '../../types/graphql';
+// import {
+//   useAuthenticatedUserTournamentsQuery,
+//   // useRegisterTournamentInvitationLinkMutation,
+// } from '../../types/graphql';
+import { useAuthenticatedUserTournaments } from '../../hooksAndQueries/backend/graphql/authenticatedUserTournaments';
 import { TournamentsList } from './TournamentsList';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flex: '1 1 auto',
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    welcomeTitle: {
-      flex: '0 0 auto',
-      marginTop: theme.spacing(5),
-    },
-    createTournamentRow: {
-      marginTop: theme.spacing(10),
-    },
-    createTournamentButton: {
-      backgroundColor: theme.palette.success.main,
-      color: theme.palette.getContrastText(theme.palette.success.main),
-    },
-    tournamentListsRow: {
-      marginTop: theme.spacing(10),
-      flex: '1 1 auto',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-      alignItems: 'flex-start',
-    },
-    column: {},
-  })
-);
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     // root: {
+//     //   flex: '1 1 auto',
+//     //   height: '100vh',
+//     //   display: 'flex',
+//     //   flexDirection: 'column',
+//     // },
+//     // welcomeTitle: {
+//     //   flex: '0 0 auto',
+//     //   marginTop: theme.spacing(5),
+//     // },
+//     // createTournamentRow: {
+//     //   marginTop: theme.spacing(10),
+//     // },
+//     // createTournamentButton: {
+//     //   backgroundColor: theme.palette.success.main,
+//     //   color: theme.palette.getContrastText(theme.palette.success.main),
+//     // },
+//     // tournamentListsRow: {
+//     //   marginTop: theme.spacing(10),
+//     //   flex: '1 1 auto',
+//     //   display: 'flex',
+//     //   flexDirection: 'row',
+//     //   justifyContent: 'space-evenly',
+//     //   alignItems: 'flex-start',
+//     // },
+//     // column: {},
+//   })
+// );
 
 export function UserHomePage() {
-  const classes = useStyles();
+    console.log('home');
+  const classes = {}//useStyles();
   const { authenticatedUser } = useAuthenticatedUser();
   const {
     error,
     data: userTournaments,
     refetch: refetchUserTournaments,
-  } = useAuthenticatedUserTournamentsQuery();
+  } = useAuthenticatedUserTournaments();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   // const [registerTournamentInvitation, tournamentInvitationResult] =
   //   useRegisterTournamentInvitationLinkMutation();
   const query = useURIQuery();
@@ -61,9 +63,9 @@ export function UserHomePage() {
   useEffect(() => {
     if (tournamentInvitationLinkID) {
       query.delete('tournament_invitation');
-      history.replace({
+      navigate({
         search: query.toString(),
-      });
+      }, { replace: true });
       // registerTournamentInvitation({
       //   variables: { tournamentInvitationLinkID },
       // });
@@ -71,7 +73,7 @@ export function UserHomePage() {
   }, [
     tournamentInvitationLinkID,
     query,
-    history,
+    navigate,
     // registerTournamentInvitation,
     refetchUserTournaments,
   ]);

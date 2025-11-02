@@ -5,31 +5,31 @@ import { SupportedProgrammingLanguages } from 'src/types/programmingLanguages';
 import { TsJsBotInstructions } from './languageSpecificInstructions/TsJsBotInstructions';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  container: {
-    flex: '0 0 auto',
-    paddingTop: theme.spacing(3),
-    textAlign: 'left',
-    [theme.breakpoints.up('md')]: {
-      width: '50rem',
-    },
-  },
-  mainTitle: {
-    marginBottom: '3rem',
-  },
-  sectionTitle: {
-    marginTop: '3rem',
-    marginBottom: '1rem',
-  },
-  sectionText: {
-    marginBottom: '2rem',
-  },
-  languageFormControl: {
-    width: '20em',
-  },
+  // root: {
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  // },
+  // container: {
+  //   flex: '0 0 auto',
+  //   paddingTop: theme.spacing(3),
+  //   textAlign: 'left',
+  //   [theme.breakpoints.up('md')]: {
+  //     width: '50rem',
+  //   },
+  // },
+  // mainTitle: {
+  //   marginBottom: '3rem',
+  // },
+  // sectionTitle: {
+  //   marginTop: '3rem',
+  //   marginBottom: '1rem',
+  // },
+  // sectionText: {
+  //   marginBottom: '2rem',
+  // },
+  // languageFormControl: {
+  //   width: '20em',
+  // },
 }));
 
 interface CodingBotInfoTabProps {

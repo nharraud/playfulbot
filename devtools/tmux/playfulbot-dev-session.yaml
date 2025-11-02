@@ -1,5 +1,41 @@
 session_name: playfulbot-dev
 windows:
+  - window_name: playfulbot-dev
+    layout: tiled
+    shell_command_before:
+      # run as a first command in all panes
+      - cd ../..
+    panes:
+      - shell_command:
+          - tmux select-pane -T 'RUN backend' -t playfulbot-dev.0
+          - cd ./backend
+          - sleep 20s
+          - npm run cli db-drop && npm run cli db-create && npm run cli load-demo
+          - npm run debug
+      - shell_command:
+          - tmux select-pane -T 'RUN game runner' -t playfulbot-dev.2
+          - cd ./backend-game-runner
+          - npm run debug
+      - shell_command:
+          - tmux select-pane -T 'RUN frontend' -t playfulbot-dev.3
+          - cd ./frontend
+          - npm run dev
+      - shell_command:
+          - tmux select-pane -T 'RUN frontend gen-graphql-backend' -t playfulbot-dev.4
+          - cd ./frontend
+          - npm run gen-graphql-backend
+      - shell_command:
+          - tmux select-pane -T 'RUN frontend gen-graphql-runner' -t playfulbot-dev.5
+          - cd ./frontend
+          - npm run gen-graphql-runner
+      - shell_command:
+          - tmux select-pane -T 'DOCKER dev' -t playfulbot-dev.6
+          - cd ./docker/dev
+          - docker compose up
+      - shell_command:
+          - tmux select-pane -T 'DOCKER test' -t playfulbot-dev.7
+          - cd ./docker/tests
+          - docker compose up
   - window_name: playfulbot-build
     layout: tiled
     shell_command_before:
@@ -7,52 +43,34 @@ windows:
       - cd ../..
     panes:
       - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-backend-commons' 
-          - cd backend-commons
-          - npm run build:watch
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'backend'
-          - cd ./backend
-          - sleep 5s
-          - npm run cli db-drop && npm run cli db-create && npm run cli load-demo
-          - npm run backend
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'game runner'
-          - cd ./backend-game-runner
-          - npm run debug
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'frontend' 
-          - cd ./frontend
-          - npm run dev
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'docker' 
-          - cd ./docker/dev
-          - docker compose up
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-game' 
+          - tmux select-pane -T 'BUILD playfulbot-game' -t playfulbot-build.6
           - cd packages/playfulbot-game
           - npm run watch-build
       - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-game-backend' 
+          - tmux select-pane -T 'BUILD backend-commons' -t playfulbot-build.7
+          - cd backend-commons
+          - npm run build:watch
+      - shell_command:
+          - tmux select-pane -T 'BUILD game-backend' -t playfulbot-build.8
           - cd packages/playfulbot-game-backend
           - npm run watch-build
       - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-game-frontend' 
+          - tmux select-pane -T 'BUILD game-frontend' -t playfulbot-build.9
           - cd packages/playfulbot-game-frontend
           - npm run watch-build
       - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-config-loader' 
+          - tmux select-pane -T 'BUILD config-loader' -t playfulbot-build.10
           - cd packages/playfulbot-config-loader
           - npm run watch-build
       - shell_command:
-          - printf '\033]2;%s\033\\' 'rollup-plugin-playfulbot-config-loader' 
+          - tmux select-pane -T 'BUILD plugin-playfulbot-config-loader' -t playfulbot-build.11
           - cd packages/rollup-plugin-playfulbot-config-loader
           - npm run watch-build
       - shell_command:
-          - printf '\033]2;%s\033\\' 'playfulbot-wallrace' 
-          - cd packages/playfulbot-wallrace
-          - npm run watch-build
-      - shell_command:
-          - printf '\033]2;%s\033\\' 'mem-pubsub' 
+          - tmux select-pane -T 'BUILD mem-pubsub' -t playfulbot-build.12
           - cd packages/mem-pubsub
           - npm run build:watch
+      - shell_command:
+          - tmux select-pane -T 'BUILD wallrace' -t playfulbot-build.13
+          - cd packages/playfulbot-wallrace
+          - npm run watch-build

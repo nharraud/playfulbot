@@ -5,33 +5,33 @@ import PeopleIcon from '@mui/icons-material/People';
 import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  container: {
-    flex: '0 0 auto',
-    paddingTop: theme.spacing(3),
-    textAlign: 'left',
-    [theme.breakpoints.up('md')]: {
-      width: '50rem',
-    },
-  },
-  mainTitle: {
-    marginBottom: '3rem',
-  },
-  sectionTitle: {
-    marginTop: '3rem',
-    marginBottom: '1rem',
-  },
-  sectionText: {
-    marginBottom: '2rem',
-  },
-  textIcon: {
-    marginRight: '0.5rem',
-    marginLeft: '0.5rem',
-    verticalAlign: 'text-bottom',
-  },
+  // root: {
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  // },
+  // container: {
+  //   flex: '0 0 auto',
+  //   paddingTop: theme.spacing(3),
+  //   textAlign: 'left',
+  //   [theme.breakpoints.up('md')]: {
+  //     width: '50rem',
+  //   },
+  // },
+  // mainTitle: {
+  //   marginBottom: '3rem',
+  // },
+  // sectionTitle: {
+  //   marginTop: '3rem',
+  //   marginBottom: '1rem',
+  // },
+  // sectionText: {
+  //   marginBottom: '2rem',
+  // },
+  // textIcon: {
+  //   marginRight: '0.5rem',
+  //   marginLeft: '0.5rem',
+  //   verticalAlign: 'text-bottom',
+  // },
 }));
 
 interface TournamentInfoTabProps {

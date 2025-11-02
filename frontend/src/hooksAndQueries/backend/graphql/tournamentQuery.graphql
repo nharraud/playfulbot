@@ -2,7 +2,7 @@ query tournament($tournamentID: ID!) {
     tournament(tournamentID: $tournamentID) {
       id
       name
-      # status
+      status
       # startDate
       # firstRoundDate
       # lastRoundDate

@@ -5,6 +5,7 @@ import { Context } from './interfaces/Context';
 import { GameDefinitionID } from 'playfulbot-config-loader';
 import { TournamentID } from '../entities/Tournaments';
 import { TournamentRole } from '../entities/TournamentRole';
+import { addTeamMember } from './team/addTeamMember';
 
 async function getGameDefinition(ctx: Context<any>, gameDefinitionId: GameDefinitionID ) {
   const gameDefinitions = await ctx.providers.gameDefinitions.getGameDefinitions();
@@ -107,6 +108,18 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     await txCtx.providers.tournamentInvitation.createTournamentInvitation(txCtx, {
       tournamentId: tournament.id, inviteeId: invitedUser.id
     });
+
+    const started = await txCtx.providers.tournament.startTournament(txCtx,  tournament.id);
+    if (!started) {
+      throw new Error('Tournament not started');
+    }
+
+    await addTeamMember(txCtx, { teamId: teams[0].id, userId: invitedUser.id, checkPermission: false });
+
+    await txCtx.providers.arena.createArena(txCtx, {
+      teamId: teams[0].id, name: 'testArena', id: 'ACEE0000-0000-0000-0000-000000000000'
+    })
+    
 
     // await tournament.start(tx);
 

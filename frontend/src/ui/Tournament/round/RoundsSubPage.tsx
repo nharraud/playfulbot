@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Team, Tournament } from 'src/types/graphql-generated';
 import { useRouteMatch } from 'react-router-dom';
 import useRoundSummary from 'src/hooksAndQueries/useRoundSummary';
-import useTeam from 'src/hooksAndQueries/useTeam';
+import useTeam from 'src/hooksAndQueries/backend/graphql/team';
 import { GameID } from 'src/types/graphql';
 
 const useStyles = makeStyles((theme) => ({

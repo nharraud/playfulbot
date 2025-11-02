@@ -1,0 +1,10 @@
+.team-arenas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  .arena {
+    margin: 2em;
+    padding: 3em;
+  }
+}

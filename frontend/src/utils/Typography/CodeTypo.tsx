@@ -5,9 +5,9 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    code: {
-      color: theme.palette.code.primary,
-    },
+    // code: {
+    //   color: theme.palette.code.primary,
+    // },
   })
 );
 

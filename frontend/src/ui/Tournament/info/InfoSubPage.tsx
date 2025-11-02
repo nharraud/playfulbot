@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TournamentQuery } from 'src/types/graphql-generated';
+import { TournamentQuery } from 'src/types/graphql';
 import { CodingBotInfoTab } from './infoTabs/CodingBotInfoTab';
 import IntroTab from './infoTabs/TournamentInfoTab';
 import { GameRulesTab } from './infoTabs/GameRulesTab';

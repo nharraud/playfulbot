@@ -4,31 +4,31 @@ import { Box, Tab, Tabs, Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    paddingTop: theme.spacing(3),
-    backgroundColor: theme.palette.menu.main,
-    color: theme.palette.getContrastText(theme.palette.menu.main),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    textAlign: 'left',
-  },
-  mainRow: {
-    paddingLeft: theme.spacing(3),
-    paddingBottom: theme.spacing(1),
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  titleCell: {
-    paddingRight: theme.spacing(8),
-    verticalAlign: 'bottom',
-  },
-  tabs: {
-    paddingTop: theme.spacing(1),
-  },
+  // root: {
+  //   width: '100%',
+  //   paddingTop: theme.spacing(3),
+  //   backgroundColor: theme.palette.menu.main,
+  //   color: theme.palette.getContrastText(theme.palette.menu.main),
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  //   alignItems: 'flex-start',
+  //   justifyContent: 'flex-start',
+  //   textAlign: 'left',
+  // },
+  // mainRow: {
+  //   paddingLeft: theme.spacing(3),
+  //   paddingBottom: theme.spacing(1),
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   justifyContent: 'flex-start',
+  // },
+  // titleCell: {
+  //   paddingRight: theme.spacing(8),
+  //   verticalAlign: 'bottom',
+  // },
+  // tabs: {
+  //   paddingTop: theme.spacing(1),
+  // },
 }));
 
 interface TournamentSubPageHeaderProps {

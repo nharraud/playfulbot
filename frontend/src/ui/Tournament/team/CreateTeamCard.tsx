@@ -6,35 +6,35 @@ import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { TeamCreateDialog } from './TeamEditDialog';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-  },
-  card: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  content: {
-    flex: '1 1 auto',
-    textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    fontSize: '4rem',
-  },
-  actions: {
-    flex: '0 0 auto',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingBottom: theme.spacing(2),
-  },
-  createButton: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
-  },
+  // root: {
+  //   height: '100%',
+  // },
+  // card: {
+  //   height: '100%',
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  // },
+  // content: {
+  //   flex: '1 1 auto',
+  //   textAlign: 'center',
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  // icon: {
+  //   fontSize: '4rem',
+  // },
+  // actions: {
+  //   flex: '0 0 auto',
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   justifyContent: 'center',
+  //   paddingBottom: theme.spacing(2),
+  // },
+  // createButton: {
+  //   backgroundColor: theme.palette.success.main,
+  //   color: theme.palette.getContrastText(theme.palette.success.main),
+  // },
 }));
 
 interface CreateTeamCardProps {

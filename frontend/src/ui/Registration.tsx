@@ -10,7 +10,7 @@ import Button from '@mui/material/Button';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useRegisterUser } from 'src/hooksAndQueries/authenticatedUser';
+import { useRegisterUser } from 'src/hooksAndQueries/backend/graphql/authenticatedUser';
 import { Divider, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import MenuBar from './MenuBar/MenuBar';

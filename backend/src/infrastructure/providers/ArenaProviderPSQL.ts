@@ -1,10 +1,10 @@
 /* eslint-disable no-shadow */
 
 import { Arena, validateArenaName } from '~playfulbot/core/entities/Arena';
-import { ArenaNameAlreadyTakenError, ArenaProvider } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
+import { ArenaNameAlreadyTakenError, ArenaProvider, ArenasSearchOptions } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { ArenaID } from '~playfulbot/core/entities/base-types';
-import { bigIntToNumber, DEFAULT, isDatabaseError } from 'playfulbot-backend-commons/lib/model/db/helpers';
+import { bigIntToNumber, DEFAULT, isDatabaseError, QueryBuilder } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { TeamID } from '~playfulbot/core/entities/Teams';
 import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 
@@ -73,5 +73,24 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
 
   deleteArena(ctx: ContextPSQL, id: TeamID): Promise<boolean> {
     throw new Error('Method not implemented.');
+  }
+
+  async getAll(
+    ctx: ContextPSQL,
+    { filters = {}, order = { field: 'name', direction: 'ASC' } }: Parameters<ArenaProvider<any>['getAll']>[1] = {}
+  ): Promise<Arena[]> {
+    const queryBuilder = new QueryBuilder(
+      'SELECT arenas.* FROM arenas'
+    );
+
+    if (!filters.teamID) {
+      return [];
+    }
+    queryBuilder.where('arenas.team_id = $[teamID]');
+
+    queryBuilder.orderBy({ column: 'name', allowed: ['name'], defaultColumn: 'name', direction: order.direction });
+
+    const rows = await ctx.dbOrTx.manyOrNone<DbArena>(queryBuilder.query, filters);
+    return rows.map((row) => buildArena(row));
   }
 }

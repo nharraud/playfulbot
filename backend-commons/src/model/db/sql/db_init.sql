@@ -4,7 +4,7 @@ SET timezone='UTC';
 
 CREATE TABLE users (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR(15) CONSTRAINT users_username_check NOT NULL UNIQUE CHECK (length(username) >= 3),
+  username VARCHAR(15) NOT NULL UNIQUE CHECK (length(username) >= 3),
   password_hash BYTEA NOT NULL
 );
 

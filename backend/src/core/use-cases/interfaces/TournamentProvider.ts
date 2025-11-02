@@ -90,7 +90,7 @@ export interface TournamentProvider<Context> {
   //   userID: UserID
   // ): Promise<boolean>;
 
-  // startTournament(ctx: Context, tournamentID: TournamentID): Promise<void>;
+  startTournament(ctx: Context, tournamentID: TournamentID): Promise<boolean>;
 
   // getRounds(ctx: Context, tournamentID: TournamentID, filters: RoundsSearchOptions): Promise<Round[]>;
 

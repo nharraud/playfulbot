@@ -14,33 +14,33 @@ import { UserMenu } from './UserMenu';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      backgroundColor: theme.palette.menu.dark,
-      color: theme.palette.getContrastText(theme.palette.menu.dark),
-    },
-    logo: {
-      color: theme.palette.getContrastText(theme.palette.menu.dark),
-      fontWeight: theme.typography.fontWeightBold,
-      '&:hover': {
-        textDecoration: 'none',
-      },
-    },
-    pushRight: {
-      marginLeft: 'auto',
-    },
-    link: {
-      color: theme.palette.getContrastText(theme.palette.menu.dark),
-      fontWeight: theme.typography.fontWeightBold,
-      '&:hover': {
-        textDecoration: 'none',
-        color: theme.palette.success.light,
-      },
-    },
-    sequenceLink: {
-      marginRight: theme.spacing(2),
-    },
+    // root: {},
+    // appBar: {
+    //   zIndex: theme.zIndex.drawer + 1,
+    //   backgroundColor: theme.palette.menu.dark,
+    //   color: theme.palette.getContrastText(theme.palette.menu.dark),
+    // },
+    // logo: {
+    //   color: theme.palette.getContrastText(theme.palette.menu.dark),
+    //   fontWeight: theme.typography.fontWeightBold,
+    //   '&:hover': {
+    //     textDecoration: 'none',
+    //   },
+    // },
+    // pushRight: {
+    //   marginLeft: 'auto',
+    // },
+    // link: {
+    //   color: theme.palette.getContrastText(theme.palette.menu.dark),
+    //   fontWeight: theme.typography.fontWeightBold,
+    //   '&:hover': {
+    //     textDecoration: 'none',
+    //     color: theme.palette.success.light,
+    //   },
+    // },
+    // sequenceLink: {
+    //   marginRight: theme.spacing(2),
+    // },
   })
 );
 

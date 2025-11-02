@@ -4,7 +4,7 @@ import createStyles from '@mui/styles/createStyles';
 import React from 'react';
 import MenuBar from '../MenuBar/MenuBar';
 import { Pitch } from './Pitch';
-import { Target } from './Target';
+// import { Target } from './Target';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +32,7 @@ export function LandingPage() {
         <MenuBar showLogin={true} />
         <Pitch />
       </div>
-      <Target />
+      {/* <Target /> */}
     </div>
   );
 }

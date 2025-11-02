@@ -7,6 +7,7 @@ import { toGraphQLError } from './errors';
 import { updateTeam } from '~playfulbot/core/use-cases/team/updateTeam';
 import { addTeamMember } from '~playfulbot/core/use-cases/team/addTeamMember';
 import { ForbiddenError, NotFoundError, TeamNotFoundError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
+import { getTeamArenas } from '~playfulbot/core/use-cases/arena/getTeamArenas';
 
 export const createTeamResolver: gqlTypes.MutationResolvers<GraphqlContext>['createTeam'] = async (
   parent,
@@ -113,6 +114,27 @@ export async function teamMembersResolver(
     username: user.username,
   }));
 }
+
+
+interface TeamArenasQueryArguments {
+  teamID?: TeamID;
+}
+
+export async function teamArenasResolver(
+  parent: gqlTypes.Team,
+  args: TeamArenasQueryArguments,
+  graphqlContext: GraphqlContext
+): Promise<gqlTypes.Arena[]> {
+  const result = await getTeamArenas(graphqlContext.ctx, args.teamID || parent?.id);
+  if (result instanceof Error) {
+    return null;
+  }
+  return result.map((arena) => ({
+    id: arena.id,
+    name: arena.name,
+  }));
+}
+
 
 export async function teamTournamentResolver(
   parent: gqlTypes.Team,

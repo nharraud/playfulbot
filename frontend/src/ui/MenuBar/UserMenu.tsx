@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import { Box } from '@mui/material';
-import { useLogout } from '../../hooksAndQueries/authenticatedUser';
+import { useLogout } from '../../hooksAndQueries/backend/graphql/authenticatedUser';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

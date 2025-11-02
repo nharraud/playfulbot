@@ -1,6 +1,6 @@
-import * as gqlTypes from './backend/graphql-generated';
+import * as gqlTypes from './backend/graphql/graphql';
 
-export * from './backend/graphql-generated';
+export * from './backend/graphql/graphql';
 
 export type UserID = string;
 export type TournamentID = string;
@@ -14,12 +14,3 @@ export type JWToken = string;
 export type TournamentInvitationID = string;
 export type TournamentInvitationLinkID = string;
 
-export function isTeam(userTeamResult: gqlTypes.UserTeamResult): userTeamResult is gqlTypes.Team {
-  return (userTeamResult as gqlTypes.Team).__typename === 'Team';
-}
-
-export function isUserNotPartOfAnyTeam(
-  result: gqlTypes.UserTeamResult
-): result is gqlTypes.UserNotPartOfAnyTeam {
-  return (result as gqlTypes.UserNotPartOfAnyTeam).__typename === 'UserNotPartOfAnyTeam';
-}

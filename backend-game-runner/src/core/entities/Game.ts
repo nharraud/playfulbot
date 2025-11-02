@@ -1,5 +1,5 @@
 import { randomUUID as uuidv4 } from 'crypto';
-import * as jsonpatch from 'fast-json-patch';
+import jsonpatch from 'fast-json-patch';
 import { GameState } from 'playfulbot-game';
 import { BackendGameDefinition, GameAction } from 'playfulbot-game-backend';
 import { DeferredPromise, cloneDeep } from 'playfulbot-backend-commons/lib/utils/index.js';

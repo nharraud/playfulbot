@@ -1,4 +1,4 @@
-import { Tournament, TournamentStatus } from 'src/types/backend/graphql-generated';
+import { Tournament, TournamentStatus } from 'src/types/backend/graphql/graphql';
 import { DateTime } from 'luxon';
 
 export function tournamentStatusToText(tournament: Tournament) {

@@ -9,18 +9,18 @@ import { NoTournamentFound } from './NoTournamentFound';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      minWidth: '20rem',
-    },
-    title: {
-      marginBottom: theme.spacing(5),
-    },
-    list: {
-      backgroundColor: theme.palette.background.paper,
-    },
-    tournamentListItem: {
-      color: 'inherit',
-    },
+  //   root: {
+  //     minWidth: '20rem',
+  //   },
+  //   title: {
+  //     marginBottom: theme.spacing(5),
+  //   },
+  //   list: {
+  //     backgroundColor: theme.palette.background.paper,
+  //   },
+  //   tournamentListItem: {
+  //     color: 'inherit',
+  //   },
   })
 );
 

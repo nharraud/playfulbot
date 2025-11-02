@@ -238,11 +238,18 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   //   return result.exists || false;
   // }
 
-  // async start(dbOrTX: DbOrTx): Promise<void> {
+  async startTournament(ctx: ContextPSQL, tournamentId: TournamentID): Promise<boolean> {
+    const result = await ctx.dbOrTx.oneOrNone<{ success: boolean }>(
+      "UPDATE tournaments SET status = 'STARTED' WHERE id = $[id] AND status = 'CREATED' AND start_date <= now() RETURNING true as success",
+      { id: tournamentId }
+    );
+    return Boolean(result?.success);
+
+
   //   // Allow to start up to 1 minute before the start date.
-  //   if (DateTime.now() <= this.startDate.minus({ minutes: 1 })) {
-  //     throw new ConflictError('Tournament cannot be started before its startDate date');
-  //   }
+    // if (DateTime.now() <= this.startDate.minus({ minutes: 1 })) {
+    //   throw new ConflictError('Tournament cannot be started before its startDate date');
+    // }
 
   //   await dbOrTX.tx(async (tx) => {
   //     const updatedTournament = await tx.oneOrNone<{ id: string }>(
@@ -267,7 +274,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   //       );
   //     await Promise.all(roundPromises);
   //   });
-  // }
+  }
 
   // getRounds(filters: RoundsSearchOptions = {}, dbOrTX: DbOrTx): Promise<Round[]> {
   //   if (filters.startingBefore === undefined && filters.startingAfter === undefined) {
