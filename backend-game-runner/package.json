@@ -18,7 +18,7 @@
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
   "engines": {
-    "node": ">=17.1.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@apollo/server": "^4.1.1",

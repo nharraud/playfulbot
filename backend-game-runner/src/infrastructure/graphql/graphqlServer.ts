@@ -61,9 +61,10 @@ export async function createGraphqlServer(deps: Dependencies, { port, host }: { 
         if (!ctx.connectionParams?.authToken) {
           throw new AuthenticationError('Missing token.');
         }
+        const fingerprint = cookies.get('JWTFingerprint');
         const tokenData = await validateAuthToken(
           ctx.connectionParams.authToken as string,
-          cookies.get('JWTFingerprint')
+          fingerprint
         );
         if (!isUserJWToken(tokenData) && !isBotJWToken(tokenData)) {
           throw new InvalidRequest('Invalid JWToken');

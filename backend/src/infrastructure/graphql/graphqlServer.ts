@@ -29,6 +29,8 @@ import { IResolvers } from '@graphql-tools/utils';
 export async function createGraphqlServer<CTX extends Context<any>>(baseContext: CTX, { port, host, resolvers: customResolvers, typeDefs: customTypeDefs }: { port?: number, host?: string, resolvers?: IResolvers<any, any> | IResolvers<any, any>[], typeDefs?: string } = {}) {
   const logger = baseContext.logger.child({ module: __filename, source: 'createGraphqlServer' });
 
+  const serverHost = host || serverConfig.BACKEND_HOST;
+
   class TransactionError extends Error {
     constructor(readonly result: ExecutionResult) {
       super('transaction error');
@@ -110,7 +112,11 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
         if (ctx?.fingerprint === null) {
           response.headers.set('Set-Cookie', cookie.serialize('JWTFingerprint', '', { maxAge: 0 }));
         } else if (ctx?.fingerprint) {
-          response.headers.set('Set-Cookie', cookie.serialize('JWTFingerprint', ctx.fingerprint, { expires: new Date(Date.now() + 1000*60*60*24*3 /* 3 days */) }));
+          response.headers.set('Set-Cookie', cookie.serialize('JWTFingerprint', ctx.fingerprint, {
+            expires: new Date(Date.now() + 1000*60*60*24*3 /* 3 days */),
+            domain: serverHost,
+            encode: v => v // prevent urlencoding. fingerprint is already base64 encoded.
+          }));
         }
       }
     }
@@ -218,7 +224,6 @@ export async function createGraphqlServer<CTX extends Context<any>>(baseContext:
   );
 
   const serverPort = port || serverConfig.GRAPHQL_PORT;
-  const serverHost = host || serverConfig.BACKEND_HOST;
   return new Promise<{ server: http.Server, httpUrl: string, wsUrl: string }>((resolve) =>
     httpServer.listen({ port: serverPort }, () => {
       logger.info(

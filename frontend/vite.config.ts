@@ -19,12 +19,12 @@ export default defineConfig({
     },
   },
   server: {
-    host: "127.0.0.1",
+    host: "local-playfulbot.com",
     port: 3000,
     strictPort: true,
     hmr: {
         clientPort: 443,
-    },
+    }
 },
 })
 

@@ -22,7 +22,7 @@ export async function authenticate(user: User): Promise<{ token: JWToken, finger
   const strFingerprint = binFingerprint.toString('base64');
 
   const hash = crypto.createHash('sha256');
-  hash.update(strFingerprint);
+  hash.update(strFingerprint, 'binary');
   const fingerprintHash = hash.digest('hex');
   hash.end();
 
