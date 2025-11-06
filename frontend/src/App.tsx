@@ -22,6 +22,7 @@ import { UserContextProvider } from './UserContext';
 import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { authenticationRequired } from './AuthenticationRequired';
 import { BackendClientProvider } from './infrastructure/graphql/GraphqlClientProviders';
+import cssCls from './App.module.css';
 // import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
 // declare module '@mui/styles/defaultTheme' {
@@ -93,41 +94,43 @@ const theme = createTheme({
 function App() {
   return (
     // <ApolloProvider client={client}>
-    <BackendClientProvider>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <CssBaseline />
-            <div className="App">
-              <UserContextProvider>
-                <Router>
-                  <Routes>
-                    <Route exact path="/" element={ <LandingPage />}/>
-                    <Route path="/login" element={<Login />}/>
-                    {/* <Route path="/register" element={<Registration />}/> */}
-{/*
-                    <Route path="/tournament_invitation/:tournamentInvitationLinkID">
-                      <TournamentInvitationPage />
-                    </Route>
-*/}
-                    {/* <Route element={<AuthenticationRequired/>}> */}
-                      <Route path="/home" loader={authenticationRequired} element={<UserHomePage />}/>
-                      <Route path="/tournament/:tournamentID/*" loader={authenticationRequired} element={<TournamentPage />}/>
-                      {/* 
-                      <Route path="/create_tournament">
-                        <TournamentCreationPage />
+    <div className={cssCls.theme}>
+      <BackendClientProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <CssBaseline />
+              <div className="App">
+                <UserContextProvider>
+                  <Router>
+                    <Routes>
+                      <Route exact path="/" element={ <LandingPage />}/>
+                      <Route path="/login" element={<Login />}/>
+                      {/* <Route path="/register" element={<Registration />}/> */}
+  {/*
+                      <Route path="/tournament_invitation/:tournamentInvitationLinkID">
+                        <TournamentInvitationPage />
                       </Route>
-                      */}
-                    {/* </Route> */}
-                  </Routes>
-                </Router>
-              </UserContextProvider>
-            </div>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
+  */}
+                      {/* <Route element={<AuthenticationRequired/>}> */}
+                        <Route path="/home" loader={authenticationRequired} element={<UserHomePage />}/>
+                        <Route path="/tournament/:tournamentID/*" loader={authenticationRequired} element={<TournamentPage />}/>
+                        {/* 
+                        <Route path="/create_tournament">
+                          <TournamentCreationPage />
+                        </Route>
+                        */}
+                      {/* </Route> */}
+                    </Routes>
+                  </Router>
+                </UserContextProvider>
+              </div>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
 
-    </BackendClientProvider>
+      </BackendClientProvider>
+    </div>
   );
 }
 

@@ -1,14 +1,8 @@
 import React, { useCallback } from 'react';
+import cssCls from './TournamentPage.module.css';
 
 import { Routes, Route, Link, useMatch,/*useRouteMatch,*/ useParams } from 'react-router';
 
-import makeStyles from '@mui/styles/makeStyles';
-
-import PeopleIcon from '@mui/icons-material/People';
-
-import CompetitionIcon from '@mui/icons-material/EmojiEvents';
-import TestIcon from '@mui/icons-material/SlowMotionVideo';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useTournament } from 'src/hooksAndQueries/backend/graphql/useTournament';
 import { TournamentStatus } from 'src/types/backend/graphql/graphql';
 import { useTeam } from 'src/hooksAndQueries/backend/graphql/team';
@@ -20,49 +14,6 @@ import Debug from './Debug';
 import MenuBar from '../MenuBar/MenuBar';
 import TeamArenasSubPage from './arenas/TeamArenasSubPage';
 import ArenaSubPage from './arenas/ArenaSubPage';
-
-const useStyles = makeStyles((theme) => ({
-  // root: {
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   minHeight: '100vh',
-  // },
-  // content: {
-  //   flex: '1 1 auto',
-  //   display: 'flex',
-  //   flexDirection: 'row',
-  //   minHeight: 0,
-  // },
-  // hide: {
-  //   display: 'none',
-  // },
-  // tournamentMenu: {
-  //   flex: '0 0 auto',
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   backgroundColor: '#1a1a1a',
-  //   '& > a': {
-  //     margin: '0.5rem',
-  //     padding: '0.5rem',
-  //   },
-  // },
-  // menuIcon: {
-  //   fontSize: '3em',
-  //   verticalAlign: 'middle',
-  // },
-  // main: {
-  //   flex: '1 1 auto',
-  //   display: 'flex',
-  // },
-  // menuLink: {
-  //   color: 'white',
-  // },
-  // activeMenuLink: {
-  //   backgroundColor: theme.palette.grey[100],
-  //   color: theme.palette.getContrastText(theme.palette.grey[100]),
-  //   borderRadius: '100px',
-  // },
-}));
 
 export interface MatchParams {
   tournamentID: string;
@@ -79,41 +30,31 @@ export default function TournamentPage() {
   const { loading, error, tournament } = useTournament(tournamentID);
   const { team } = useTeam(tournamentID);
 
-  const classes = useStyles();
-
-  const className = useCallback(
+  const activeClass = useCallback(
     (page: string) => {
       if (match?.params?.page === page) {
-        return classes.activeMenuLink;
+        return cssCls.activeButton;
       }
-      return classes.menuLink;
+      return '';
     },
-    [match?.params, classes]
+    [match?.params, cssCls]
   );
 
   let content;
   if (tournament) {
     content = (
-      <>
-        <div className={classes.tournamentMenu}>
-          <Link to={`${baseURL}/info`} className={className('info')}>
-            <MenuBookIcon className={classes.menuIcon} />
-          </Link>
-          <Link to={`${baseURL}/team`} className={className('team')}>
-            <PeopleIcon className={classes.menuIcon} />
-          </Link>
+      <div className={cssCls.tournamentPage}>
+        <div className={cssCls.menu}>
+          <Link to={`${baseURL}/info`} className={`${cssCls.instructions} ${activeClass('info')}`}/>
+          <Link to={`${baseURL}/team`} className={`${cssCls.teamButton} ${activeClass('team')}`}/>
           {tournament.status === TournamentStatus.Started && team && (
-            <Link to={`${baseURL}/arenas`} className={className('arenas')}>
-              <TestIcon className={classes.menuIcon} />
-            </Link>
+            <Link to={`${baseURL}/arenas`} className={`${cssCls.teamArenas} ${activeClass('arenas')}`}/>
           )}
           {tournament.status === TournamentStatus.Started && (
-            <Link to={`${baseURL}/competition`} className={className('competition')}>
-              <CompetitionIcon className={classes.menuIcon} />
-            </Link>
+            <Link to={`${baseURL}/competition`} className={`${cssCls.competition} ${activeClass('competition')}`}/>
           )}
         </div>
-        <main className={classes.main} style={{ overflow: 'hidden' }}>
+        <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
           <Routes>
             <Route path={`/info`} element={<InfoSubPage tournament={tournament} />}/>
             <Route path={`/team`} element={<TeamSubPage tournament={tournament} />}/>
@@ -127,7 +68,7 @@ export default function TournamentPage() {
             </Route> */}
           </Routes>
         </main>
-      </>
+      </div>
     );
   } else if (loading) {
     content = <LoadingWidget />;
@@ -136,12 +77,12 @@ export default function TournamentPage() {
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       <MenuBar
         location={tournament ? `${tournament.name} tournament` : undefined}
         showTournaments={true}
       />
-      <div className={classes.content}>{content}</div>
+      {content}
     </div>
   );
 }

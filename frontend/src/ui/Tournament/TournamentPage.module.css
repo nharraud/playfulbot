@@ -1,0 +1,53 @@
+.tournamentPage {
+  display: flex;
+}
+
+
+.subPage {
+  width: 100%
+}
+
+
+.menu {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  width: 5em;
+  padding-top: 1em;
+}
+
+.menuItem {
+  display: block;
+  margin: 1em;
+  width: 2.5em;
+  height: 2.5em;
+  background-color: var(--unselected-color);
+}
+
+.teamArenas {
+  composes: menuItem;
+  -webkit-mask-image: url(./assets/icons/play-speed.svg);
+  mask-image: url(./assets/icons/play-speed.svg);
+}
+
+.competition {
+  composes: menuItem;
+  -webkit-mask-image: url(./assets/icons/fencing.svg);
+  mask-image: url(./assets/icons/fencing.svg);
+}
+
+.instructions {
+  composes: menuItem;
+  -webkit-mask-image: url(./assets/icons/book-open-variant.svg);
+  mask-image: url(./assets/icons/book-open-variant.svg);
+}
+
+.teamButton {
+  composes: menuItem;
+  -webkit-mask-image: url(./assets/icons/account-group.svg);
+  mask-image: url(./assets/icons/account-group.svg);
+}
+
+.activeButton {
+  background-color: var(--selected-color);
+}
