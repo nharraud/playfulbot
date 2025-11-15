@@ -3,7 +3,7 @@ import { createGraphqlTestWsClient, GraphqlTestClient } from '../utils/GraphqlTe
 import { Client as WsClient } from 'graphql-ws';
 
 export async function graphqlFixture({ ctx }: { ctx: any}, use: any) {
-  const graphql = await createGraphqlServer(ctx);
+  const graphql = await createGraphqlServer(ctx, { port: 0 });
   const client = new GraphqlTestClient(graphql.httpUrl);
   const createWsClient = async (userData: { username: string, password: string }) => {
     await client.login(userData);
