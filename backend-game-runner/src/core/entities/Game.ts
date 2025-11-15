@@ -1,9 +1,9 @@
-import { randomUUID as uuidv4 } from 'crypto';
 import jsonpatch from 'fast-json-patch';
+import { Observer } from 'fast-json-patch';
 import { GameState } from 'playfulbot-game';
 import { BackendGameDefinition, GameAction } from 'playfulbot-game-backend';
 import { DeferredPromise, cloneDeep } from 'playfulbot-backend-commons/lib/utils/index.js';
-import { ForbiddenError, InvalidArgument, InvalidGameState, PlayingOutOfTurn, AlreadyPlayed, GameCancelledError } from './errors';
+import { ForbiddenError, InvalidGameState, PlayingOutOfTurn, AlreadyPlayed, GameCancelledError, InvalidPlayer } from './errors';
 import { GameID, PlayerID, JSONPatch } from './base-types';
 import { GameWatcher } from './GameWatcher';
 
@@ -34,7 +34,7 @@ export class Game {
   #gameEndPromise = new DeferredPromise<this>();
 
   watcher?: GameWatcher;
-  stateObserver: jsonpatch.Observer<GameState>;
+  stateObserver: Observer<GameState>;
 
   constructor(id: string, gameDefinition: BackendGameDefinition, players: PlayerAssignment[]) {
     this.id = id;
@@ -82,7 +82,7 @@ export class Game {
     if (typeof playerIDOrNumber === 'number') {
       playerNumber = playerIDOrNumber;
       if (playerNumber < 0 || playerNumber >= this.players.length) {
-        throw new InvalidArgument(`Game does not have such player.`);
+        throw new InvalidPlayer(`Game does not have such player.`);
       }
     } else {
       playerNumber = this.players.findIndex(

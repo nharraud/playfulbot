@@ -3,7 +3,7 @@ syntax = "proto3";
 package playfulbot.v0;
 
 service PlayfulBotGameRunner {
-  rpc createGames (CreateGamesRequest) returns (CreateGamesResponse) {}
+  // rpc createGames (CreateGamesRequest) returns (CreateGamesResponse) {}
   rpc FollowGame (stream FollowGameRequest) returns (stream FollowGameResponse) {}
   rpc PlayGame (stream PlayGameRequest) returns (PlayGameResponse) {}
 }
@@ -45,10 +45,10 @@ message FollowGameResponse {
   }
 }
 
-message CreateGamesRequest {
-  int32 nbOfGames = 1;
-}
+// message CreateGamesRequest {
+//   int32 nbOfGames = 1;
+// }
 
-message CreateGamesResponse {
+// message CreateGamesResponse {
 
-}
+// }

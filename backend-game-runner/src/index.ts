@@ -2,7 +2,7 @@
 import logger from '~game-runner/infrastructure/logging';
 
 import { createGraphqlServer } from '~game-runner/infrastructure/graphql/graphqlServer';
-import { startServer as startGrpcServer } from '~game-runner/infrastructure/grpc/server';
+import { createGrpcServer } from '~game-runner/infrastructure/grpc/grpcServer';
 import { validateSecretKey } from './secret';
 import { RunningGameRepositoryInMemory } from './infrastructure/games/RunningGameRepositoryInMemory';
 import { GameScheduler } from './core/use-cases/game-scheduling/GameScheduler';
@@ -15,10 +15,10 @@ async function main() {
   validateSecretKey();
 
   const gameRepository = new RunningGameRepositoryInMemory();
-
-  const graphqlServer = await createGraphqlServer({ gameRepository }, { host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRAPHQL_PORT });
+  const deps = { gameRepository };
+  const graphqlServer = await createGraphqlServer(deps, { host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRAPHQL_PORT });
   const graphqlAddress = graphqlServer.address() as AddressInfo;
-  const { url: grpcUrl } = startGrpcServer({ host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRPC_PORT });
+  const { url: grpcUrl } = await createGrpcServer(deps, { host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRPC_PORT });
 
   const gameDefinitions = await getGameDefinitions();
   const gameProvider = new PSQLGameProvider({

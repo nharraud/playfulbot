@@ -13,7 +13,7 @@
     "lint": "eslint src",
     "lint-fix": "eslint --fix src",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
-    "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
+    "gen-grpc": "rm -rf ./src/infrastructure/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/infrastructure/grpc/proto/types src/infrastructure/grpc/proto/**/**/*.proto"
   },
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
@@ -70,12 +70,13 @@
     "@types/cors": "^2.8.12",
     "@types/dotenv-flow": "^3.1.0",
     "@types/luxon": "^1.26.4",
-    "@types/node": "^18.8.3",
+    "@types/node": "^24.10.1",
     "@types/pg": "^7.14.11",
     "@types/sinonjs__fake-timers": "^6.0.2",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
+    "@vitest/coverage-v8": "^4.0.9",
     "0x": "^4.10.2",
     "asciidoctor": "^2.2.3",
     "asciidoctor-kroki": "^0.11.0",
@@ -92,6 +93,6 @@
     "tsc-alias": "^1.8.8",
     "tsx": "^4.20.5",
     "typescript": "^5.3.3",
-    "vitest": "^1.4.0"
+    "vitest": "^4.0.9"
   }
 }

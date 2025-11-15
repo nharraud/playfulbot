@@ -10,8 +10,6 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 export interface ProtoGrpcType {
   playfulbot: {
     v0: {
-      CreateGamesRequest: MessageTypeDefinition
-      CreateGamesResponse: MessageTypeDefinition
       FollowGameRequest: MessageTypeDefinition
       FollowGameResponse: MessageTypeDefinition
       Game: MessageTypeDefinition
