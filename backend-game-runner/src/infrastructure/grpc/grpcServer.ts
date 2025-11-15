@@ -240,7 +240,7 @@ export function createGrpcServer(
     const sslKey = fs.readFileSync(sslConfig.SSL_KEY);
     const keyCertPairs = [{ private_key: sslKey, cert_chain: sslCert }];
 
-    const serverCred = grpc.ServerCredentials.createSsl(sslCa, keyCertPairs, false);
+    serverCred = grpc.ServerCredentials.createSsl(sslCa, keyCertPairs, false);
   } else if (process.env.TEST) {
     serverCred = grpc.ServerCredentials.createInsecure();
   } else {
