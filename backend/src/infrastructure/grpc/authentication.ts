@@ -1,8 +1,8 @@
 import * as grpc from '@grpc/grpc-js';
 import { ServerSurfaceCall } from '@grpc/grpc-js/build/src/server-call';
-import { validateAuthToken } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
-import { BotJWTokenData, isBotJWToken, JWTokenData } from '~playfulbot/types/token';
 import { Call, CallAndCallback } from './types';
+import { BotJWTokenData, isBotJWToken, JWTokenData } from 'playfulbot-backend-commons/lib/types/token';
+import { validateAuthToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication';
 
 type CallAndCallbackWithToken<CALL, CALLBACK extends grpc.sendUnaryData<any>> = (
   call: CALL,

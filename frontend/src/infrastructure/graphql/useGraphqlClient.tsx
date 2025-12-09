@@ -42,7 +42,7 @@ function createGraphqlClient({ url, withHttp = true }: { url: string, withHttp: 
     client.resetStore();
   }
 
-  const errorLink = onError(({ graphQLErrors, networkError }) => {
+  const errorLink = onError(({ graphQLErrors, networkError, ...others }) => {
     if (networkError && isServerError(networkError)) {
       for (const error of networkError.result.errors) {
         if (error.extensions.code === 'UNAUTHENTICATED') {
@@ -57,6 +57,10 @@ function createGraphqlClient({ url, withHttp = true }: { url: string, withHttp: 
           resetAuthentication();
         }
       }
+    }
+
+    if (others) {
+      console.error('other graphql errors', others);
     }
   });
 

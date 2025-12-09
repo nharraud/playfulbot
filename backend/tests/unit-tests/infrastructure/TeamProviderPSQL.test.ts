@@ -181,6 +181,12 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const foundTeam = await provider.getTeamByID(ctx, randomUUID());
       expect(foundTeam).toBeNull();
     });
+
+    test('should return null when the id is not a UUID', async ({ ctx }) => {
+      const provider = new TeamProviderPSQL();
+      const foundTeam = await provider.getTeamByID(ctx, 'foo');
+      expect(foundTeam).toBeNull();
+    });
   });
 
 

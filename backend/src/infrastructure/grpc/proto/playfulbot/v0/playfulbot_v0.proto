@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package playfulbot.v0;
+
+service PlayfulBot {
+  rpc FollowPlayerGames (FollowPlayerGamesRequest) returns (stream FollowPlayerGamesResponse) {}
+}
+
+message FollowPlayerGamesRequest {}
+
+message FollowPlayerGamesResponse {
+  repeated GameRef games = 1;
+}
+
+message GameRef {
+  string id = 1;
+  string url = 2;
+}

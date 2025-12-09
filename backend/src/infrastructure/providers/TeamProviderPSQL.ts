@@ -11,6 +11,7 @@ import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { bigIntToNumber, DEFAULT, isDatabaseError, QueryBuilder } from 'playfulbot-backend-commons/lib/model/db/helpers';
 import { TeamNotFoundError, ValidationError, UserNotFoundError } from '~playfulbot/core/use-cases/Errors';
 import { UserID } from '~playfulbot/core/entities/Users';
+import { uuidValidateV4 } from './helpers';
 // import { ValidationError } from '~playfulbot/core/use-cases/Errors';
 // import { Validator } from '~playfulbot/core/use-cases/Validator';
 
@@ -121,6 +122,9 @@ export class TeamProviderPSQL implements TeamProvider<ContextPSQL> {
   }
 
   async getTeamByID(ctx: ContextPSQL, id: TeamID): Promise<Team | null> {
+    if (!uuidValidateV4(id)) {
+      return null;
+    }
     const data = await ctx.dbOrTx.oneOrNone<DbTeam>('SELECT * FROM teams WHERE id = $[id]', {
       id,
     });

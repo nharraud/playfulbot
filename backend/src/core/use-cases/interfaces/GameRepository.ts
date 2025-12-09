@@ -4,6 +4,7 @@ import { ArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
 import { GameRef, GameRefWithDate } from '~playfulbot/core/entities/GameRef';
 import { Game } from '~playfulbot/core/entities/Game';
 import { RunnerInfo } from './RunnerInfo';
+import { PlayerID } from '~playfulbot/core/entities/Players';
 
 export interface GameRepository {
   addGame({ gameDefId, players }: { gameDefId: string, players: PlayerAssignment[], arenaId?: ArenaID, waitUntilStarted?: Boolean }): Promise<GameRef>;
@@ -11,6 +12,7 @@ export interface GameRepository {
   getFullGame(gameId: GameID): Promise<Game>;
   getArenaLatestGame(arenaId: ArenaID): Promise<GameRefWithDate | undefined>;
   close(): Promise<void>;
-  streamArenaGames(arenaId: ArenaID): Promise<AsyncIterable<GameRef>>
-  getRunnerInfo(runnerId: GameRunnerId): Promise<RunnerInfo | undefined>
+  streamArenaGames(arenaId: ArenaID): Promise<AsyncIterable<GameRef>>;
+  streamPlayerGames(playerId: PlayerID): Promise<AsyncIterable<GameRef>>;
+  getRunnerInfo(runnerId: GameRunnerId): Promise<RunnerInfo | undefined>;
 }

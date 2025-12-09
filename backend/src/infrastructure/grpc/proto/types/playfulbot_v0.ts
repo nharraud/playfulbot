@@ -10,15 +10,9 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 export interface ProtoGrpcType {
   playfulbot: {
     v0: {
-      FollowGameRequest: MessageTypeDefinition
-      FollowGameResponse: MessageTypeDefinition
       FollowPlayerGamesRequest: MessageTypeDefinition
       FollowPlayerGamesResponse: MessageTypeDefinition
-      Game: MessageTypeDefinition
-      GameCanceled: MessageTypeDefinition
-      GamePatch: MessageTypeDefinition
-      PlayGameRequest: MessageTypeDefinition
-      PlayGameResponse: MessageTypeDefinition
+      GameRef: MessageTypeDefinition
       PlayfulBot: SubtypeConstructor<typeof grpc.Client, _playfulbot_v0_PlayfulBotClient> & { service: ServiceDefinition }
     }
   }

@@ -14,7 +14,7 @@
     "lint": "eslint src",
     "lint-fix": "eslint --fix src",
     "gen-graphql": "graphql-codegen --config graphql-codegen.yml",
-    "gen-grpc": "rm -rf ./src/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/grpc/proto/types src/grpc/proto/**/**/*.proto"
+    "gen-grpc": "rm -rf ./src/infrastructure/grpc/proto/types && proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/infrastructure/grpc/proto/types src/infrastructure/grpc/proto/**/**/*.proto"
   },
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
