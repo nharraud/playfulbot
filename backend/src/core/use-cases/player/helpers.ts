@@ -35,3 +35,11 @@ export function getPlayerOwnerId(playerId: PlayerID): { teamId: TeamID } | { are
     throw new Error('Unsupported Player type');
   }
 }
+
+export function getArenaPlayerId(arenaId: ArenaID, playerNb: number) {
+  return `${PlayerIdPrefixes[PlayerTypes.ARENA]}${arenaId}_${playerNb}`;
+}
+
+export function getTeamPlayerId(teamId: TeamID, playerNb: number) {
+  return `${PlayerIdPrefixes[PlayerTypes.TEAM]}${teamId}_${playerNb}`;
+}

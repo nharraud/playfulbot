@@ -4,10 +4,7 @@ import { ArenaNotFoundError, ForbiddenError } from "../Errors";
 import { ArenaID } from "~playfulbot/core/entities/base-types";
 import { GameRef } from "~playfulbot/core/entities/GameRef";
 import { PlayerAssignment } from "~playfulbot/core/entities/PlayerAssignment";
-
-function generatePlayerID(arenaId: ArenaID, playerNumber: number): string {
-  return `${arenaId}_player${playerNumber}`;
-}
+import { getArenaPlayerId } from "../player/helpers";
 
 export async function createArenaGame(
   ctx: Context<any>, { userId, arenaId }: { userId: UserID, arenaId: ArenaID }
@@ -33,7 +30,7 @@ export async function createArenaGame(
   } else {
     players = Array.from(
       {length: 2},
-      (_, idx) => ({ playerID: generatePlayerID(arena.id, idx) })
+      (_, idx) => ({ playerID: getArenaPlayerId(arena.id, idx) })
     )
   }
 

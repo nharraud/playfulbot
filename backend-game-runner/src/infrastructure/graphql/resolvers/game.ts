@@ -7,6 +7,7 @@ import { GameNotFoundError, ForbiddenError } from '~game-runner/infrastructure/g
 import { ApolloContext, isBotContext } from '~game-runner/infrastructure/graphql/types/apolloTypes';
 import * as gqlTypes from '~game-runner/infrastructure/graphql/types/graphql';
 import { Game } from '~game-runner/core/entities/Game';
+import { createPlayerToken } from 'playfulbot-backend-commons/lib/graphqlResolvers/authentication';
 // import { Player } from '~game-runner/model/Player';
 
 export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game'] = {
@@ -40,7 +41,7 @@ export const gameResolver: gqlTypes.SubscriptionResolvers<ApolloContext>['game']
         throw new GameNotFoundError();
       }
       const players = currentGame.players.map((assignment) => {
-        return { id: assignment.playerID, token: '', connected: true };
+        return { id: assignment.playerID, token: createPlayerToken(assignment.playerID), connected: true };
         // const player = Player.getPlayer(assignment.playerID);
         // FIXME: add the token only when allowed.
         // return { id: player.id, token: player.token, connected: player.connected };
