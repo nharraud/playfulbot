@@ -220,7 +220,7 @@ export function createGrpcServer(
   { host = 'localhost', port = 5000 }: { host?: string, port?: number } = {}
 ): Promise<{ server: grpc.Server, url: string }> {
   let grpcPort = port;
-  if (process.env.GRPC_PORT) {
+  if (grpcPort === undefined && process.env.GRPC_PORT) {
     grpcPort = parseInt(process.env.GRPC_PORT, 10);
   }
   let grpcHost = host;
@@ -253,10 +253,10 @@ export function createGrpcServer(
         logger.error(`GRPC Server error: ${err.message}`);
         reject(err);
       } else {
-        logger.info(`GRPC Server bound at: ${url}`);
         server.start();
         // if port 0 is used, the final port is chosen by the system
         const finalUrl = `${grpcHost}:${port}`;
+        logger.info(`GRPC Server bound at: ${finalUrl}`);
         resolve({ server, url: finalUrl });
       }
     });

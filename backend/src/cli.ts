@@ -8,6 +8,7 @@ import { initDemo } from '~playfulbot/core/use-cases/initDemo';
 // import { scheduler } from './scheduling/Scheduler';
 import { generateSecretKey, validateSecretKey } from './secret';
 import { Context } from './core/use-cases/interfaces/Context';
+import { createGrpcServer } from './infrastructure/grpc/grpcServer';
 
 async function closeConnections(db: Database) {
   await db.disconnectDefault();
@@ -22,8 +23,8 @@ async function execute(createCtx: () => Promise<Context<Context<any>>>, db: Data
     .action(async () => {
       const ctx = (await createCtx()).ctxWithChildLogger({ module: __filename });
       validateSecretKey();
-      await createGraphqlServer<Context<any>>(ctx);
-      // startGrpcServer();
+      await createGraphqlServer<Context<any>>(ctx)
+      await createGrpcServer(ctx);
       // await scheduler.start();
     });
 
