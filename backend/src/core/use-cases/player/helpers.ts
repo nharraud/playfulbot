@@ -8,16 +8,21 @@ export enum PlayerTypes {
   TEAM = 'TEAM'
 }
 
-const PlayerIdPrefixes: Record<string, PlayerTypes> = {
+const PlayerIdPrefixToType: Record<string, PlayerTypes> = {
   'A': PlayerTypes.ARENA,
   'T': PlayerTypes.TEAM,
+}
+
+const PlayerTypeToIdPrefix: Record<PlayerTypes, string> = {
+  [PlayerTypes.ARENA]: 'A',
+  [PlayerTypes.TEAM]: 'T',
 }
 
 export function getPlayerTypeFromPlayerId(playerId: PlayerID): null | PlayerTypes {
   if (playerId?.length <= 1) {
     return null;
   }
-  const type = PlayerIdPrefixes[playerId[0]]
+  const type = PlayerIdPrefixToType[playerId[0]]
   return type || null;
 }
 
@@ -37,9 +42,9 @@ export function getPlayerOwnerId(playerId: PlayerID): { teamId: TeamID } | { are
 }
 
 export function getArenaPlayerId(arenaId: ArenaID, playerNb: number) {
-  return `${PlayerIdPrefixes[PlayerTypes.ARENA]}${arenaId}_${playerNb}`;
+  return `${PlayerTypeToIdPrefix[PlayerTypes.ARENA]}${arenaId}_${playerNb}`;
 }
 
 export function getTeamPlayerId(teamId: TeamID, playerNb: number) {
-  return `${PlayerIdPrefixes[PlayerTypes.TEAM]}${teamId}_${playerNb}`;
+  return `${PlayerTypeToIdPrefix[PlayerTypes.TEAM]}${teamId}_${playerNb}`;
 }
