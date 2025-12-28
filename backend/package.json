@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "rm -rf build && tsc && tsc-alias && cp ./src/graphqlSchema.graphql ./build/graphqlSchema.graphql && mkdir -p build/grpc/proto/playfulbot/v0 && cp src/grpc/proto/playfulbot/v0/playfulbot_v0.proto build/grpc/proto/playfulbot/v0/playfulbot_v0.proto",
+    "build": "rm -rf build && tsc && tsc-alias && cp ./src/graphqlSchema.graphql ./build/graphqlSchema.graphql && mkdir -p build/grpc/proto/playfulbot_backend/v0 && cp src/grpc/proto/playfulbot_backend/v0/playfulbot_backend_v0.proto build/grpc/proto/playfulbot_backend/v0/playfulbot_backend_v0.proto",
     "dev": "NODE_ENV=development PLAYFULBOT_CONFIG=../game-config.json node --inspect=127.0.0.1:9228 --require dotenv-flow/config build/index.js | npx pino-pretty",
     "debug": "NODE_ENV=development PLAYFULBOT_CONFIG=../game-config.json nodemon --inspect=127.0.0.1:9228 --require dotenv-flow/config src/index.ts serve",
     "backend": "PLAYFULBOT_CONFIG=../game-config.json nodemon --inspect --require dotenv-flow/config src/index.ts serve",
