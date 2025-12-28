@@ -3,5 +3,5 @@ basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = localhost
-DNS.2 = 127.0.0.1
+DNS.1 = local-playfulbot.com
+DNS.2 = *.local-playfulbot.com

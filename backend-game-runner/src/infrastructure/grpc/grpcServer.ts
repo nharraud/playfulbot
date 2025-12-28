@@ -33,7 +33,7 @@ import { ForbiddenError, GameCancelledError, InvalidPlayer, PlayingOutOfTurn } f
 import { GameNotFoundError } from '../graphql/errors';
 
 const __dirname = getDirName(import.meta.url);
-const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot', 'v0', 'playfulbot_v0.proto');
+const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot_runner', 'v0', 'playfulbot_runner_v0.proto');
 
 interface MyContext {
   token?: string;

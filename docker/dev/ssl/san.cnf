@@ -1,0 +1,22 @@
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions = req_ext
+prompt = no
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+
+[ req_distinguished_name ]
+countryName         = FR
+stateOrProvinceName = France
+localityName        = Paris
+organizationName    = Playfulbot
+commonName          = local-playfulbot
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = local-playfulbot.com
+DNS.2 = *.local-playfulbot.com
