@@ -4,11 +4,11 @@ import * as protoLoader from '@grpc/proto-loader';
 import * as path from 'path';
 import logger from '~game-runner/infrastructure/logging';
 
-import { ProtoGrpcType } from './proto/types/playfulbot_v0';
-import { PlayGameRequest } from './proto/types/playfulbot/v0/PlayGameRequest';
-import { PlayGameResponse } from './proto/types/playfulbot/v0/PlayGameResponse';
-import { FollowGameRequest } from './proto/types/playfulbot/v0/FollowGameRequest';
-import { FollowGameResponse } from './proto/types/playfulbot/v0/FollowGameResponse';
+import { ProtoGrpcType } from './proto/types/playfulbot_runner_v0';
+import { PlayGameRequest } from './proto/types/playfulbot_runner/v0/PlayGameRequest';
+import { PlayGameResponse } from './proto/types/playfulbot_runner/v0/PlayGameResponse';
+import { FollowGameRequest } from './proto/types/playfulbot_runner/v0/FollowGameRequest';
+import { FollowGameResponse } from './proto/types/playfulbot_runner/v0/FollowGameResponse';
 import { BotJWTokenData } from 'playfulbot-backend-commons/lib/types/token.js';
 import {
   CallAndCallbackRequireAuthentication,
@@ -24,7 +24,7 @@ import { asyncCallHandler } from './asyncGrpc';
 import { Game } from '~game-runner/core/entities/Game';
 import { getDirName } from 'playfulbot-backend-commons/lib/utils/esm.js';
 import { sslConfig } from './sslConfig';
-import { PlayfulBotGameRunnerHandlers } from './proto/types/playfulbot/v0/PlayfulBotGameRunner';
+import { PlayfulBotGameRunnerHandlers } from './proto/types/playfulbot_runner/v0/PlayfulBotGameRunner';
 // import { CreateGamesRequest__Output } from './proto/types/playfulbot/v0/CreateGamesRequest';
 // import { CreateGamesResponse } from './proto/types/playfulbot/v0/CreateGamesResponse';
 import { Dependencies } from '../graphql/types/apolloTypes';
@@ -207,7 +207,7 @@ function getServer(gameRepository: RunningGameRepository): grpc.Server {
   // We need to disable typescript validation because of incompatible signatures in gprc-js
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  server.addService(proto.playfulbot.v0.PlayfulBotGameRunner.service, playfulBotServer);
+  server.addService(proto.playfulbot_runner.v0.PlayfulBotGameRunner.service, playfulBotServer);
   return server;
 }
 

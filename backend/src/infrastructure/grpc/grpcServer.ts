@@ -4,9 +4,9 @@ import * as protoLoader from '@grpc/proto-loader';
 import * as path from 'path';
 
 import { Context } from '../../core/use-cases/interfaces/Context';
-import { ProtoGrpcType } from './proto/types/playfulbot_v0';
-import { FollowPlayerGamesRequest } from './proto/types/playfulbot/v0/FollowPlayerGamesRequest';
-import { FollowPlayerGamesResponse } from './proto/types/playfulbot/v0/FollowPlayerGamesResponse';
+import { ProtoGrpcType } from './proto/types/playfulbot_backend_v0';
+import { FollowPlayerGamesRequest } from './proto/types/playfulbot_backend/v0/FollowPlayerGamesRequest';
+import { FollowPlayerGamesResponse } from './proto/types/playfulbot_backend/v0/FollowPlayerGamesResponse';
 import { BotJWTokenData } from 'playfulbot-backend-commons/lib/types/token.js';
 import {
   CallAndCallbackRequireAuthentication,
@@ -27,10 +27,10 @@ import { Game } from '~playfulbot/core/entities/Game';
 // import { isGameStateChanged } from '~playfulbot/pubsub/messages';
 // import { ChannelListener } from '~playfulbot/pubsub/ChannelListener';
 import { sslConfig } from './sslConfig';
-import { PlayfulBotHandlers } from './proto/types/playfulbot/v0/PlayfulBot';
+import { PlayfulBotHandlers } from './proto/types/playfulbot_backend/v0/PlayfulBot';
 import { isValidPlayerId } from '~playfulbot/core/use-cases/player/isValidPlayer';
 
-const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot', 'v0', 'playfulbot_v0.proto');
+const PROTO_PATH = path.join(__dirname, 'proto', 'playfulbot_backend', 'v0', 'playfulbot_backend_v0.proto');
 
 class GrpcServerHandlers<CTX extends Context<any>> implements PlayfulBotHandlers {
   readonly #baseContext: CTX;
@@ -124,7 +124,7 @@ function getServer<CTX extends Context<any>>(ctx: CTX): grpc.Server {
   // We need to disable typescript validation because of incompatible signatures in gprc-js
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  server.addService(proto.playfulbot.v0.PlayfulBot.service, playfulBotServer);
+  server.addService(proto.playfulbot_backend.v0.PlayfulBot.service, playfulBotServer);
   return server;
 }
 

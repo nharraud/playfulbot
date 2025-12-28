@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { RunningGameRepositoryInMemory } from "~game-runner/infrastructure/games/RunningGameRepositoryInMemory";
 import { createGrpcServer } from "~game-runner/infrastructure/grpc/grpcServer";
 import { createClient } from "./utils/createGrpcClient";
-import { PlayfulBotGameRunnerClient } from "~game-runner/infrastructure/grpc/proto/types/playfulbot/v0/PlayfulBotGameRunner";
+import { PlayfulBotGameRunnerClient } from "~game-runner/infrastructure/grpc/proto/types/playfulbot_runner/v0/PlayfulBotGameRunner";
 import * as grpc from '@grpc/grpc-js';
 import { createPlayerToken } from "playfulbot-backend-commons/lib/graphqlResolvers/authentication";
 import { Game } from "~game-runner/core/entities/Game";

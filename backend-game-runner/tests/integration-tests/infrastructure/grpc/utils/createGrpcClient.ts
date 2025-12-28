@@ -1,9 +1,9 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import type { ProtoGrpcType } from '~game-runner/infrastructure/grpc/proto/types/playfulbot_v0';
-import type { PlayfulBotGameRunnerClient } from '~game-runner/infrastructure/grpc/proto/types/playfulbot/v0/PlayfulBotGameRunner';
+import type { ProtoGrpcType } from '~game-runner/infrastructure/grpc/proto/types/playfulbot_runner_v0';
+import type { PlayfulBotGameRunnerClient } from '~game-runner/infrastructure/grpc/proto/types/playfulbot_runner/v0/PlayfulBotGameRunner';
 
-const PROTO_PATH = 'src/infrastructure/grpc/proto/playfulbot/v0/playfulbot_v0.proto';
+const PROTO_PATH = 'src/infrastructure/grpc/proto/playfulbot_runner/v0/playfulbot_runner_v0.proto';
 
 export function createClient(url: string, options: { timeout: number } = { timeout: 5000 }): Promise<PlayfulBotGameRunnerClient> {
   const packageDefinition = protoLoader.loadSync(PROTO_PATH);
@@ -16,7 +16,7 @@ export function createClient(url: string, options: { timeout: number } = { timeo
   // const channelCreds = grpc.credentials.createSsl();
   const channelCreds = grpc.credentials.createInsecure();
   return new Promise((resolve, reject) => {
-    const client = new proto.playfulbot.v0.PlayfulBotGameRunner(
+    const client = new proto.playfulbot_runner.v0.PlayfulBotGameRunner(
       url,
       channelCreds
     );

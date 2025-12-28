@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package playfulbot.v0;
+package playfulbot_backend.v0;
 
 service PlayfulBot {
   rpc FollowPlayerGames (FollowPlayerGamesRequest) returns (stream FollowPlayerGamesResponse) {}

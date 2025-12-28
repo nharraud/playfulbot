@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package playfulbot.v0;
+package playfulbot_runner.v0;
 
 service PlayfulBotGameRunner {
   // rpc createGames (CreateGamesRequest) returns (CreateGamesResponse) {}
