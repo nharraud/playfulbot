@@ -18,7 +18,7 @@ export default defineConfig({
     },
     setupFiles: 'dotenv-flow/config',
     include:[
-      'tests/**',
+      'tests/**/*.test.ts',
     ],
     exclude:[
       ...configDefaults.exclude,
