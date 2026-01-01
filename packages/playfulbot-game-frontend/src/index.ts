@@ -1,4 +1,5 @@
 import { GameID, GameState } from "playfulbot-game";
+import { JSX } from "react";
 
 export interface GameRendererProps<GState extends GameState> {
   gameState: GState;
