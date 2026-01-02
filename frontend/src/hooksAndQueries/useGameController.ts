@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameState } from 'playfulbot-game';
-import { Game } from 'src/types/graphql-generated';
+import { Game } from 'src/types/game-runner/graphql/graphql';
 import { applyPatch, Operation } from 'fast-json-patch';
 import { NoUndefinedVariablesRule } from 'graphql';
 import { GameID } from 'src/types/graphql';
@@ -26,21 +26,22 @@ function patchStateToVersion(
     startState = currentControlledGame.gameState;
   } else {
     startVersion = 0;
-    startState = game.initialState;
+    startState = game.initialState as GameState;
   }
   for (let patch = startVersion; patch < finalVersion; ++patch) {
-    startState = applyPatch(startState, game.patches[patch], false, false).newDocument;
+    const patches = game.patches as Operation[][];
+    startState = applyPatch(startState, patches[patch], false, false).newDocument;
   }
   return {
-    id: game.id,
+    id: game.id as string,
     gameState: startState,
     version: finalVersion,
-    maxVersion: game.version,
+    maxVersion: game.version as number,
   };
 }
 
 export interface useGameControllerResult {
-  controlledGame: ControlledGame;
+  controlledGame: ControlledGame | undefined;
   setGameVersion: SetGameVersion;
 }
 
@@ -48,12 +49,12 @@ export function useGameController(game?: Game): useGameControllerResult {
   // const displayedGame = useRef<DisplayedGame>(undefined);
   const [gameVersion, setGameVersionInternal] = useState(0);
   const [followLastVersion, setFollowLastVersion] = useState(true);
-  const [controlledGame, setControlledGame] = useState<ControlledGame>(undefined);
+  const [controlledGame, setControlledGame] = useState<ControlledGame | undefined>(undefined);
 
   const setGameVersion = useCallback(
-    (gameVersion) => {
-      setFollowLastVersion(gameVersion === game.version);
-      setGameVersionInternal(gameVersion);
+    (gameVersion: number) => {
+      setFollowLastVersion(gameVersion === game?.version);
+      setGameVersionInternal(gameVersion || 0);
     },
     [game?.version]
   );

@@ -6,6 +6,7 @@ import { Link, useMatch } from 'react-router';
 import { useArenaArenaSubscription, useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
 import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientProviders';
 import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
+import { useGameController } from 'src/hooksAndQueries/useGameController';
 
 interface TournamentArenasProps {
   tournament?: TournamentQuery['tournament'];
@@ -34,11 +35,19 @@ interface GameWidgetProps {
 }
 
 function GameWidget(props: GameWidgetProps) {
+  const gameResult = useGame(props.gameID);
+  const  { controlledGame, setGameVersion } = useGameController(gameResult?.game);
 
-  const result = useGame(props.gameID);
   return (
     <div>
-      <p>{JSON.stringify(result?.game)}</p>
+      <p>{JSON.stringify(controlledGame)}</p>
+      <br/>
+      <input
+        type='range' id='version' name='version' min='0'
+        max={controlledGame?.maxVersion?.toString() || '0'}
+        value={controlledGame?.version?.toString() || '0'}
+        onChange={e => setGameVersion(parseInt(e.target.value, 10))}
+      />
     </div>
   );
 }

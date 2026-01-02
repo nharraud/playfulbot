@@ -21,25 +21,25 @@ export type Scalars = {
 export type Game = {
   __typename: 'Game';
   canceled: Maybe<Scalars['Boolean']['output']>;
-  id: Maybe<Scalars['ID']['output']>;
-  initialState: Maybe<Scalars['JSON']['output']>;
+  id: Scalars['ID']['output'];
+  initialState: Scalars['JSON']['output'];
   patches: Maybe<Scalars['JSON']['output']>;
-  players: Maybe<Array<Maybe<Player>>>;
-  version: Maybe<Scalars['Int']['output']>;
+  players: Array<Maybe<Player>>;
+  version: Scalars['Int']['output'];
   winners: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
 };
 
 export type GameCanceled = {
   __typename: 'GameCanceled';
   gameID: Maybe<Scalars['ID']['output']>;
-  version: Maybe<Scalars['Int']['output']>;
+  version: Scalars['Int']['output'];
 };
 
 export type GamePatch = {
   __typename: 'GamePatch';
   gameID: Maybe<Scalars['ID']['output']>;
   patch: Maybe<Scalars['JSON']['output']>;
-  version: Maybe<Scalars['Int']['output']>;
+  version: Scalars['Int']['output'];
   winners: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
 };
 
@@ -91,17 +91,17 @@ export type GameSubscriptionVariables = Exact<{
 
 
 export type GameSubscription = { game:
-    | { __typename: 'Game', id: string | null, canceled: boolean | null, version: number | null, winners: Array<number | null> | null, initialState: unknown | null, patches: unknown | null, players: Array<{ __typename: 'Player', id: string | null, token: string | null, connected: boolean | null } | null> | null }
-    | { __typename: 'GameCanceled', gameID: string | null, version: number | null }
-    | { __typename: 'GamePatch', gameID: string | null, version: number | null, patch: unknown | null, winners: Array<number | null> | null }
+    | { __typename: 'Game', id: string, canceled: boolean | null, version: number, winners: Array<number | null> | null, initialState: unknown, patches: unknown | null, players: Array<{ __typename: 'Player', id: string | null, token: string | null, connected: boolean | null } | null> }
+    | { __typename: 'GameCanceled', gameID: string | null, version: number }
+    | { __typename: 'GamePatch', gameID: string | null, version: number, patch: unknown | null, winners: Array<number | null> | null }
     | { __typename: 'PlayerConnection' }
    | null };
 
-export type GameCancelFragment = { __typename: 'Game', version: number | null, canceled: boolean | null } & { ' $fragmentName'?: 'GameCancelFragment' };
+export type GameCancelFragment = { __typename: 'Game', version: number, canceled: boolean | null } & { ' $fragmentName'?: 'GameCancelFragment' };
 
-export type GameFragment = { __typename: 'Game', id: string | null, version: number | null, canceled: boolean | null, winners: Array<number | null> | null, initialState: unknown | null, patches: unknown | null, players: Array<{ __typename: 'Player', id: string | null, token: string | null, connected: boolean | null } | null> | null } & { ' $fragmentName'?: 'GameFragment' };
+export type GameFragment = { __typename: 'Game', id: string, version: number, canceled: boolean | null, winners: Array<number | null> | null, initialState: unknown, patches: unknown | null, players: Array<{ __typename: 'Player', id: string | null, token: string | null, connected: boolean | null } | null> } & { ' $fragmentName'?: 'GameFragment' };
 
-export type GamePatchFragment = { __typename: 'Game', version: number | null, patches: unknown | null, winners: Array<number | null> | null } & { ' $fragmentName'?: 'GamePatchFragment' };
+export type GamePatchFragment = { __typename: 'Game', version: number, patches: unknown | null, winners: Array<number | null> | null } & { ' $fragmentName'?: 'GamePatchFragment' };
 
 export const GameCancelFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"GameCancel"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Game"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"canceled"}}]}}]} as unknown as DocumentNode<GameCancelFragment, unknown>;
 export const GameFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Game"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Game"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"canceled"}},{"kind":"Field","name":{"kind":"Name","value":"players"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"connected"}}]}},{"kind":"Field","name":{"kind":"Name","value":"winners"}},{"kind":"Field","name":{"kind":"Name","value":"initialState"}},{"kind":"Field","name":{"kind":"Name","value":"patches"}}]}}]} as unknown as DocumentNode<GameFragment, unknown>;

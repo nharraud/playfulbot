@@ -8,6 +8,7 @@ import { RunnerClientContext } from 'src/infrastructure/graphql/GraphqlClientCon
 import { graphql } from '../../../types/game-runner/graphql';
 
 import * as gqlTypes from '../../../types/graphql';
+import { Game } from 'src/types/game-runner/graphql/graphql';
 
 // import { useRestartingSubscription } from '../../useRestartingSubscription';
 
@@ -86,7 +87,7 @@ export function useGame(gameID?: Maybe<string>) {
 
   const client = useContext(RunnerClientContext);
   if (!client) {
-    return;
+    return { game: undefined };
   }
   const { data, loading, error } = useSubscription(GameSubscription, {
     variables: { gameID: gameID as string },
@@ -142,7 +143,7 @@ export function useGame(gameID?: Maybe<string>) {
   //   }
   }
 
-  const result = useFragment({
+  const result = useFragment<Game>({
     fragment: GameFragment,
     client,
     from: {
@@ -151,7 +152,7 @@ export function useGame(gameID?: Maybe<string>) {
     },
   });
 
-  return { game: result || undefined };
+  return { game: result?.data as Game | undefined };
 }
 
 function fullGameID(gameID?: Maybe<GameID>) {

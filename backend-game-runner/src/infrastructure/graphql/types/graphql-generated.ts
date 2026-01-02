@@ -19,25 +19,25 @@ export type Scalars = {
 export type Game = {
   __typename?: 'Game';
   canceled?: Maybe<Scalars['Boolean']>;
-  id?: Maybe<Scalars['ID']>;
-  initialState?: Maybe<Scalars['JSON']>;
+  id: Scalars['ID'];
+  initialState: Scalars['JSON'];
   patches?: Maybe<Scalars['JSON']>;
-  players?: Maybe<Array<Maybe<Player>>>;
-  version?: Maybe<Scalars['Int']>;
+  players: Array<Maybe<Player>>;
+  version: Scalars['Int'];
   winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
 export type GameCanceled = {
   __typename?: 'GameCanceled';
   gameID?: Maybe<Scalars['ID']>;
-  version?: Maybe<Scalars['Int']>;
+  version: Scalars['Int'];
 };
 
 export type GamePatch = {
   __typename?: 'GamePatch';
   gameID?: Maybe<Scalars['ID']>;
   patch?: Maybe<Scalars['JSON']>;
-  version?: Maybe<Scalars['Int']>;
+  version: Scalars['Int'];
   winners?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
@@ -194,25 +194,25 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type GameResolvers<ContextType = any, ParentType extends ResolversParentTypes['Game'] = ResolversParentTypes['Game']> = {
   canceled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  initialState?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  initialState?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   patches?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  players?: Resolver<Array<Maybe<ResolversTypes['Player']>>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type GameCanceledResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameCanceled'] = ResolversParentTypes['GameCanceled']> = {
   gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type GamePatchResolvers<ContextType = any, ParentType extends ResolversParentTypes['GamePatch'] = ResolversParentTypes['GamePatch']> = {
   gameID?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   patch?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   winners?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

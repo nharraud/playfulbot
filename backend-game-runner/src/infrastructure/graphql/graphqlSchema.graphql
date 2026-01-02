@@ -23,25 +23,25 @@ scalar JSON
 # #
 
 type Game {
-  id: ID
-  version: Int
+  id: ID!
+  version: Int!
   canceled: Boolean
-  players: [Player]
+  players: [Player]!
   winners: [Int]
-  initialState: JSON
+  initialState: JSON!
   patches: JSON
 }
 
 type GamePatch {
   patch: JSON
   gameID: ID
-  version: Int
+  version: Int!
   winners: [Int]
 }
 
 type GameCanceled {
   gameID: ID
-  version: Int
+  version: Int!
 }
 
 type PlayerConnection {
