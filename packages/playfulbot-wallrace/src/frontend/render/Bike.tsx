@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-// import { a } from '@react-spring/three';
-// import * as THREE from 'three';
+import { a } from '@react-spring/three';
+import * as THREE from 'three';
 
 interface BikenProps {
   position: [number, number, number]
@@ -8,18 +8,19 @@ interface BikenProps {
 }
 
 export default function Bike(props: BikenProps) {
-  // const emissiveColor = useMemo(() => new THREE.Color('#ffffff'), [])
-  return (<div/>
-    // <a.mesh position={props.position} layers={1}>
-    //   <boxBufferGeometry attach='geometry' args={[1, 1, 2]} />
-    //   <meshStandardMaterial
-    //     attach='material'
-    //     color={props.color}
-    //     emissive={emissiveColor}
-    //     emissiveIntensity={100}
-    //     opacity={0.4}
-    //     transparent
-    //   />
-    // </a.mesh>
+  const emissiveColor = useMemo(() => new THREE.Color('#ffffff'), [])
+  return (
+  // <div/>
+    <a.mesh position={props.position} layers={1}>
+      <boxGeometry attach='geometry' args={[1, 1, 2]} />
+      <meshStandardMaterial
+        attach='material'
+        color={props.color}
+        emissive={emissiveColor}
+        emissiveIntensity={100}
+        opacity={0.4}
+        transparent
+      />
+    </a.mesh>
   )
 }

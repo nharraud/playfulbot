@@ -7,6 +7,7 @@ import { useArenaArenaSubscription, useCreateArenaGame } from 'src/hooksAndQueri
 import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientProviders';
 import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
 import { useGameController } from 'src/hooksAndQueries/useGameController';
+import { gameDefinition } from 'playfulbot-config';
 
 interface TournamentArenasProps {
   tournament?: TournamentQuery['tournament'];
@@ -40,7 +41,9 @@ function GameWidget(props: GameWidgetProps) {
 
   return (
     <div>
+      <p>{JSON.stringify(gameResult?.game?.players)}</p>
       <p>{JSON.stringify(controlledGame)}</p>
+      <gameDefinition.game gameState={controlledGame?.gameState} />
       <br/>
       <input
         type='range' id='version' name='version' min='0'

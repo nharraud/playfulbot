@@ -16,6 +16,7 @@
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.2",
     "@types/react": "^19.2.0",
+    "@types/three": "^0.182.0",
     "playfulbot-game": "file:../playfulbot-game",
     "playfulbot-game-backend": "file:../playfulbot-game-backend",
     "playfulbot-game-frontend": "file:../playfulbot-game-frontend",
@@ -27,5 +28,12 @@
   },
   "peerDependencies": {
     "react": "^19.0.0"
+  },
+  "dependencies": {
+    "@react-spring/three": "^10.0.3",
+    "@react-spring/web": "^10.0.3",
+    "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "three": "^0.182.0"
   }
 }
