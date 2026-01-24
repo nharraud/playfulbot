@@ -15,13 +15,13 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "\n  subscription game($gameID: ID!) {\n    game(gameID: $gameID) {\n\n      ... on GamePatch {\n        gameID, version, patch, winners\n      }\n      ... on Game {\n        id\n        canceled\n        version\n        players {\n          id, token, connected\n        }\n        winners\n        initialState\n        patches\n      }\n      ... on GameCanceled {\n        gameID,\n        version\n      }\n      # ... on PlayerConnection {\n      #   playerID\n      #   connected\n      # }\n    }\n  }\n": typeof types.GameDocument,
-    "\n  fragment GameCancel on Game {\n    version\n    canceled\n  }\n": typeof types.GameCancelFragmentDoc,
+    "\n  fragment GameCancel on Game {\n    version\n    canceled\n    patches\n  }\n": typeof types.GameCancelFragmentDoc,
     "\n  fragment Game on Game {\n    id\n    version\n    canceled\n    players {\n      id\n      token\n      connected\n    }\n    winners\n    initialState\n    patches\n  }\n": typeof types.GameFragmentDoc,
     "\n  fragment GamePatch on Game {\n    version\n    patches\n    winners\n  }\n": typeof types.GamePatchFragmentDoc,
 };
 const documents: Documents = {
     "\n  subscription game($gameID: ID!) {\n    game(gameID: $gameID) {\n\n      ... on GamePatch {\n        gameID, version, patch, winners\n      }\n      ... on Game {\n        id\n        canceled\n        version\n        players {\n          id, token, connected\n        }\n        winners\n        initialState\n        patches\n      }\n      ... on GameCanceled {\n        gameID,\n        version\n      }\n      # ... on PlayerConnection {\n      #   playerID\n      #   connected\n      # }\n    }\n  }\n": types.GameDocument,
-    "\n  fragment GameCancel on Game {\n    version\n    canceled\n  }\n": types.GameCancelFragmentDoc,
+    "\n  fragment GameCancel on Game {\n    version\n    canceled\n    patches\n  }\n": types.GameCancelFragmentDoc,
     "\n  fragment Game on Game {\n    id\n    version\n    canceled\n    players {\n      id\n      token\n      connected\n    }\n    winners\n    initialState\n    patches\n  }\n": types.GameFragmentDoc,
     "\n  fragment GamePatch on Game {\n    version\n    patches\n    winners\n  }\n": types.GamePatchFragmentDoc,
 };
@@ -47,7 +47,7 @@ export function graphql(source: "\n  subscription game($gameID: ID!) {\n    game
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment GameCancel on Game {\n    version\n    canceled\n  }\n"): (typeof documents)["\n  fragment GameCancel on Game {\n    version\n    canceled\n  }\n"];
+export function graphql(source: "\n  fragment GameCancel on Game {\n    version\n    canceled\n    patches\n  }\n"): (typeof documents)["\n  fragment GameCancel on Game {\n    version\n    canceled\n    patches\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

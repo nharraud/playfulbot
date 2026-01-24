@@ -47,6 +47,7 @@ const GameCancelFragment = graphql(`
   fragment GameCancel on Game {
     version
     canceled
+    patches
   }
 `);
 
@@ -98,10 +99,16 @@ export function useGame(gameID?: Maybe<string>) {
 
   if (data) {
     if (data.game?.__typename === 'GameCanceled') {
+      const modifiedGameID = fullGameID(data.game.gameID);
+      const game = client.readFragment({
+        id: modifiedGameID,
+        fragment: GameFragment,
+      });
       client.writeFragment({
-        id: fullGameID(data.game.gameID),
+        id: modifiedGameID,
         fragment: GameCancelFragment,
         data: {
+          patches: (game?.patches as object[]).concat([{}]),
           canceled: true,
           version: data.game.version,
           __typename: "Game",
