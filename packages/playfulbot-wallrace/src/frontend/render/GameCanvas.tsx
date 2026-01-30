@@ -14,7 +14,6 @@ export function GameCanvas(props: GameCanvasProps) {
     game = (<Game {...props} />)
   }
   return (
-  // <div/>
   <Canvas
     orthographic
     camera={{

@@ -21,7 +21,7 @@ const WallSection = (props: WallSectionProps) => {
     1
   ] as [number, number, number];
   const bikePosition = [props.end[0] + 0.5, props.end[1] + 0.5, 1] as [number, number, number];
-  const size = [width, height];
+  const size: [number, number, number] = [width, height, 1];
 
   let bike: JSX.Element | undefined = undefined;
   if (props.isHead) {
@@ -30,7 +30,7 @@ const WallSection = (props: WallSectionProps) => {
   return (
     <group>
       {bike}
-      <a.mesh position={position} scale={size as any}>
+      <a.mesh position={position} scale={size}>
         <planeGeometry attach="geometry"/>
         <meshBasicMaterial attach="material" color={props.color}/>
       </a.mesh>
@@ -56,12 +56,14 @@ export function Wall(props: WallPropsInterface) {
   }, [props.points])
 
   const wallShapes = useMemo(() =>
-  wallSections.map((section, index) => (
-    <WallSection start={section[0]} end={section[1]} key={index - 1}
-    color={props.color}
-    isHead={index === wallSections.length - 1}
-    />
-  )), [wallSections, props.color]);
+    wallSections.map((section, index) => (
+      <WallSection start={section[0]} end={section[1]} key={index - 1}
+      color={props.color}
+      isHead={index === wallSections.length - 1}
+      />
+    )),
+    [wallSections, props.color]
+  );
 
   return (
     <group>

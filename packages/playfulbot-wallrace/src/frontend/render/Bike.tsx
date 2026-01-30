@@ -10,14 +10,13 @@ interface BikenProps {
 export default function Bike(props: BikenProps) {
   const emissiveColor = useMemo(() => new THREE.Color('#ffffff'), [])
   return (
-  // <div/>
     <a.mesh position={props.position} layers={1}>
       <boxGeometry attach='geometry' args={[1, 1, 2]} />
       <meshStandardMaterial
         attach='material'
         color={props.color}
         emissive={emissiveColor}
-        emissiveIntensity={100}
+        emissiveIntensity={20}
         opacity={0.4}
         transparent
       />
