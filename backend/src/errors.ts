@@ -1,6 +1,4 @@
 /* eslint-disable max-classes-per-file */
-import { ApolloServerErrorCode } from '@apollo/server/errors';
-
 import { GraphQLError } from 'graphql';
 
 export class GameNotPlayableError extends GraphQLError {
@@ -105,7 +103,7 @@ export class InvalidRequest extends GraphQLError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
     super(message, {
       extensions: {
-        code: ApolloServerErrorCode.BAD_REQUEST,
+        code: 'BAD_REQUEST',
         ...additionalProperties,
       },
     });
@@ -116,7 +114,7 @@ export class InvalidArgument extends GraphQLError {
   constructor(message: string, additionalProperties?: Record<string, unknown>) {
     super(message, {
       extensions: {
-        code: ApolloServerErrorCode.BAD_USER_INPUT,
+        code: 'BAD_USER_INPUT',
         ...additionalProperties,
       },
     });
