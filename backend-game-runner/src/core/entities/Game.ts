@@ -32,6 +32,7 @@ export class Game {
   storedActions = new Map<number, GameAction>();
 
   #gameEndPromise = new DeferredPromise<this>();
+  #gameCancelledPromise = new DeferredPromise<this>();
 
   watcher?: GameWatcher;
   stateObserver: Observer<GameState>;
@@ -61,6 +62,7 @@ export class Game {
     this.watcher?.notifyGameCancelled(this.id, this.version);
     jsonpatch.unobserve(this.gameState, this.stateObserver);
     this.#gameEndPromise.resolve(this);
+    this.#gameCancelledPromise.resolve(this);
   }
 
   get isActive(): boolean {
@@ -73,6 +75,10 @@ export class Game {
 
   get gameEndPromise(): Promise<Game> {
     return this.#gameEndPromise.promise;
+  }
+
+  get gameCancelledPromise(): Promise<Game> {
+    return this.#gameCancelledPromise.promise;
   }
 
   play(playerNumber: number, actionData: Record<string, any>): void;

@@ -3,27 +3,19 @@ import { GameCancelled, GameProvider, StopListeningHandler as StopListeningGameN
 import { Game } from "~game-runner/core/entities/Game";
 import { PubSubGameWatcher } from "~game-runner/infrastructure/PubSubGameWatcher";
 
-
-export interface GameSchedulerConfig {
-  /** maximum number of games the GameScheduler will schedule */
-  maxGames: number
-};
-
 /**
  * Schedule games returned by a GameProvider. The GameSchedulre is in charge of adding games
  * when ressources allow it.
  */
 export class GameScheduler {
-  readonly config: GameSchedulerConfig;
   readonly gameProvider: GameProvider;
   readonly gameRepository: RunningGameRepository;
   #status: 'running' | 'stopping' | 'stopped';
   #stopListeningGameNotifications: StopListeningGameNotificationHandler;
 
-  constructor(gameProvider: GameProvider, gameRepository: RunningGameRepository, config: GameSchedulerConfig) {
+  constructor(gameProvider: GameProvider, gameRepository: RunningGameRepository) {
     this.gameProvider = gameProvider;
     this.gameRepository = gameRepository;
-    this.config = config;
     this.#status = 'stopped';
   }
 
@@ -65,23 +57,12 @@ export class GameScheduler {
       }
     });
     while (this.#status === 'running') {
-      if (this.gameRepository.nbGames < this.config.maxGames) {
-        const gameConfig = await this.gameProvider.fetchGame();
-        if (gameConfig.id) {
-          const game = new Game(gameConfig.id, gameConfig.gameDefinition, gameConfig.players);
-          this.gameRepository.add(game);
-          game.watch(new PubSubGameWatcher());
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      } else {
-        await Promise.any(this.gameRepository.list().map(game => game.gameEndPromise));
-        const games = this.gameRepository.list();
-        for (const game of games) {
-          if (!game.isActive) {
-            this.gameRepository.delete(game.id);
-          }
-        }
+      await this.gameRepository.canAddGame();
+      const gameConfig = await this.gameProvider.fetchGame();
+      if (gameConfig.id) {
+        const game = new Game(gameConfig.id, gameConfig.gameDefinition, gameConfig.players);
+        this.gameRepository.add(game);
+        game.watch(new PubSubGameWatcher());
       }
     }
   }

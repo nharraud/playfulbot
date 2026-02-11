@@ -7,4 +7,5 @@ export interface RunningGameRepository {
   get(id: GameID): Game | undefined;
   add(game: Game): void;
   delete(id: GameID): void;
+  canAddGame(): Promise<void>;
 };

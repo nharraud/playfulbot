@@ -14,7 +14,7 @@ import { AddressInfo } from 'net';
 async function main() {
   validateSecretKey();
 
-  const gameRepository = new RunningGameRepositoryInMemory();
+  const gameRepository = new RunningGameRepositoryInMemory({ maxGames: 3 });
   const deps = { gameRepository };
   const graphqlServer = await createGraphqlServer(deps, { host: serverConfig.GRAPHQL_HOST, port: serverConfig.GRAPHQL_PORT });
   const graphqlAddress = graphqlServer.address() as AddressInfo;
@@ -26,7 +26,7 @@ async function main() {
     graphqlUrl: serverConfig.EXPOSED_GRAPHQL_URL || `${graphqlAddress.address}:${graphqlAddress.port}`,
     grpcUrl: serverConfig.EXPOSED_GRPC_URL || grpcUrl,
   });
-  const gameScheduler = new GameScheduler(gameProvider, gameRepository, { maxGames: 1 });
+  const gameScheduler = new GameScheduler(gameProvider, gameRepository);
   await gameScheduler.start();
 }
 
