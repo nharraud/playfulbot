@@ -33,7 +33,7 @@ async function createTeams(ctx: Context<any>, nbTeam: number, tournamentId: Tour
       ctx, {
         name: `team ${idx}`,
         tournamentID: tournamentId,
-        id: `FEAB0000-0000-0000-0000-${teamNB}`
+        id: `FEAB0000-0000-4000-a000-${teamNB}`
     }) as Promise<Team>;
   });
   return Promise.all(teams);
@@ -50,7 +50,7 @@ async function createTeamMembers(ctx: Context<any>, nbUsers: number, teams: Team
       ctx, {
         username: `user${idx}`,
         password: `pass${idx}`,
-        id: `ACEB0000-0000-0000-0000-${userNB}`
+        id: `ACEB0000-0000-4000-a000-${userNB}`
       }
     ) as User;
     await ctx.providers.team.addTeamMember(ctx, teams[teamIdx].id, user.id);
@@ -65,7 +65,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
   await ctx.txIf(async (txCtx) => {
     ctx.logger.info('Creating admin user');
     const admin = await txCtx.providers.user.createUser(txCtx, {
-      username: 'zeus', password: 'password', id: 'ACEE0000-0000-0000-0000-000000000000'
+      username: 'zeus', password: 'password', id: 'ACEE0000-0000-4000-A000-000000000000'
     }) as User;
 
     ctx.logger.info('Creating tournament');
@@ -117,7 +117,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     await addTeamMember(txCtx, { teamId: teams[0].id, userId: invitedUser.id, checkPermission: false });
 
     await txCtx.providers.arena.createArena(txCtx, {
-      teamId: teams[0].id, name: 'testArena', id: 'ACEE0000-0000-0000-0000-000000000000'
+      teamId: teams[0].id, name: 'testArena', id: 'ACEE0000-0000-4000-A000-000000000000'
     })
     
 
