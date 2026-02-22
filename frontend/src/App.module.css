@@ -1,4 +1,11 @@
-.theme {
+.app {
   --selected-color: rgb(144, 202, 249);
   --unselected-color: rgba(255, 255, 255, 0.7);
+  --spacing: 0.25rem;
+}
+
+@media screen and (min-width: 1280px) {
+  .app {
+    --main-content-width: 1280px;
+  }
 }

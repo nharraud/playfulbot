@@ -1,0 +1,7 @@
+.mainIcon {
+  display: block;
+  margin: 1em;
+  width: 2.5em;
+  height: 2.5em;
+  content: url(/src/assets/images/otteroo.png);
+}

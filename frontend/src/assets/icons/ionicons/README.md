@@ -1,0 +1,1 @@
+The icons in this directory come from https://github.com/ionic-team/ionicons

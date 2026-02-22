@@ -1,0 +1,100 @@
+.header {
+  display: flex;
+  justify-content: center;
+  background-image: linear-gradient(to right, oklch(0.511 0.262 276.966) 0%, oklch(0.558 0.288 302.321) 100%);
+  border-bottom-color: oklch(0.457 0.24 277.023);
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: var(--main-content-width);
+  padding-inline: calc(var(--spacing) * 6);
+  padding-block: calc(var(--spacing) * 5);
+}
+
+.title {
+  color: white;
+  font-weight: bold;
+  font-size: xx-large;
+  margin-top: calc(var(--spacing) * 6);
+  margin-bottom: calc(var(--spacing) * 6);
+}
+
+.subTitle {
+  color: white;
+  font-weight: normal;
+  font-size: large;
+}
+
+.headerText {
+  align-self: flex-start;
+}
+
+
+/*
+ * Menu
+ */
+
+.headerMenu {
+  margin-top: calc(var(--spacing) * 6);
+  margin-right: calc(var(--spacing) * 12);
+  display: block;
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: column;
+  /* align menu on the right border */
+  align-items: flex-end;
+}
+
+.subMenuWrapper {
+  /* hide menu until the button is clicked */
+  visibility: hidden;
+  /* force parent element to ignore the size of this element. Thus letting it overflow. */
+  width: 0;
+  overflow: visible;
+  /* prevent text from wrapping because width=0 */
+  white-space: nowrap;
+  /* force the menu to align on the right border */
+  direction: rtl;
+}
+
+.subMenu {
+  /* force the subMenu to overflow outside of the subMenuWrapper */
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--spacing) * 2);
+  border-radius: 5px;
+  background-color: white;
+}
+
+.menuButton + .subMenuWrapper:active,
+.menuButton:focus + .subMenuWrapper {
+    visibility: visible;
+}
+
+.menuButton {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: color-mix(in oklab, white 60%, transparent);
+}
+
+.menuButton:hover {
+  background: color-mix(in oklab, white 90%, transparent);
+}
+
+.userMenuButton {
+  composes: menuButton;
+  mask: url('/src/assets/icons/ionicons/person-outline.svg');
+  mask-size: contain;
+}
+
+.subMenu a {
+  cursor: pointer;
+}

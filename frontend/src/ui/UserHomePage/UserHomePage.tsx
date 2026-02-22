@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Theme, Typography, Button } from '@mui/material';
-// import makeStyles from '@mui/styles/makeStyles';
-// import createStyles from '@mui/styles/createStyles';
+// import { Theme, Typography, Button } from '@mui/material';
 import { useAuthenticatedUser } from 'src/hooksAndQueries/backend/graphql/authenticatedUser';
 import { useURIQuery } from 'src/utils/router/useURIQuery';
 import { useNavigate } from 'react-router';
@@ -13,41 +11,12 @@ import MenuBar from '../MenuBar/MenuBar';
 // } from '../../types/graphql';
 import { useAuthenticatedUserTournaments } from '../../hooksAndQueries/backend/graphql/authenticatedUserTournaments';
 import { TournamentsList } from './TournamentsList';
+import { FormattedMessage } from 'react-intl';
+import { Header } from './Header';
 
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     // root: {
-//     //   flex: '1 1 auto',
-//     //   height: '100vh',
-//     //   display: 'flex',
-//     //   flexDirection: 'column',
-//     // },
-//     // welcomeTitle: {
-//     //   flex: '0 0 auto',
-//     //   marginTop: theme.spacing(5),
-//     // },
-//     // createTournamentRow: {
-//     //   marginTop: theme.spacing(10),
-//     // },
-//     // createTournamentButton: {
-//     //   backgroundColor: theme.palette.success.main,
-//     //   color: theme.palette.getContrastText(theme.palette.success.main),
-//     // },
-//     // tournamentListsRow: {
-//     //   marginTop: theme.spacing(10),
-//     //   flex: '1 1 auto',
-//     //   display: 'flex',
-//     //   flexDirection: 'row',
-//     //   justifyContent: 'space-evenly',
-//     //   alignItems: 'flex-start',
-//     // },
-//     // column: {},
-//   })
-// );
+import cssCls from './UserHomePage.module.css';
 
 export function UserHomePage() {
-    console.log('home');
-  const classes = {}//useStyles();
   const { authenticatedUser } = useAuthenticatedUser();
   const {
     error,
@@ -94,18 +63,30 @@ export function UserHomePage() {
   const jointedTournaments = userTournaments?.authenticatedUser?.teams?.map(
     (team) => team.tournament
   );
-  const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
-    (invitation) => invitation.tournament
-  );
-  const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
+  // const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
+  //   (invitation) => invitation.tournament
+  // );
+  // const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
 
+  const icon = <img className={cssCls.mainIcon}/>
+
+  const Title = (<FormattedMessage
+    description="Home page title"
+    defaultMessage="PlayfulBot"
+  />);
+
+  const SubTitle = (<FormattedMessage
+    description="Home page subtitle"
+    defaultMessage="Organize & Play programming tournaments"
+  />);
   return (
-    <div className={classes.root}>
-      <MenuBar />
-      <Typography variant="h3" className={classes.welcomeTitle}>
+    <div>
+      <Header title={Title} subtitle={SubTitle} />
+      {/* <MenuBar /> */}
+      {/* <Typography variant="h3" className={classes.welcomeTitle}>
         Welcome {authenticatedUser?.username}! Here are your tournaments.
-      </Typography>
-      <div className={classes.createTournamentRow}>
+      </Typography> */}
+      {/* <div className={classes.createTournamentRow}>
         <Button
           variant="contained"
           component={Link}
@@ -128,7 +109,7 @@ export function UserHomePage() {
         <div className={classes.column}>
           <TournamentsList title="Tournaments you organize" tournaments={organizedTournaments} />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
