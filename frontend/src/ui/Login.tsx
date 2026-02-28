@@ -49,7 +49,7 @@ export default function Login() {
           <Link to={'/'} className={cssCls.header}>
             <h1>Playfulbot</h1>
           </Link>
-          <Card>
+          <Card className={cssCls.loginCard}>
             <h2>
               <FormattedMessage
                 description='Login message welcoming back the user'

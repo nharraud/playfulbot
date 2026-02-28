@@ -16,6 +16,27 @@
   --radius-2xl: 1rem;
 
   --container-md: 28rem;
+
+
+  --shadow-color: 0deg 0% 0%;
+  --shadow-low:
+    0.3px 0.7px 0.9px hsl(var(--shadow-color) / 0.09),
+    0.5px 1.1px 1.4px -1.2px hsl(var(--shadow-color) / 0.09),
+    1.2px 2.7px 3.3px -2.5px hsl(var(--shadow-color) / 0.09);
+  --shadow-medium:
+    0.3px 0.7px 0.9px hsl(var(--shadow-color) / 0.09),
+    1px 2.2px 2.7px -0.8px hsl(var(--shadow-color) / 0.09),
+    2.5px 5.5px 6.8px -1.7px hsl(var(--shadow-color) / 0.09),
+    6px 13.4px 16.5px -2.5px hsl(var(--shadow-color) / 0.09);
+  --shadow-high:
+    0.3px 0.7px 0.9px hsl(var(--shadow-color) / 0.09),
+    1.7px 3.7px 4.6px -0.4px hsl(var(--shadow-color) / 0.09),
+    3.1px 6.9px 8.5px -0.7px hsl(var(--shadow-color) / 0.09),
+    5.1px 11.3px 13.9px -1.1px hsl(var(--shadow-color) / 0.09),
+    8.1px 17.9px 22.1px -1.4px hsl(var(--shadow-color) / 0.09),
+    12.6px 28px 34.5px -1.8px hsl(var(--shadow-color) / 0.09),
+    19.1px 42.5px 52.4px -2.1px hsl(var(--shadow-color) / 0.09),
+    28.1px 62.5px 77.1px -2.5px hsl(var(--shadow-color) / 0.09);
 }
 
 @media screen and (min-width: 1280px) {

@@ -13,6 +13,10 @@
   max-width: var(--container-md);
 }
 
+.loginCard {
+  box-shadow: var(--shadow-high);
+}
+
 .header {
   margin-bottom: calc(var(--spacing) * 8);
   text-decoration: none;
