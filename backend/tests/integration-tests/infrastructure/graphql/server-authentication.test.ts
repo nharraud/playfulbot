@@ -88,7 +88,7 @@ describe('graphql', () => {
           query: `
             mutation registerUser($username: String!, $password: String!) {
               registerUser(username: $username, password: $password) {
-                ... on LoginResult {
+                ... on LoginSuccess {
                   __typename
                   user { username }
                   token

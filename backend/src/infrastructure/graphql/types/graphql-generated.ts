@@ -123,6 +123,11 @@ export type GetArenaSuccess = {
   arena?: Maybe<Arena>;
 };
 
+export type InvalidCredentialsError = Error & {
+  __typename?: 'InvalidCredentialsError';
+  message: Scalars['String']['output'];
+};
+
 export type JoinTeamError = ForbiddenError | TeamNotFoundError;
 
 export type JoinTeamFailure = {
@@ -138,8 +143,17 @@ export type JoinTeamSuccess = {
   oldTeam?: Maybe<TeamOrDeletedTeam>;
 };
 
-export type LoginResult = {
-  __typename?: 'LoginResult';
+export type LoginError = InvalidCredentialsError;
+
+export type LoginFailure = {
+  __typename?: 'LoginFailure';
+  errors: Array<LoginError>;
+};
+
+export type LoginResult = LoginFailure | LoginSuccess;
+
+export type LoginSuccess = {
+  __typename?: 'LoginSuccess';
   token: Scalars['String']['output'];
   user: User;
 };
@@ -326,7 +340,7 @@ export type UserNotPartOfAnyTeam = {
   message: Scalars['String']['output'];
 };
 
-export type UserRegistrationResult = LoginResult | UsernameAlreadyTaken | ValidationError;
+export type UserRegistrationResult = LoginSuccess | UsernameAlreadyTaken | ValidationError;
 
 export type UserTeamResult = Team | UserNotPartOfAnyTeam;
 
@@ -421,16 +435,18 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   GetArenaResult: ( Omit<GetArenaFailure, 'errors'> & { errors: Array<_RefType['GetArenaError']> } ) | ( GetArenaSuccess );
   JoinTeamError: ( ForbiddenError ) | ( TeamNotFoundError );
   JoinTeamResult: ( Omit<JoinTeamFailure, 'errors'> & { errors: Array<_RefType['JoinTeamError']> } ) | ( Omit<JoinTeamSuccess, 'oldTeam'> & { oldTeam?: Maybe<_RefType['TeamOrDeletedTeam']> } );
+  LoginError: ( InvalidCredentialsError );
+  LoginResult: ( Omit<LoginFailure, 'errors'> & { errors: Array<_RefType['LoginError']> } ) | ( LoginSuccess );
   TeamOrDeletedTeam: ( DeletedTeam ) | ( Team );
   UpdateTeamError: ( ForbiddenError ) | ( TeamNameAlreadyTakenError ) | ( ValidationError );
   UpdateTeamResult: ( Omit<UpdateTeamFailure, 'errors'> & { errors: Array<_RefType['UpdateTeamError']> } ) | ( UpdateTeamSuccess );
-  UserRegistrationResult: ( LoginResult ) | ( UsernameAlreadyTaken ) | ( ValidationError );
+  UserRegistrationResult: ( LoginSuccess ) | ( UsernameAlreadyTaken ) | ( ValidationError );
   UserTeamResult: ( Team ) | ( UserNotPartOfAnyTeam );
 };
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Error: ( ArenaNameAlreadyTakenError ) | ( ArenaNotFoundError ) | ( ForbiddenError ) | ( MaxArenaReachedError ) | ( TeamNameAlreadyTakenError ) | ( TeamNotFoundError ) | ( UsernameAlreadyTaken ) | ( ValidationError );
+  Error: ( ArenaNameAlreadyTakenError ) | ( ArenaNotFoundError ) | ( ForbiddenError ) | ( InvalidCredentialsError ) | ( MaxArenaReachedError ) | ( TeamNameAlreadyTakenError ) | ( TeamNotFoundError ) | ( UsernameAlreadyTaken ) | ( ValidationError );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -465,12 +481,16 @@ export type ResolversTypes = {
   GetArenaSuccess: ResolverTypeWrapper<GetArenaSuccess>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  InvalidCredentialsError: ResolverTypeWrapper<InvalidCredentialsError>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   JoinTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['JoinTeamError']>;
   JoinTeamFailure: ResolverTypeWrapper<Omit<JoinTeamFailure, 'errors'> & { errors: Array<ResolversTypes['JoinTeamError']> }>;
   JoinTeamResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['JoinTeamResult']>;
   JoinTeamSuccess: ResolverTypeWrapper<Omit<JoinTeamSuccess, 'oldTeam'> & { oldTeam?: Maybe<ResolversTypes['TeamOrDeletedTeam']> }>;
-  LoginResult: ResolverTypeWrapper<LoginResult>;
+  LoginError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['LoginError']>;
+  LoginFailure: ResolverTypeWrapper<Omit<LoginFailure, 'errors'> & { errors: Array<ResolversTypes['LoginError']> }>;
+  LoginResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['LoginResult']>;
+  LoginSuccess: ResolverTypeWrapper<LoginSuccess>;
   MaxArenaReachedError: ResolverTypeWrapper<MaxArenaReachedError>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
@@ -529,12 +549,16 @@ export type ResolversParentTypes = {
   GetArenaSuccess: GetArenaSuccess;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  InvalidCredentialsError: InvalidCredentialsError;
   JSON: Scalars['JSON']['output'];
   JoinTeamError: ResolversUnionTypes<ResolversParentTypes>['JoinTeamError'];
   JoinTeamFailure: Omit<JoinTeamFailure, 'errors'> & { errors: Array<ResolversParentTypes['JoinTeamError']> };
   JoinTeamResult: ResolversUnionTypes<ResolversParentTypes>['JoinTeamResult'];
   JoinTeamSuccess: Omit<JoinTeamSuccess, 'oldTeam'> & { oldTeam?: Maybe<ResolversParentTypes['TeamOrDeletedTeam']> };
-  LoginResult: LoginResult;
+  LoginError: ResolversUnionTypes<ResolversParentTypes>['LoginError'];
+  LoginFailure: Omit<LoginFailure, 'errors'> & { errors: Array<ResolversParentTypes['LoginError']> };
+  LoginResult: ResolversUnionTypes<ResolversParentTypes>['LoginResult'];
+  LoginSuccess: LoginSuccess;
   MaxArenaReachedError: MaxArenaReachedError;
   Mutation: {};
   Query: {};
@@ -655,7 +679,7 @@ export type DeletedTeamResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
-  __resolveType: TypeResolveFn<'ArenaNameAlreadyTakenError' | 'ArenaNotFoundError' | 'ForbiddenError' | 'MaxArenaReachedError' | 'TeamNameAlreadyTakenError' | 'TeamNotFoundError' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ArenaNameAlreadyTakenError' | 'ArenaNotFoundError' | 'ForbiddenError' | 'InvalidCredentialsError' | 'MaxArenaReachedError' | 'TeamNameAlreadyTakenError' | 'TeamNotFoundError' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
@@ -688,6 +712,11 @@ export type GetArenaSuccessResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type InvalidCredentialsErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvalidCredentialsError'] = ResolversParentTypes['InvalidCredentialsError']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -711,7 +740,20 @@ export type JoinTeamSuccessResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type LoginErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginError'] = ResolversParentTypes['LoginError']> = {
+  __resolveType: TypeResolveFn<'InvalidCredentialsError', ParentType, ContextType>;
+};
+
+export type LoginFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginFailure'] = ResolversParentTypes['LoginFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['LoginError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = {
+  __resolveType: TypeResolveFn<'LoginFailure' | 'LoginSuccess', ParentType, ContextType>;
+};
+
+export type LoginSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginSuccess'] = ResolversParentTypes['LoginSuccess']> = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -818,7 +860,7 @@ export type UserNotPartOfAnyTeamResolvers<ContextType = any, ParentType extends 
 };
 
 export type UserRegistrationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserRegistrationResult'] = ResolversParentTypes['UserRegistrationResult']> = {
-  __resolveType: TypeResolveFn<'LoginResult' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'LoginSuccess' | 'UsernameAlreadyTaken' | 'ValidationError', ParentType, ContextType>;
 };
 
 export type UserTeamResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserTeamResult'] = ResolversParentTypes['UserTeamResult']> = {
@@ -863,12 +905,16 @@ export type Resolvers<ContextType = any> = {
   GetArenaFailure?: GetArenaFailureResolvers<ContextType>;
   GetArenaResult?: GetArenaResultResolvers<ContextType>;
   GetArenaSuccess?: GetArenaSuccessResolvers<ContextType>;
+  InvalidCredentialsError?: InvalidCredentialsErrorResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JoinTeamError?: JoinTeamErrorResolvers<ContextType>;
   JoinTeamFailure?: JoinTeamFailureResolvers<ContextType>;
   JoinTeamResult?: JoinTeamResultResolvers<ContextType>;
   JoinTeamSuccess?: JoinTeamSuccessResolvers<ContextType>;
+  LoginError?: LoginErrorResolvers<ContextType>;
+  LoginFailure?: LoginFailureResolvers<ContextType>;
   LoginResult?: LoginResultResolvers<ContextType>;
+  LoginSuccess?: LoginSuccessResolvers<ContextType>;
   MaxArenaReachedError?: MaxArenaReachedErrorResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

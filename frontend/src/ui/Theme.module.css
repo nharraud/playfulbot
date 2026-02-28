@@ -33,6 +33,18 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --color-neutral-300: oklch(87% 0 0);
+  --color-neutral-600: oklch(43.9% 0 0);
+  --color-neutral-700: oklch(37.1% 0 0);
+  --color-neutral-900: oklch(20.5% 0 0);
+
+  --color-error: oklch(49.142% 0.20166 29.223);
+  --color-error-background: rgb(255, 226, 226);
+
+  --shadow-2xl: 0 25px 50px -12px var(--shadow-color,#00000040);
+  --box-shadow-2xl: var(--inset-shadow),var(--inset-ring-shadow),var(--ring-offset-shadow),var(--ring-shadow),var(--shadow-2xl);
+  
 }
 
 .dark {

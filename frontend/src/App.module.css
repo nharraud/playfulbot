@@ -2,6 +2,20 @@
   --selected-color: rgb(144, 202, 249);
   --unselected-color: rgba(255, 255, 255, 0.7);
   --spacing: 0.25rem;
+
+  --font-weight-bold: 700;
+
+  --text-sm: 0.875rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  --text-sm--line-height: calc(1.25/.875);
+  --text-2xl--line-height: calc(2 / 1.5);
+
+  --radius: 0.625rem;
+  --radius-2xl: 1rem;
+
+  --container-md: 28rem;
 }
 
 @media screen and (min-width: 1280px) {

@@ -8,7 +8,10 @@ import { useURIQuery } from 'src/utils/router/useURIQuery';
 // import { client } from '../../../infrastructure/graphql/useGraphqlClient';
 import { BackendClientContext } from 'src/infrastructure/graphql/GraphqlClientContexts'
 
-import { graphql } from '../../../types/backend/graphql';
+import { graphql } from 'src/types/backend/graphql/gql';
+import { isFailure } from './isFailure';
+import { LoginFailure } from 'src/types/graphql';
+
  
 const getAuthenticatedUserQuery = graphql(`
   query getAuthenticatedUser {
@@ -31,10 +34,10 @@ export function useAuthenticatedUser() {
   return { authenticatedUser: data ? data.authenticatedUser : null };
 }
 
-function updateAuthentication(cache: ApolloCache, loginResult: any) {
+function updateAuthentication(cache: ApolloCache, loginSuccess: any) {
   cache.writeQuery({
     query: getAuthenticatedUserQuery,
-    data: { authenticatedUser: loginResult.user },
+    data: { authenticatedUser: loginSuccess.user },
   });
 }
 
@@ -74,10 +77,19 @@ export function useRedirectionAfterAuthentication() {
 const loginMutation = graphql(`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
+      ... on LoginSuccess {
         user {
             id, username
         }
         token
+      }
+      ... on LoginFailure {
+        errors {
+          ... on Error {
+            message
+          }
+        }
+      }
     }
   }
 `)
@@ -87,10 +99,12 @@ export function useLogin() {
   const client = useContext(BackendClientContext);
   const redirect = useRedirectionAfterAuthentication();
   const [login, result] = useMutation(loginMutation, {
-      update: function update (cache, { data: { login } }) {
-        updateAuthentication(cache, login);
-        setToken(login.token);
-        redirect();
+      update: function update (cache, { data }) {
+        if (!isFailure<LoginFailure>(data?.login) && data?.login?.user) {
+          updateAuthentication(cache, login);
+          setToken(data?.login.token);
+          redirect();
+        }
       },
       client
   });

@@ -75,16 +75,29 @@ type UserNotPartOfAnyTeam {
 
 union UserTeamResult = Team | UserNotPartOfAnyTeam
 
-type LoginResult {
+type LoginSuccess {
   user: User!
   token: String!
 }
+
+type InvalidCredentialsError implements Error {
+  message: String!
+}
+
+type LoginFailure {
+  errors: [LoginError!]!
+}
+
+union LoginError = InvalidCredentialsError
+
+union LoginResult = LoginSuccess | LoginFailure
+
 
 type UsernameAlreadyTaken implements Error {
   message: String!
 }
 
-union UserRegistrationResult = LoginResult | ValidationError | UsernameAlreadyTaken
+union UserRegistrationResult = LoginSuccess | ValidationError | UsernameAlreadyTaken
 
 
 

@@ -40,18 +40,25 @@ export const loginResolver: gqlTypes.MutationResolvers<GraphqlContext>['login'] 
 ) {
   const foundUser = await graphqlContext.ctx.providers.user.getUserByName(graphqlContext.ctx, args.username, true);
 
-  if (!foundUser) {
-    throw new AuthenticationError(`Could not find account: ${args.username}`);
+  let match = false;
+  if (foundUser) {
+    match = await bcrypt.compare(args.password, foundUser.passwordHash?.toString('utf8'));
   }
-  const match = await bcrypt.compare(args.password, foundUser.passwordHash?.toString('utf8'));
 
   if (!match) {
-    throw new AuthenticationError('Incorrect credentials');
+    return {
+      __typename: 'LoginFailure',
+      errors: [{
+        __typename: 'InvalidCredentialsError',
+        message: 'Incorrect credentials'
+      }],
+    };
   }
   const { token, fingerprint } = await authenticate(foundUser);
   graphqlContext.ctx.fingerprint = fingerprint;
 
   return {
+    __typename: 'LoginSuccess',
     token,
     user: {
       id: foundUser.id,

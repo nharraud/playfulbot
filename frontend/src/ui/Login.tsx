@@ -1,78 +1,96 @@
-import React, { useContext, useState } from 'react';
-import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import { useContext, useActionState } from 'react';
 import { UserContext } from 'src/UserContext';
-import Divider from '@mui/material/Divider';
-import { Link } from 'react-router-dom';
-import { useAuthenticatedUser, useLogin } from '../hooksAndQueries/backend/graphql/authenticatedUser';
-import MenuBar from './MenuBar/MenuBar';
+import { Link, Navigate } from 'react-router-dom';
+import { useLogin } from '../hooksAndQueries/backend/graphql/authenticatedUser';
 import cssCls from './Login.module.css';
+import formCssCls from 'src/ui/components/form/Form.module.css';
+import { Card } from './components/card/Card';
+import { FormattedMessage } from 'react-intl';
+import { isFailure } from 'src/hooksAndQueries/backend/graphql/isFailure';
+import { useFormStatus } from 'react-dom';
+import { FormSubmit } from './components/form/FormSubmit';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    // root: {
-    //   // flexGrow: 1,
-    // },
-    // left: {
-    //   backgroundColor: 'black',
-    // },
-    // formBox: {
-    //   marginTop: theme.spacing(10),
-    // },
-    // form: {
-    //   padding: theme.spacing(5),
-    //   paddingBottom: theme.spacing(3),
-    //   textAlign: 'left',
-    // },
-    // formGrid: {
-    //   margin: 'auto',
-    // },
-    // formTitle: {
-    //   paddingBottom: theme.spacing(3),
-    //   textAlign: 'center',
-    // },
-    // formButtons: {
-    //   marginTop: theme.spacing(1),
-    // },
-    // loginButton: {
-    //   width: '100%',
-    // },
-    // registerButton: {
-    //   backgroundColor: theme.palette.success.main,
-    //   color: theme.palette.getContrastText(theme.palette.success.main),
-    // },
-    // registerButtonContainer: {
-    //   padding: theme.spacing(3),
-    // },
-  })
-);
+function Submit() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending}>
+      <FormattedMessage defaultMessage='Sign in'/>
+    </button>
+  );
+}
 
-export default function Login(props) {
-  const classes = useStyles();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const { login, result } = useLogin();
+export default function Login() {
+  const { login } = useLogin();
   const { authenticated } = useContext(UserContext);
 
-  const submitLogin = (event) => {
-    event.preventDefault();
-    login(username, password);
+  const submitLogin = async (prevState: unknown, formData: FormData) => {
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+    const result = await login(username, password);
+    return { error: isFailure(result?.data?.login) }
   };
 
-  return <>
-    <MenuBar />
-    <div className={cssCls.login}>
-      {result.error ? JSON.stringify(result.error) : null}
-      <div className={cssCls.panel}>
-        <Grid item xs={4}>
+  const [loginResult, loginAction] = useActionState(submitLogin, null);
+
+  if (authenticated) {
+    return <Navigate to={'/home'} replace />;
+  }
+
+  let errorMessage;
+  if (loginResult?.error) {
+    errorMessage = <FormattedMessage defaultMessage='Invalid Credentials' />
+  }
+
+  return (
+    <div className={cssCls.loginPage}>
+      <div className={cssCls.rootContainer}>
+        <div className={cssCls.loginContainer}>
+          <Link to={'/'} className={cssCls.header}>
+            <h1>Playfulbot</h1>
+          </Link>
+          <Card>
+            <h2>
+              <FormattedMessage
+                description='Login message welcoming back the user'
+                defaultMessage='Welcome back'
+              />
+            </h2>
+            <p className={cssCls.subtitle}>
+              <FormattedMessage
+                defaultMessage='Sign in to your account to continue'
+              />
+            </p>
+            <form className={formCssCls.form} action={loginAction}>
+              <p className={formCssCls.formError}>
+                {errorMessage}
+              </p>
+              <div>
+                <label htmlFor='username'>
+                    <FormattedMessage
+                      defaultMessage='User name'
+                    />
+                </label>
+                <input name="username" id="username"/>
+              </div>
+              <div>
+                <label htmlFor='password'>
+                    <FormattedMessage
+                      defaultMessage='Password'
+                    />
+                </label>
+                <input name="password" id="password" type='password'/>
+              </div>
+              <FormSubmit className={cssCls.submitButton}>
+                <FormattedMessage defaultMessage='Sign in'/>
+              </FormSubmit>
+            </form>
+          </Card>
+        </div>
+      </div>
+      {/* {result.error ? JSON.stringify(result.error) : null} */}
+      {/* <div className={cssCls.panel}> */}
+        {/* <Grid item xs={4}>
           <Paper className={classes.formBox} elevation={3}>
             <form className={classes.form} noValidate autoComplete="off" onSubmit={submitLogin}>
               <Typography className={classes.formTitle} variant="h4" component="h2" gutterBottom>
@@ -128,8 +146,8 @@ export default function Login(props) {
               </Button>
             </div>
           </Paper>
-        </Grid>
-      </div>
+        </Grid> */}
+      {/* </div> */}
     </div>
-  </>;
+  );
 }

@@ -29,7 +29,7 @@ export const registerUserResolver: gqlTypes.MutationResolvers<GraphqlContext>['r
   const { token, fingerprint } = await authenticate(createUserResult);
   graphqlContext.ctx.fingerprint = fingerprint;
   return {
-    __typename: 'LoginResult',
+    __typename: 'LoginSuccess',
     token,
     user: {
       id: createUserResult.id,
