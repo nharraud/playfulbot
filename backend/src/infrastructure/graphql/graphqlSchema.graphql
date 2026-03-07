@@ -56,9 +56,9 @@ type Tournament {
 }
 
 type TournamentInvitation {
-  tournament: Tournament
-  invitee: User
-  sentAt: Date
+  tournament: Tournament!
+  invitee: User!
+  sentAt: Date!
 }
 
 type Team {
@@ -66,7 +66,7 @@ type Team {
   name: String!
   members: [User]
   arenas: [Arena]
-  tournament: Tournament
+  tournament: Tournament!
 }
 
 type UserNotPartOfAnyTeam {

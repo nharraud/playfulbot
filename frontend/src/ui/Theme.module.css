@@ -1,9 +1,10 @@
 .light {
-  --background: #ffffff;
+  --background: var(--color-neutral-50);
   --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
+  --card-background: #ffffff;
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --card-border: var(--color-neutral-200);
+  --popover-background: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #030213;
   --primary-foreground: oklch(1 0 0);
@@ -33,11 +34,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
-  --color-neutral-300: oklch(87% 0 0);
-  --color-neutral-600: oklch(43.9% 0 0);
-  --color-neutral-700: oklch(37.1% 0 0);
-  --color-neutral-900: oklch(20.5% 0 0);
 
   --color-error: oklch(49.142% 0.20166 29.223);
   --color-error-background: rgb(255, 226, 226);

@@ -6,7 +6,7 @@ import { useLogout } from 'src/hooksAndQueries/backend/graphql/authenticatedUser
 interface HeaderProps {
   title: ReactNode,
   subtitle: ReactNode,
-  icon: ReactNode,
+  // icon: ReactNode,
 }
 export function Header({ title, subtitle/*, icon*/ }: HeaderProps) {
   const { logout } = useLogout();

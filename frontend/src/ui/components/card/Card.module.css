@@ -1,5 +1,6 @@
 .card {
-  background-color: var(--background);
-  padding: calc(var(--spacing) * 8);
+  background-color: var(--card-background);
+  padding: calc(var(--spacing) * 6);
   border-radius: var(--radius-2xl);
+  border: 1px solid var(--card-border);
 }

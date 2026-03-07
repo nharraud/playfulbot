@@ -266,7 +266,7 @@ export type Team = {
   id: Scalars['ID']['output'];
   members?: Maybe<Array<Maybe<User>>>;
   name: Scalars['String']['output'];
-  tournament?: Maybe<Tournament>;
+  tournament: Tournament;
 };
 
 export type TeamInput = {
@@ -297,9 +297,9 @@ export type Tournament = {
 
 export type TournamentInvitation = {
   __typename?: 'TournamentInvitation';
-  invitee?: Maybe<User>;
-  sentAt?: Maybe<Scalars['Date']['output']>;
-  tournament?: Maybe<Tournament>;
+  invitee: User;
+  sentAt: Scalars['Date']['output'];
+  tournament: Tournament;
 };
 
 export enum TournamentRole {
@@ -792,7 +792,7 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType>;
+  tournament?: Resolver<ResolversTypes['Tournament'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -821,9 +821,9 @@ export type TournamentResolvers<ContextType = any, ParentType extends ResolversP
 };
 
 export type TournamentInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TournamentInvitation'] = ResolversParentTypes['TournamentInvitation']> = {
-  invitee?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  sentAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType>;
+  invitee?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  sentAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  tournament?: Resolver<ResolversTypes['Tournament'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

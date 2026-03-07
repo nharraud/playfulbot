@@ -14,6 +14,9 @@
 }
 
 .loginCard {
+  background-color: var(--card-background);
+  padding: calc(var(--spacing) * 8);
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-high);
 }
 

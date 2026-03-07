@@ -7,7 +7,6 @@ import { ApolloProvider } from '@apollo/client/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import logo from './logo.svg';
-import './App.css';
 import Login from './ui/Login';
 // import Registration from './ui/Registration';
 

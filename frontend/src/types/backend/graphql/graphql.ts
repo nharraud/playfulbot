@@ -265,7 +265,7 @@ export type Team = {
   id: Scalars['ID']['output'];
   members: Maybe<Array<Maybe<User>>>;
   name: Scalars['String']['output'];
-  tournament: Maybe<Tournament>;
+  tournament: Tournament;
 };
 
 export type TeamInput = {
@@ -296,9 +296,9 @@ export type Tournament = {
 
 export type TournamentInvitation = {
   __typename: 'TournamentInvitation';
-  invitee: Maybe<User>;
-  sentAt: Maybe<Scalars['Date']['output']>;
-  tournament: Maybe<Tournament>;
+  invitee: User;
+  sentAt: Scalars['Date']['output'];
+  tournament: Tournament;
 };
 
 export enum TournamentRole {
@@ -388,7 +388,7 @@ export type LogoutMutation = { logout: boolean | null };
 export type AuthenticatedUserTournamentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AuthenticatedUserTournamentsQuery = { authenticatedUser: { __typename: 'User', id: string, username: string, teams: Array<{ __typename: 'Team', id: string, name: string, tournament: { __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null } | null } | null> | null, tournamentInvitations: Array<{ __typename: 'TournamentInvitation', tournament: { __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null } | null }> | null, organizedTournaments: Array<{ __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null }> | null } | null };
+export type AuthenticatedUserTournamentsQuery = { authenticatedUser: { __typename: 'User', id: string, username: string, teams: Array<{ __typename: 'Team', id: string, name: string, tournament: { __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null } } | null> | null, tournamentInvitations: Array<{ __typename: 'TournamentInvitation', tournament: { __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null } }> | null, organizedTournaments: Array<{ __typename: 'Tournament', id: string, name: string, status: TournamentStatus | null }> | null } | null };
 
 export type GetTeamQueryVariables = Exact<{
   userID: Scalars['ID']['input'];

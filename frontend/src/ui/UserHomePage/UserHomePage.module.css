@@ -1,7 +1,37 @@
+.page {
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
 .mainIcon {
   display: block;
   margin: 1em;
   width: 2.5em;
   height: 2.5em;
   content: url(/src/assets/images/otteroo.png);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: var(--main-content-width);
+  padding-inline: calc(var(--spacing) * 6);
+  padding-block: calc(var(--spacing) * 5);
+  margin-inline: auto;
+}
+
+.titleBlock {
+  width: 100%;
+  margin-bottom: calc(var(--spacing)*8);
+}
+
+h2 {
+  color: var(--color-neutral-900);
+  font-size: var(--text-xl);
+  line-height: var(--text-xl--line-height);
+}
+
+.subtitle {
+  color: var(--color-neutral-600);
 }

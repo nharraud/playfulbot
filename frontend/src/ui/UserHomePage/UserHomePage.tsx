@@ -18,55 +18,47 @@ import cssCls from './UserHomePage.module.css';
 
 export function UserHomePage() {
   const { authenticatedUser } = useAuthenticatedUser();
-  const {
-    error,
-    data: userTournaments,
-    refetch: refetchUserTournaments,
-  } = useAuthenticatedUserTournaments();
+  // const {
+  //   error,
+  //   data: userTournaments,
+  //   refetch: refetchUserTournaments,
+  // } = useAuthenticatedUserTournaments();
 
   const navigate = useNavigate();
   // const [registerTournamentInvitation, tournamentInvitationResult] =
   //   useRegisterTournamentInvitationLinkMutation();
   const query = useURIQuery();
-  const tournamentInvitationLinkID = query.get('tournament_invitation');
-  useEffect(() => {
-    if (tournamentInvitationLinkID) {
-      query.delete('tournament_invitation');
-      navigate({
-        search: query.toString(),
-      }, { replace: true });
-      // registerTournamentInvitation({
-      //   variables: { tournamentInvitationLinkID },
-      // });
-    }
-  }, [
-    tournamentInvitationLinkID,
-    query,
-    navigate,
-    // registerTournamentInvitation,
-    refetchUserTournaments,
-  ]);
+  // const tournamentInvitationLinkID = query.get('tournament_invitation');
+  // useEffect(() => {
+  //   if (tournamentInvitationLinkID) {
+  //     query.delete('tournament_invitation');
+  //     navigate({
+  //       search: query.toString(),
+  //     }, { replace: true });
+  //     // registerTournamentInvitation({
+  //     //   variables: { tournamentInvitationLinkID },
+  //     // });
+  //   }
+  // }, [
+  //   tournamentInvitationLinkID,
+  //   query,
+  //   navigate,
+  //   // registerTournamentInvitation,
+  //   refetchUserTournaments,
+  // ]);
 
-  const [invitationProcessed, setInvitationProcessed] = useState(false);
-  useEffect(() => {
-    // if (tournamentInvitationResult.data && !invitationProcessed) {
-    //   setInvitationProcessed(true);
-    //   refetchUserTournaments();
-    // }
-  }, [
-    // tournamentInvitationResult.data,
-    invitationProcessed,
-    setInvitationProcessed,
-    refetchUserTournaments,
-  ]);
-
-  const jointedTournaments = userTournaments?.authenticatedUser?.teams?.map(
-    (team) => team.tournament
-  );
-  // const invitedTournaments = userTournaments?.authenticatedUser?.tournamentInvitations?.map(
-  //   (invitation) => invitation.tournament
-  // );
-  // const organizedTournaments = userTournaments?.authenticatedUser?.organizedTournaments;
+  // const [invitationProcessed, setInvitationProcessed] = useState(false);
+  // useEffect(() => {
+  //   // if (tournamentInvitationResult.data && !invitationProcessed) {
+  //   //   setInvitationProcessed(true);
+  //   //   refetchUserTournaments();
+  //   // }
+  // }, [
+  //   // tournamentInvitationResult.data,
+  //   invitationProcessed,
+  //   setInvitationProcessed,
+  //   refetchUserTournaments,
+  // ]);
 
   const icon = <img className={cssCls.mainIcon}/>
 
@@ -80,8 +72,21 @@ export function UserHomePage() {
     defaultMessage="Organize & Play programming tournaments"
   />);
   return (
-    <div>
+    <div className={cssCls.page}>
       <Header title={Title} subtitle={SubTitle} />
+      <main className={cssCls.main}>
+        <div className={cssCls.titleBlock}>
+          <h2>
+            <FormattedMessage defaultMessage="Tournaments" />
+          </h2>
+          <p className={cssCls.subtitle}>
+            <FormattedMessage
+              defaultMessage="Select a tournament to view details and participate"
+            />
+          </p>
+        </div>
+        <TournamentsList/>
+      </main>
       {/* <MenuBar /> */}
       {/* <Typography variant="h3" className={classes.welcomeTitle}>
         Welcome {authenticatedUser?.username}! Here are your tournaments.

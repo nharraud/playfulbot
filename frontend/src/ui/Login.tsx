@@ -4,7 +4,6 @@ import { Link, Navigate } from 'react-router-dom';
 import { useLogin } from '../hooksAndQueries/backend/graphql/authenticatedUser';
 import cssCls from './Login.module.css';
 import formCssCls from 'src/ui/components/form/Form.module.css';
-import { Card } from './components/card/Card';
 import { FormattedMessage } from 'react-intl';
 import { isFailure } from 'src/hooksAndQueries/backend/graphql/isFailure';
 import { useFormStatus } from 'react-dom';
@@ -49,7 +48,7 @@ export default function Login() {
           <Link to={'/'} className={cssCls.header}>
             <h1>Playfulbot</h1>
           </Link>
-          <Card className={cssCls.loginCard}>
+          <div className={cssCls.loginCard}>
             <h2>
               <FormattedMessage
                 description='Login message welcoming back the user'
@@ -85,7 +84,7 @@ export default function Login() {
                 <FormattedMessage defaultMessage='Sign in'/>
               </FormSubmit>
             </form>
-          </Card>
+          </div>
         </div>
       </div>
       {/* {result.error ? JSON.stringify(result.error) : null} */}
