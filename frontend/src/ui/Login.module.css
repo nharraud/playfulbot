@@ -16,7 +16,7 @@
 .loginCard {
   background-color: var(--card-background);
   padding: calc(var(--spacing) * 8);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-high);
 }
 
@@ -29,7 +29,7 @@
   h1 {
     color: white;
     font-weight: var(--font-weight-bold);
-    font-size: var(--text-3xl);
+    font-size: var(--font-3xl);
     margin: 0;
   }
 }
@@ -41,15 +41,15 @@
 
 
 h2 {
-  color: var(--color-neutral-900);
+  color: var(--card-text-main);
   font-weight: var(--font-weight-bold);
-  font-size: var(--text-2xl);
-  line-height: var(--text-2xl--line-height);
+  font-size: var(--font-2xl);
+  line-height: var(--font-2xl-line-height);
   margin-bottom: calc(var(--spacing) * 2);
   margin-top: 0;
 }
 .subtitle {
-  color: var(--color-neutral-600);
+  color: var(--card-text-secondary);
   margin-bottom: calc(var(--spacing) * 6);
 }
 

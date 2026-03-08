@@ -6,9 +6,9 @@
 
   label {
     display: block;
-    color: var(--color-neutral-700);
-    font-size: var(--text-sm);
-    line-height: var(--text-sm--line-height);
+    color: var(--card-text-main);
+    font-size: var(--font-sm);
+    line-height: var(--font-sm-line-height);
     margin-bottom: calc(var(--spacing)*2);
   }
 
@@ -16,9 +16,9 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     border-width: 1px;
-    border-color: var(--color-neutral-300);
+    border-color: var(--form-field-border);
     padding-left: calc(var(--spacing)*1);
     padding-right: calc(var(--spacing)*4);
     padding-block: calc(var(--spacing)*3);
