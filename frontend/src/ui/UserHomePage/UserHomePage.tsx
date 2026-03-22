@@ -12,7 +12,7 @@ import MenuBar from '../MenuBar/MenuBar';
 import { useAuthenticatedUserTournaments } from '../../hooksAndQueries/backend/graphql/authenticatedUserTournaments';
 import { TournamentsList } from './TournamentsList';
 import { FormattedMessage } from 'react-intl';
-import { Header } from './Header';
+import { Header } from 'src/ui/components/header/Header';
 
 import cssCls from './UserHomePage.module.css';
 
@@ -73,7 +73,7 @@ export function UserHomePage() {
   />);
   return (
     <div className={cssCls.page}>
-      <Header title={Title} subtitle={SubTitle} />
+      <Header title={Title} />
       <main className={cssCls.main}>
         <div className={cssCls.titleBlock}>
           <h2>

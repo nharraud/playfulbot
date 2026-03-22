@@ -14,6 +14,8 @@ import Debug from './Debug';
 import MenuBar from '../MenuBar/MenuBar';
 import TeamArenasSubPage from './arenas/TeamArenasSubPage';
 import ArenaSubPage from './arenas/ArenaSubPage';
+import { Header } from '../components/header/Header';
+import { FormattedMessage } from 'react-intl';
 
 export interface MatchParams {
   tournamentID: string;
@@ -76,12 +78,18 @@ export default function TournamentPage() {
     content = <p>{error.message}</p>;
   }
 
+
+  const backLinkText = (<FormattedMessage
+    defaultMessage="Tournaments"
+  />);
+
   return (
     <div>
-      <MenuBar
+      <Header title={tournament?.name} backLink={{ url: '/home', text: backLinkText }}/>
+      {/* <MenuBar
         location={tournament ? `${tournament.name} tournament` : undefined}
         showTournaments={true}
-      />
+      /> */}
       {content}
     </div>
   );

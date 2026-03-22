@@ -3,6 +3,9 @@
   justify-content: center;
   background-image: linear-gradient(to right, oklch(0.511 0.262 276.966) 0%, oklch(0.558 0.288 302.321) 100%);
   border-bottom-color: oklch(0.457 0.24 277.023);
+
+  --default-button-color: color-mix(in oklab, white 75%, transparent);
+  --hover-button-color: white;
 }
 
 .headerContent {
@@ -14,11 +17,16 @@
   padding-block: calc(var(--spacing) * 5);
 }
 
+.headerLeftContent {
+  display: flex;
+  flex-direction: column;
+}
+
 .title {
   color: white;
   font-weight: bold;
   font-size: xx-large;
-  margin-top: calc(var(--spacing) * 6);
+  margin-top: 0;
   margin-bottom: calc(var(--spacing) * 6);
 }
 
@@ -38,8 +46,6 @@
  */
 
 .headerMenu {
-  margin-top: calc(var(--spacing) * 6);
-  margin-right: calc(var(--spacing) * 12);
   display: block;
 }
 
@@ -67,6 +73,7 @@
   width: max-content;
   display: flex;
   flex-direction: column;
+  margin-top: calc(var(--spacing) * 1);
   padding: calc(var(--spacing) * 2);
   border-radius: 5px;
   background-color: white;
@@ -79,14 +86,15 @@
 
 .menuButton {
   display: block;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border: 0;
-  background: color-mix(in oklab, white 60%, transparent);
+  background: var(--default-button-color);
+  cursor: pointer;
 }
 
 .menuButton:hover {
-  background: color-mix(in oklab, white 90%, transparent);
+  background: var(--hover-button-color);
 }
 
 .userMenuButton {
@@ -96,5 +104,73 @@
 }
 
 .subMenu a {
+  display: flex;
+  flex-direction: row;
   cursor: pointer;
+
+  .subMenuText {
+    display: block;
+    margin: 0;
+  }
+}
+
+.subMenuIcon {
+  display: block;
+  background-color: var(--text-main);
+  width: 1.3rem;
+  height: 1.3rem;
+  border: 0;
+  padding-right: calc(var(--spacing) * 2);
+}
+
+.logoutIcon {
+  composes: subMenuIcon;
+  background-color: var(--color-danger);
+  mask: url('/src/assets/icons/ionicons/exit-outline.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+}
+
+.logoutText {
+  composes: subMenuText;
+  color: var(--color-danger);
+}
+
+
+/*
+ * Back Link
+ */
+ 
+.backLink {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--default-button-color);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  padding-bottom: calc(var(--spacing) * 5);
+}
+
+.backLink:hover {
+  color: var(--hover-button-color);
+
+  .backLinkIcon {
+    background: var(--hover-button-color);
+  }
+}
+
+.backLinkIcon {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  padding-right: calc(var(--spacing) * 2);
+  mask: url('/src/assets/icons/ionicons/arrow-back-outline.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  background: var(--default-button-color);
+}
+
+.backLinkText {
+  margin: 0;
 }

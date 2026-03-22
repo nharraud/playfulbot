@@ -14,6 +14,8 @@
   --color-error: var(--color-red-900);
   --color-error-background: var(--color-red-100);
 
+  --color-danger: var(--color-red-600);
+
 
   --selected-color: rgb(144, 202, 249);
   --unselected-color: rgba(255, 255, 255, 0.7);

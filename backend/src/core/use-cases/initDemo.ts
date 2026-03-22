@@ -78,7 +78,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     const tournamentEnd = now.plus({ hours: 2, minutes: 2 });
     Settings.now = () => tournamentStart.toMillis();
     const tournament = await txCtx.providers.tournament.createTournament(txCtx, {
-      name: 'Team Building',
+      name: 'Team Building Tournament',
       startDate: tournamentStart.toISO(),
       lastRoundDate: tournamentEnd.toISO(),
       roundsNumber: 7,
