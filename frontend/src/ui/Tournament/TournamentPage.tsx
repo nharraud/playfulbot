@@ -46,16 +46,26 @@ export default function TournamentPage() {
   if (tournament) {
     content = (
       <div className={cssCls.tournamentPage}>
-        <div className={cssCls.menu}>
-          <Link to={`${baseURL}/info`} className={`${cssCls.instructions} ${activeClass('info')}`}/>
-          <Link to={`${baseURL}/team`} className={`${cssCls.teamButton} ${activeClass('team')}`}/>
-          {tournament.status === TournamentStatus.Started && team && (
-            <Link to={`${baseURL}/arenas`} className={`${cssCls.teamArenas} ${activeClass('arenas')}`}/>
-          )}
-          {tournament.status === TournamentStatus.Started && (
-            <Link to={`${baseURL}/competition`} className={`${cssCls.competition} ${activeClass('competition')}`}/>
-          )}
-        </div>
+        <aside className={cssCls.menuAside}>
+          <nav className={cssCls.menu}>
+            <Link to={`${baseURL}/info`} className={`${cssCls.instructions} ${activeClass('info')}`}>
+              <i/><FormattedMessage defaultMessage="Instructions"/>
+            </Link>
+            <Link to={`${baseURL}/team`} className={`${cssCls.teamButton} ${activeClass('team')}`}>
+              <i/><FormattedMessage defaultMessage="Teams"/>
+            </Link>
+            {tournament.status === TournamentStatus.Started && team && (
+              <Link to={`${baseURL}/arenas`} className={`${cssCls.teamArenas} ${activeClass('arenas')}`}>
+                <i/><FormattedMessage defaultMessage="Arenas"/>
+              </Link>
+            )}
+            {tournament.status === TournamentStatus.Started && (
+              <Link to={`${baseURL}/competition`} className={`${cssCls.competition} ${activeClass('competition')}`}>
+                <i/><FormattedMessage defaultMessage="Competition"/>
+              </Link>
+            )}
+          </nav>
+        </aside>
         <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
           <Routes>
             <Route path={`/info`} element={<InfoSubPage tournament={tournament} />}/>
@@ -86,11 +96,9 @@ export default function TournamentPage() {
   return (
     <div>
       <Header title={tournament?.name} backLink={{ url: '/home', text: backLinkText }}/>
-      {/* <MenuBar
-        location={tournament ? `${tournament.name} tournament` : undefined}
-        showTournaments={true}
-      /> */}
-      {content}
+      <div className={cssCls.mainContainer}>
+        {content}
+      </div>
     </div>
   );
 }

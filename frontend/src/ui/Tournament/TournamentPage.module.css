@@ -1,5 +1,10 @@
 .tournamentPage {
   display: flex;
+  margin: auto;
+  width: var(--main-content-width);
+  padding-inline: calc(var(--spacing) * 6);
+  padding-block: calc(var(--spacing) * 5);
+  gap: calc(var(--spacing) * 8);
 }
 
 
@@ -7,47 +12,88 @@
   width: 100%
 }
 
+.menuAside {
+  width: calc(var(--spacing) * 56);
+}
 
 .menu {
+  position: sticky;
+  width: 100%;
   display: flex;
+
   flex-flow: column nowrap;
   align-items: stretch;
-  width: 5em;
   padding-top: 1em;
 }
 
 .menuItem {
-  display: block;
-  margin: 1em;
-  width: 2.5em;
-  height: 2.5em;
-  background-color: var(--unselected-color);
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  color: var(--page-menu-unselected-color);
+  gap: calc(var(--spacing) * 2);
+  padding-block: calc(var(--spacing) * 3);
+  padding-inline: calc(var(--spacing) * 4);
+  border-radius: var(--radius-lg);
+
+  i {
+    display: inline-block;
+    vertical-align: middle;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: var(--page-menu-unselected-color);
+  }
+  &:hover {
+    color: var(--page-menu-hover-color);
+    i {
+      background-color: var(--page-menu-hover-color);
+    }
+  }
 }
 
 .teamArenas {
   composes: menuItem;
-  -webkit-mask-image: url(./assets/icons/play-speed.svg);
-  mask-image: url(./assets/icons/play-speed.svg);
+  i {
+    mask: url('/src/assets/icons/ionicons/game-controller-outline.svg');
+  }
 }
 
 .competition {
   composes: menuItem;
-  -webkit-mask-image: url(./assets/icons/fencing.svg);
-  mask-image: url(./assets/icons/fencing.svg);
+  i {
+    mask: url('/src/assets/icons/ionicons/trophy-outline.svg');
+  }
 }
 
 .instructions {
   composes: menuItem;
-  -webkit-mask-image: url(./assets/icons/book-open-variant.svg);
-  mask-image: url(./assets/icons/book-open-variant.svg);
+  i {
+    mask: url('/src/assets/icons/ionicons/information-circle-outline.svg');
+  }
 }
 
 .teamButton {
   composes: menuItem;
-  -webkit-mask-image: url(./assets/icons/account-group.svg);
-  mask-image: url(./assets/icons/account-group.svg);
+  i {
+    mask: url('/src/assets/icons/ionicons/people-outline.svg');
+  }
 }
 
 .activeButton {
-  background-color: var(--selected-color);
+  background-image: linear-gradient(to right, var(--color-indigo-600) 0%, var(--color-purple-600) 100%);
+  color: white;
+  i {
+    background-color: white;
+  }
+
+  &:hover {
+    color: white;
+    i {
+    background-color: white;
+    }
+  }
+  /* background-color: var(--selected-color); */
 }
