@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface TournamentSubPageHeaderProps {
-  title: string;
   sections: Array<string>;
   currentSection: number;
   setSection: (section: number) => void;
@@ -52,9 +51,6 @@ export function TournamentSubPageHeader(props: TournamentSubPageHeaderProps) {
   return (
     <Box boxShadow={3} className={classes.root}>
       <div className={classes.mainRow}>
-        <div className={classes.titleCell}>
-          <Typography variant="h1">{props.title}</Typography>
-        </div>
         {props.children}
       </div>
       <Tabs

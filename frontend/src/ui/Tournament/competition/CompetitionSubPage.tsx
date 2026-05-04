@@ -37,7 +37,6 @@ export default function CompetitionSubPage(props: CompetitionSubPageProps) {
   return (
     <>
       <TournamentSubPage
-        title="Tournament"
         sections={sections}
         currentSection={currentSection}
         setSection={setSection}

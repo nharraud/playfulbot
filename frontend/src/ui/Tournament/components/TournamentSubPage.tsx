@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface TournamentSubPageProps {
-  title: string;
   sections: Array<[string, JSX.Element]>;
   currentSection: number;
   setSection: React.Dispatch<React.SetStateAction<number>>;
@@ -30,7 +29,6 @@ export default function TournamentSubPage(props: TournamentSubPageProps) {
   return (
     <div className={classes.root}>
       <TournamentSubPageHeader
-        title={props.title}
         sections={sectionNames}
         currentSection={props.currentSection}
         setSection={props.setSection}

@@ -94,7 +94,6 @@ export default function TeamSubPage(props: TeamSubPageProps) {
 
   return (
     <TournamentSubPage
-      title="Teams"
       sections={sections}
       currentSection={currentSection}
       setSection={setSection}

@@ -20,7 +20,6 @@ export default function InfoSubPage(props: TournamentInfoProps) {
 
   return (
     <TournamentSubPage
-      title={`Information ${'\u0026'} Rules`}
       sections={sections}
       currentSection={currentSection}
       setSection={setSection}
