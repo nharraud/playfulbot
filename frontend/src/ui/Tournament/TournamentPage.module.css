@@ -1,7 +1,8 @@
 .tournamentPage {
   display: flex;
   margin: auto;
-  width: var(--main-content-width);
+  width: calc(100% - var(--spacing) * 12);
+  max-width: var(--main-content-width);
   padding-inline: calc(var(--spacing) * 6);
   padding-block: calc(var(--spacing) * 5);
   gap: calc(var(--spacing) * 8);
@@ -42,8 +43,8 @@
   i {
     display: inline-block;
     vertical-align: middle;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.1rem;
+    height: 1.1rem;
     background-color: var(--page-menu-unselected-color);
   }
   &:hover {
