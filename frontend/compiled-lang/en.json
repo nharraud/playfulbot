@@ -1,14 +1,92 @@
 {
-  "4LrTqt": [
+  "5sg7KC": [
     {
       "type": 0,
-      "value": "Organize & Play programming tournaments2"
+      "value": "Password"
+    }
+  ],
+  "8E2uwH": [
+    {
+      "type": 0,
+      "value": "Select a tournament to view details and participate"
+    }
+  ],
+  "8ihSfH": [
+    {
+      "type": 0,
+      "value": "Sign in to your account to continue"
+    }
+  ],
+  "9bYRzF": [
+    {
+      "type": 0,
+      "value": "Welcome back"
+    }
+  ],
+  "DNeuzb": [
+    {
+      "type": 0,
+      "value": "Teams"
+    }
+  ],
+  "Jt74Kw": [
+    {
+      "type": 0,
+      "value": "Organize & Play programming tournaments"
+    }
+  ],
+  "PRZpAL": [
+    {
+      "type": 0,
+      "value": "Invalid Credentials"
+    }
+  ],
+  "SQJto2": [
+    {
+      "type": 0,
+      "value": "Sign in"
+    }
+  ],
+  "WKCiPu": [
+    {
+      "type": 0,
+      "value": "Competition"
+    }
+  ],
+  "aHOR77": [
+    {
+      "type": 0,
+      "value": "Arenas"
+    }
+  ],
+  "dc98WB": [
+    {
+      "type": 0,
+      "value": "Logout test"
     }
   ],
   "mkx2Z7": [
     {
       "type": 0,
       "value": "PlayfulBot"
+    }
+  ],
+  "o7nzDs": [
+    {
+      "type": 0,
+      "value": "User name"
+    }
+  ],
+  "sV2v5L": [
+    {
+      "type": 0,
+      "value": "Instructions"
+    }
+  ],
+  "yBFAhB": [
+    {
+      "type": 0,
+      "value": "Tournaments"
     }
   ]
 }

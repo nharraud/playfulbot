@@ -1,10 +1,50 @@
 {
-  "4LrTqt": {
-    "defaultMessage": "Organize & Play programming tournaments2",
+  "5sg7KC": {
+    "defaultMessage": "Password"
+  },
+  "8E2uwH": {
+    "defaultMessage": "Select a tournament to view details and participate"
+  },
+  "8ihSfH": {
+    "defaultMessage": "Sign in to your account to continue"
+  },
+  "9bYRzF": {
+    "defaultMessage": "Welcome back",
+    "description": "Login message welcoming back the user"
+  },
+  "DNeuzb": {
+    "defaultMessage": "Teams"
+  },
+  "Jt74Kw": {
+    "defaultMessage": "Organize & Play programming tournaments",
     "description": "Home page subtitle"
+  },
+  "PRZpAL": {
+    "defaultMessage": "Invalid Credentials"
+  },
+  "SQJto2": {
+    "defaultMessage": "Sign in"
+  },
+  "WKCiPu": {
+    "defaultMessage": "Competition"
+  },
+  "aHOR77": {
+    "defaultMessage": "Arenas"
+  },
+  "dc98WB": {
+    "defaultMessage": "Logout test"
   },
   "mkx2Z7": {
     "defaultMessage": "PlayfulBot",
     "description": "Home page title"
+  },
+  "o7nzDs": {
+    "defaultMessage": "User name"
+  },
+  "sV2v5L": {
+    "defaultMessage": "Instructions"
+  },
+  "yBFAhB": {
+    "defaultMessage": "Tournaments"
   }
 }
