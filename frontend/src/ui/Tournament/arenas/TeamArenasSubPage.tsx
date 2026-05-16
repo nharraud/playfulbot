@@ -17,6 +17,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
   const [createArenaModalOpen, setCreateArenaModalOpen] = useState(false);
 
   const result = useTeamArenas(props.tournament?.id);
+  const teamId = result.teamId;
   const arenasElt = result.arenas?.map(arena =>
     <Link to={`${baseURL}/${arena.id}`} className={cssCls.arena}>
       <div>{arena.name}</div>
@@ -28,6 +29,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
         isOpen={createArenaModalOpen}
         onClose={() => setCreateArenaModalOpen(false)}
         onCreate={() => result.refetch()}
+        teamId={teamId}
       />
       <div className={headerCssCls.pageHeader}>
         <div className={headerCssCls.iconColumn}>

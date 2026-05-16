@@ -38,12 +38,45 @@ export function useTeamArenas(tournamentID?: gqlTypes.TournamentID) {
 
   let userNotPartOfAnyTeam;
   let arenas: gqlTypes.Arena[] | undefined;
+  let teamId: string | undefined;
 
   if (data?.team && data?.team.__typename === 'Team') {
+    teamId = data?.team?.id;
     arenas = data?.team?.arenas as gqlTypes.Arena[];
   } else if (data?.team && data?.team.__typename === 'UserNotPartOfAnyTeam') {
     userNotPartOfAnyTeam = true;
   }
 
-  return { arenas, userNotPartOfAnyTeam, loading: loading || skip, error, refetch };
+  return { arenas, teamId, userNotPartOfAnyTeam, loading: loading || skip, error, refetch };
+}
+
+
+const createArenaMutation = graphql(`
+  mutation createArena($teamID: ID!, $name: String!) {
+    createArena(teamID: $teamID, name: $name) {
+      ... on CreateArenaSuccess {
+        arena {
+          id
+          name
+        }
+      }
+      ... on CreateArenaFailure {
+        errors {
+          ... on Error {
+            message
+          }
+        }
+      }
+    }
+  }
+`);
+
+export function useCreateArena() {
+  const [createArena] = useMutation(
+    createArenaMutation
+  );
+
+  return ({teamID, name}: {teamID: gqlTypes.TeamID, name: string}) => new Promise<gqlTypes.CreateArenaMutation['createArena']>(
+    (resolve) => createArena({ variables: { teamID, name }, onCompleted: data => resolve(data.createArena)})
+  );
 }

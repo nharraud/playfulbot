@@ -194,7 +194,7 @@ union CreateTeamResult = CreateTeamSuccess | CreateTeamFailure
 # # Create Arena Input/Output
 # #
 type CreateArenaSuccess {
-  arena: Arena
+  arena: Arena!
 }
 
 type CreateArenaFailure {
@@ -309,9 +309,9 @@ union ArenaGamesResult = GameRef | ArenaGamesFailure
 # union LivePlayer = Player | PlayerConnection
 
 type Arena {
-  id: ID
-  name: String
-  team: Team
+  id: ID!
+  name: String!
+  team: Team!
 }
 
 
