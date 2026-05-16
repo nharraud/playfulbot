@@ -140,8 +140,19 @@ describe('graphql', () => {
         query: `
           mutation login($username: String!, $password: String!) {
             login(username: $username, password: $password) {
-              user { username }
-              token
+              __typename
+              ... on LoginSuccess {
+                user { username }
+                token
+              }
+              ... on LoginFailure {
+                errors {
+                  ... on Error {
+                    __typename
+                    message
+                  }
+                }
+              }
             }
           }
         `,
@@ -170,12 +181,9 @@ describe('graphql', () => {
       const variables = { username: 'unknown', password: 'pass' };
       const response = await login(variables);
       const body = JSON.parse(response.body);
-      expect(body.errors).toHaveLength(1);
-      expect(body.errors[0]).toMatchObject({
-        extensions: {
-          code: 'UNAUTHENTICATED',
-        },
-        message: 'Could not find account: unknown',
+      expect(body.data.login.errors).toHaveLength(1);
+      expect(body.data.login.errors[0]).toMatchObject({
+        message: 'Incorrect credentials',
       });
       expect(response.headers).not.toHaveProperty('set-cookie');
     });
@@ -185,11 +193,8 @@ describe('graphql', () => {
       const variables = { username: userData.username, password: 'wrong password' };
       const response = await login(variables);
       const body = JSON.parse(response.body);
-      expect(body.errors).toHaveLength(1);
-      expect(body.errors[0]).toMatchObject({
-        extensions: {
-          code: 'UNAUTHENTICATED',
-        },
+      expect(body.data.login.errors).toHaveLength(1);
+      expect(body.data.login.errors[0]).toMatchObject({
         message: 'Incorrect credentials',
       });
       expect(response.headers).not.toHaveProperty('set-cookie');

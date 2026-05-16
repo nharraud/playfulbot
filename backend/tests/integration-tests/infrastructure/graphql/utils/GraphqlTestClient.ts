@@ -41,7 +41,9 @@ export class GraphqlTestClient {
           query: `
             mutation login($username: String!, $password: String!) {
               login(username: $username, password: $password) {
-                token
+                ... on LoginSuccess {
+                  token
+                }
               }
             }
           `,
