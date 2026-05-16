@@ -71,7 +71,8 @@
     "rollup-plugin-playfulbot-config-loader": "file:../packages/rollup-plugin-playfulbot-config-loader",
     "ts-dedent": "^2.2.0",
     "web-vitals": "^5.1.0",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@formatjs/cli": "^6.12.2",

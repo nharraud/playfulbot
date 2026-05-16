@@ -20,7 +20,13 @@ const babelPlugin = babel({
         ast: true,
       },
     ],
-  ]
+  ],
+  parserOpts: {
+    plugins: ['importAttributes']
+  },
+  generatorOpts: {
+    importAttributesKeyword: 'with'
+  }
 });
 
 // https://vitejs.dev/config/

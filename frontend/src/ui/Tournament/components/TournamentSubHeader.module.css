@@ -1,0 +1,55 @@
+.pageHeader {
+  composes: card from '~components/card/Card.module.css';
+  display: flex;
+  flex-direction: row;
+}
+
+.iconColumn {
+  margin-right: calc(var(--spacing) * 4);
+}
+
+.titleColumn {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing));
+  margin-right: auto;
+}
+
+.actionColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: var(--font-md);
+    background-color: var(--color-btn-bg-success);
+    color: var(--color-btn-txt-success);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--spacing) * 3);
+    border-width: 0px;;
+  }
+}
+
+.subtitle {
+  color: var(--page-tournament-sub-title-color);
+  margin: 0px;
+}
+
+.headerIcon {
+  display: inline-block;
+  border: 0;
+  background-image: linear-gradient(to right, var(--color-indigo-600) 0%, var(--color-purple-600) 100%);
+  padding: calc(var(--spacing) * 3);
+  border-radius: var(--radius-lg);
+  i {
+    display: block;
+    width: 1.8rem;
+    height: 1.8rem;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    background: white;
+  }
+}

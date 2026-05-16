@@ -1,10 +1,28 @@
-.team-arenas {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.teamArenas {
+  /* display: flex; */
+  /* justify-content: center;
+  align-items: center; */
   
   .arena {
     margin: 2em;
     padding: 3em;
   }
+}
+
+.headerIcon {
+  composes: headerIcon from '../components/TournamentSubHeader.module.css';
+  i {
+    mask: url('/src/assets/icons/ionicons/game-controller-outline.svg');
+  }
+}
+
+.createArenaIcon {
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    padding-right: var(--spacing);
+    mask: url('/src/assets/icons/ionicons/add.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    background: white;
 }

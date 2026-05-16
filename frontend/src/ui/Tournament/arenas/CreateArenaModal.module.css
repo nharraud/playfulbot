@@ -1,0 +1,26 @@
+
+.modal {
+  composes: modalSm from '../../components/modal/Modal.module.css';
+}
+
+.title {
+  margin-bottom: calc(var(--spacing) * 8);
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 8);
+}
+
+.createAction {
+  composes: modalButton from '../../components/modal/Modal.module.css';
+  composes: buttonSuccess from '../../components/button/Button.module.css';
+}
+
+.cancelAction {
+  composes: modalButton from '../../components/modal/Modal.module.css';
+  composes: buttonCancel from '../../components/button/Button.module.css';
+}

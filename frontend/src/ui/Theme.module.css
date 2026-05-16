@@ -1,25 +1,42 @@
 .light {
+  /* Main */
   --background: var(--color-neutral-50);
   --text-main: var(--color-neutral-900);
   --text-secondary: var(--color-neutral-700);
 
+  /* Card */
   --card-background: white;
   --card-border: var(--color-neutral-200);
   --card-text-main: var(--color-neutral-900);
   --card-text-secondary: var(--color-neutral-600);
   --card-border-hover: var(--color-indigo-600);
 
+  /* Modal */
+  --modal-background: white;
+  --modal-border: var(--color-neutral-300);
+
+  /* Form */
   --form-field-border: var(--color-neutral-300);
 
+  /* Semantic colors */
   --color-error: var(--color-red-900);
   --color-error-background: var(--color-red-100);
 
   --color-danger: var(--color-red-600);
 
+  /* Buttons */
+  --color-btn-txt-success: white;
+  --color-btn-bg-success: var(--color-green-500);
 
+  --color-btn-txt-cancel: var(--color-neutral-700);
+  --color-btn-bg-cancel: var(--color-neutral-100);
+
+  /* Menu */
   --page-menu-selected-color: var(--color-indigo-600);
   --page-menu-unselected-color: var(--color-neutral-600);
   --page-menu-hover-color: var(--color-indigo-600);
+
+  --page-tournament-sub-title-color: var(--color-neutral-600);
 }
 
 .dark {

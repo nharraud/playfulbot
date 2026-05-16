@@ -1,0 +1,17 @@
+.buttonMd {
+  padding: calc(var(--spacing) * 2);
+  font-size: var(--font-base);
+  border-radius: var(--radius-md);
+  border-width: 0px;
+  font-weight: var(--font-weight-bold);
+}
+
+.buttonSuccess {
+  color: var(--color-btn-txt-success);
+  background-color: var(--color-btn-bg-success);
+}
+
+.buttonCancel {
+  color: var(--color-btn-txt-cancel);
+  background-color: var(--color-btn-bg-cancel);
+}

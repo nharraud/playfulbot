@@ -28,7 +28,7 @@ export function Header({ title, subtitle, backLink/*, icon*/ }: HeaderProps) {
         <div className={cssCls.headerLeftContent}>
           { backButton }
           <div className={cssCls.headerText}>
-            <p className={cssCls.title}>{title}</p>
+            <h1 className={cssCls.title}>{title}</h1>
             { subtitle ?? <p className={cssCls.subTitle}>{subtitle}</p> }
           </div>
         </div>
