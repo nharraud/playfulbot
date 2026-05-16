@@ -1,4 +1,10 @@
 {
+  "47FYwb": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "5sg7KC": [
     {
       "type": 0,
@@ -23,6 +29,12 @@
       "value": "Welcome back"
     }
   ],
+  "9z9/zc": [
+    {
+      "type": 0,
+      "value": "Create Arena"
+    }
+  ],
   "DNeuzb": [
     {
       "type": 0,
@@ -35,16 +47,54 @@
       "value": "Organize & Play programming tournaments"
     }
   ],
+  "OInXkN": [
+    {
+      "type": 0,
+      "value": "Arena name"
+    }
+  ],
   "PRZpAL": [
     {
       "type": 0,
       "value": "Invalid Credentials"
     }
   ],
+  "PrrEYR": [
+    {
+      "type": 0,
+      "value": "Create new Arena"
+    }
+  ],
   "SQJto2": [
     {
       "type": 0,
       "value": "Sign in"
+    }
+  ],
+  "Vfh9eb": [
+    {
+      "type": 0,
+      "value": "Test and debug your bot in an arena"
+    }
+  ],
+  "VzzYJk": [
+    {
+      "type": 0,
+      "value": "Create"
+    }
+  ],
+  "WDC11f": [
+    {
+      "type": 0,
+      "value": "Minimum "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": " characters"
     }
   ],
   "WKCiPu": [
@@ -63,6 +113,12 @@
     {
       "type": 0,
       "value": "Logout test"
+    }
+  ],
+  "iC/aF6": [
+    {
+      "type": 0,
+      "value": "Test Arenas"
     }
   ],
   "mkx2Z7": [

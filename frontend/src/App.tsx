@@ -17,11 +17,11 @@ import { UserContextProvider } from './UserContext';
 import { UserHomePage } from './ui/UserHomePage/UserHomePage';
 import { AuthenticationRequired } from './AuthenticationRequired';
 import { BackendClientProvider } from './infrastructure/graphql/GraphqlClientProviders';
+import { I18nProvider } from './i18n/I18nProvider';
 import cssCls from './App.module.css';
 
 import { ThemeProvider } from './ui/Theme';
 import { IntlProvider } from 'react-intl';
-import langMessages from 'compiled-lang/en.json';
 // import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
 
@@ -29,7 +29,7 @@ function App() {
   return (
     <div className={cssCls.app}>
       <ThemeProvider>
-        <IntlProvider messages={langMessages} locale="en" defaultLocale="en">
+        <I18nProvider>
           <BackendClientProvider>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
               <div className="App">
@@ -59,7 +59,7 @@ function App() {
               </div>
             </LocalizationProvider>
           </BackendClientProvider>
-        </IntlProvider>
+        </I18nProvider>
       </ThemeProvider>
     </div>
   );

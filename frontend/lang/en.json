@@ -1,4 +1,7 @@
 {
+  "47FYwb": {
+    "defaultMessage": "Cancel"
+  },
   "5sg7KC": {
     "defaultMessage": "Password"
   },
@@ -12,6 +15,9 @@
     "defaultMessage": "Welcome back",
     "description": "Login message welcoming back the user"
   },
+  "9z9/zc": {
+    "defaultMessage": "Create Arena"
+  },
   "DNeuzb": {
     "defaultMessage": "Teams"
   },
@@ -19,11 +25,26 @@
     "defaultMessage": "Organize & Play programming tournaments",
     "description": "Home page subtitle"
   },
+  "OInXkN": {
+    "defaultMessage": "Arena name"
+  },
   "PRZpAL": {
     "defaultMessage": "Invalid Credentials"
   },
+  "PrrEYR": {
+    "defaultMessage": "Create new Arena"
+  },
   "SQJto2": {
     "defaultMessage": "Sign in"
+  },
+  "Vfh9eb": {
+    "defaultMessage": "Test and debug your bot in an arena"
+  },
+  "VzzYJk": {
+    "defaultMessage": "Create"
+  },
+  "WDC11f": {
+    "defaultMessage": "Minimum {min} characters"
   },
   "WKCiPu": {
     "defaultMessage": "Competition"
@@ -33,6 +54,9 @@
   },
   "dc98WB": {
     "defaultMessage": "Logout test"
+  },
+  "iC/aF6": {
+    "defaultMessage": "Test Arenas"
   },
   "mkx2Z7": {
     "defaultMessage": "PlayfulBot",

@@ -12,7 +12,7 @@
     "gen-graphql-backend": "graphql-codegen --watch --config codegen-backend.ts",
     "gen-graphql-runner": "graphql-codegen --watch --config codegen-game-runner.ts",
     "intl-extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-    "intl-compile": "formatjs compile lang/en.json --ast --out-file compiled-lang/en.json"
+    "intl-compile": "formatjs compile-folder --ast lang src/i18n/lang"
   },
   "author": "Nicolas Harraudeau",
   "license": "AGPL-3.0-only",
