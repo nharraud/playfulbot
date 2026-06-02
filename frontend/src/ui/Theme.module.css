@@ -27,9 +27,15 @@
   /* Buttons */
   --color-btn-txt-success: white;
   --color-btn-bg-success: var(--color-green-500);
+  --color-btn-bg-success-hover: var(--color-green-600);
 
   --color-btn-txt-cancel: var(--color-neutral-700);
   --color-btn-bg-cancel: var(--color-neutral-100);
+  --color-btn-bg-cancel-hover: var(--color-neutral-200);
+
+  --color-btn-txt-danger: var(--color-red-600);
+  --color-btn-bg-danger: var(--color-neutral-100);
+  --color-btn-bg-danger-hover: var(--color-red-100);
 
   /* Menu */
   --page-menu-selected-color: var(--color-indigo-600);

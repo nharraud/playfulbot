@@ -19,9 +19,19 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
   const result = useTeamArenas(props.tournament?.id);
   const teamId = result.teamId;
   const arenasElt = result.arenas?.map(arena =>
-    <Link to={`${baseURL}/${arena.id}`} className={cssCls.arena}>
-      <div>{arena.name}</div>
-    </Link>
+    <div key={arena.id} className={cssCls.arena}>
+      <div className={cssCls.arenaTitle}>{arena.name}</div>
+      <hr className={cssCls.arenaSeparator} />
+      <div className={cssCls.arenaActions}>
+        <Link to={`${baseURL}/${arena.id}`} className={cssCls.openButton}>
+          <i className={cssCls.openIcon} />
+          <FormattedMessage defaultMessage="Open" />
+        </Link>
+        <button className={cssCls.deleteButton}>
+          <i className={cssCls.deleteIcon} />
+        </button>
+      </div>
+    </div>
   );
   return (
     <div className={cssCls.teamArenas}>
@@ -43,7 +53,9 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
           <button onClick={() => setCreateArenaModalOpen(true)}><i className={cssCls.createArenaIcon}/><FormattedMessage defaultMessage="Create Arena"/></button>
         </div>
       </div>
-      {arenasElt}
+      <div className={cssCls.arenaList}>
+        {arenasElt}
+      </div>
     </div>
   );
 }
