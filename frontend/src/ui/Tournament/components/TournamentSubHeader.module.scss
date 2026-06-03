@@ -1,3 +1,5 @@
+@import '~components/button/Button.module.scss';
+
 .pageHeader {
   composes: card from '~components/card/Card.module.css';
   display: flex;
@@ -20,16 +22,7 @@
   flex-direction: column;
   justify-content: center;
   button {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-size: var(--font-md);
-    background-color: var(--color-btn-bg-success);
-    color: var(--color-btn-txt-success);
-    font-weight: var(--font-weight-bold);
-    border-radius: var(--radius-sm);
-    padding: calc(var(--spacing) * 3);
-    border-width: 0px;;
+    @include buttonSize('lg');
   }
 }
 

@@ -1,0 +1,41 @@
+@mixin buttonSize($size) {
+  $paddingMultiplier: map-get((
+      md : 2,
+      lg : 3,
+  ), $size);
+
+  padding: calc(var(--spacing) * $paddingMultiplier);
+  font-size: var(--font-base);
+  border-radius: var(--radius-#{$size});
+  border-width: 0px;
+  font-weight: var(--font-weight-bold);
+}
+
+@mixin buttonType($style) {
+  color: var(--color-btn-txt-#{$style});
+  background-color: var(--color-btn-bg-#{$style});
+
+  &:hover {
+    background-color: var(--color-btn-bg-#{$style}-hover);
+    transition: background-color var(--transition-fast) linear;
+  }
+}
+
+@mixin buttonWithIcon($iconPath, $iconSize: 1rem) {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  justify-content: center;
+  cursor: pointer;
+
+  i {
+    display: inline-block;
+    width: $iconSize;
+    height: $iconSize;
+    flex-shrink: 0;
+    background: currentColor;
+    mask: url($iconPath);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+  }
+}

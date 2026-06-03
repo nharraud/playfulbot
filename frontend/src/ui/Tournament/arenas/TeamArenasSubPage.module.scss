@@ -1,0 +1,74 @@
+@import '~components/button/Button.module.scss';
+
+.teamArenas {
+  display: flex;
+  flex-direction: column;
+}
+
+.arenaList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 4);
+  padding-top: calc(var(--spacing) * 4);
+}
+
+.arena {
+  composes: card from '~components/card/Card.module.css';
+  padding: 0;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.arenaTitle {
+  padding: calc(var(--spacing) * 4);
+  font-weight: var(--font-weight-semibold);
+  color: var(--card-text-main);
+}
+
+.arenaSeparator {
+  border: none;
+  border-top: 1px solid var(--card-border);
+  margin: 0;
+}
+
+.arenaActions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+}
+
+.openButton {
+  @include buttonSize('md');
+  @include buttonWithIcon('/src/assets/icons/ionicons/play-outline.svg');
+  @include buttonType('success');
+  flex: 1;
+  text-decoration: none;
+}
+
+.deleteButton {
+  @include buttonSize('md');
+  @include buttonType('danger');
+  @include buttonWithIcon('/src/assets/icons/ionicons/trash-outline.svg');
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.headerIcon {
+  composes: headerIcon from '../components/TournamentSubHeader.module.scss';
+  i {
+    mask: url('/src/assets/icons/ionicons/game-controller-outline.svg');
+  }
+}
+
+.createArenaBtn {
+  @include buttonType('success');
+  @include buttonWithIcon('/src/assets/icons/ionicons/add.svg', 1.4rem);
+}

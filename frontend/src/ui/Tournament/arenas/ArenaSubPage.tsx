@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTeamArenas } from 'src/hooksAndQueries/backend/graphql/arena';
 import { TournamentQuery } from 'src/types/graphql';
-import cssCls from './TeamArenasSubPage.module.css';
 import { Link, useMatch } from 'react-router';
 import { useArenaArenaSubscription, useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
 import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientProviders';
@@ -20,7 +19,7 @@ export default function ArenaSubPage(props: TournamentArenasProps) {
   const result = useArenaArenaSubscription(arenaId);
   const createGame = useCreateArenaGame(arenaId);
   return (
-    <div className={cssCls.arenas}>
+    <div>
       <p>{JSON.stringify(result.gameRef)}</p>
       <RunnerClientProvider runnerUrl={result.gameRef?.graphqlUrl}>
         <GameWidget gameID={result.gameRef?.gameID}/>

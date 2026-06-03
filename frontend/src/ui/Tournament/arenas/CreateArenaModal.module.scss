@@ -1,0 +1,27 @@
+@import '~components/button/Button.module.scss';
+
+.modal {
+  composes: modalSm from '../../components/modal/Modal.module.scss';
+}
+
+.title {
+  margin-bottom: calc(var(--spacing) * 8);
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 8);
+}
+
+.createAction {
+  composes: modalButton from '../../components/modal/Modal.module.scss';
+  @include buttonType('success');
+}
+
+.cancelAction {
+  composes: modalButton from '../../components/modal/Modal.module.scss';
+  @include buttonType('cancel');
+}

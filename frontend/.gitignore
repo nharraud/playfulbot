@@ -2,6 +2,7 @@
 
 *.generated.ts
 *.module.css.d.ts
+*.module.scss.d.ts
 
 # dependencies
 /node_modules

@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { useTeamArenas } from 'src/hooksAndQueries/backend/graphql/arena';
 import { TournamentQuery } from 'src/types/graphql';
-import cssCls from './TeamArenasSubPage.module.css';
-import headerCssCls from '../components/TournamentSubHeader.module.css';
+import cssCls from './TeamArenasSubPage.module.scss';
+import headerCssCls from '../components/TournamentSubHeader.module.scss';
 import { Link, useMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 import CreateArenaModal from './CreateArenaModal';
@@ -24,7 +24,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
       <hr className={cssCls.arenaSeparator} />
       <div className={cssCls.arenaActions}>
         <Link to={`${baseURL}/${arena.id}`} className={cssCls.openButton}>
-          <i className={cssCls.openIcon} />
+          <i/>
           <FormattedMessage defaultMessage="Open" />
         </Link>
         <button className={cssCls.deleteButton}>
@@ -50,7 +50,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
           <p className={headerCssCls.subtitle}><FormattedMessage defaultMessage="Test and debug your bot in an arena"/></p>
         </div>
         <div className={headerCssCls.actionColumn}>
-          <button onClick={() => setCreateArenaModalOpen(true)}><i className={cssCls.createArenaIcon}/><FormattedMessage defaultMessage="Create Arena"/></button>
+          <button className={cssCls.createArenaBtn} onClick={() => setCreateArenaModalOpen(true)}><i/><FormattedMessage defaultMessage="Create Arena"/></button>
         </div>
       </div>
       <div className={cssCls.arenaList}>

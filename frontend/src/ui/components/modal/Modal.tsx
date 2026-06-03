@@ -1,5 +1,5 @@
 import { useEffect, useRef, ReactNode } from 'react';
-import cssCls from './Modal.module.css';
+import cssCls from './Modal.module.scss';
 
 type ModalProps = {
   isOpen: Boolean,

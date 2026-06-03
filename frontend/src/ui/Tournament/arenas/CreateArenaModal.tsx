@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod";
 import { FormattedMessage } from 'react-intl';
 import { Modal } from 'src/ui/components/modal/Modal';
-import cssCls from './CreateArenaModal.module.css';
+import cssCls from './CreateArenaModal.module.scss';
 import { Arena, CreateArenaFailure } from 'src/types/graphql';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useCreateArena } from 'src/hooksAndQueries/backend/graphql/arena';

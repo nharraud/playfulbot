@@ -1,3 +1,5 @@
+@import '~components/button/Button.module.scss';
+
 .modal {
   padding: 0;
   background-color: var(--modal-background);
@@ -21,5 +23,5 @@
 }
 
 .modalButton {
-  composes: buttonMd from '../button/Button.module.css';
+  @include buttonSize('md');
 }

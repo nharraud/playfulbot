@@ -6,8 +6,10 @@ Web frontend to create, configure and participate to tournaments.
 
 ## Tech stack
 
+Vite
 GraphQL (Apollo Client).
 Forms done via zod.
+Sass + CSS modules
 
 ### Legacy stack (being replaced)
 
@@ -83,6 +85,7 @@ use `import { graphql } from '../../../types/game-runner/graphql'` for game runn
 
 Styling is done via CSS module files which are located next to the corresponding React component file. Example: "TournamentPage.tsx" and "TournamentPage.module.css".
 A file named "TournamentPage.module.css.d.ts" is automatically generated just for convenience.
+Sass may also be used. In that case the file name would be "TournamentPage.module.scss" and "TournamentPage.module.scss.d.ts" is automatically generated.
 
 App.module.css defines, using CSS variables, all colors, font size, font weight, etc...
 Theme.module.css use the generic color variables to associate them to specific components.
