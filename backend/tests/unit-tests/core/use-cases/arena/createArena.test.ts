@@ -44,7 +44,7 @@ async function teamFixture({ ctx, tournament }: Omit<TestFixtures, 'team'>, use:
 
 async function nonTeamMemberFixture({ ctx }: Omit<TestFixtures, 'nonTeamMember'>, use: any) {
   const user = await ctx.providers.user.createUser(ctx, {
-    username: 'testUser',
+    username: 'nonTeamMember',
     password: 'mypassword'
   });
   await use(user);
@@ -52,10 +52,10 @@ async function nonTeamMemberFixture({ ctx }: Omit<TestFixtures, 'nonTeamMember'>
 
 async function teamMemberFixture({ ctx, team }: Omit<TestFixtures, 'teamMember'>, use: any) {
   const user = await ctx.providers.user.createUser(ctx, {
-    username: 'testUser',
+    username: 'teamMember',
     password: 'mypassword'
   }) as User;
-  ctx.providers.team.addTeamMember(ctx, team.id, user.id);
+  await ctx.providers.team.addTeamMember(ctx, team.id, user.id);
   await use(user);
 }
 
