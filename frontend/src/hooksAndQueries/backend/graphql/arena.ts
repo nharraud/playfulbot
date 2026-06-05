@@ -80,3 +80,29 @@ export function useCreateArena() {
     (resolve) => createArena({ variables: { teamID, name }, onCompleted: data => resolve(data.createArena)})
   );
 }
+
+
+const deleteArenaMutation = graphql(`
+  mutation deleteArena($arenaID: ID!) {
+    deleteArena(arenaID: $arenaID) {
+      ... on DeleteArenaSuccess {
+        arenaID
+      }
+      ... on DeleteArenaFailure {
+        errors {
+          ... on Error {
+            message
+          }
+        }
+      }
+    }
+  }
+`);
+
+export function useDeleteArena() {
+  const [deleteArena] = useMutation(deleteArenaMutation);
+
+  return (arenaID: gqlTypes.ArenaID) => new Promise<gqlTypes.DeleteArenaMutation['deleteArena']>(
+    (resolve) => deleteArena({ variables: { arenaID }, onCompleted: data => resolve(data.deleteArena) })
+  );
+}

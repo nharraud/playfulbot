@@ -16,6 +16,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n  query GetTeamArenas($userID: ID!, $tournamentID: ID!) {\n    team(userID: $userID, tournamentID: $tournamentID) {\n      ... on Team {\n        id\n        arenas {\n          id\n          name\n        }\n      }\n      ... on UserNotPartOfAnyTeam {\n        message\n      }\n    }\n  }\n": typeof types.GetTeamArenasDocument,
     "\n  mutation createArena($teamID: ID!, $name: String!) {\n    createArena(teamID: $teamID, name: $name) {\n      ... on CreateArenaSuccess {\n        arena {\n          id\n          name\n        }\n      }\n      ... on CreateArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": typeof types.CreateArenaDocument,
+    "\n  mutation deleteArena($arenaID: ID!) {\n    deleteArena(arenaID: $arenaID) {\n      ... on DeleteArenaSuccess {\n        arenaID\n      }\n      ... on DeleteArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": typeof types.DeleteArenaDocument,
     "\n  query getAuthenticatedUser {\n    authenticatedUser { id, username }\n  }\n": typeof types.GetAuthenticatedUserDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    login(username: $username, password: $password) {\n      ... on LoginSuccess {\n        user {\n            id, username\n        }\n        token\n      }\n      ... on LoginFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": typeof types.LoginDocument,
     "\n  mutation logout {\n    logout\n}": typeof types.LogoutDocument,
@@ -32,6 +33,7 @@ type Documents = {
 const documents: Documents = {
     "\n  query GetTeamArenas($userID: ID!, $tournamentID: ID!) {\n    team(userID: $userID, tournamentID: $tournamentID) {\n      ... on Team {\n        id\n        arenas {\n          id\n          name\n        }\n      }\n      ... on UserNotPartOfAnyTeam {\n        message\n      }\n    }\n  }\n": types.GetTeamArenasDocument,
     "\n  mutation createArena($teamID: ID!, $name: String!) {\n    createArena(teamID: $teamID, name: $name) {\n      ... on CreateArenaSuccess {\n        arena {\n          id\n          name\n        }\n      }\n      ... on CreateArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": types.CreateArenaDocument,
+    "\n  mutation deleteArena($arenaID: ID!) {\n    deleteArena(arenaID: $arenaID) {\n      ... on DeleteArenaSuccess {\n        arenaID\n      }\n      ... on DeleteArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": types.DeleteArenaDocument,
     "\n  query getAuthenticatedUser {\n    authenticatedUser { id, username }\n  }\n": types.GetAuthenticatedUserDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    login(username: $username, password: $password) {\n      ... on LoginSuccess {\n        user {\n            id, username\n        }\n        token\n      }\n      ... on LoginFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n": types.LoginDocument,
     "\n  mutation logout {\n    logout\n}": types.LogoutDocument,
@@ -68,6 +70,10 @@ export function graphql(source: "\n  query GetTeamArenas($userID: ID!, $tourname
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation createArena($teamID: ID!, $name: String!) {\n    createArena(teamID: $teamID, name: $name) {\n      ... on CreateArenaSuccess {\n        arena {\n          id\n          name\n        }\n      }\n      ... on CreateArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation createArena($teamID: ID!, $name: String!) {\n    createArena(teamID: $teamID, name: $name) {\n      ... on CreateArenaSuccess {\n        arena {\n          id\n          name\n        }\n      }\n      ... on CreateArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation deleteArena($arenaID: ID!) {\n    deleteArena(arenaID: $arenaID) {\n      ... on DeleteArenaSuccess {\n        arenaID\n      }\n      ... on DeleteArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation deleteArena($arenaID: ID!) {\n    deleteArena(arenaID: $arenaID) {\n      ... on DeleteArenaSuccess {\n        arenaID\n      }\n      ... on DeleteArenaFailure {\n        errors {\n          ... on Error {\n            message\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

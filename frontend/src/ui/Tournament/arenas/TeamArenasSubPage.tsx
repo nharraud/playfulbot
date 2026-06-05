@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useTeamArenas } from 'src/hooksAndQueries/backend/graphql/arena';
+import { useTeamArenas, useDeleteArena } from 'src/hooksAndQueries/backend/graphql/arena';
 import { TournamentQuery } from 'src/types/graphql';
 import cssCls from './TeamArenasSubPage.module.scss';
 import headerCssCls from '../components/TournamentSubHeader.module.scss';
@@ -18,6 +18,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
 
   const result = useTeamArenas(props.tournament?.id);
   const teamId = result.teamId;
+  const deleteArena = useDeleteArena();
   const arenasElt = result.arenas?.map(arena =>
     <div key={arena.id} className={cssCls.arena}>
       <div className={cssCls.arenaTitle}>{arena.name}</div>
@@ -27,7 +28,7 @@ export default function TeamArenasSubPage(props: TournamentArenasProps) {
           <i/>
           <FormattedMessage defaultMessage="Open" />
         </Link>
-        <button className={cssCls.deleteButton}>
+        <button className={cssCls.deleteButton} onClick={() => deleteArena(arena.id).then(() => result.refetch())}>
           <i className={cssCls.deleteIcon} />
         </button>
       </div>
