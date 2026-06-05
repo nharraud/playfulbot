@@ -235,6 +235,21 @@ union GetArenaError = ForbiddenError | ArenaNotFoundError
 union GetArenaResult = GetArenaSuccess | GetArenaFailure
 
 
+# #
+# # Delete Arena Input/Output
+# #
+type DeleteArenaSuccess {
+  arenaID: ID!
+}
+
+type DeleteArenaFailure {
+  errors: [DeleteArenaError!]!
+}
+
+union DeleteArenaError = ForbiddenError | ArenaNotFoundError
+
+union DeleteArenaResult = DeleteArenaSuccess | DeleteArenaFailure
+
 
 # #
 # # Create Arena Game Input/Output
@@ -372,6 +387,7 @@ type Mutation {
   createArenaGame(arenaID: ID!): CreateArenaGameResult
   createArena(teamID: ID!, name: String!): CreateArenaResult
   getArena(arenaID: ID!): GetArenaResult
+  deleteArena(arenaID: ID!): DeleteArenaResult
 
   registerUser(username: String!, password: String!): UserRegistrationResult
   login(username: String!, password: String!): LoginResult

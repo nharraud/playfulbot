@@ -71,8 +71,9 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
     return bigIntToNumber(result.count);
   }
 
-  deleteArena(ctx: ContextPSQL, id: TeamID): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async deleteArena(ctx: ContextPSQL, id: ArenaID): Promise<boolean> {
+    const result = await ctx.dbOrTx.result('DELETE FROM arenas WHERE id = $[id]', { id });
+    return result.rowCount > 0;
   }
 
   async getAll(

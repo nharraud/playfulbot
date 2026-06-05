@@ -257,6 +257,70 @@ describe('graphql', () => {
   });
 
 
+  describe('Mutation/deleteArena', () => {
+    const query = `
+      mutation deleteArena($arenaID: ID!) {
+        deleteArena(arenaID: $arenaID) {
+          __typename
+          ... on DeleteArenaSuccess {
+            arenaID
+          }
+          ... on DeleteArenaFailure {
+            errors {
+              ... on Error {
+                __typename
+                message
+              }
+            }
+          }
+        }
+      }`;
+
+    test('should fail if user is not authenticated', async ({ arena, graphql }) => {
+      hideErrorLogs();
+      const response = await graphql.client.query({ operationName: 'deleteArena', query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.deleteArena).eql(null);
+      expect(response.body.errors[0].extensions.code).eql('UNAUTHENTICATED');
+    });
+
+    test('should fail if user is not part of the team', async ({ arena, nonTeamMember: _nonTeamMember, graphql }) => {
+      await graphql.client.login(nonTeamMemberData);
+      const response = await graphql.client.query({ operationName: 'deleteArena', query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.deleteArena.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test("should fail if user is not part of the arena's team", async ({ arena, differentTeamMember: _differentTeamMember, graphql }) => {
+      await graphql.client.login(differentTeamMemberData);
+      const response = await graphql.client.query({ operationName: 'deleteArena', query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.deleteArena.errors[0].__typename).eql('ForbiddenError');
+    });
+
+    test('should fail if arena does not exist', async ({ teamMember: _teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response = await graphql.client.query({ operationName: 'deleteArena', query, variables: {
+        arenaID: '00000000-0000-4000-9000-000000000000'
+      } });
+      expect(response.body.data.deleteArena.errors[0].__typename).eql('ArenaNotFoundError');
+    });
+
+    test('should succeed and delete the arena', async ({ ctx, arena, teamMember: _teamMember, graphql }) => {
+      await graphql.client.login(teamMemberData);
+      const response = await graphql.client.query({ operationName: 'deleteArena', query, variables: {
+        arenaID: arena.id
+      } });
+      expect(response.body.data.deleteArena.__typename).eql('DeleteArenaSuccess');
+      expect(response.body.data.deleteArena.arenaID).eql(arena.id);
+      const deletedArena = await ctx.providers.arena.getArena(ctx, arena.id);
+      expect(deletedArena).toBeNull();
+    });
+  });
+
   describe('Subscription/arenaGames', () => {
     const query = `
       subscription arenaGames($arenaID: ID!) {

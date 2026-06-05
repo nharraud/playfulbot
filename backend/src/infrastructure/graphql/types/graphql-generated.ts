@@ -21,9 +21,9 @@ export type Scalars = {
 
 export type Arena = {
   __typename?: 'Arena';
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  team?: Maybe<Team>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  team: Team;
 };
 
 export type ArenaGamesError = ArenaNotFoundError | ForbiddenError;
@@ -71,7 +71,7 @@ export type CreateArenaResult = CreateArenaFailure | CreateArenaSuccess;
 
 export type CreateArenaSuccess = {
   __typename?: 'CreateArenaSuccess';
-  arena?: Maybe<Arena>;
+  arena: Arena;
 };
 
 export type CreateTeamError = ForbiddenError | TeamNameAlreadyTakenError | ValidationError;
@@ -86,6 +86,20 @@ export type CreateTeamResult = CreateTeamFailure | CreateTeamSuccess;
 export type CreateTeamSuccess = {
   __typename?: 'CreateTeamSuccess';
   team?: Maybe<Team>;
+};
+
+export type DeleteArenaError = ArenaNotFoundError | ForbiddenError;
+
+export type DeleteArenaFailure = {
+  __typename?: 'DeleteArenaFailure';
+  errors: Array<DeleteArenaError>;
+};
+
+export type DeleteArenaResult = DeleteArenaFailure | DeleteArenaSuccess;
+
+export type DeleteArenaSuccess = {
+  __typename?: 'DeleteArenaSuccess';
+  arenaID: Scalars['ID']['output'];
 };
 
 export type DeletedTeam = {
@@ -169,6 +183,7 @@ export type Mutation = {
   createArenaGame?: Maybe<CreateArenaGameResult>;
   createTeam?: Maybe<CreateTeamResult>;
   createTournament?: Maybe<Tournament>;
+  deleteArena?: Maybe<DeleteArenaResult>;
   getArena?: Maybe<GetArenaResult>;
   joinTeam?: Maybe<JoinTeamResult>;
   login?: Maybe<LoginResult>;
@@ -202,6 +217,11 @@ export type MutationCreateTournamentArgs = {
   name: Scalars['String']['input'];
   roundsNumber: Scalars['Int']['input'];
   startDate: Scalars['Date']['input'];
+};
+
+
+export type MutationDeleteArenaArgs = {
+  arenaID: Scalars['ID']['input'];
 };
 
 
@@ -431,6 +451,8 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   CreateArenaResult: ( Omit<CreateArenaFailure, 'errors'> & { errors: Array<_RefType['CreateArenaError']> } ) | ( CreateArenaSuccess );
   CreateTeamError: ( ForbiddenError ) | ( TeamNameAlreadyTakenError ) | ( ValidationError );
   CreateTeamResult: ( Omit<CreateTeamFailure, 'errors'> & { errors: Array<_RefType['CreateTeamError']> } ) | ( CreateTeamSuccess );
+  DeleteArenaError: ( ArenaNotFoundError ) | ( ForbiddenError );
+  DeleteArenaResult: ( Omit<DeleteArenaFailure, 'errors'> & { errors: Array<_RefType['DeleteArenaError']> } ) | ( DeleteArenaSuccess );
   GetArenaError: ( ArenaNotFoundError ) | ( ForbiddenError );
   GetArenaResult: ( Omit<GetArenaFailure, 'errors'> & { errors: Array<_RefType['GetArenaError']> } ) | ( GetArenaSuccess );
   JoinTeamError: ( ForbiddenError ) | ( TeamNotFoundError );
@@ -471,6 +493,10 @@ export type ResolversTypes = {
   CreateTeamResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['CreateTeamResult']>;
   CreateTeamSuccess: ResolverTypeWrapper<CreateTeamSuccess>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  DeleteArenaError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['DeleteArenaError']>;
+  DeleteArenaFailure: ResolverTypeWrapper<Omit<DeleteArenaFailure, 'errors'> & { errors: Array<ResolversTypes['DeleteArenaError']> }>;
+  DeleteArenaResult: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['DeleteArenaResult']>;
+  DeleteArenaSuccess: ResolverTypeWrapper<DeleteArenaSuccess>;
   DeletedTeam: ResolverTypeWrapper<DeletedTeam>;
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
@@ -539,6 +565,10 @@ export type ResolversParentTypes = {
   CreateTeamResult: ResolversUnionTypes<ResolversParentTypes>['CreateTeamResult'];
   CreateTeamSuccess: CreateTeamSuccess;
   Date: Scalars['Date']['output'];
+  DeleteArenaError: ResolversUnionTypes<ResolversParentTypes>['DeleteArenaError'];
+  DeleteArenaFailure: Omit<DeleteArenaFailure, 'errors'> & { errors: Array<ResolversParentTypes['DeleteArenaError']> };
+  DeleteArenaResult: ResolversUnionTypes<ResolversParentTypes>['DeleteArenaResult'];
+  DeleteArenaSuccess: DeleteArenaSuccess;
   DeletedTeam: DeletedTeam;
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   ForbiddenError: ForbiddenError;
@@ -584,9 +614,9 @@ export type ResolversParentTypes = {
 };
 
 export type ArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Arena'] = ResolversParentTypes['Arena']> = {
-  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -646,7 +676,7 @@ export type CreateArenaResultResolvers<ContextType = any, ParentType extends Res
 };
 
 export type CreateArenaSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateArenaSuccess'] = ResolversParentTypes['CreateArenaSuccess']> = {
-  arena?: Resolver<Maybe<ResolversTypes['Arena']>, ParentType, ContextType>;
+  arena?: Resolver<ResolversTypes['Arena'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -671,6 +701,24 @@ export type CreateTeamSuccessResolvers<ContextType = any, ParentType extends Res
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
+
+export type DeleteArenaErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteArenaError'] = ResolversParentTypes['DeleteArenaError']> = {
+  __resolveType: TypeResolveFn<'ArenaNotFoundError' | 'ForbiddenError', ParentType, ContextType>;
+};
+
+export type DeleteArenaFailureResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteArenaFailure'] = ResolversParentTypes['DeleteArenaFailure']> = {
+  errors?: Resolver<Array<ResolversTypes['DeleteArenaError']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type DeleteArenaResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteArenaResult'] = ResolversParentTypes['DeleteArenaResult']> = {
+  __resolveType: TypeResolveFn<'DeleteArenaFailure' | 'DeleteArenaSuccess', ParentType, ContextType>;
+};
+
+export type DeleteArenaSuccessResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteArenaSuccess'] = ResolversParentTypes['DeleteArenaSuccess']> = {
+  arenaID?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type DeletedTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeletedTeam'] = ResolversParentTypes['DeletedTeam']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -769,6 +817,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createArenaGame?: Resolver<Maybe<ResolversTypes['CreateArenaGameResult']>, ParentType, ContextType, RequireFields<MutationCreateArenaGameArgs, 'arenaID'>>;
   createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input' | 'join' | 'tournamentID'>>;
   createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
+  deleteArena?: Resolver<Maybe<ResolversTypes['DeleteArenaResult']>, ParentType, ContextType, RequireFields<MutationDeleteArenaArgs, 'arenaID'>>;
   getArena?: Resolver<Maybe<ResolversTypes['GetArenaResult']>, ParentType, ContextType, RequireFields<MutationGetArenaArgs, 'arenaID'>>;
   joinTeam?: Resolver<Maybe<ResolversTypes['JoinTeamResult']>, ParentType, ContextType, RequireFields<MutationJoinTeamArgs, 'teamID'>>;
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
@@ -897,6 +946,10 @@ export type Resolvers<ContextType = any> = {
   CreateTeamResult?: CreateTeamResultResolvers<ContextType>;
   CreateTeamSuccess?: CreateTeamSuccessResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  DeleteArenaError?: DeleteArenaErrorResolvers<ContextType>;
+  DeleteArenaFailure?: DeleteArenaFailureResolvers<ContextType>;
+  DeleteArenaResult?: DeleteArenaResultResolvers<ContextType>;
+  DeleteArenaSuccess?: DeleteArenaSuccessResolvers<ContextType>;
   DeletedTeam?: DeletedTeamResolvers<ContextType>;
   Error?: ErrorResolvers<ContextType>;
   ForbiddenError?: ForbiddenErrorResolvers<ContextType>;

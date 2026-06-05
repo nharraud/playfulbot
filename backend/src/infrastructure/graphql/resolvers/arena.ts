@@ -9,6 +9,7 @@ import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
 import { GameRef } from '~playfulbot/core/entities/GameRef';
 import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator';
 import { getArena } from '~playfulbot/core/use-cases/arena/getArena';
+import { deleteArena } from '~playfulbot/core/use-cases/arena/deleteArena';
 
 export const arenaGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arenaGames'] = {
   subscribe: async (model, args, graphqlContext, info) => {
@@ -105,5 +106,28 @@ export const getArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['getAr
     return {
       __typename: 'GetArenaSuccess',
       arena: result
+    };
+};
+
+export const deleteArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['deleteArena'] = async (
+    parent,
+    args,
+    graphqlContext
+) => {
+    if (!isUserContext(graphqlContext)) {
+      throw new AuthenticationError('Only users are allowed to delete arenas')
+    }
+
+    const result = await deleteArena(graphqlContext.ctx, { userId: graphqlContext.userID, arenaId: args.arenaID });
+
+    if (result instanceof Error) {
+      return {
+        __typename: 'DeleteArenaFailure',
+        errors: [toGraphQLError(result)],
+      };
+    }
+    return {
+      __typename: 'DeleteArenaSuccess',
+      arenaID: result,
     };
 };

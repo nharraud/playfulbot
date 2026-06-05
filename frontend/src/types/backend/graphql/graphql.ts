@@ -87,6 +87,20 @@ export type CreateTeamSuccess = {
   team: Maybe<Team>;
 };
 
+export type DeleteArenaError = ArenaNotFoundError | ForbiddenError;
+
+export type DeleteArenaFailure = {
+  __typename: 'DeleteArenaFailure';
+  errors: Array<DeleteArenaError>;
+};
+
+export type DeleteArenaResult = DeleteArenaFailure | DeleteArenaSuccess;
+
+export type DeleteArenaSuccess = {
+  __typename: 'DeleteArenaSuccess';
+  arenaID: Scalars['ID']['output'];
+};
+
 export type DeletedTeam = {
   __typename: 'DeletedTeam';
   id: Scalars['ID']['output'];
@@ -168,6 +182,7 @@ export type Mutation = {
   createArenaGame: Maybe<CreateArenaGameResult>;
   createTeam: Maybe<CreateTeamResult>;
   createTournament: Maybe<Tournament>;
+  deleteArena: Maybe<DeleteArenaResult>;
   getArena: Maybe<GetArenaResult>;
   joinTeam: Maybe<JoinTeamResult>;
   login: Maybe<LoginResult>;
@@ -201,6 +216,11 @@ export type MutationCreateTournamentArgs = {
   name: Scalars['String']['input'];
   roundsNumber: Scalars['Int']['input'];
   startDate: Scalars['Date']['input'];
+};
+
+
+export type MutationDeleteArenaArgs = {
+  arenaID: Scalars['ID']['input'];
 };
 
 

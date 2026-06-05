@@ -123,6 +123,23 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
     });
   });
 
+  describe('deleteArena', () => {
+    test('should return true and remove the arena when it exists', async ({ ctx, team }) => {
+      const provider = new ArenaProviderPSQL();
+      const created = await provider.createArena(ctx, { teamId: team.id, name: 'testArena' }) as Arena;
+      const result = await provider.deleteArena(ctx, created.id);
+      expect(result).toBe(true);
+      const fetched = await provider.getArena(ctx, created.id);
+      expect(fetched).toBeNull();
+    });
+
+    test('should return false when the arena does not exist', async ({ ctx }) => {
+      const provider = new ArenaProviderPSQL();
+      const result = await provider.deleteArena(ctx, dummyUUID);
+      expect(result).toBe(false);
+    });
+  });
+
   describe('getAll', () => {
     test('should return an empty list when the team has no arena', async ({ ctx, team }) => {
       const provider = new ArenaProviderPSQL();
