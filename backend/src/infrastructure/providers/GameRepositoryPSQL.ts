@@ -158,10 +158,13 @@ export class GameRepositoryPSQL implements GameRepository {
     return { gameId };
   }
 
-  async getFullGame(gameId: GameID): Promise<Game> {
+  async getFullGame(gameId: GameID): Promise<Game | null> {
     // FIXME: limit retrieved columns
     const getGameRequest = `SELECT * from games WHERE id = $[gameId];`;
     const result = await this.#db.oneOrNone<DbGame>(getGameRequest, { gameId });
+    if (!result) {
+      return null;
+    }
     return buildGame(result);
   }
 
@@ -192,7 +195,7 @@ export class GameRepositoryPSQL implements GameRepository {
    * @returns The game reference or undefined if no game has been created yet
    */
   async getArenaLatestGame(arenaId: ArenaID): Promise<GameRefWithDate | undefined> {
-    const request = 'SELECT games.id, games.runner_id, games.started_at FROM games JOIN arenas ON games.arena_id = arenas.id WHERE arenas.id = $[arenaId] ORDER BY started_at DESC LIMIT 1;';
+    const request = 'SELECT games.id, games.runner_id, games.started_at FROM games WHERE games.arena_id = $[arenaId] ORDER BY started_at DESC LIMIT 1;';
     const result = await this.#db.oneOrNone<{ id: GameID, started_at: string, runner_id: GameRunnerId }>(request, { arenaId });
     if (result) {
       return {
