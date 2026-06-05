@@ -22,3 +22,8 @@ export async function cancelGame(gameId: GameID): Promise<boolean> {
   const result = await db.default.one<{ cancel_game: boolean }>(cancelGameRequest, { gameId });
   return result.cancel_game;
 }
+
+export async function deleteGame(gameId: GameID): Promise<void> {
+  const deleteGameRequest = `DELETE FROM games WHERE games.id = $[gameId];`;
+  const result = await db.default.none(deleteGameRequest, { gameId });
+}

@@ -167,15 +167,34 @@ BEGIN
       RETURN false;
     END IF;
 
-    serialized_game := row_to_json(cancelled_game)::text;
-
     IF cancelled_game.runner_id IS NOT NULL THEN
+      serialized_game := row_to_json(cancelled_game)::text;
       PERFORM pg_notify('runner_' || cancelled_game.runner_id, serialized_game);
     END IF;
 
     RETURN true;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE FUNCTION cancel_game_on_delete() RETURNS trigger AS $$
+DECLARE
+    serialized_game TEXT;
+BEGIN
+    -- PERFORM cancel_game(OLD.id);
+    IF OLD.runner_id IS NOT NULL THEN
+      OLD.cancelled = TRUE;
+      serialized_game := row_to_json(OLD)::text;
+      PERFORM pg_notify('runner_' || OLD.runner_id, serialized_game);
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER cancel_game_on_delete
+    BEFORE DELETE ON games
+    FOR EACH ROW
+    EXECUTE FUNCTION cancel_game_on_delete();
 
 
 -- CREATE FUNCTION notify_arena_delete() RETURNS void AS $$

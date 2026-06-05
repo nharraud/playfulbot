@@ -5,9 +5,9 @@ import { PSQLGameRepository } from './utils/PSQLGameRepository';
 import { basicGameDefinition } from '../mocks/mockGameDefinitions';
 import { randomUUID } from 'crypto';
 import { PSQLGameProvider } from '~game-runner/infrastructure/games/PSQLGameProvider';
-import { dropTestDB, initTestDB, cancelGame } from './utils/psql';
+import { dropTestDB, initTestDB, cancelGame, deleteGame } from './utils/psql';
 import { DeferredPromise } from 'playfulbot-backend-commons/lib/utils';
-import { GameNotification } from '~game-runner/core/use-cases/game-scheduling/GameProvider';
+import { GameCancelled, GameNotification } from '~game-runner/core/use-cases/game-scheduling/GameProvider';
 
 describe('infrastructure/games/PSQLGameProvider', () => {
   const gameDefProvider = () => Promise.resolve(basicGameDefinition);
@@ -47,9 +47,29 @@ describe('infrastructure/games/PSQLGameProvider', () => {
 
     await cancelGame(retrievedGame.id);
 
-    await expect(cancelledGamePromise.promise).resolves.toMatchObject({
-      gameId: retrievedGame.id 
+    const result = await cancelledGamePromise.promise;
+    expect(result).toMatchObject({ gameId: retrievedGame.id });
+    expect(result).toBeInstanceOf(GameCancelled);
+    await psqlGameProvider.close();
+  });
+
+  test('should cancel games before deleting them', async () => {
+    const psqlGameRepository = new PSQLGameRepository();
+    const addedGame = { gameDefId: 'testGame', players: [{ playerID: randomUUID() }, { playerID: randomUUID() }]};
+    const res = await psqlGameRepository.addGame(addedGame);
+    const psqlGameProvider = new PSQLGameProvider({ gameDefinitionsProvider: gameDefProvider });
+    const retrievedGame = await psqlGameProvider.fetchGame();
+
+    const cancelledGamePromise = new DeferredPromise<GameNotification>;
+    psqlGameProvider.onNotification(async (notification) => {
+      cancelledGamePromise.resolve(notification)
     });
+
+    await deleteGame(retrievedGame.id);
+
+    const result = await cancelledGamePromise.promise;
+    expect(result).toMatchObject({ gameId: retrievedGame.id });
+    expect(result).toBeInstanceOf(GameCancelled);
     await psqlGameProvider.close();
   });
 });
