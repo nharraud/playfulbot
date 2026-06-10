@@ -10,7 +10,6 @@ import logo from './logo.svg';
 import Login from './ui/Login';
 // import Registration from './ui/Registration';
 
-import TournamentPage from './ui/Tournament/TournamentPage';
 // import TournamentCreationPage from './ui/Tournament/TournamentCreationPage';
 import { LandingPage } from './ui/LandingPage/LandingPage';
 import { UserContextProvider } from './UserContext';
@@ -22,6 +21,7 @@ import cssCls from './App.module.css';
 
 import { ThemeProvider } from './ui/Theme';
 import { IntlProvider } from 'react-intl';
+import TournamentRootPage from './ui/Tournament/TournamentRootPage';
 // import { TournamentInvitationPage } from './ui/TournamentInvitation/TournamentInvitationPage';
 
 
@@ -46,7 +46,7 @@ function App() {
       */}
                       <Route element={<AuthenticationRequired/>}>
                         <Route path="/home" loader={AuthenticationRequired} element={<UserHomePage />}/>
-                        <Route path="/tournament/:tournamentID/*" loader={AuthenticationRequired} element={<TournamentPage />}/>
+                        <Route path="/tournament/:tournamentID/*" loader={AuthenticationRequired} element={<TournamentRootPage/>}/>
                         {/* 
                         <Route path="/create_tournament">
                           <TournamentCreationPage />

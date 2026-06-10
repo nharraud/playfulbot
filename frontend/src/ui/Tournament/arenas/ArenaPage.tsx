@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTeamArenas } from 'src/hooksAndQueries/backend/graphql/arena';
+import { useArena, useTeamArenas } from 'src/hooksAndQueries/backend/graphql/arena';
 import { TournamentQuery } from 'src/types/graphql';
 import { Link, useMatch } from 'react-router';
 import { useArenaArenaSubscription, useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
@@ -7,20 +7,24 @@ import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientPr
 import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
 import { useGameController } from 'src/hooksAndQueries/useGameController';
 import { gameDefinition } from 'playfulbot-config';
+import { Header } from 'src/ui/components/header/Header';
 
 interface TournamentArenasProps {
   tournament?: TournamentQuery['tournament'];
 }
 
-export default function ArenaSubPage(props: TournamentArenasProps) {
+export default function ArenaPage(props: TournamentArenasProps) {
   const match = useMatch('/tournament/:tournamentID/arenas/:arenaID');
   const arenaId = match?.params.arenaID;
+
+  const { arena, error } = useArena(arenaId);
 
   const result = useArenaArenaSubscription(arenaId);
   const createGame = useCreateArenaGame(arenaId);
   return (
     <div>
-      <p>{JSON.stringify(result.gameRef)}</p>
+      <Header title={arena?.name || error?.message} backLink={ {url: 'foo', text: 'bar' }}/>
+      {/* <p>{JSON.stringify(result.gameRef)}</p> */}
       <RunnerClientProvider runnerUrl={result.gameRef?.graphqlUrl}>
         <GameWidget gameID={result.gameRef?.gameID}/>
       </RunnerClientProvider>
@@ -40,8 +44,8 @@ function GameWidget(props: GameWidgetProps) {
 
   return (
     <div>
-      <p>{JSON.stringify(gameResult?.game?.players)}</p>
-      <p>{JSON.stringify(controlledGame)}</p>
+      {/* <p>{JSON.stringify(gameResult?.game?.players)}</p>
+      <p>{JSON.stringify(controlledGame)}</p> */}
       <gameDefinition.game gameState={controlledGame?.gameState} />
       <br/>
       <input
