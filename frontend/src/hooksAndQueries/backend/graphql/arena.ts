@@ -50,6 +50,41 @@ export function useTeamArenas(tournamentID?: gqlTypes.TournamentID) {
   return { arenas, teamId, userNotPartOfAnyTeam, loading: loading || skip, error, refetch };
 }
 
+const arenaQuery = graphql(`
+  query Arena($arenaID: ID!) {
+    arena(arenaID: $arenaID) {
+      ... on ArenaSuccess {
+        arena {
+          id
+          name
+        }
+      }
+      ... on ArenaFailure {
+        errors {
+          ... on Error {
+            message
+          }
+        }
+      }
+    }
+  }
+`);
+
+export function useArena(arenaID?: string) {
+  const skip = !arenaID;
+  const { loading, error, data, refetch } = useQuery(arenaQuery, {
+    variables: { arenaID: arenaID as string },
+    skip,
+  });
+
+  let arena: gqlTypes.Arena | undefined;
+  if (data?.arena?.__typename === 'ArenaSuccess') {
+    arena = data.arena.arena as gqlTypes.Arena;
+  }
+
+  return { arena, loading: loading || skip, error, refetch };
+}
+
 
 const createArenaMutation = graphql(`
   mutation createArena($teamID: ID!, $name: String!) {

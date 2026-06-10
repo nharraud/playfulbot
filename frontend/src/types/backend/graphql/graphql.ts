@@ -22,7 +22,14 @@ export type Arena = {
   __typename: 'Arena';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  team: Team;
+  team: Maybe<Team>;
+};
+
+export type ArenaError = ArenaNotFoundError | ForbiddenError;
+
+export type ArenaFailure = {
+  __typename: 'ArenaFailure';
+  errors: Array<ArenaError>;
 };
 
 export type ArenaGamesError = ArenaNotFoundError | ForbiddenError;
@@ -43,6 +50,13 @@ export type ArenaNotFoundError = Error & {
   __typename: 'ArenaNotFoundError';
   arenaID: Maybe<Scalars['ID']['output']>;
   message: Scalars['String']['output'];
+};
+
+export type ArenaResult = ArenaFailure | ArenaSuccess;
+
+export type ArenaSuccess = {
+  __typename: 'ArenaSuccess';
+  arena: Maybe<Arena>;
 };
 
 export type CreateArenaError = ArenaNameAlreadyTakenError | ForbiddenError | MaxArenaReachedError | ValidationError;
@@ -122,20 +136,6 @@ export type GameRef = {
   graphqlUrl: Scalars['String']['output'];
 };
 
-export type GetArenaError = ArenaNotFoundError | ForbiddenError;
-
-export type GetArenaFailure = {
-  __typename: 'GetArenaFailure';
-  errors: Array<GetArenaError>;
-};
-
-export type GetArenaResult = GetArenaFailure | GetArenaSuccess;
-
-export type GetArenaSuccess = {
-  __typename: 'GetArenaSuccess';
-  arena: Maybe<Arena>;
-};
-
 export type InvalidCredentialsError = Error & {
   __typename: 'InvalidCredentialsError';
   message: Scalars['String']['output'];
@@ -183,7 +183,6 @@ export type Mutation = {
   createTeam: Maybe<CreateTeamResult>;
   createTournament: Maybe<Tournament>;
   deleteArena: Maybe<DeleteArenaResult>;
-  getArena: Maybe<GetArenaResult>;
   joinTeam: Maybe<JoinTeamResult>;
   login: Maybe<LoginResult>;
   logout: Maybe<Scalars['Boolean']['output']>;
@@ -224,11 +223,6 @@ export type MutationDeleteArenaArgs = {
 };
 
 
-export type MutationGetArenaArgs = {
-  arenaID: Scalars['ID']['input'];
-};
-
-
 export type MutationJoinTeamArgs = {
   teamID: Scalars['ID']['input'];
 };
@@ -253,9 +247,15 @@ export type MutationUpdateTeamArgs = {
 
 export type Query = {
   __typename: 'Query';
+  arena: Maybe<ArenaResult>;
   authenticatedUser: Maybe<User>;
   team: Maybe<UserTeamResult>;
   tournament: Maybe<Tournament>;
+};
+
+
+export type QueryArenaArgs = {
+  arenaID: Scalars['ID']['input'];
 };
 
 
@@ -382,6 +382,19 @@ export type GetTeamArenasQueryVariables = Exact<{
 export type GetTeamArenasQuery = { team:
     | { __typename: 'Team', id: string, arenas: Array<{ __typename: 'Arena', id: string, name: string } | null> | null }
     | { __typename: 'UserNotPartOfAnyTeam', message: string }
+   | null };
+
+export type ArenaQueryVariables = Exact<{
+  arenaID: Scalars['ID']['input'];
+}>;
+
+
+export type ArenaQuery = { arena:
+    | { __typename: 'ArenaFailure', errors: Array<
+        | { __typename: 'ArenaNotFoundError', message: string }
+        | { __typename: 'ForbiddenError', message: string }
+      > }
+    | { __typename: 'ArenaSuccess', arena: { __typename: 'Arena', id: string, name: string } | null }
    | null };
 
 export type CreateArenaMutationVariables = Exact<{
@@ -535,6 +548,7 @@ export type TournamentQuery = { tournament: { __typename: 'Tournament', id: stri
 
 
 export const GetTeamArenasDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTeamArenas"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tournamentID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"team"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userID"}}},{"kind":"Argument","name":{"kind":"Name","value":"tournamentID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tournamentID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Team"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"arenas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserNotPartOfAnyTeam"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<GetTeamArenasQuery, GetTeamArenasQueryVariables>;
+export const ArenaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Arena"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"arenaID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"arena"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"arenaID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"arenaID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ArenaSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"arena"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ArenaFailure"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ArenaQuery, ArenaQueryVariables>;
 export const CreateArenaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createArena"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createArena"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"teamID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"teamID"}}},{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CreateArenaSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"arena"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CreateArenaFailure"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateArenaMutation, CreateArenaMutationVariables>;
 export const DeleteArenaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteArena"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"arenaID"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteArena"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"arenaID"},"value":{"kind":"Variable","name":{"kind":"Name","value":"arenaID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteArenaSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"arenaID"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteArenaFailure"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeleteArenaMutation, DeleteArenaMutationVariables>;
 export const GetAuthenticatedUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAuthenticatedUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authenticatedUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<GetAuthenticatedUserQuery, GetAuthenticatedUserQueryVariables>;

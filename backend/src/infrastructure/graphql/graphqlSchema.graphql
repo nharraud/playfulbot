@@ -217,12 +217,12 @@ union CreateArenaResult = CreateArenaSuccess | CreateArenaFailure
 # #
 # # Get Arena Input/Output
 # #
-type GetArenaSuccess {
+type ArenaSuccess {
   arena: Arena
 }
 
-type GetArenaFailure {
-  errors: [GetArenaError!]!
+type ArenaFailure {
+  errors: [ArenaError!]!
 }
 
 type ArenaNotFoundError implements Error {
@@ -230,9 +230,9 @@ type ArenaNotFoundError implements Error {
   arenaID: ID
 }
 
-union GetArenaError = ForbiddenError | ArenaNotFoundError
+union ArenaError = ForbiddenError | ArenaNotFoundError
 
-union GetArenaResult = GetArenaSuccess | GetArenaFailure
+union ArenaResult = ArenaSuccess | ArenaFailure
 
 
 # #
@@ -326,7 +326,7 @@ union ArenaGamesResult = GameRef | ArenaGamesFailure
 type Arena {
   id: ID!
   name: String!
-  team: Team!
+  team: Team
 }
 
 
@@ -377,6 +377,7 @@ type Subscription {
 
 type Query {
   tournament(tournamentID: ID!): Tournament
+  arena(arenaID: ID!): ArenaResult
   # tournamentByInvitationLink(tournamentInvitationLinkID: ID!): Tournament
   # round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
@@ -386,7 +387,6 @@ type Query {
 type Mutation {
   createArenaGame(arenaID: ID!): CreateArenaGameResult
   createArena(teamID: ID!, name: String!): CreateArenaResult
-  getArena(arenaID: ID!): GetArenaResult
   deleteArena(arenaID: ID!): DeleteArenaResult
 
   registerUser(username: String!, password: String!): UserRegistrationResult

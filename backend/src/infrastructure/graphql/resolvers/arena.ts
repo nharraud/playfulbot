@@ -86,7 +86,7 @@ export const createArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['cr
 };
 
 
-export const getArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['getArena'] = async (
+export const arenaResolver: gqlTypes.QueryResolvers<GraphqlContext>['arena'] = async (
     parent,
     args,
     graphqlContext
@@ -99,15 +99,16 @@ export const getArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['getAr
 
     if (result instanceof Error) {
       return {
-        __typename: 'GetArenaFailure',
+        __typename: 'ArenaFailure',
         errors: [toGraphQLError(result)],
       };
     }
     return {
-      __typename: 'GetArenaSuccess',
+      __typename: 'ArenaSuccess',
       arena: result
     };
 };
+
 
 export const deleteArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['deleteArena'] = async (
     parent,
