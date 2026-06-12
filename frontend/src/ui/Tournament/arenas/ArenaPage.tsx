@@ -7,13 +7,13 @@ import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientPr
 import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
 import { useGameController } from 'src/hooksAndQueries/useGameController';
 import { gameDefinition } from 'playfulbot-config';
-import { Header } from 'src/ui/components/header/Header';
+import { ArenaHeader } from './ArenaHeader';
 
 interface TournamentArenasProps {
   tournament?: TournamentQuery['tournament'];
 }
 
-export default function ArenaPage(props: TournamentArenasProps) {
+export default function ArenaPage({ tournament }: TournamentArenasProps) {
   const match = useMatch('/tournament/:tournamentID/arenas/:arenaID');
   const arenaId = match?.params.arenaID;
 
@@ -23,7 +23,7 @@ export default function ArenaPage(props: TournamentArenasProps) {
   const createGame = useCreateArenaGame(arenaId);
   return (
     <div>
-      <Header title={arena?.name || error?.message} backLink={ {url: 'foo', text: 'bar' }}/>
+      <ArenaHeader arenaName={arena?.name} tournamentId={tournament?.id}/>
       {/* <p>{JSON.stringify(result.gameRef)}</p> */}
       <RunnerClientProvider runnerUrl={result.gameRef?.graphqlUrl}>
         <GameWidget gameID={result.gameRef?.gameID}/>

@@ -13,8 +13,8 @@ import InfoSubPage from './info/InfoSubPage';
 import Debug from './Debug';
 import MenuBar from '../MenuBar/MenuBar';
 import TeamArenasSubPage from './arenas/TeamArenasSubPage';
-import { Header } from '../components/header/Header';
 import { FormattedMessage } from 'react-intl';
+import { TallHeader } from '../components/header/TallHeader';
 
 export interface MatchParams {
   tournamentID: string;
@@ -86,7 +86,7 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
 
   return (
     <div>
-      <Header title={tournament?.name} backLink={{ url: '/home', text: backLinkText }}/>
+      <TallHeader title={tournament?.name} backLink={{ url: '/home', text: backLinkText }}/>
       <div className={cssCls.mainContainer}>
         {content}
       </div>

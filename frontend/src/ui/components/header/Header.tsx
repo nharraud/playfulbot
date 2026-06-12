@@ -5,12 +5,12 @@ import { useLogout } from 'src/hooksAndQueries/backend/graphql/authenticatedUser
 import { NavLink } from 'react-router';
 
 interface HeaderProps {
-  title: ReactNode,
-  subtitle?: ReactNode,
+  lowerContent?: ReactNode,
+  upperContent?: ReactNode,
   backLink?: { url: string, text: ReactNode },
-  // icon: ReactNode,
+  fullWidth?: boolean,
 }
-export function Header({ title, subtitle, backLink/*, icon*/ }: HeaderProps) {
+export function Header({ lowerContent, backLink, upperContent, fullWidth = false }: HeaderProps) {
   const { logout } = useLogout();
   let backButton: ReactNode;
   if (backLink) {
@@ -21,20 +21,21 @@ export function Header({ title, subtitle, backLink/*, icon*/ }: HeaderProps) {
         </NavLink>
     );
   }
+  const widthClass = fullWidth ? cssCls.fullWidth : '';
   return (
     <div className={cssCls.header}>
       {/* {icon} */}
-      <div className={cssCls.headerContent}>
-        <div className={cssCls.headerLeftContent}>
-          { backButton }
-          <div className={cssCls.headerText}>
-            <h1 className={cssCls.title}>{title}</h1>
-            { subtitle ?? <p className={cssCls.subTitle}>{subtitle}</p> }
+      <div className={`${cssCls.headerContent} ${widthClass}`}>
+        <div className={cssCls.headerLeftContentColumn}>
+          <div className={cssCls.headerLeftContentRow}>
+            { backButton }
+            { upperContent }
           </div>
+          { lowerContent }
         </div>
         <div className={cssCls.headerMenu}>
           <div className={cssCls.menuItem}>
-            <a tabindex="0" role="button" className={cssCls.userMenuButton}></a>
+            <a tabIndex={0} role="button" className={cssCls.userMenuButton}></a>
             <div className={cssCls.subMenuWrapper}>
               <nav className={cssCls.subMenu}>
                 <a onClick={logout}>

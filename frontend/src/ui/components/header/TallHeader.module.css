@@ -1,0 +1,17 @@
+.title {
+  color: white;
+  font-weight: bold;
+  font-size: xx-large;
+  margin-top: 0;
+  margin-bottom: calc(var(--spacing) * 6);
+}
+
+.subTitle {
+  color: white;
+  font-weight: normal;
+  font-size: large;
+}
+
+.headerText {
+  align-self: flex-start;
+}

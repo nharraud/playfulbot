@@ -1,4 +1,8 @@
 .header {
+  /* Enable menu to go above elements following the header */
+  position: relative;
+  z-index: 2;
+
   display: flex;
   justify-content: center;
   background-image: linear-gradient(to right, oklch(0.511 0.262 276.966) 0%, oklch(0.558 0.288 302.321) 100%);
@@ -17,27 +21,21 @@
   padding-block: calc(var(--spacing) * 5);
 }
 
-.headerLeftContent {
+.fullWidth {
+  width: 100%;
+}
+
+.headerLeftContentColumn {
   display: flex;
   flex-direction: column;
+  gap: calc(var(--spacing) * 5);
 }
 
-.title {
-  color: white;
-  font-weight: bold;
-  font-size: xx-large;
-  margin-top: 0;
-  margin-bottom: calc(var(--spacing) * 6);
-}
-
-.subTitle {
-  color: white;
-  font-weight: normal;
-  font-size: large;
-}
-
-.headerText {
-  align-self: flex-start;
+.headerLeftContentRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: calc(var(--spacing) * 3);
 }
 
 
@@ -61,6 +59,7 @@
   visibility: hidden;
   /* force parent element to ignore the size of this element. Thus letting it overflow. */
   width: 0;
+  height: 0;
   overflow: visible;
   /* prevent text from wrapping because width=0 */
   white-space: nowrap;
@@ -148,7 +147,6 @@
   color: var(--default-button-color);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
-  padding-bottom: calc(var(--spacing) * 5);
 }
 
 .backLink:hover {
@@ -162,7 +160,7 @@
 .backLinkIcon {
   display: inline-block;
   width: 1.2rem;
-  height: 1.2rem;
+  height: 1.1rem;
   border: 0;
   padding-right: calc(var(--spacing) * 2);
   mask: url('/src/assets/icons/ionicons/arrow-back-outline.svg');
