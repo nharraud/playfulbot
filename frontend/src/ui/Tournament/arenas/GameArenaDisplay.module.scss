@@ -1,0 +1,34 @@
+@import '~components/button/Button.module.scss';
+
+.gameArenaDisplayContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: auto;
+}
+
+.gameColumn {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.gameContainer {
+  flex-grow: 1;
+}
+
+.revisionSelector {
+  height: 10vh;
+}
+
+.arenaMenu {
+  padding: calc(var(--spacing) * 6);
+  background-color: white;
+  width: 15vw;
+}
+
+.newGameButton {
+  @include buttonSize('md');
+  @include buttonWithIcon('/src/assets/icons/ionicons/play-outline.svg');
+  @include buttonType('success');
+}

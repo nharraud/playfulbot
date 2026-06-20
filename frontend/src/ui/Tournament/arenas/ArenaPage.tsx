@@ -4,10 +4,9 @@ import { TournamentQuery } from 'src/types/graphql';
 import { Link, useMatch } from 'react-router';
 import { useArenaArenaSubscription, useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
 import { RunnerClientProvider } from 'src/infrastructure/graphql/GraphqlClientProviders';
-import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
-import { useGameController } from 'src/hooksAndQueries/useGameController';
-import { gameDefinition } from 'playfulbot-config';
 import { ArenaHeader } from './ArenaHeader';
+import { GameArenaDisplay } from './GameArenaDisplay';
+import cssCls from './ArenaPage.module.css';
 
 interface TournamentArenasProps {
   tournament?: TournamentQuery['tournament'];
@@ -20,40 +19,16 @@ export default function ArenaPage({ tournament }: TournamentArenasProps) {
   const { arena, error } = useArena(arenaId);
 
   const result = useArenaArenaSubscription(arenaId);
-  const createGame = useCreateArenaGame(arenaId);
   return (
-    <div>
+    <div className={cssCls.pageContainer}>
       <ArenaHeader arenaName={arena?.name} tournamentId={tournament?.id}/>
       {/* <p>{JSON.stringify(result.gameRef)}</p> */}
-      <RunnerClientProvider runnerUrl={result.gameRef?.graphqlUrl}>
-        <GameWidget gameID={result.gameRef?.gameID}/>
-      </RunnerClientProvider>
-      <a onClick={createGame}>createGame</a>
+      <div className={cssCls.arenaContainer}>
+        <RunnerClientProvider runnerUrl={result.gameRef?.graphqlUrl}>
+          <GameArenaDisplay gameID={result.gameRef?.gameID} arenaId={arenaId}/>
+        </RunnerClientProvider>
+      </div>
     </div>
   );
 }
 
-
-interface GameWidgetProps {
-  gameID?: string
-}
-
-function GameWidget(props: GameWidgetProps) {
-  const gameResult = useGame(props.gameID);
-  const  { controlledGame, setGameVersion } = useGameController(gameResult?.game);
-
-  return (
-    <div>
-      {/* <p>{JSON.stringify(gameResult?.game?.players)}</p>
-      <p>{JSON.stringify(controlledGame)}</p> */}
-      <gameDefinition.game gameState={controlledGame?.gameState} />
-      <br/>
-      <input
-        type='range' id='version' name='version' min='0'
-        max={controlledGame?.maxVersion?.toString() || '0'}
-        value={controlledGame?.version?.toString() || '0'}
-        onChange={e => setGameVersion(parseInt(e.target.value, 10))}
-      />
-    </div>
-  );
-}

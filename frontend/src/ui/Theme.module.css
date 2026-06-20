@@ -15,6 +15,12 @@
   --modal-background: white;
   --modal-border: var(--color-neutral-300);
 
+  /* Menu */
+  --menu-background: white;
+  --menu-border: var(--color-neutral-200);
+  --menu-text-main: var(--color-neutral-900);
+  --menu-text-secondary: var(--color-neutral-600);
+
   /* Form */
   --form-field-border: var(--color-neutral-300);
 
