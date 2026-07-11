@@ -13,6 +13,12 @@
   @include buttonType('cancel');
 }
 
+.playerTokenRow {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
 .playerTokenInput {
     display: block;
     width: 100%;
@@ -23,4 +29,14 @@
     padding-left: calc(var(--spacing)*1);
     padding-right: calc(var(--spacing)*4);
     padding-block: calc(var(--spacing)*3);
+}
+
+.copyButton {
+  @include buttonSize('md');
+  @include buttonWithIcon('/src/assets/icons/ionicons/copy-outline.svg');
+  @include buttonType('info');
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
 }

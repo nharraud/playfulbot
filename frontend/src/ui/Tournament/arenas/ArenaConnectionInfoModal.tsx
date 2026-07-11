@@ -1,4 +1,4 @@
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Modal } from 'src/ui/components/modal/Modal';
 import cssCls from './ArenaConnectionInfoModal.module.scss';
 import { Arena } from 'src/types/graphql';
@@ -10,6 +10,8 @@ interface CreateArenaModalProps {
 }
 
 export default function ArenaConnectionInfoModal(props: CreateArenaModalProps) {
+  const intl = useIntl();
+  const copyTokenLabel = intl.formatMessage({ defaultMessage: 'Copy token' });
   const tokens = props.arena?.players?.map((player, idx) => {
     const playerText = (<FormattedMessage
       defaultMessage="Player {playerNb}"
@@ -19,7 +21,18 @@ export default function ArenaConnectionInfoModal(props: CreateArenaModalProps) {
     return (
       <div key={`playerToken${idx}`}>
         <label htmlFor={fieldId}>{playerText}</label>
-        <input id={fieldId} className={cssCls.playerTokenInput} type='text' value={player?.token} readonly disabled/>
+        <div className={cssCls.playerTokenRow}>
+          <input id={fieldId} className={cssCls.playerTokenInput} type='text' value={player?.token} readonly disabled/>
+          <button
+            type='button'
+            className={cssCls.copyButton}
+            onClick={() => {
+              console.log('GNI! ' + player?.token)
+              return navigator.clipboard.writeText(player?.token ?? '');
+            }}
+            aria-label={copyTokenLabel}
+          ><i/></button>
+        </div>
       </div>
     )
   });
