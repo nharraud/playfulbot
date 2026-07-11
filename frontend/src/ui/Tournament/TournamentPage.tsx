@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import cssCls from './TournamentPage.module.css';
+import cssCls from './TournamentPage.module.scss';
 
 import { Routes, Route, Link, useMatch,/*useRouteMatch,*/ useParams } from 'react-router';
 
@@ -9,7 +9,9 @@ import { useTeam } from 'src/hooksAndQueries/backend/graphql/team';
 import LoadingWidget from '../Loading';
 // import CompetitionSubPage from './competition/CompetitionSubPage';
 import TeamSubPage from './team/TeamSubPage';
-import InfoSubPage from './info/InfoSubPage';
+import TournamentInfoSubPage from './tournamentInfo/TournamentInfoSubPage';
+import GameRulesSubPage from './gameRules/GameRulesSubPage';
+import CodingBotSubPage from './codingBot/CodingBotSubPage';
 import Debug from './Debug';
 import MenuBar from '../MenuBar/MenuBar';
 import TeamArenasSubPage from './arenas/TeamArenasSubPage';
@@ -46,7 +48,13 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
       <aside className={cssCls.menuAside}>
         <nav className={cssCls.menu}>
           <Link to={`${baseURL}/info`} className={`${cssCls.instructions} ${activeClass('info')}`}>
-            <i/><FormattedMessage defaultMessage="Instructions"/>
+            <i/><FormattedMessage defaultMessage="Introduction"/>
+          </Link>
+          <Link to={`${baseURL}/rules`} className={`${cssCls.gameRules} ${activeClass('rules')}`}>
+            <i/><FormattedMessage defaultMessage="Game Rules"/>
+          </Link>
+          <Link to={`${baseURL}/coding`} className={`${cssCls.codingBot} ${activeClass('coding')}`}>
+            <i/><FormattedMessage defaultMessage="Coding a Bot"/>
           </Link>
           <Link to={`${baseURL}/team`} className={`${cssCls.teamButton} ${activeClass('team')}`}>
             <i/><FormattedMessage defaultMessage="Teams"/>
@@ -65,7 +73,9 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
       </aside>
       <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
         <Routes>
-          <Route path={`/info`} element={<InfoSubPage tournament={tournament} />}/>
+          <Route path={`/info`} element={<TournamentInfoSubPage tournament={tournament} />}/>
+          <Route path={`/rules`} element={<GameRulesSubPage />}/>
+          <Route path={`/coding`} element={<CodingBotSubPage />}/>
           <Route path={`/team`} element={<TeamSubPage tournament={tournament} />}/>
           <Route path={`/arenas`} element={<TeamArenasSubPage tournament={tournament} />}/>
           {/* <Route path={`${baseURL}/arenas/*`}>

@@ -27,7 +27,7 @@
   padding-top: 1em;
 }
 
-.menuItem {
+@mixin menuItem($iconPath) {
   height: 2rem;
   display: flex;
   align-items: center;
@@ -43,9 +43,13 @@
   i {
     display: inline-block;
     vertical-align: middle;
-    width: 1.1rem;
-    height: 1.1rem;
-    background-color: var(--page-menu-unselected-color);
+    width: 1.3rem;
+    height: 1.3rem;
+    background: var(--page-menu-unselected-color);
+    flex-shrink: 0;
+    mask: url($iconPath);
+    mask-size: contain;
+    mask-repeat: no-repeat;
   }
   &:hover {
     color: var(--page-menu-hover-color);
@@ -56,31 +60,27 @@
 }
 
 .teamArenas {
-  composes: menuItem;
-  i {
-    mask: url('/src/assets/icons/ionicons/game-controller-outline.svg');
-  }
+  @include menuItem('/src/assets/icons/ionicons/game-controller-outline.svg');
 }
 
 .competition {
-  composes: menuItem;
-  i {
-    mask: url('/src/assets/icons/ionicons/trophy-outline.svg');
-  }
+  @include menuItem('/src/assets/icons/ionicons/trophy-outline.svg');
 }
 
 .instructions {
-  composes: menuItem;
-  i {
-    mask: url('/src/assets/icons/ionicons/information-circle-outline.svg');
-  }
+  @include menuItem('/src/assets/icons/ionicons/information-circle-outline.svg');
+}
+
+.gameRules {
+  @include menuItem('/src/assets/icons/ionicons/school-outline.svg');
+}
+
+.codingBot {
+  @include menuItem('/src/assets/icons/ionicons/terminal-outline.svg');
 }
 
 .teamButton {
-  composes: menuItem;
-  i {
-    mask: url('/src/assets/icons/ionicons/people-outline.svg');
-  }
+  @include menuItem('/src/assets/icons/ionicons/people-outline.svg');
 }
 
 .activeButton {

@@ -32,13 +32,13 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-interface CodingBotInfoTabProps {
+interface CodingBotSubPageProps {
   // tournament?: {
   //   name?: string,
   // }
 }
 
-export function CodingBotInfoTab(props: CodingBotInfoTabProps) {
+export default function CodingBotSubPage(props: CodingBotSubPageProps) {
   const classes = useStyles();
 
   const [selectedLanguage, setSelectedLanguage] = useState<string>(

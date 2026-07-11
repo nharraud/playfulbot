@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-interface TournamentInfoTabProps {
+interface TournamentInfoSubPageProps {
   tournament?: {
     name?: string;
     startDate?: any;
@@ -45,7 +45,7 @@ interface TournamentInfoTabProps {
   };
 }
 
-export default function TournamentInfoTab({ tournament }: TournamentInfoTabProps) {
+export default function TournamentInfoSubPage({ tournament }: TournamentInfoSubPageProps) {
   const classes = useStyles();
 
   const startDate = tournament ? DateTime.fromISO(tournament.startDate) : undefined;
@@ -100,8 +100,8 @@ export default function TournamentInfoTab({ tournament }: TournamentInfoTabProps
           First you need to create or join a team. Click on the
           <PeopleIcon className={classes.textIcon} titleAccess="team button" role="img" />
           in the left menu to go to the "teams" page. Then you and your teammates can go to the
-          "game rules" tab on this page and learn how to play a game. Information on how to program
-          a bots are also available on this page in the tab "Coding a bot".
+          "Game Rules" page and learn how to play a game. Information on how to program a bot is
+          also available on the "Coding a Bot" page.
         </Typography>
       </div>
     </div>

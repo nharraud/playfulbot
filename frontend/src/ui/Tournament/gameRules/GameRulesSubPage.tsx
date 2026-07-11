@@ -46,9 +46,9 @@ function CodeBlock({ children }: StringChildrenProps) {
   return <SyntaxHighlighter style={a11yDark}>{dedent(children)}</SyntaxHighlighter>;
 }
 
-interface GameRulesTabProps {}
+interface GameRulesSubPageProps {}
 
-export function GameRulesTab(props: GameRulesTabProps) {
+export default function GameRulesSubPage(props: GameRulesSubPageProps) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
