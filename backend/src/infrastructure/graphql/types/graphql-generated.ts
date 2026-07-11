@@ -23,6 +23,7 @@ export type Arena = {
   __typename?: 'Arena';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  players?: Maybe<Array<Maybe<Player>>>;
   team?: Maybe<Team>;
 };
 
@@ -244,6 +245,13 @@ export type MutationRegisterUserArgs = {
 export type MutationUpdateTeamArgs = {
   input: TeamInput;
   teamID: Scalars['ID']['input'];
+};
+
+export type Player = {
+  __typename?: 'Player';
+  connected?: Maybe<Scalars['Boolean']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
 };
 
 export type Query = {
@@ -519,6 +527,7 @@ export type ResolversTypes = {
   LoginSuccess: ResolverTypeWrapper<LoginSuccess>;
   MaxArenaReachedError: ResolverTypeWrapper<MaxArenaReachedError>;
   Mutation: ResolverTypeWrapper<{}>;
+  Player: ResolverTypeWrapper<Player>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -591,6 +600,7 @@ export type ResolversParentTypes = {
   LoginSuccess: LoginSuccess;
   MaxArenaReachedError: MaxArenaReachedError;
   Mutation: {};
+  Player: Player;
   Query: {};
   String: Scalars['String']['output'];
   Subscription: {};
@@ -616,6 +626,7 @@ export type ResolversParentTypes = {
 export type ArenaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Arena'] = ResolversParentTypes['Arena']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  players?: Resolver<Maybe<Array<Maybe<ResolversTypes['Player']>>>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -825,6 +836,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateTeam?: Resolver<Maybe<ResolversTypes['UpdateTeamResult']>, ParentType, ContextType, RequireFields<MutationUpdateTeamArgs, 'input' | 'teamID'>>;
 };
 
+export type PlayerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Player'] = ResolversParentTypes['Player']> = {
+  connected?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   arena?: Resolver<Maybe<ResolversTypes['ArenaResult']>, ParentType, ContextType, RequireFields<QueryArenaArgs, 'arenaID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -970,6 +988,7 @@ export type Resolvers<ContextType = any> = {
   LoginSuccess?: LoginSuccessResolvers<ContextType>;
   MaxArenaReachedError?: MaxArenaReachedErrorResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Player?: PlayerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;

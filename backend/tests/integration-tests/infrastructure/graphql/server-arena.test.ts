@@ -69,7 +69,8 @@ async function differentTeamMemberFixture({ ctx, tournament }: Omit<TestFixtures
 async function arenaFixture({ ctx, team }: Omit<TestFixtures, 'arena'>, use: any) {
   const arena = await ctx.providers.arena.createArena(ctx, {
     name: 'testArena',
-    teamId: team.id
+    teamId: team.id,
+    nbPlayers: 2,
   });
   await use(arena);
 }
@@ -153,7 +154,7 @@ describe('graphql', () => {
     });
 
     test('should fail if name is already taken', async ({ ctx, team, teamMember, teamMember2, graphql }) => {
-      await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'myArena' });
+      await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'myArena', nbPlayers: 2 });
       await graphql.client.login(teamMemberData);
       const response = await graphql.client.query({ operationName: 'createArena', query: query, variables: {
         teamID: team.id, name: 'myArena'
@@ -162,7 +163,7 @@ describe('graphql', () => {
     });
 
     test('should fail if max number of arenas is reached', async ({ ctx, team, teamMember, graphql }) => {
-      await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'myArena' });
+      await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'myArena', nbPlayers: 2 });
       await graphql.client.login(teamMemberData);
       const response = await graphql.client.query({ operationName: 'createArena', query: query, variables: {
         teamID: team.id, name: 'oneMore'

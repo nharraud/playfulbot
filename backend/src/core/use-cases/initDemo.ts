@@ -117,7 +117,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     await addTeamMember(txCtx, { teamId: teams[0].id, userId: invitedUser.id, checkPermission: false });
 
     await txCtx.providers.arena.createArena(txCtx, {
-      teamId: teams[0].id, name: 'testArena', id: 'ACEE0000-0000-4000-A000-000000000000'
+      teamId: teams[0].id, name: 'testArena', id: 'ACEE0000-0000-4000-A000-000000000000', nbPlayers: 2
     })
     
 

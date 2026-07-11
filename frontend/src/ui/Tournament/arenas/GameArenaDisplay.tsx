@@ -5,21 +5,29 @@ import { gameDefinition } from 'playfulbot-config';
 import cssCls from './GameArenaDisplay.module.scss';
 import { useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
 import { FormattedMessage } from 'react-intl';
+import { useState } from 'react';
+import ArenaConnectionInfoModal from './ArenaConnectionInfoModal';
+import { Arena } from 'src/types/graphql';
 
 interface GameArenaDisplayProps {
   gameID?: string
-  arenaId?: string
+  arena?: Arena
+  createGame?: () => void
 }
 
 export function GameArenaDisplay(props: GameArenaDisplayProps) {
   const gameResult = useGame(props.gameID);
 
-  const newGameText = (<FormattedMessage
-    defaultMessage="New Game"
-  />);
-  const createGame = useCreateArenaGame(props.arenaId);
-
   const  { controlledGame, setGameVersion } = useGameController(gameResult?.game);
+
+
+  const newGameText = (<FormattedMessage
+    defaultMessage="New game"
+  />);
+  const connectionInfoText = (<FormattedMessage
+    defaultMessage="Bot Connection Info"
+  />);
+  const [connectionInfoModalOpen, setConnectionInfoModalOpen] = useState(false);
 
   return (
     <div className={cssCls.gameArenaDisplayContainer}>
@@ -38,8 +46,15 @@ export function GameArenaDisplay(props: GameArenaDisplayProps) {
         />
       </div>
       <div className={cssCls.arenaMenu}>
-        <button className={cssCls.newGameButton} onClick={createGame}>{newGameText}</button>
+        <button className={cssCls.newGameButton} onClick={props.createGame}>{newGameText}</button>
+        <button className={cssCls.connectionInfoButton} onClick={() => setConnectionInfoModalOpen(true)}>{connectionInfoText}</button>
       </div>
+
+      <ArenaConnectionInfoModal
+        isOpen={connectionInfoModalOpen}
+        onClose={() => setConnectionInfoModalOpen(false)}
+        arena={props.arena}
+      />
     </div>
   );
 }

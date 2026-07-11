@@ -6,7 +6,8 @@ import { Arena } from "~playfulbot/core/entities/Arena";
 import { ArenaNameAlreadyTakenError, MaxArenaReachedError } from "../interfaces/ArenaProvider";
 
 export async function createArena(
-  ctx: Context<any>, { teamId, userId, arenaName }: { teamId: TeamID, userId: UserID, arenaName: string }
+  ctx: Context<any>,
+  { teamId, userId, arenaName }: { teamId: TeamID, userId: UserID, arenaName: string }
 ): Promise<Arena | ValidationError | ForbiddenError | ArenaNameAlreadyTakenError | MaxArenaReachedError> {
   const isMember = await ctx.providers.team.isTeamMember(ctx, teamId, userId);
 
@@ -19,6 +20,6 @@ export async function createArena(
   if (arenasCount >= membersCount) {
     return new MaxArenaReachedError();
   }
-  const arenaOrError = await ctx.providers.arena.createArena(ctx, { name: arenaName , teamId });
+  const arenaOrError = await ctx.providers.arena.createArena(ctx, { name: arenaName , teamId, nbPlayers: 2 });
   return arenaOrError;
 }

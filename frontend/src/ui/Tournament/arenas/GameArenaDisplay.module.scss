@@ -29,6 +29,10 @@
 
 .newGameButton {
   @include buttonSize('md');
-  @include buttonWithIcon('/src/assets/icons/ionicons/play-outline.svg');
   @include buttonType('success');
+}
+
+.connectionInfoButton {
+  @include buttonSize('md');
+  @include buttonType('info');
 }

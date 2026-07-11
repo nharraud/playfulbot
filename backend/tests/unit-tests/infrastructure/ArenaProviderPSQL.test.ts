@@ -55,12 +55,14 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const provider = new ArenaProviderPSQL();
       const arena = await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       });
       expect(arena).toEqual({
         id: expect.any(String),
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2
       });
     });
 
@@ -68,11 +70,13 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const provider = new ArenaProviderPSQL();
       await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       });
       const arenaResponse = await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       });
       await expect(arenaResponse).instanceOf(ArenaNameAlreadyTakenError);
     });
@@ -83,14 +87,16 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const provider = new ArenaProviderPSQL();
       const createdArena = await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       }) as Arena;
       const retrievedArena = await provider.getArena(ctx, createdArena.id);
       expect(retrievedArena).toEqual(createdArena);
       expect(retrievedArena).toEqual({
         id: expect.any(String),
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       });
     });
   });
@@ -100,11 +106,13 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const provider = new ArenaProviderPSQL();
       const createdArena = await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena'
+        name: 'testArena',
+        nbPlayers: 2,
       }) as Arena;
       const createdArena2 = await provider.createArena(ctx, {
         teamId: team.id,
-        name: 'testArena2'
+        name: 'testArena2',
+        nbPlayers: 2,
       }) as Arena;
       const arenasCount = await provider.countArenas(ctx, team.id);
       expect(arenasCount).toEqual(2);
@@ -126,7 +134,7 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
   describe('deleteArena', () => {
     test('should return true and remove the arena when it exists', async ({ ctx, team }) => {
       const provider = new ArenaProviderPSQL();
-      const created = await provider.createArena(ctx, { teamId: team.id, name: 'testArena' }) as Arena;
+      const created = await provider.createArena(ctx, { teamId: team.id, name: 'testArena', nbPlayers: 2, }) as Arena;
       const result = await provider.deleteArena(ctx, created.id);
       expect(result).toBe(true);
       const fetched = await provider.getArena(ctx, created.id);
@@ -153,7 +161,8 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
         [0,1,2,3].map(idx => 
           provider.createArena(ctx, {
           teamId: team.id,
-          name: `testArena${idx}`
+          name: `testArena${idx}`,
+          nbPlayers: 2,
           })
         )
       );

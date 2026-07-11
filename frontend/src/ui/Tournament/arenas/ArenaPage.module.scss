@@ -1,3 +1,5 @@
+@import '~components/button/Button.module.scss';
+
 .pageContainer {
   display: flex;
   flex-direction: column;
@@ -11,4 +13,9 @@
   flex-direction: row; /* Aligns children side-by-side */
   align-items: stretch; /* Default behavior: forces children to match parent height */
   background-color: var(---background);
+}
+
+.createGameButton {
+  @include buttonSize('md');
+  @include buttonType('success');
 }

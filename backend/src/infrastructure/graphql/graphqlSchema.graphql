@@ -315,18 +315,19 @@ union ArenaGamesResult = GameRef | ArenaGamesFailure
 
 # # union LiveGame = Game | GamePatch | GameCanceled | PlayerConnection
 
-# type Player {
-#   id: ID
-#   token: String
-#   connected: Boolean
-# }
+type Player {
+  id: ID
+  token: String
+  connected: Boolean
+}
 
 # union LivePlayer = Player | PlayerConnection
 
 type Arena {
   id: ID!
   name: String!
-  team: Team
+  team: Team,
+  players: [Player]
 }
 
 

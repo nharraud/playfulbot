@@ -83,6 +83,7 @@ describe('use-cases/arena/createArena', () => {
       id: expect.any(String),
       name: 'newArena',
       teamId: team.id,
+      nbPlayers: 2,
     });
   });
 

@@ -10,6 +10,7 @@ import { GameRef } from '~playfulbot/core/entities/GameRef';
 import { TransformAsyncIterator } from 'mem-pubsub/lib/TransformAsyncIterator';
 import { getArena } from '~playfulbot/core/use-cases/arena/getArena';
 import { deleteArena } from '~playfulbot/core/use-cases/arena/deleteArena';
+import { getArenaPlayers } from '~playfulbot/core/use-cases/arena/getArenaPlayers';
 
 export const arenaGamesResolver: gqlTypes.SubscriptionResolvers<GraphqlContext>['arenaGames'] = {
   subscribe: async (model, args, graphqlContext, info) => {
@@ -79,9 +80,15 @@ export const createArenaResolver: gqlTypes.MutationResolvers<GraphqlContext>['cr
         errors: [toGraphQLError(result)],
       };
     }
+
+    const arena: gqlTypes.Arena = {
+      ...result,
+      players: getArenaPlayers(result),
+    }
+
     return {
       __typename: 'CreateArenaSuccess',
-      arena: result
+      arena
     };
 };
 
@@ -103,9 +110,15 @@ export const arenaResolver: gqlTypes.QueryResolvers<GraphqlContext>['arena'] = a
         errors: [toGraphQLError(result)],
       };
     }
+
+    const arena: gqlTypes.Arena = {
+      ...result,
+      players: getArenaPlayers(result),
+    }
+
     return {
       __typename: 'ArenaSuccess',
-      arena: result
+      arena
     };
 };
 

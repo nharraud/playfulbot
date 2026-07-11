@@ -72,6 +72,7 @@ CREATE TABLE arenas (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   team_id uuid NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
   name VARCHAR(36) NOT NULL,
+  nb_players smallint NOT NULL,
   UNIQUE (team_id, name)
 );
 

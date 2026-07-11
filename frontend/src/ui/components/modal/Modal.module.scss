@@ -16,6 +16,12 @@
   }
 }
 
+.modalXl {
+  .modalContentWrapper {
+    min-width: calc(var(--spacing) * 150);
+  }
+}
+
 .modalContentWrapper {
   display: flex;
   flex-direction: column;

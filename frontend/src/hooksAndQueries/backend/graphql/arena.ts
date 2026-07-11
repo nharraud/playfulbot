@@ -57,6 +57,9 @@ const arenaQuery = graphql(`
         arena {
           id
           name
+          players {
+            token
+          }
         }
       }
       ... on ArenaFailure {

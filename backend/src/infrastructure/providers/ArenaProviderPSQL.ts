@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 
-import { Arena, validateArenaName } from '~playfulbot/core/entities/Arena';
+import { Arena, validateArenaName, validateNbPlayers } from '~playfulbot/core/entities/Arena';
 import { ArenaNameAlreadyTakenError, ArenaProvider, ArenasSearchOptions } from '~playfulbot/core/use-cases/interfaces/ArenaProvider';
 import { ContextPSQL } from './ContextPSQL';
 import { ArenaID } from '~playfulbot/core/entities/base-types';
@@ -14,6 +14,7 @@ export interface DbArena {
   id: ArenaID;
   team_id: TeamID;
   name: string;
+  nb_players: number;
 }
 /* eslint-enable */
 
@@ -22,6 +23,7 @@ function buildArena(data: DbArena): Arena {
     id: data.id,
     teamId: data.team_id,
     name: data.name,
+    nbPlayers: data.nb_players,
   };
   return result;
 }
@@ -32,6 +34,7 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
     arena: {
       teamId: TeamID,
       name: string,
+      nbPlayers: number,
       id?: ArenaID
     }): Promise<Arena | ArenaNameAlreadyTakenError | ValidationError> {
 
@@ -39,11 +42,16 @@ export class ArenaProviderPSQL implements ArenaProvider<ContextPSQL>  {
     if (validationError) {
       return new ValidationError('Invalid Arena', { 'arena.name': [ validationError ] });
     }
-    const addArenaRequest = 'INSERT INTO arenas(id, team_id, name) VALUES($[id], $[teamId], $[name]) RETURNING *;';
+    const nbPlayersError = validateNbPlayers(arena.nbPlayers);
+    if (nbPlayersError) {
+      return new ValidationError('Invalid Arena', { 'arena.nbPlayers': [ nbPlayersError ] });
+    }
+    const addArenaRequest = 'INSERT INTO arenas(id, team_id, name, nb_players) VALUES($[id], $[teamId], $[name], $[nbPlayers]) RETURNING *;';
     try {
       const data = await ctx.dbOrTx.one<DbArena>(addArenaRequest, {
         teamId: arena.teamId,
         name: arena.name,
+        nbPlayers: arena.nbPlayers,
         id: arena.id || DEFAULT,
       });
       return buildArena(data);

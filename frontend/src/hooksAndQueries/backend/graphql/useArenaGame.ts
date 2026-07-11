@@ -31,7 +31,7 @@ const arenaGamesSubscription = graphql(`
   }
 `)
 
-export function useArenaArenaSubscription(arenaID?: string) {
+export function useArenaGamesSubscription(arenaID?: string) {
   const client = useContext(BackendClientContext);
   const { data, loading, error } = useSubscription(
     arenaGamesSubscription,
@@ -46,7 +46,7 @@ export function useArenaArenaSubscription(arenaID?: string) {
   if (data?.arenaGames?.__typename === 'GameRef') {
     gameRef = data?.arenaGames;
   }
-  return { gameRef };
+  return { gameRef, loading, error };
 }
 
 const createArenaGameMutation = graphql(`

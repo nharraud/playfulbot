@@ -44,7 +44,7 @@ async function arenaFixture({ ctx, team }: Omit<TestFixtures, 'arena'>, use: any
   //   username: 'testUser',
   //   password: 'mypassword'
   // }) as User;
-  const arena = await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'testArena' });
+  const arena = await ctx.providers.arena.createArena(ctx, { teamId: team.id, name: 'testArena', nbPlayers: 2 });
   await use(arena);
 }
 

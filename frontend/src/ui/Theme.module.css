@@ -43,6 +43,10 @@
   --color-btn-bg-danger: var(--color-neutral-100);
   --color-btn-bg-danger-hover: var(--color-red-100);
 
+  --color-btn-txt-info: white;
+  --color-btn-bg-info: var(--color-blue-500);
+  --color-btn-bg-info-hover: var(--color-blue-600);
+
   /* Menu */
   --page-menu-selected-color: var(--color-indigo-600);
   --page-menu-unselected-color: var(--color-neutral-600);

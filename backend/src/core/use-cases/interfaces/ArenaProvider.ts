@@ -27,6 +27,7 @@ export interface ArenaProvider<Context> {
   createArena(ctx: Context, arena: {
       teamId: TeamID,
       name: string,
+      nbPlayers: number,
       id?: ArenaID
   }): Promise<Arena | ArenaNameAlreadyTakenError | ValidationError>;
   getArena(ctx: Context, id: ArenaID): Promise<Arena | null>;
