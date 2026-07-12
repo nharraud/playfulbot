@@ -136,7 +136,7 @@ describe('grpc', () => {
       await expect(endPromise).rejects.toThrow('CANCELLED');
     });
 
-    test('should stream game cancellation during initial game state', async () => {
+    test('should stream game not found during initial game state when the game is already cancelled', async () => {
       const token = createPlayerToken('testPlayer1');
       const authMetadata = new grpc.Metadata();
       game.cancel();
@@ -145,10 +145,9 @@ describe('grpc', () => {
       const endPromise = endStreamPromise(gameCall);
       gameCall.write({ gameId: 'testGame' });
       const iterator = gameCall.iterator();
-      const response1 = await iterator.next() as any;
-      expect(response1).toMatchObject({value: { game: { id: 'testGame', canceled: true, version: 1 }}});
+      const response1 = iterator.next() as any;
+      await expect(response1).rejects.toThrow('NOT_FOUND');
       gameCall.cancel();
-      await expect(endPromise).rejects.toThrow('CANCELLED');
     });
   });
 
@@ -216,7 +215,7 @@ describe('grpc', () => {
       authMetadata.set('authorization', token);
       const { cbPromise, playCall } = playGame(client, authMetadata);
       playCall.write({ gameId: 'testGame', data: '{ "count": 12 }' });
-      await expect(cbPromise).rejects.toThrowError(expect.objectContaining({ code: grpc.status.FAILED_PRECONDITION }));
+      await expect(cbPromise).rejects.toThrowError('NOT_FOUND');
     });
 
     test('should fail to play a non existing game', async () => {
