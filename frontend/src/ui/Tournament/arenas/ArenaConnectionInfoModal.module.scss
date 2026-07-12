@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .modal {
   composes: modalXl from '../../components/modal/Modal.module.scss';
@@ -9,8 +9,8 @@
 }
 
 .closeButton {
-  @include buttonSize('md');
-  @include buttonType('cancel');
+  @include button.buttonSize('md');
+  @include button.buttonType('cancel');
 }
 
 .playerTokenRow {
@@ -32,9 +32,9 @@
 }
 
 .copyButton {
-  @include buttonSize('md');
-  @include buttonWithIcon('/src/assets/icons/ionicons/copy-outline.svg');
-  @include buttonType('info');
+  @include button.buttonSize('md');
+  @include button.buttonWithIcon('/src/assets/icons/ionicons/copy-outline.svg');
+  @include button.buttonType('info');
   flex-shrink: 0;
   width: 2rem;
   height: 2rem;

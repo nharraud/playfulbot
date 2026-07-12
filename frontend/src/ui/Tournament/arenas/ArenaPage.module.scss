@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .pageContainer {
   display: flex;
@@ -16,6 +16,6 @@
 }
 
 .createGameButton {
-  @include buttonSize('md');
-  @include buttonType('success');
+  @include button.buttonSize('md');
+  @include button.buttonType('success');
 }

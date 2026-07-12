@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .modal {
   composes: modalSm from '../../components/modal/Modal.module.scss';
@@ -18,10 +18,10 @@
 
 .createAction {
   composes: modalButton from '../../components/modal/Modal.module.scss';
-  @include buttonType('success');
+  @include button.buttonType('success');
 }
 
 .cancelAction {
   composes: modalButton from '../../components/modal/Modal.module.scss';
-  @include buttonType('cancel');
+  @include button.buttonType('cancel');
 }

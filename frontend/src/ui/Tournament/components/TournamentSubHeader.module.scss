@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .pageHeader {
   composes: card from '~components/card/Card.module.css';
@@ -22,7 +22,7 @@
   flex-direction: column;
   justify-content: center;
   button {
-    @include buttonSize('lg');
+    @include button.buttonSize('lg');
   }
 }
 

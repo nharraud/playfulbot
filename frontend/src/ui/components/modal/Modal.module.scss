@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .modal {
   padding: 0;
@@ -29,5 +29,5 @@
 }
 
 .modalButton {
-  @include buttonSize('md');
+  @include button.buttonSize('md');
 }

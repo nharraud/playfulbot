@@ -1,4 +1,4 @@
-@import '~components/button/Button.module.scss';
+@use '~components/button/Button.module.scss' as button;
 
 .teamArenas {
   display: flex;
@@ -39,17 +39,17 @@
 }
 
 .openButton {
-  @include buttonSize('md');
-  @include buttonWithIcon('/src/assets/icons/ionicons/play-outline.svg');
-  @include buttonType('success');
+  @include button.buttonSize('md');
+  @include button.buttonWithIcon('/src/assets/icons/ionicons/play-outline.svg');
+  @include button.buttonType('success');
   flex: 1;
   text-decoration: none;
 }
 
 .deleteButton {
-  @include buttonSize('md');
-  @include buttonType('danger');
-  @include buttonWithIcon('/src/assets/icons/ionicons/trash-outline.svg');
+  @include button.buttonSize('md');
+  @include button.buttonType('danger');
+  @include button.buttonWithIcon('/src/assets/icons/ionicons/trash-outline.svg');
   
   display: flex;
   align-items: center;
@@ -69,6 +69,6 @@
 }
 
 .createArenaBtn {
-  @include buttonType('success');
-  @include buttonWithIcon('/src/assets/icons/ionicons/add.svg', 1.4rem);
+  @include button.buttonType('success');
+  @include button.buttonWithIcon('/src/assets/icons/ionicons/add.svg', 1.4rem);
 }

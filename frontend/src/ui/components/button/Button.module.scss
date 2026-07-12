@@ -1,5 +1,7 @@
+@use "sass:map";
+
 @mixin buttonSize($size) {
-  $paddingMultiplier: map-get((
+  $paddingMultiplier: map.get((
       md : 2,
       lg : 3,
   ), $size);
