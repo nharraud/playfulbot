@@ -314,9 +314,11 @@ export type TeamOrDeletedTeam = DeletedTeam | Team;
 
 export type Tournament = {
   __typename?: 'Tournament';
+  endDate?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   myRole?: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
+  startDate?: Maybe<Scalars['Date']['output']>;
   status?: Maybe<TournamentStatus>;
   teams?: Maybe<Array<Maybe<Team>>>;
 };
@@ -875,9 +877,11 @@ export type TeamOrDeletedTeamResolvers<ContextType = any, ParentType extends Res
 };
 
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   myRole?: Resolver<Maybe<ResolversTypes['TournamentRole']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['TournamentStatus']>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

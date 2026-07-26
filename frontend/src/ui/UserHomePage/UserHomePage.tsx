@@ -11,13 +11,15 @@ import MenuBar from '../MenuBar/MenuBar';
 // } from '../../types/graphql';
 import { useAuthenticatedUserTournaments } from '../../hooksAndQueries/backend/graphql/authenticatedUserTournaments';
 import { TournamentsList } from './TournamentsList';
+import CreateTournamentModal from './CreateTournamentModal';
 import { FormattedMessage } from 'react-intl';
 import { Header } from 'src/ui/components/header/Header';
 
-import cssCls from './UserHomePage.module.css';
+import cssCls from './UserHomePage.module.scss';
 
 export function UserHomePage() {
   const { authenticatedUser } = useAuthenticatedUser();
+  const [createTournamentModalOpen, setCreateTournamentModalOpen] = useState(false);
   // const {
   //   error,
   //   data: userTournaments,
@@ -75,15 +77,28 @@ export function UserHomePage() {
     <div className={cssCls.page}>
       <Header title={Title} />
       <main className={cssCls.main}>
+        <CreateTournamentModal
+          isOpen={createTournamentModalOpen}
+          onClose={() => setCreateTournamentModalOpen(false)}
+          onCreate={() => {}}
+        />
         <div className={cssCls.titleBlock}>
-          <h2>
-            <FormattedMessage defaultMessage="Tournaments" />
-          </h2>
-          <p className={cssCls.subtitle}>
-            <FormattedMessage
-              defaultMessage="Select a tournament to view details and participate"
-            />
-          </p>
+          <div className={cssCls.titleBlockText}>
+            <h2>
+              <FormattedMessage defaultMessage="Tournaments" />
+            </h2>
+            <p className={cssCls.subtitle}>
+              <FormattedMessage
+                defaultMessage="Select a tournament to view details and participate"
+              />
+            </p>
+          </div>
+          <button
+            className={cssCls.createTournamentButton}
+            onClick={() => setCreateTournamentModalOpen(true)}
+          >
+            <FormattedMessage defaultMessage="Create Tournament" />
+          </button>
         </div>
         <TournamentsList/>
       </main>
