@@ -23,10 +23,9 @@ export interface DbTournament {
   name: string;
   status: TournamentStatus;
   start_date: string;
-  last_round_date: string;
-  rounds_number: number;
-  minutes_between_rounds: number;
+  end_date: string;
   game_definition_id: string;
+  config: string;
 }
 /* eslint-enable */
 
@@ -35,10 +34,9 @@ function buildTournament(data: DbTournament): Tournament {
     id: data.id,
     name: data.name,
     status: data.status,
-    startDate: data.start_date,
-    lastRoundDate: data.last_round_date,
-    roundsNumber: data.rounds_number,
-    minutesBetweenRounds: data.minutes_between_rounds,
+    startDate: data.start_date?.replace(/\+00$/, 'Z'),
+    endDate: data.end_date?.replace(/\+00$/, 'Z'),
+    config: data.config,
     gameDefinitionId: data.game_definition_id,
   }
 }
@@ -48,26 +46,32 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   async createTournament(
     ctx: ContextPSQL,
     {
-      name, startDate, lastRoundDate, roundsNumber, minutesBetweenRounds,
-      gameDefinitionId, id
+      name, startDate, endDate, config, gameDefinitionId, id
     }: {
       name: string,
-      startDate: string,
-      lastRoundDate: string,
-      roundsNumber: number,
-      minutesBetweenRounds: number,
+      startDate: Date | string,
+      endDate: Date | string,
+      config?: Object | string,
       gameDefinitionId: GameDefinitionID,
       id?: TournamentID
     }) {
-      const query = `INSERT INTO tournaments(id, name, start_date, last_round_date, rounds_number, minutes_between_rounds, game_definition_id)
-      VALUES($[id], $[name], $[startDate], $[lastRoundDate], $[roundsNumber], $[minutesBetweenRounds], $[gameDefinitionId])
+      if (typeof startDate !== 'string') {
+        startDate = startDate.toISOString();
+      }
+      if (typeof endDate !== 'string') {
+        endDate = endDate.toISOString();
+      }
+      if (config && typeof config !== 'string') {
+        config = JSON.stringify(config);
+      }
+      const query = `INSERT INTO tournaments(id, name, start_date, end_date, config, game_definition_id)
+      VALUES($[id], $[name], $[startDate], $[endDate], $[config], $[gameDefinitionId])
       RETURNING *`;
       const data = await ctx.dbOrTx.one<DbTournament>(query, {
         name,
-        startDate,
-        lastRoundDate,
-        roundsNumber,
-        minutesBetweenRounds,
+        startDate: startDate,
+        endDate: endDate,
+        config: config,
         gameDefinitionId,
         id: id || DEFAULT,
       });

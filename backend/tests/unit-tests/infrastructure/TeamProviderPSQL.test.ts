@@ -19,10 +19,8 @@ const dummyUUID = '00000000-0000-4000-9000-000000000000';
 const tournamentData = {
   name: 'testTournament',
   gameDefinitionId: 'testGame',
-  lastRoundDate: '2024-01-02T00:00:00+00',
-  minutesBetweenRounds: 60,
-  roundsNumber: 10,
   startDate: '2024-01-01T00:00:00+00',
+  endDate: '2024-01-02T00:00:00+00',
 };
 
 async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use: any) {
@@ -203,10 +201,8 @@ describe('infrastructure/games/TeamProviderPSQL', () => {
       const tournament2 = await tournamentProvider.createTournament(ctx, {
         name: 'testTournament2',
         gameDefinitionId: 'testGame',
-        lastRoundDate: '2024-01-02T00:00:00+00',
-        minutesBetweenRounds: 60,
-        roundsNumber: 10,
         startDate: '2024-01-01T00:00:00+00',
+        endDate: '2024-01-02T00:00:00+00',
       });
 
       const teamProvider = new TeamProviderPSQL();

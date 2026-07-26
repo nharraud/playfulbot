@@ -38,10 +38,9 @@ export interface TournamentProvider<Context> {
     ctx: Context,
     params: {
       name: string,
-      startDate: string,
-      lastRoundDate: string,
-      roundsNumber: number,
-      minutesBetweenRounds: number,
+      startDate: Date | string,
+      endDate: Date | string,
+      config?: string | object,
       gameDefinitionId: GameDefinitionID,
       id?: TournamentID
     }

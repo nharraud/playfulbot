@@ -30,10 +30,8 @@ export const createTournamentResolver: gqlTypes.MutationResolvers<GraphqlContext
 
     return createTournament(apolloContext.ctx, {
       tournamentName: args.name,
-      lastRoundDate: args.lastRoundDate,
-      minutesBetweenRounds: args.minutesBetweenRounds,
-      roundsNumber: args.roundsNumber,
-      startDate: args.startDate
+      startDate: args.startDate,
+      endDate: args.endDate,
     });
   };
 

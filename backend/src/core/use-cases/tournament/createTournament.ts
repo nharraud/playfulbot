@@ -4,7 +4,7 @@ import { TournamentRole } from "~playfulbot/core/entities/TournamentRole";
 
 export async function createTournament(
   ctx: Context<any>, params: {
-    tournamentName: string, startDate: string, lastRoundDate: string, roundsNumber: number, minutesBetweenRounds: number
+    tournamentName: string, startDate: string, endDate: string,
   }
 ): Promise<Tournament> {
   const gameDefinitions = await ctx.providers.gameDefinitions.getGameDefinitions();
@@ -13,9 +13,7 @@ export async function createTournament(
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
       name: params.tournamentName,
       startDate: params.startDate,
-      lastRoundDate: params.lastRoundDate,
-      roundsNumber: params.roundsNumber,
-      minutesBetweenRounds: params.minutesBetweenRounds,
+      endDate: params.endDate,
       gameDefinitionId: gameDefinition.value
     }
   );

@@ -211,10 +211,8 @@ export type MutationCreateTeamArgs = {
 
 
 export type MutationCreateTournamentArgs = {
-  lastRoundDate: Scalars['Date']['input'];
-  minutesBetweenRounds: Scalars['Int']['input'];
+  endDate: Scalars['Date']['input'];
   name: Scalars['String']['input'];
-  roundsNumber: Scalars['Int']['input'];
   startDate: Scalars['Date']['input'];
 };
 
@@ -315,9 +313,11 @@ export type TeamOrDeletedTeam = DeletedTeam | Team;
 
 export type Tournament = {
   __typename: 'Tournament';
+  endDate: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   myRole: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
+  startDate: Maybe<Scalars['Date']['output']>;
   status: Maybe<TournamentStatus>;
   teams: Maybe<Array<Maybe<Team>>>;
 };

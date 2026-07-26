@@ -14,15 +14,10 @@ CREATE TABLE tournaments (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   status tournament_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp NOT NULL,
-  last_round_date timestamp NOT NULL,
-  rounds_number smallint NOT NULL CHECK (rounds_number > 1),
-  minutes_between_rounds smallint NOT NULL,
+  start_date timestamp with time zone NOT NULL,
+  end_date timestamp with time zone NOT NULL,
   game_definition_id VARCHAR(70) NOT NULL,
-
-  CONSTRAINT first_round_after_tournament_start CHECK (
-    start_date <= last_round_date - rounds_number * make_interval(mins := minutes_between_rounds)
-  )
+  config text
 );
 
 
@@ -47,7 +42,7 @@ CREATE TYPE round_status AS ENUM ('CREATED', 'STARTED', 'ENDED');
 CREATE TABLE rounds (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
   status round_status NOT NULL DEFAULT 'CREATED',
-  start_date timestamp NOT NULL,
+  start_date timestamp with time zone NOT NULL,
   tournament_id uuid NOT NULL REFERENCES tournaments (id) ON DELETE CASCADE
 );
 
@@ -80,7 +75,7 @@ CREATE TYPE game_status AS ENUM ('pending', 'started', 'ended');
 
 CREATE TABLE games (
   id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-  started_at timestamp DEFAULT NOW(),
+  started_at timestamp with time zone DEFAULT NOW(),
   game_def_id VARCHAR(36) NOT NULL,
   players JSONB NOT NULL,
   runner_id uuid REFERENCES game_runners(id) ON DELETE SET NULL,
@@ -246,6 +241,6 @@ CREATE TABLE tournament_invitation_links (
 CREATE TABLE tournament_invitations (
   tournament_id uuid REFERENCES tournaments (id) ON DELETE CASCADE,
   invitee_id uuid REFERENCES users (id) ON DELETE CASCADE,
-  sent_at timestamp NOT NULL DEFAULT NOW(),
+  sent_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (tournament_id, invitee_id)
 );

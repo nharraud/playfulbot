@@ -4,8 +4,8 @@ services:
     ports:
       - "5432"
     environment:
-      TZ: 'GMT'
-      PGTZ: 'GMT'
+      TZ: 'Etc/UTC'
+      PGTZ: 'Etc/UTC'
   playfulbot-backend:
     build:
       context: ..

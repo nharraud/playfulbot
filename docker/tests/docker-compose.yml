@@ -6,5 +6,5 @@ services:
     environment:
       POSTGRES_PASSWORD: test_password
       POSTGRES_USER: playfulbot_test
-      TZ: 'GMT'
-      PGTZ: 'GMT'
+      TZ: 'Etc/UTC'
+      PGTZ: 'Etc/UTC'

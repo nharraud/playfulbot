@@ -41,11 +41,8 @@ type Tournament {
   id: ID!
   name: String!
   status: TournamentStatus
-  # startDate: Date
-  # lastRoundDate: Date
-  # firstRoundDate: Date
-  # roundsNumber: Int
-  # minutesBetweenRounds: Int
+  startDate: Date
+  endDate: Date
   teams: [Team]
 
   # rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
@@ -397,9 +394,7 @@ type Mutation {
   createTournament(
     name: String!,
     startDate: Date!,
-    lastRoundDate: Date!,
-    roundsNumber: Int!,
-    minutesBetweenRounds: Int!,
+    endDate: Date!
   ): Tournament
 
 #   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult

@@ -212,10 +212,8 @@ export type MutationCreateTeamArgs = {
 
 
 export type MutationCreateTournamentArgs = {
-  lastRoundDate: Scalars['Date']['input'];
-  minutesBetweenRounds: Scalars['Int']['input'];
+  endDate: Scalars['Date']['input'];
   name: Scalars['String']['input'];
-  roundsNumber: Scalars['Int']['input'];
   startDate: Scalars['Date']['input'];
 };
 
@@ -514,7 +512,6 @@ export type ResolversTypes = {
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
   GameRef: ResolverTypeWrapper<GameRef>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   InvalidCredentialsError: ResolverTypeWrapper<InvalidCredentialsError>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   JoinTeamError: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['JoinTeamError']>;
@@ -587,7 +584,6 @@ export type ResolversParentTypes = {
   ForbiddenError: ForbiddenError;
   GameRef: GameRef;
   ID: Scalars['ID']['output'];
-  Int: Scalars['Int']['output'];
   InvalidCredentialsError: InvalidCredentialsError;
   JSON: Scalars['JSON']['output'];
   JoinTeamError: ResolversUnionTypes<ResolversParentTypes>['JoinTeamError'];
@@ -827,7 +823,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createArena?: Resolver<Maybe<ResolversTypes['CreateArenaResult']>, ParentType, ContextType, RequireFields<MutationCreateArenaArgs, 'name' | 'teamID'>>;
   createArenaGame?: Resolver<Maybe<ResolversTypes['CreateArenaGameResult']>, ParentType, ContextType, RequireFields<MutationCreateArenaGameArgs, 'arenaID'>>;
   createTeam?: Resolver<Maybe<ResolversTypes['CreateTeamResult']>, ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input' | 'join' | 'tournamentID'>>;
-  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'lastRoundDate' | 'minutesBetweenRounds' | 'name' | 'roundsNumber' | 'startDate'>>;
+  createTournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<MutationCreateTournamentArgs, 'endDate' | 'name' | 'startDate'>>;
   deleteArena?: Resolver<Maybe<ResolversTypes['DeleteArenaResult']>, ParentType, ContextType, RequireFields<MutationDeleteArenaArgs, 'arenaID'>>;
   joinTeam?: Resolver<Maybe<ResolversTypes['JoinTeamResult']>, ParentType, ContextType, RequireFields<MutationJoinTeamArgs, 'teamID'>>;
   login?: Resolver<Maybe<ResolversTypes['LoginResult']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;

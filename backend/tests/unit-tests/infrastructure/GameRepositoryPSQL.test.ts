@@ -21,10 +21,8 @@ async function tournamentFixture({ ctx }: Omit<TestFixtures, 'tournament'>, use:
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
-    lastRoundDate: '2024-01-02T00:00:00+00',
-    minutesBetweenRounds: 60,
-    roundsNumber: 10,
     startDate: '2024-01-01T00:00:00+00',
+    endDate: '2024-01-02T00:00:00+00',
   }) as Tournament;
 
   use(tournament);

@@ -13,10 +13,8 @@ async function tournamentFixture({ ctx }: { ctx: Context<any> }, use: any) {
   const tournament = await ctx.providers.tournament.createTournament(ctx, {
     name: 'testTournament',
     gameDefinitionId: 'testGame',
-    lastRoundDate: '2024-01-02T00:00:00+00',
-    minutesBetweenRounds: 60,
-    roundsNumber: 10,
     startDate: '2024-01-01T00:00:00+00',
+    endDate: '2024-01-02T00:00:00+00',
   });
   await use(tournament);
 }
@@ -88,24 +86,18 @@ describe('graphql', () => {
     const tournamentData = {
       name: 'newTournament',
       gameDefinitionId: 'testGame',
-      lastRoundDate: '3024-01-02T00:00:00+00',
-      minutesBetweenRounds: 60,
-      roundsNumber: 3,
-      startDate: '3024-01-01T00:00:00+00',
+      startDate: '3024-01-01T00:00:00Z',
+      endDate: '3024-01-02T00:00:00Z',
     };
     const query = `mutation createTournament(
       $name: String!,
       $startDate: Date!,
-      $lastRoundDate: Date!,
-      $roundsNumber: Int!,
-      $minutesBetweenRounds: Int!,
+      $endDate: Date!,
     ) {
       createTournament(
         name: $name
         startDate: $startDate,
-        lastRoundDate: $lastRoundDate,
-        roundsNumber: $roundsNumber,
-        minutesBetweenRounds: $minutesBetweenRounds,
+        endDate: $endDate,
       ) {
         id
         name

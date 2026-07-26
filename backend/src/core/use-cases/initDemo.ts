@@ -79,12 +79,9 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     Settings.now = () => tournamentStart.toMillis();
     const tournament = await txCtx.providers.tournament.createTournament(txCtx, {
       name: 'Team Building Tournament',
-      startDate: tournamentStart.toISO(),
-      lastRoundDate: tournamentEnd.toISO(),
-      roundsNumber: 7,
-      minutesBetweenRounds: 30,
       gameDefinitionId: gameDefinition.name,
-      // admin.id,
+      startDate: tournamentStart.toISO(),
+      endDate: tournamentEnd.toISO(),
       id: 'F00FABE0-0000-4000-a000-000000000001',
     });
     txCtx.providers.tournament.changeTournamentRole(txCtx, {

@@ -35,10 +35,8 @@ async function user2Fixture({ ctx }: Omit<TestFixtures, 'user2'>, use: any) {
 
 const tournamentData = {
   gameDefinitionId: 'testGame',
-  lastRoundDate: '2024-01-02T00:00:00+00',
-  minutesBetweenRounds: 60,
-  roundsNumber: 10,
   startDate: '2024-01-01T00:00:00+00',
+  endDate: '2024-01-02T00:00:00+00',
 };
 
 async function tournamentsFixture({ ctx }: Omit<TestFixtures, 'tournaments'>, use: any) {
