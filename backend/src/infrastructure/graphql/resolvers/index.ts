@@ -25,7 +25,7 @@ import {
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
 // import { playerGamesResolver } from './playerGames';
-import { DateScalar } from './scalars/DateScalar';
+import { DateScalar } from 'playfulbot-backend-commons/lib/graphqlResolvers/scalars/DateScalar';
 import { GraphqlContext } from '../types/graphqlTypes';
 import { createArenaGameResolver, createArenaResolver, arenaResolver, arenaGamesResolver, deleteArenaResolver } from './arena';
 // import { teamPlayerResolver } from './teamPlayer';

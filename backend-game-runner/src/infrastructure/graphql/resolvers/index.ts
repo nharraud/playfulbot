@@ -4,7 +4,7 @@ import { IResolvers } from '@graphql-tools/utils';
 import { gameResolver, playResolver } from '~game-runner/infrastructure/graphql/resolvers/game';
 import { pingResolver } from '~game-runner/infrastructure/graphql/resolvers/ping';
 import * as gqlTypes from '~game-runner/infrastructure/graphql/types/graphql';
-import { DateScalar } from './scalars/DateScalar';
+import { DateScalar } from 'playfulbot-backend-commons/lib/graphqlResolvers/scalars/DateScalar';
 
 const resolvers: IResolvers = {
   Query: {
