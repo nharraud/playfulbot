@@ -12,6 +12,7 @@ import TeamSubPage from './team/TeamSubPage';
 import TournamentInfoSubPage from './tournamentInfo/TournamentInfoSubPage';
 import GameRulesSubPage from './gameRules/GameRulesSubPage';
 import CodingBotSubPage from './codingBot/CodingBotSubPage';
+import ConfigurationSubPage from './configuration/ConfigurationSubPage';
 import Debug from './Debug';
 import MenuBar from '../MenuBar/MenuBar';
 import TeamArenasSubPage from './arenas/TeamArenasSubPage';
@@ -69,6 +70,9 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
               <i/><FormattedMessage defaultMessage="Competition"/>
             </Link>
           )}
+          <Link to={`${baseURL}/configuration`} className={`${cssCls.configuration} ${activeClass('configuration')}`}>
+            <i/><FormattedMessage defaultMessage="Configuration"/>
+          </Link>
         </nav>
       </aside>
       <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
@@ -78,6 +82,7 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
           <Route path={`/coding`} element={<CodingBotSubPage />}/>
           <Route path={`/team`} element={<TeamSubPage tournament={tournament} />}/>
           <Route path={`/arenas`} element={<TeamArenasSubPage tournament={tournament} />}/>
+          <Route path={`/configuration`} element={<ConfigurationSubPage tournament={tournament} />}/>
           {/* <Route path={`${baseURL}/arenas/*`}>
             <Debug tournament={tournament} arenaId={arenaMatch?.params?.arenaID} />
           </Route> */}

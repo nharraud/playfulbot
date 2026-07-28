@@ -1,0 +1,44 @@
+@use '~components/button/Button.module.scss' as button;
+
+.configuration {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 6);
+}
+
+.headerIcon {
+  composes: headerIcon from '../components/TournamentSubHeader.module.scss';
+  i {
+    mask: url('/src/assets/icons/ionicons/options-outline.svg');
+  }
+}
+
+.formCard {
+  composes: card from '~components/card/Card.module.css';
+}
+
+.dateFields {
+  display: flex;
+  gap: calc(var(--spacing) * 4);
+
+  > div {
+    flex: 1;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--spacing) * 4);
+}
+
+.successMessage {
+  color: var(--color-success);
+  margin: 0;
+}
+
+.saveAction {
+  @include button.buttonSize('md');
+  @include button.buttonType('success');
+}

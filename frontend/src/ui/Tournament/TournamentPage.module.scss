@@ -83,6 +83,10 @@
   @include menuItem('/src/assets/icons/ionicons/people-outline.svg');
 }
 
+.configuration {
+  @include menuItem('/src/assets/icons/ionicons/options-outline.svg');
+}
+
 .activeButton {
   background-image: linear-gradient(to right, var(--color-indigo-600) 0%, var(--color-purple-600) 100%);
   color: white;
