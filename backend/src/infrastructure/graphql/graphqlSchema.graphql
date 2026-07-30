@@ -168,6 +168,29 @@ union UpdateTeamResult = UpdateTeamSuccess | UpdateTeamFailure
 
 
 # #
+# # Update Tournament Configuration Input/Output
+# #
+
+input TournamentConfigurationInput {
+  name: String!
+  startDate: Date!
+  endDate: Date!
+}
+
+type UpdateTournamentConfigurationSuccess {
+  tournament: Tournament
+}
+
+type UpdateTournamentConfigurationFailure {
+  errors: [UpdateTournamentConfigurationError!]!
+}
+
+union UpdateTournamentConfigurationError = ForbiddenError | ValidationError
+
+union UpdateTournamentConfigurationResult = UpdateTournamentConfigurationSuccess | UpdateTournamentConfigurationFailure
+
+
+# #
 # # Create Team Input/Output
 # #
 type CreateTeamSuccess {
@@ -396,6 +419,8 @@ type Mutation {
     startDate: Date!,
     endDate: Date!
   ): Tournament
+
+  updateTournamentConfiguration(tournamentID: ID!, input: TournamentConfigurationInput!): UpdateTournamentConfigurationResult
 
 #   registerTournamentInvitationLink(tournamentInvitationLinkID: ID!): RegisterTournamentInvitationResult
 

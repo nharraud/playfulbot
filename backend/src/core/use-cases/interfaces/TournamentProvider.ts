@@ -46,6 +46,16 @@ export interface TournamentProvider<Context> {
     }
   ): Promise<Tournament>;
 
+  updateTournament(
+    ctx: Context,
+    params: {
+      id: TournamentID,
+      name: string,
+      startDate: Date | string,
+      endDate: Date | string,
+    }
+  ): Promise<Tournament>;
+
   getTournamentByID(ctx: Context, id: TournamentID): Promise<Tournament | null>;
 
   getTournamentByTeam(ctx: Context, teamID: TeamID): Promise<Tournament | null>;

@@ -23,6 +23,14 @@ interface ConfigurationSubPageProps {
   tournament: Exclude<TournamentQuery['tournament'], null>;
 }
 
+// datetime-local inputs need "YYYY-MM-DDTHH:mm" in local time, with no `Z`/offset.
+function toDatetimeLocalValue(date: unknown): string {
+  if (!date) return '';
+  const d = new Date(date as string);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function ConfigurationSubPage({ tournament }: ConfigurationSubPageProps) {
   const updateTournamentConfiguration = useUpdateTournamentConfiguration();
   const {
@@ -31,7 +39,11 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
     formState: { errors, isSubmitSuccessful },
   } = useForm<FormData>({
     resolver: zodResolver(configurationSchema),
-    defaultValues: { name: tournament.name },
+    defaultValues: {
+      name: tournament.name,
+      startDate: toDatetimeLocalValue(tournament.startDate),
+      endDate: toDatetimeLocalValue(tournament.endDate),
+    },
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {

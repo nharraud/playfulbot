@@ -7,7 +7,8 @@ const tournamentQuery = graphql(`
       id
       name
       status
-      # startDate
+      startDate
+      endDate
       # firstRoundDate
       # lastRoundDate
       # roundsNumber

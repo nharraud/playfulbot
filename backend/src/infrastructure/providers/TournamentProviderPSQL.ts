@@ -78,6 +78,34 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
       return buildTournament(data);
   }
 
+  async updateTournament(
+    ctx: ContextPSQL,
+    {
+      id, name, startDate, endDate
+    }: {
+      id: TournamentID,
+      name: string,
+      startDate: Date | string,
+      endDate: Date | string,
+    }) {
+      if (typeof startDate !== 'string') {
+        startDate = startDate.toISOString();
+      }
+      if (typeof endDate !== 'string') {
+        endDate = endDate.toISOString();
+      }
+      const query = `UPDATE tournaments SET name = $[name], start_date = $[startDate], end_date = $[endDate]
+      WHERE id = $[id]
+      RETURNING *`;
+      const data = await ctx.dbOrTx.one<DbTournament>(query, {
+        id,
+        name,
+        startDate: startDate,
+        endDate: endDate,
+      });
+      return buildTournament(data);
+  }
+
   async tournamentExists(ctx: ContextPSQL, id: TournamentID): Promise<boolean> {
     try {
       const result = await ctx.dbOrTx.oneOrNone<{ exists: boolean }>(

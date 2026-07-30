@@ -21,6 +21,7 @@ import {
   tournamentResolver,
 //   tournamentRoundsResolver,
   tournamentTeamsResolver,
+  updateTournamentConfigurationResolver,
 } from './tournaments';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 // import { createNewDebugGameResolver, debugArenaResolver } from './debugArena';
@@ -65,6 +66,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
     login: loginResolver,
     logout: logoutResolver,
     createTournament: createTournamentResolver,
+    updateTournamentConfiguration: updateTournamentConfigurationResolver,
   //   registerTournamentInvitationLink: registerTournamentInvitationLinkResolver,
     joinTeam: joinTeamResolver,
     createTeam: createTeamResolver,

@@ -4,7 +4,7 @@ import cssCls from './TournamentPage.module.scss';
 import { Routes, Route, Link, useMatch,/*useRouteMatch,*/ useParams } from 'react-router';
 
 import { useTournament } from 'src/hooksAndQueries/backend/graphql/useTournament';
-import { GetTeamQuery, TournamentQuery, TournamentStatus } from 'src/types/backend/graphql/graphql';
+import { GetTeamQuery, TournamentQuery, TournamentRole, TournamentStatus } from 'src/types/backend/graphql/graphql';
 import { useTeam } from 'src/hooksAndQueries/backend/graphql/team';
 import LoadingWidget from '../Loading';
 // import CompetitionSubPage from './competition/CompetitionSubPage';
@@ -70,9 +70,11 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
               <i/><FormattedMessage defaultMessage="Competition"/>
             </Link>
           )}
+          {tournament.myRole === TournamentRole.Organizer && (
           <Link to={`${baseURL}/configuration`} className={`${cssCls.configuration} ${activeClass('configuration')}`}>
             <i/><FormattedMessage defaultMessage="Configuration"/>
           </Link>
+          )}
         </nav>
       </aside>
       <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
@@ -82,7 +84,9 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
           <Route path={`/coding`} element={<CodingBotSubPage />}/>
           <Route path={`/team`} element={<TeamSubPage tournament={tournament} />}/>
           <Route path={`/arenas`} element={<TeamArenasSubPage tournament={tournament} />}/>
-          <Route path={`/configuration`} element={<ConfigurationSubPage tournament={tournament} />}/>
+          {tournament.myRole === TournamentRole.Organizer && (
+            <Route path={`/configuration`} element={<ConfigurationSubPage tournament={tournament} />}/>
+          )}
           {/* <Route path={`${baseURL}/arenas/*`}>
             <Debug tournament={tournament} arenaId={arenaMatch?.params?.arenaID} />
           </Route> */}

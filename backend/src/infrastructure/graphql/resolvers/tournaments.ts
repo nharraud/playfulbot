@@ -10,8 +10,10 @@ import {
 } from '~playfulbot/infrastructure/graphql/types/graphqlTypes';
 import * as gqlTypes from '~playfulbot/infrastructure/graphql/types/graphql';
 import { createTournament } from '~playfulbot/core/use-cases/tournament/createTournament';
+import { updateTournamentConfiguration } from '~playfulbot/core/use-cases/tournament/updateTournamentConfiguration';
 import { validateTournamentName } from '~playfulbot/core/entities/Tournaments';
 import { getTournamentTeams } from '~playfulbot/core/use-cases/tournament/getTournamentTeams';
+import { toGraphQLError } from './errors';
 
 export const createTournamentResolver: gqlTypes.MutationResolvers<GraphqlContext>['createTournament'] =
   async (parent, args, apolloContext) => {
@@ -33,6 +35,40 @@ export const createTournamentResolver: gqlTypes.MutationResolvers<GraphqlContext
       startDate: args.startDate,
       endDate: args.endDate,
     });
+  };
+
+export const updateTournamentConfigurationResolver: gqlTypes.MutationResolvers<GraphqlContext>['updateTournamentConfiguration'] =
+  async (parent, args, apolloContext) => {
+    if (!isUserContext(apolloContext)) {
+      throw new ForbiddenError(`Only authenticated users are allowed to update tournaments.`);
+    }
+
+    const tournamentNameError = validateTournamentName(args.input.name);
+    if (tournamentNameError) {
+      return {
+        __typename: 'UpdateTournamentConfigurationFailure',
+        errors: [{ __typename: 'ValidationError', message: JSON.stringify({ 'input.name': [tournamentNameError] }) }]
+      } as gqlTypes.UpdateTournamentConfigurationFailure;
+    }
+
+    const result = await updateTournamentConfiguration(apolloContext.ctx, {
+      tournamentId: args.tournamentID,
+      name: args.input.name,
+      startDate: args.input.startDate,
+      endDate: args.input.endDate,
+    });
+
+    if (result instanceof Error) {
+      return {
+        __typename: 'UpdateTournamentConfigurationFailure',
+        errors: [toGraphQLError(result)],
+      } as gqlTypes.UpdateTournamentConfigurationFailure;
+    }
+
+    return {
+      __typename: 'UpdateTournamentConfigurationSuccess',
+      tournament: result,
+    } as gqlTypes.UpdateTournamentConfigurationSuccess;
   };
 
 export const tournamentResolver: gqlTypes.QueryResolvers<GraphqlContext>['tournament'] = async (

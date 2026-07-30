@@ -1,4 +1,7 @@
+import { useMutation } from '@apollo/client/react';
 import { TournamentID } from '../../../types/graphql';
+
+import { graphql } from '../../../types/backend/graphql';
 
 export interface UpdateTournamentConfigurationInput {
   tournamentID: TournamentID;
@@ -14,11 +17,53 @@ export interface UpdateTournamentConfigurationResult {
   endDate: string;
 }
 
-// Mocked until the backend exposes a mutation to update the tournament configuration.
+const updateTournamentConfigurationMutation = graphql(`
+  mutation updateTournamentConfiguration($tournamentID: ID!, $input: TournamentConfigurationInput!) {
+    updateTournamentConfiguration(tournamentID: $tournamentID, input: $input) {
+      ... on UpdateTournamentConfigurationSuccess {
+        tournament {
+          id
+          name
+          startDate
+          endDate
+        }
+      }
+      ... on UpdateTournamentConfigurationFailure {
+        errors {
+          ... on Error {
+            message
+          }
+        }
+      }
+    }
+  }
+`);
+
 export function useUpdateTournamentConfiguration() {
-  return (input: UpdateTournamentConfigurationInput) =>
-    new Promise<UpdateTournamentConfigurationResult>((resolve) => {
-      const { tournamentID, ...rest } = input;
-      setTimeout(() => resolve({ id: tournamentID, ...rest }), 300);
+  const [updateTournamentConfiguration] = useMutation(
+    updateTournamentConfigurationMutation
+  );
+
+  return ({ tournamentID, name, startDate, endDate }: UpdateTournamentConfigurationInput) =>
+    new Promise<UpdateTournamentConfigurationResult>((resolve, reject) => {
+      updateTournamentConfiguration({
+        variables: { tournamentID, input: { name, startDate, endDate } },
+        onCompleted: (data) => {
+          const result = data.updateTournamentConfiguration;
+          if (result?.__typename === 'UpdateTournamentConfigurationSuccess' && result.tournament) {
+            resolve({
+              id: result.tournament.id,
+              name: result.tournament.name,
+              startDate: result.tournament.startDate as string,
+              endDate: result.tournament.endDate as string,
+            });
+          } else if (result?.__typename === 'UpdateTournamentConfigurationFailure') {
+            reject(new Error(result.errors[0]?.message || 'Failed to update tournament configuration'));
+          } else {
+            reject(new Error('Failed to update tournament configuration'));
+          }
+        },
+        onError: (error) => reject(error),
+      });
     });
 }
