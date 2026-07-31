@@ -53,6 +53,7 @@ export interface TournamentProvider<Context> {
       name: string,
       startDate: Date | string,
       endDate: Date | string,
+      gameDefinitionId: GameDefinitionID,
     }
   ): Promise<Tournament>;
 

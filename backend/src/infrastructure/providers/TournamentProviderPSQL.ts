@@ -81,12 +81,13 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
   async updateTournament(
     ctx: ContextPSQL,
     {
-      id, name, startDate, endDate
+      id, name, startDate, endDate, gameDefinitionId
     }: {
       id: TournamentID,
       name: string,
       startDate: Date | string,
       endDate: Date | string,
+      gameDefinitionId: GameDefinitionID,
     }) {
       if (typeof startDate !== 'string') {
         startDate = startDate.toISOString();
@@ -94,7 +95,8 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
       if (typeof endDate !== 'string') {
         endDate = endDate.toISOString();
       }
-      const query = `UPDATE tournaments SET name = $[name], start_date = $[startDate], end_date = $[endDate]
+      const query = `UPDATE tournaments SET name = $[name], start_date = $[startDate], end_date = $[endDate],
+      game_definition_id = $[gameDefinitionId]
       WHERE id = $[id]
       RETURNING *`;
       const data = await ctx.dbOrTx.one<DbTournament>(query, {
@@ -102,6 +104,7 @@ export class TournamentProviderPSQL implements TournamentProvider<ContextPSQL> {
         name,
         startDate: startDate,
         endDate: endDate,
+        gameDefinitionId,
       });
       return buildTournament(data);
   }

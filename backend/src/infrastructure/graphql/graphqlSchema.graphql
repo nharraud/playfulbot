@@ -43,6 +43,7 @@ type Tournament {
   status: TournamentStatus
   startDate: Date
   endDate: Date
+  gameDefinitionId: ID
   teams: [Team]
 
   # rounds(maxSize: Int = 5, before: Date, after: Date): [Round]
@@ -175,6 +176,7 @@ input TournamentConfigurationInput {
   name: String!
   startDate: Date!
   endDate: Date!
+  gameDefinitionId: ID!
 }
 
 type UpdateTournamentConfigurationSuccess {
@@ -350,6 +352,11 @@ type Arena {
   players: [Player]
 }
 
+type GameDefinition {
+  id: ID!
+  name: String!
+}
+
 
 # #
 # # Player Games
@@ -403,6 +410,7 @@ type Query {
   # round(roundID: ID): Round
   team(userID: ID!, tournamentID: ID!): UserTeamResult
   authenticatedUser: User
+  gameDefinitions: [GameDefinition!]!
 }
 
 type Mutation {

@@ -5,6 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { TournamentQuery } from 'src/types/graphql';
 import { useUpdateTournamentConfiguration } from 'src/hooksAndQueries/backend/graphql/tournamentConfiguration';
+import { useGameDefinitions } from 'src/hooksAndQueries/backend/graphql/gameDefinitions';
 import formCssCls from 'src/ui/components/form/Form.module.css';
 import headerCssCls from '../components/TournamentSubHeader.module.scss';
 import cssCls from './ConfigurationSubPage.module.scss';
@@ -13,6 +14,7 @@ const configurationSchema = z.object({
   name: z.string().min(3).max(36),
   startDate: z.string().min(1),
   endDate: z.string().min(1),
+  gameDefinitionId: z.string().min(1),
 }).refine(data => new Date(data.endDate) > new Date(data.startDate), {
   message: 'End date must be after start date',
   path: ['endDate'],
@@ -33,6 +35,7 @@ function toDatetimeLocalValue(date: unknown): string {
 
 export default function ConfigurationSubPage({ tournament }: ConfigurationSubPageProps) {
   const updateTournamentConfiguration = useUpdateTournamentConfiguration();
+  const { gameDefinitions } = useGameDefinitions();
   const {
     register,
     handleSubmit,
@@ -43,6 +46,7 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
       name: tournament.name,
       startDate: toDatetimeLocalValue(tournament.startDate),
       endDate: toDatetimeLocalValue(tournament.endDate),
+      gameDefinitionId: tournament.gameDefinitionId ?? '',
     },
   });
 
@@ -54,6 +58,7 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
       // so `toISOString()` converts them to the UTC `Z` format the backend expects.
       startDate: new Date(data.startDate).toISOString(),
       endDate: new Date(data.endDate).toISOString(),
+      gameDefinitionId: data.gameDefinitionId,
     });
   };
 
@@ -75,6 +80,16 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
             <label htmlFor="name"><FormattedMessage defaultMessage="Tournament name"/></label>
             <input id="name" {...register('name')} />
             <p className={formCssCls.formError}>{errors.name?.message}</p>
+          </div>
+
+          <div>
+            <label htmlFor="gameDefinitionId"><FormattedMessage defaultMessage="Game"/></label>
+            <select id="gameDefinitionId" {...register('gameDefinitionId')}>
+              {gameDefinitions.map((gameDefinition) => (
+                <option key={gameDefinition.id} value={gameDefinition.id}>{gameDefinition.name}</option>
+              ))}
+            </select>
+            <p className={formCssCls.formError}>{errors.gameDefinitionId?.message}</p>
           </div>
 
           <div className={cssCls.dateFields}>

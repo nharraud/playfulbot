@@ -4,6 +4,7 @@ import { IResolvers } from '@graphql-tools/utils';
 import { loginResolver, logoutResolver } from '~playfulbot/infrastructure/graphql/resolvers/authentication';
 
 import { authenticatedUserResolver } from '~playfulbot/infrastructure/graphql/resolvers/authenticatedUser';
+import { gameDefinitionsResolver } from '~playfulbot/infrastructure/graphql/resolvers/gameDefinitions';
 import {
   createTeamResolver,
   joinTeamResolver,
@@ -57,6 +58,7 @@ const resolvers: gqlTypes.Resolvers<GraphqlContext> = {
     authenticatedUser: authenticatedUserResolver,
     tournament: tournamentResolver,
     arena: arenaResolver,
+    gameDefinitions: gameDefinitionsResolver,
     // round: roundResolver,
     // tournamentByInvitationLink: tournamentByInvitationLinkResolver,
   } as gqlTypes.QueryResolvers,

@@ -56,6 +56,7 @@ export const updateTournamentConfigurationResolver: gqlTypes.MutationResolvers<G
       name: args.input.name,
       startDate: args.input.startDate,
       endDate: args.input.endDate,
+      gameDefinitionId: args.input.gameDefinitionId,
     });
 
     if (result instanceof Error) {

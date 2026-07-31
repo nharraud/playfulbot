@@ -132,6 +132,12 @@ export type ForbiddenError = Error & {
   message: Scalars['String']['output'];
 };
 
+export type GameDefinition = {
+  __typename?: 'GameDefinition';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type GameRef = {
   __typename?: 'GameRef';
   gameID: Scalars['String']['output'];
@@ -263,6 +269,7 @@ export type Query = {
   __typename?: 'Query';
   arena?: Maybe<ArenaResult>;
   authenticatedUser?: Maybe<User>;
+  gameDefinitions: Array<GameDefinition>;
   team?: Maybe<UserTeamResult>;
   tournament?: Maybe<Tournament>;
 };
@@ -322,6 +329,7 @@ export type TeamOrDeletedTeam = DeletedTeam | Team;
 export type Tournament = {
   __typename?: 'Tournament';
   endDate?: Maybe<Scalars['Date']['output']>;
+  gameDefinitionId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   myRole?: Maybe<TournamentRole>;
   name: Scalars['String']['output'];
@@ -332,6 +340,7 @@ export type Tournament = {
 
 export type TournamentConfigurationInput = {
   endDate: Scalars['Date']['input'];
+  gameDefinitionId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
   startDate: Scalars['Date']['input'];
 };
@@ -541,6 +550,7 @@ export type ResolversTypes = {
   DeletedTeam: ResolverTypeWrapper<DeletedTeam>;
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   ForbiddenError: ResolverTypeWrapper<ForbiddenError>;
+  GameDefinition: ResolverTypeWrapper<GameDefinition>;
   GameRef: ResolverTypeWrapper<GameRef>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   InvalidCredentialsError: ResolverTypeWrapper<InvalidCredentialsError>;
@@ -618,6 +628,7 @@ export type ResolversParentTypes = {
   DeletedTeam: DeletedTeam;
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   ForbiddenError: ForbiddenError;
+  GameDefinition: GameDefinition;
   GameRef: GameRef;
   ID: Scalars['ID']['output'];
   InvalidCredentialsError: InvalidCredentialsError;
@@ -802,6 +813,12 @@ export type ForbiddenErrorResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type GameDefinitionResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameDefinition'] = ResolversParentTypes['GameDefinition']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type GameRefResolvers<ContextType = any, ParentType extends ResolversParentTypes['GameRef'] = ResolversParentTypes['GameRef']> = {
   gameID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   graphqlUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -884,6 +901,7 @@ export type PlayerResolvers<ContextType = any, ParentType extends ResolversParen
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   arena?: Resolver<Maybe<ResolversTypes['ArenaResult']>, ParentType, ContextType, RequireFields<QueryArenaArgs, 'arenaID'>>;
   authenticatedUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  gameDefinitions?: Resolver<Array<ResolversTypes['GameDefinition']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['UserTeamResult']>, ParentType, ContextType, RequireFields<QueryTeamArgs, 'tournamentID' | 'userID'>>;
   tournament?: Resolver<Maybe<ResolversTypes['Tournament']>, ParentType, ContextType, RequireFields<QueryTournamentArgs, 'tournamentID'>>;
 };
@@ -918,6 +936,7 @@ export type TeamOrDeletedTeamResolvers<ContextType = any, ParentType extends Res
 
 export type TournamentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tournament'] = ResolversParentTypes['Tournament']> = {
   endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  gameDefinitionId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   myRole?: Resolver<Maybe<ResolversTypes['TournamentRole']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1033,6 +1052,7 @@ export type Resolvers<ContextType = any> = {
   DeletedTeam?: DeletedTeamResolvers<ContextType>;
   Error?: ErrorResolvers<ContextType>;
   ForbiddenError?: ForbiddenErrorResolvers<ContextType>;
+  GameDefinition?: GameDefinitionResolvers<ContextType>;
   GameRef?: GameRefResolvers<ContextType>;
   InvalidCredentialsError?: InvalidCredentialsErrorResolvers<ContextType>;
   JSON?: GraphQLScalarType;

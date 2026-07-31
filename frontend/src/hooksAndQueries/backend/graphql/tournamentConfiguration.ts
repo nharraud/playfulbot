@@ -8,6 +8,7 @@ export interface UpdateTournamentConfigurationInput {
   name: string;
   startDate: string;
   endDate: string;
+  gameDefinitionId: string;
 }
 
 export interface UpdateTournamentConfigurationResult {
@@ -15,6 +16,7 @@ export interface UpdateTournamentConfigurationResult {
   name: string;
   startDate: string;
   endDate: string;
+  gameDefinitionId: string;
 }
 
 const updateTournamentConfigurationMutation = graphql(`
@@ -26,6 +28,7 @@ const updateTournamentConfigurationMutation = graphql(`
           name
           startDate
           endDate
+          gameDefinitionId
         }
       }
       ... on UpdateTournamentConfigurationFailure {
@@ -44,10 +47,10 @@ export function useUpdateTournamentConfiguration() {
     updateTournamentConfigurationMutation
   );
 
-  return ({ tournamentID, name, startDate, endDate }: UpdateTournamentConfigurationInput) =>
+  return ({ tournamentID, name, startDate, endDate, gameDefinitionId }: UpdateTournamentConfigurationInput) =>
     new Promise<UpdateTournamentConfigurationResult>((resolve, reject) => {
       updateTournamentConfiguration({
-        variables: { tournamentID, input: { name, startDate, endDate } },
+        variables: { tournamentID, input: { name, startDate, endDate, gameDefinitionId } },
         onCompleted: (data) => {
           const result = data.updateTournamentConfiguration;
           if (result?.__typename === 'UpdateTournamentConfigurationSuccess' && result.tournament) {
@@ -56,6 +59,7 @@ export function useUpdateTournamentConfiguration() {
               name: result.tournament.name,
               startDate: result.tournament.startDate as string,
               endDate: result.tournament.endDate as string,
+              gameDefinitionId: result.tournament.gameDefinitionId as string,
             });
           } else if (result?.__typename === 'UpdateTournamentConfigurationFailure') {
             reject(new Error(result.errors[0]?.message || 'Failed to update tournament configuration'));
