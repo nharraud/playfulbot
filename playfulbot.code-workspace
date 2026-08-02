@@ -28,6 +28,9 @@
       "path": "./packages/playfulbot-wallrace"
     },
     {
+      "path": "./packages/playfulbot-tictactoe"
+    },
+    {
       "path": "./packages/playfulbot-config-loader"
     },
     {

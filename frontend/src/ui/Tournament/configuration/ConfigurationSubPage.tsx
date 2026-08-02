@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -35,10 +35,15 @@ function toDatetimeLocalValue(date: unknown): string {
 
 export default function ConfigurationSubPage({ tournament }: ConfigurationSubPageProps) {
   const updateTournamentConfiguration = useUpdateTournamentConfiguration();
-  const { gameDefinitions } = useGameDefinitions();
+  const { gameDefinitions, loading: gameDefinitionsLoading } = useGameDefinitions();
+  const gameDefinitionId = tournament.gameDefinitionId ?? '';
+  const gameDefinitionNotFound = !gameDefinitionsLoading
+    && gameDefinitionId !== ''
+    && !gameDefinitions.some((gameDefinition) => gameDefinition.id === gameDefinitionId);
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitSuccessful },
   } = useForm<FormData>({
     resolver: zodResolver(configurationSchema),
@@ -46,9 +51,17 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
       name: tournament.name,
       startDate: toDatetimeLocalValue(tournament.startDate),
       endDate: toDatetimeLocalValue(tournament.endDate),
-      gameDefinitionId: tournament.gameDefinitionId ?? '',
+      gameDefinitionId,
     },
   });
+
+  // The select's options load asynchronously; once they're in, re-apply the
+  // value so the browser can actually match it to an <option> and select it.
+  useEffect(() => {
+    if (!gameDefinitionsLoading) {
+      setValue('gameDefinitionId', gameDefinitionId);
+    }
+  }, [gameDefinitionsLoading, gameDefinitionId, setValue]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     await updateTournamentConfiguration({
@@ -85,10 +98,16 @@ export default function ConfigurationSubPage({ tournament }: ConfigurationSubPag
           <div>
             <label htmlFor="gameDefinitionId"><FormattedMessage defaultMessage="Game"/></label>
             <select id="gameDefinitionId" {...register('gameDefinitionId')}>
+              {!gameDefinitionId && <option value="" />}
               {gameDefinitions.map((gameDefinition) => (
                 <option key={gameDefinition.id} value={gameDefinition.id}>{gameDefinition.name}</option>
               ))}
             </select>
+            {gameDefinitionNotFound && (
+              <p className={formCssCls.formError}>
+                <FormattedMessage defaultMessage="The previously selected game is no longer available."/>
+              </p>
+            )}
             <p className={formCssCls.formError}>{errors.gameDefinitionId?.message}</p>
           </div>
 

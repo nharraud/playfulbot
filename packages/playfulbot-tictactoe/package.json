@@ -1,0 +1,39 @@
+{
+  "name": "playfulbot-tictactoe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "watch-build": "rollup -c -w"
+  },
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.2",
+    "@types/react": "^19.2.0",
+    "@types/three": "^0.182.0",
+    "playfulbot-game": "file:../playfulbot-game",
+    "playfulbot-game-backend": "file:../playfulbot-game-backend",
+    "playfulbot-game-frontend": "file:../playfulbot-game-frontend",
+    "rollup": "^4.52.4",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "dependencies": {
+    "@react-spring/three": "^10.0.3",
+    "@react-spring/web": "^10.0.3",
+    "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "three": "^0.182.0"
+  }
+}

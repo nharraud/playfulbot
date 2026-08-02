@@ -55,6 +55,7 @@
     "playfulbot-config-loader": "file:../packages/playfulbot-config-loader",
     "playfulbot-game": "file:../packages/playfulbot-game",
     "playfulbot-game-backend": "file:../packages/playfulbot-game-backend",
+    "playfulbot-tictactoe": "file:../packages/playfulbot-tictactoe",
     "playfulbot-wallrace": "file:../packages/playfulbot-wallrace",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^3.9.0",
