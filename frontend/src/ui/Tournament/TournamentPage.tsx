@@ -60,7 +60,7 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
           <Link to={`${baseURL}/team`} className={`${cssCls.teamButton} ${activeClass('team')}`}>
             <i/><FormattedMessage defaultMessage="Teams"/>
           </Link>
-          {tournament.status === TournamentStatus.Started && team && (
+          {team && (
             <Link to={`${baseURL}/arenas`} className={`${cssCls.teamArenas} ${activeClass('arenas')}`}>
               <i/><FormattedMessage defaultMessage="Arenas"/>
             </Link>

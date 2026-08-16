@@ -50,26 +50,26 @@ export default function TeamSubPage(props: TeamSubPageProps) {
   }
 
   let inviteComp;
-  if (isOrganizer) {
-    inviteComp = (
-      <>
-        <Button
-          variant="contained"
-          className={classes.inviteButton}
-          color="secondary"
-          startIcon={<PersonAddIcon />}
-          onClick={openInviteModal}
-        >
-          Invite Players
-        </Button>
-        <TeamInviteDialog
-          open={inviteModalOpen}
-          handleClose={closeInviteModal}
-          invitationLinkID={props.tournament.invitationLinkID}
-        />
-      </>
-    );
-  }
+  // if (isOrganizer) {
+  //   inviteComp = (
+  //     <>
+  //       <Button
+  //         variant="contained"
+  //         className={classes.inviteButton}
+  //         color="secondary"
+  //         startIcon={<PersonAddIcon />}
+  //         onClick={openInviteModal}
+  //       >
+  //         Invite Players
+  //       </Button>
+  //       <TeamInviteDialog
+  //         open={inviteModalOpen}
+  //         handleClose={closeInviteModal}
+  //         invitationLinkID={props.tournament.invitationLinkID}
+  //       />
+  //     </>
+  //   );
+  // }
 
   let sections: [string, JSX.Element][] = [];
   if (!loading) {

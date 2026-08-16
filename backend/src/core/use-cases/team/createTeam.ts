@@ -5,6 +5,7 @@ import { Context } from "~playfulbot/core/use-cases/interfaces/Context";
 import { ForbiddenError, ValidationError } from "../Errors";
 import { TeamNameAlreadyTakenError } from "../interfaces/TeamProvider";
 import { addTeamMember } from "./addTeamMember";
+import { TournamentRole } from "~playfulbot/core/entities/TournamentRole";
 
 export async function createTeam(
   ctx: Context<any>, { teamName, userId, tournamentId, join = true }: { teamName: string, userId: UserID, tournamentId: TournamentID, join?: boolean }
@@ -17,9 +18,10 @@ export async function createTeam(
   const isInvited = await ctx.providers.tournamentInvitation.isInvited(ctx, { tournamentId, inviteeId: userId });
   const hasTeam = await ctx.providers.team.getTeamByMember(ctx, userId, tournamentId);
   // FIXME: add support for createTeam permission
-  // const isOrganizer = await  ctx.providers.tournament.isOrganizer(args.tournamentID, ctx.userID, tx);
+  const userRole = await  ctx.providers.tournament.getUserRole(ctx, { tournamentId, userId: ctx.requestingUserId });
+  const isOrganizer = userRole === TournamentRole.Organizer;
   if (!isInvited && !hasTeam
-    //  && !isOrganizer
+     && !isOrganizer
     ) {
       return new ForbiddenError('Only tournament invitees, team members and tournament organizers can create new teams.');
   }
