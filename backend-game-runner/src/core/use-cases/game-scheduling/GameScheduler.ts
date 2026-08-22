@@ -63,6 +63,8 @@ export class GameScheduler {
         const game = new Game(gameConfig.id, gameConfig.gameDefinition, gameConfig.players);
         this.gameRepository.add(game);
         game.watch(new PubSubGameWatcher());
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
   }
