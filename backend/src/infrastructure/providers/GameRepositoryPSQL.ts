@@ -5,6 +5,7 @@ import { DB } from 'playfulbot-backend-commons/lib/model/db/index';
 import { GameID } from 'playfulbot-game';
 import { PlayerAssignment } from '~playfulbot/core/entities/PlayerAssignment';
 import { ArenaID, GameRunnerId } from '~playfulbot/core/entities/base-types';
+import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 import { GameRef, GameRefWithDate } from '~playfulbot/core/entities/GameRef';
 import { GameRepository } from '~playfulbot/core/use-cases/interfaces/GameRepository';
 import { AsyncStream } from 'mem-pubsub/lib/AsyncStream';
@@ -172,6 +173,11 @@ export class GameRepositoryPSQL implements GameRepository {
     const cancelGameRequest = `SELECT * from cancel_game($[gameId]);`;
     const result = await this.#db.one<{ cancel_game: boolean }>(cancelGameRequest, { gameId });
     return result.cancel_game;
+  }
+
+  async cancelGamesForTournament(tournamentId: TournamentID): Promise<void> {
+    const cancelTournamentGamesRequest = `SELECT cancel_tournament_games($[tournamentId]);`;
+    await this.#db.one(cancelTournamentGamesRequest, { tournamentId });
   }
 
   /**

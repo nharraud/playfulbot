@@ -173,6 +173,24 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE FUNCTION cancel_tournament_games(p_tournament_id uuid) RETURNS void AS $$
+DECLARE
+    matching_game_id uuid;
+BEGIN
+    FOR matching_game_id IN
+      SELECT g.id
+      FROM games g
+      JOIN arenas a ON g.arena_id = a.id
+      JOIN teams t ON a.team_id = t.id
+      WHERE t.tournament_id = p_tournament_id
+        AND g.status != 'ended'
+    LOOP
+      PERFORM cancel_game(matching_game_id);
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE FUNCTION cancel_game_on_delete() RETURNS trigger AS $$
 DECLARE
     serialized_game TEXT;

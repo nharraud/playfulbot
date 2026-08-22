@@ -18,11 +18,19 @@ export async function updateTournamentConfiguration(
     return new ForbiddenError('Only the tournament organizer can update its configuration.');
   }
 
-  return ctx.providers.tournament.updateTournament(ctx, {
+  const previousTournament = await ctx.providers.tournament.getTournamentByID(ctx, params.tournamentId);
+
+  const tournament = await ctx.providers.tournament.updateTournament(ctx, {
     id: params.tournamentId,
     name: params.name,
     startDate: params.startDate,
     endDate: params.endDate,
     gameDefinitionId: params.gameDefinitionId,
   });
+
+  if (previousTournament?.gameDefinitionId !== params.gameDefinitionId) {
+    await ctx.providers.gameRepository.cancelGamesForTournament(params.tournamentId);
+  }
+
+  return tournament;
 }

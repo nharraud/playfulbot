@@ -5,10 +5,12 @@ import { GameRef, GameRefWithDate } from '~playfulbot/core/entities/GameRef';
 import { Game } from '~playfulbot/core/entities/Game';
 import { RunnerInfo } from './RunnerInfo';
 import { PlayerID } from '~playfulbot/core/entities/Players';
+import { TournamentID } from '~playfulbot/core/entities/Tournaments';
 
 export interface GameRepository {
   addGame({ gameDefId, players }: { gameDefId: string, players: PlayerAssignment[], arenaId?: ArenaID, waitUntilStarted?: Boolean }): Promise<GameRef>;
   cancelGame(gameId: GameID): Promise<boolean>;
+  cancelGamesForTournament(tournamentId: TournamentID): Promise<void>;
   getFullGame(gameId: GameID): Promise<Game>;
   getArenaLatestGame(arenaId: ArenaID): Promise<GameRefWithDate | undefined>;
   close(): Promise<void>;
