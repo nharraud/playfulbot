@@ -80,7 +80,7 @@ export default function TournamentPage({ tournament, team }: TournamentPageProps
       <main className={cssCls.subPage} style={{ overflow: 'hidden' }}>
         <Routes>
           <Route path={`/info`} element={<TournamentInfoSubPage tournament={tournament} />}/>
-          <Route path={`/rules`} element={<GameRulesSubPage />}/>
+          <Route path={`/rules`} element={<GameRulesSubPage gameDefinitionId={tournament.gameDefinitionId} />}/>
           <Route path={`/coding`} element={<CodingBotSubPage />}/>
           <Route path={`/team`} element={<TeamSubPage tournament={tournament} />}/>
           <Route path={`/arenas`} element={<TeamArenasSubPage tournament={tournament} />}/>

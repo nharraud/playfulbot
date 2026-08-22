@@ -15,11 +15,12 @@
 // ${exports}
 // };
 // `
-import { loadConfig } from 'playfulbot-config-loader';
+import { loadConfig, toImportIdentifier } from 'playfulbot-config-loader';
 import { GameDefinitionID } from './GameDefinition';
 
 export default async function virtualModule () {
   const config = await loadConfig();
+  console.info(`GENERATING frontend config`);
   return {
     name: 'rollup-plugin-playfulbot-config-loader', // this name will show up in warnings and errors
     resolveId ( source: GameDefinitionID ) {
@@ -30,12 +31,16 @@ export default async function virtualModule () {
     },
     load ( id: GameDefinitionID ) {
       if (id === 'playfulbot-config') {
-        // return result;
-
+        const imports = config.games
+          .map(packageId => `import * as ${toImportIdentifier(packageId)} from '${packageId}/frontend';`)
+          .join('\n');
+        const entries = config.games
+          .map(packageId => `'${packageId}': ${toImportIdentifier(packageId)}.gameDefinition,`)
+          .join('\n');
         return `
-        import * as wallrace from '${config.games[0]}';
+        ${imports}
 
-        export const gameDefinition = wallrace.gameDefinition.frontend;
+        export const gameDefinitions = {${entries}};
         `;
       }
       return null; // other ids should be handled as usually

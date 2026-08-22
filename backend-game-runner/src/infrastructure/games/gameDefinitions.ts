@@ -8,11 +8,10 @@ export async function getGameDefinitions(): Promise<Map<string, BackendGameDefin
   if (!loaded) {
     const config = await loadConfig();
     for (const gameModule of config.games) {
-      const { gameDefinition } = (await import(gameModule)) as {
-        gameDefinition: { backend: BackendGameDefinition };
+      const { gameDefinition: backendGameDefinition } = (await import(`${gameModule}/backend`)) as {
+        gameDefinition: BackendGameDefinition;
       };
-      const backendGameDefinition = gameDefinition.backend;
-      gameDefinitions.set(backendGameDefinition.name, backendGameDefinition);
+      gameDefinitions.set(gameModule, backendGameDefinition);
       loaded = true;
     }
   }

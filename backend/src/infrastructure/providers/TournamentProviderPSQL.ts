@@ -1,9 +1,7 @@
 import { DateTime } from 'luxon';
-import { BackendGameDefinition } from 'playfulbot-game-backend';
 import { ConflictError } from '~playfulbot/errors';
 
 // import { DbOrTx, DEFAULT, QueryBuilder } from './db/helpers';
-import { getGameDefinitions } from '~playfulbot/games';
 import { TournamentInvitationLink, TournamentInvitationLinkID } from '../../model/TournamentInvitationLink';
 import { Round, RoundsSearchOptions } from '../../model/Round';
 import { scheduler, Scheduler } from '~playfulbot/scheduling/Scheduler';

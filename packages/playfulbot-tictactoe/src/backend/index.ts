@@ -3,7 +3,7 @@ import init from './init';
 import { actionHandler } from './actions';
 
 export const gameDefinition: BackendGameDefinition = {
-  name: 'tictactoe',
+  name: 'TicTacToe',
   actionHandler,
   init,
 };

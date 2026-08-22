@@ -37,7 +37,7 @@ export default function ArenaPage({ tournament }: TournamentArenasProps) {
       {createGameButton}
       <div className={cssCls.arenaContainer}>
         <RunnerClientProvider runnerUrl={gameRef?.graphqlUrl}>
-          <GameArenaDisplay gameID={gameRef?.gameID} arena={arena} createGame={createGame}/>
+          <GameArenaDisplay gameID={gameRef?.gameID} arena={arena} createGame={createGame} gameDefinitionId={tournament?.gameDefinitionId}/>
         </RunnerClientProvider>
       </div>
     </div>

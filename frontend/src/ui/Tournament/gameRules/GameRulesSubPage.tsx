@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import { gameDefinition } from 'playfulbot-config';
+import { gameDefinitions } from 'playfulbot-config';
 import { StringChildrenProps } from 'playfulbot-game-frontend';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -46,10 +46,13 @@ function CodeBlock({ children }: StringChildrenProps) {
   return <SyntaxHighlighter style={a11yDark}>{dedent(children)}</SyntaxHighlighter>;
 }
 
-interface GameRulesSubPageProps {}
+interface GameRulesSubPageProps {
+  gameDefinitionId?: string | null;
+}
 
-export default function GameRulesSubPage(props: GameRulesSubPageProps) {
+export default function GameRulesSubPage({ gameDefinitionId }: GameRulesSubPageProps) {
   const classes = useStyles();
+  const gameDefinition = gameDefinitionId ? gameDefinitions[gameDefinitionId] : undefined;
   return (
     <div className={classes.root}>
       <div className={classes.container}>
@@ -57,11 +60,13 @@ export default function GameRulesSubPage(props: GameRulesSubPageProps) {
           Game Rules
         </Typography>
 
-        <gameDefinition.rules
-          SectionTitle={SectionTitle}
-          SectionParagraph={SectionParagraph}
-          CodeBlock={CodeBlock}
-        />
+        {gameDefinition && (
+          <gameDefinition.rules
+            SectionTitle={SectionTitle}
+            SectionParagraph={SectionParagraph}
+            CodeBlock={CodeBlock}
+          />
+        )}
       </div>
     </div>
   );

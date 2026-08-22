@@ -4,26 +4,22 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import postcss from "rollup-plugin-postcss";
 
-// const packageJson = require("./package.json");
-
-import { readFile } from 'fs/promises';
-const packageJson = JSON.parse(
-  await readFile(
-    new URL('./package.json', import.meta.url)
-  )
-);
-
 export default {
-  input: "src/index.ts",
+  input: {
+    "backend/index": "src/backend/index.ts",
+    "frontend/index": "src/frontend/index.ts"
+  },
   external: ['react','react-dom'],
   output: [
     {
-      file: packageJson.main,
+      dir: "lib",
+      entryFileNames: "[name].js",
       format: "cjs",
       sourcemap: true
     },
     {
-      file: packageJson.module,
+      dir: "lib",
+      entryFileNames: "[name].esm.js",
       format: "esm",
       sourcemap: true
     }

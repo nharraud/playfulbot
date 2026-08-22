@@ -79,7 +79,7 @@ export async function initDemo(ctx: Context<any>, params: { gameDefinitionId: Ga
     Settings.now = () => tournamentStart.toMillis();
     const tournament = await txCtx.providers.tournament.createTournament(txCtx, {
       name: 'Team Building Tournament',
-      gameDefinitionId: gameDefinition.name,
+      gameDefinitionId: params.gameDefinitionId,
       startDate: tournamentStart.toISO(),
       endDate: tournamentEnd.toISO(),
       id: 'F00FABE0-0000-4000-a000-000000000001',

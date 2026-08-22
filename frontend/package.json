@@ -98,6 +98,7 @@
     "eslint-plugin-react-hooks": "^6.1.1",
     "lightningcss": "^1.32.0",
     "playfulbot-wallrace": "file:../packages/playfulbot-wallrace",
+    "playfulbot-tictactoe": "file:../packages/playfulbot-tictactoe",
     "prettier": "^3.6.2",
     "sass-embedded": "^1.100.0",
     "typescript": "^5.9.3",

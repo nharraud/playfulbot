@@ -10,12 +10,11 @@ export class GamedDefinitionProviderEnv implements GameDefinitionProvider {
     if (!this.#loaded) {
       const config = await loadConfig();
       for (const gameModule of config.games) {
-        const { gameDefinition } = (await import(gameModule)) as {
-          gameDefinition: { backend: BackendGameDefinition };
+        const { gameDefinition: backendGameDefinition } = (await import(`${gameModule}/backend`)) as {
+          gameDefinition: BackendGameDefinition;
         };
-        console.info(`loading game def "${gameModule}": ${JSON.stringify(gameDefinition)}`)
-        const backendGameDefinition = gameDefinition.backend;
-        this.#gameDefinitions.set(backendGameDefinition.name, backendGameDefinition);
+        console.info(`loading game def "${gameModule}": ${JSON.stringify(backendGameDefinition)}`)
+        this.#gameDefinitions.set(gameModule, backendGameDefinition);
         this.#loaded = true;
       }
     }

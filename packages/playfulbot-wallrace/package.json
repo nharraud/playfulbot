@@ -2,9 +2,19 @@
   "name": "playfulbot-wallrace",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/index.js",
-  "module": "lib/index.esm.js",
-  "types": "lib/index.d.ts",
+  "type": "module",
+  "exports": {
+    "./backend": {
+      "types": "./lib/backend/index.d.ts",
+      "import": "./lib/backend/index.esm.js",
+      "require": "./lib/backend/index.js"
+    },
+    "./frontend": {
+      "types": "./lib/frontend/index.d.ts",
+      "import": "./lib/frontend/index.esm.js",
+      "require": "./lib/frontend/index.js"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
