@@ -9,7 +9,7 @@ import { onError } from '@apollo/client/link/error';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 
-import { apolloCache } from './apolloCache';
+import { createApolloCache } from './apolloCache';
 import { triggerUserContextUpdate } from '../../UserContext';
 import { subscriptionReconnectListeners } from '../../hooksAndQueries/useRestartingSubscription';
 import { useEffect, useState } from 'react';
@@ -105,7 +105,7 @@ function createGraphqlClient({ url, withHttp = true }: { url: string, withHttp: 
 
   const client = new ApolloClient({
     link: from([errorLink, authLink, splitLink]),
-    cache: apolloCache,
+    cache: createApolloCache(),
   });
 
   const close = async () => {

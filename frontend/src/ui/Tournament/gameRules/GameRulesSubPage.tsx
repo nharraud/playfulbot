@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import { gameDefinitions } from 'playfulbot-config';
+import { useGameDefinition } from 'src/hooksAndQueries/useGameDefinition';
 import { StringChildrenProps } from 'playfulbot-game-frontend';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -52,7 +52,7 @@ interface GameRulesSubPageProps {
 
 export default function GameRulesSubPage({ gameDefinitionId }: GameRulesSubPageProps) {
   const classes = useStyles();
-  const gameDefinition = gameDefinitionId ? gameDefinitions[gameDefinitionId] : undefined;
+  const gameDefinition = useGameDefinition(gameDefinitionId);
   return (
     <div className={classes.root}>
       <div className={classes.container}>

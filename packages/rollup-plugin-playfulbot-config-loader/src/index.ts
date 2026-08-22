@@ -15,7 +15,7 @@
 // ${exports}
 // };
 // `
-import { loadConfig, toImportIdentifier } from 'playfulbot-config-loader';
+import { loadConfig } from 'playfulbot-config-loader';
 import { GameDefinitionID } from './GameDefinition';
 
 export default async function virtualModule () {
@@ -31,16 +31,11 @@ export default async function virtualModule () {
     },
     load ( id: GameDefinitionID ) {
       if (id === 'playfulbot-config') {
-        const imports = config.games
-          .map(packageId => `import * as ${toImportIdentifier(packageId)} from '${packageId}/frontend';`)
-          .join('\n');
         const entries = config.games
-          .map(packageId => `'${packageId}': ${toImportIdentifier(packageId)}.gameDefinition,`)
+          .map(packageId => `'${packageId}': () => import('${packageId}/frontend').then(m => m.gameDefinition),`)
           .join('\n');
         return `
-        ${imports}
-
-        export const gameDefinitions = {${entries}};
+        export const gameDefinitionLoaders = {${entries}};
         `;
       }
       return null; // other ids should be handled as usually

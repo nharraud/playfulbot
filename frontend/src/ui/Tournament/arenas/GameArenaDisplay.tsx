@@ -1,7 +1,7 @@
 
 import { useGame } from 'src/hooksAndQueries/game-runner/graphql/useGame';
 import { useGameController } from 'src/hooksAndQueries/useGameController';
-import { gameDefinitions } from 'playfulbot-config';
+import { useGameDefinition } from 'src/hooksAndQueries/useGameDefinition';
 import cssCls from './GameArenaDisplay.module.scss';
 import { useCreateArenaGame } from 'src/hooksAndQueries/backend/graphql/useArenaGame';
 import { FormattedMessage } from 'react-intl';
@@ -21,7 +21,7 @@ export function GameArenaDisplay(props: GameArenaDisplayProps) {
 
   const  { controlledGame, setGameVersion } = useGameController(gameResult?.game);
 
-  const gameDefinition = props.gameDefinitionId ? gameDefinitions[props.gameDefinitionId] : undefined;
+  const gameDefinition = useGameDefinition(props.gameDefinitionId);
 
 
   const newGameText = (<FormattedMessage
