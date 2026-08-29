@@ -49,6 +49,32 @@ export function GameArenaDisplay(props: GameArenaDisplayProps) {
         />
       </div>
       <div className={cssCls.arenaMenu}>
+        <ul className={cssCls.playerList}>
+          {controlledGame?.gameState?.players.map((playerState, index) => {
+            const isPlaying = !controlledGame.gameState.end && playerState.playing;
+            return (
+              <li key={index} className={cssCls.playerRow}>
+                <span
+                  className={cssCls.playerColor}
+                  style={{ backgroundColor: gameDefinition?.playerColor(index) }}
+                />
+                <span className={cssCls.playerName}>
+                  <FormattedMessage defaultMessage="Player {playerNb}" values={{ playerNb: index }} />
+                </span>
+                {isPlaying && (
+                  <span className={cssCls.playerTurnBadge}>
+                    <FormattedMessage defaultMessage="Playing" />
+                  </span>
+                )}
+                {playerState.winner && (
+                  <span className={cssCls.playerWinnerBadge}>
+                    <FormattedMessage defaultMessage="Winner" />
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
         <button className={cssCls.newGameButton} onClick={props.createGame}>{newGameText}</button>
         <button className={cssCls.connectionInfoButton} onClick={() => setConnectionInfoModalOpen(true)}>{connectionInfoText}</button>
       </div>

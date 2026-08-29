@@ -1,4 +1,10 @@
 {
+  "1t1oXY": [
+    {
+      "type": 0,
+      "value": "Copy token"
+    }
+  ],
   "47FYwb": [
     {
       "type": 0,
@@ -9,6 +15,18 @@
     {
       "type": 0,
       "value": "Password"
+    }
+  ],
+  "6LLeOR": [
+    {
+      "type": 0,
+      "value": "Tournament name"
+    }
+  ],
+  "7OW8BT": [
+    {
+      "type": 0,
+      "value": "Configuration"
     }
   ],
   "8E2uwH": [
@@ -35,16 +53,64 @@
       "value": "Create Arena"
     }
   ],
+  "Am8glJ": [
+    {
+      "type": 0,
+      "value": "Game"
+    }
+  ],
+  "BoEpk9": [
+    {
+      "type": 0,
+      "value": "Introduction"
+    }
+  ],
   "DNeuzb": [
     {
       "type": 0,
       "value": "Teams"
     }
   ],
+  "H+vBOj": [
+    {
+      "type": 0,
+      "value": "Winner"
+    }
+  ],
+  "Humfno": [
+    {
+      "type": 0,
+      "value": "End date"
+    }
+  ],
+  "IZy6Qj": [
+    {
+      "type": 0,
+      "value": "New game"
+    }
+  ],
+  "JbOjXc": [
+    {
+      "type": 0,
+      "value": "Playing"
+    }
+  ],
+  "JfG49w": [
+    {
+      "type": 0,
+      "value": "Open"
+    }
+  ],
   "Jt74Kw": [
     {
       "type": 0,
       "value": "Organize & Play programming tournaments"
+    }
+  ],
+  "K1m+OJ": [
+    {
+      "type": 0,
+      "value": "Create new Tournament"
     }
   ],
   "OInXkN": [
@@ -65,10 +131,28 @@
       "value": "Create new Arena"
     }
   ],
+  "RJ2Udg": [
+    {
+      "type": 0,
+      "value": "Create Tournament"
+    }
+  ],
   "SQJto2": [
     {
       "type": 0,
       "value": "Sign in"
+    }
+  ],
+  "SsZjMp": [
+    {
+      "type": 0,
+      "value": "Bot Connection Info"
+    }
+  ],
+  "VaCXl1": [
+    {
+      "type": 0,
+      "value": "How to connect a bot to this Arena"
     }
   ],
   "Vfh9eb": [
@@ -81,6 +165,12 @@
     {
       "type": 0,
       "value": "Create"
+    }
+  ],
+  "W1UJVD": [
+    {
+      "type": 0,
+      "value": "Configuration saved"
     }
   ],
   "WDC11f": [
@@ -103,6 +193,12 @@
       "value": "Competition"
     }
   ],
+  "XR+SW+": [
+    {
+      "type": 0,
+      "value": "The previously selected game is no longer available."
+    }
+  ],
   "aHOR77": [
     {
       "type": 0,
@@ -115,10 +211,22 @@
       "value": "Logout test"
     }
   ],
+  "f/5V+H": [
+    {
+      "type": 0,
+      "value": "Coding a Bot"
+    }
+  ],
   "iC/aF6": [
     {
       "type": 0,
       "value": "Test Arenas"
+    }
+  ],
+  "jvo0vs": [
+    {
+      "type": 0,
+      "value": "Save"
     }
   ],
   "mkx2Z7": [
@@ -127,22 +235,62 @@
       "value": "PlayfulBot"
     }
   ],
+  "n5QvJy": [
+    {
+      "type": 0,
+      "value": "Start date"
+    }
+  ],
   "o7nzDs": [
     {
       "type": 0,
       "value": "User name"
     }
   ],
-  "sV2v5L": [
+  "pmypxK": [
     {
       "type": 0,
-      "value": "Instructions"
+      "value": "Manage your tournament's settings"
+    }
+  ],
+  "qzCTft": [
+    {
+      "type": 0,
+      "value": "Game Rules"
+    }
+  ],
+  "r+km64": [
+    {
+      "type": 0,
+      "value": "Player "
+    },
+    {
+      "type": 1,
+      "value": "playerNb"
+    }
+  ],
+  "rTuUcF": [
+    {
+      "type": 0,
+      "value": "Arena"
+    }
+  ],
+  "rbrahO": [
+    {
+      "type": 0,
+      "value": "Close"
     }
   ],
   "yBFAhB": [
     {
       "type": 0,
       "value": "Tournaments"
+    }
+  ],
+  "yongOz": [
+    {
+      "type": 0,
+      "value": "Back to Tournament"
     }
   ]
 }

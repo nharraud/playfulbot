@@ -1,9 +1,18 @@
 {
+  "1t1oXY": {
+    "defaultMessage": "Copy token"
+  },
   "47FYwb": {
     "defaultMessage": "Cancel"
   },
   "5sg7KC": {
     "defaultMessage": "Password"
+  },
+  "6LLeOR": {
+    "defaultMessage": "Tournament name"
+  },
+  "7OW8BT": {
+    "defaultMessage": "Configuration"
   },
   "8E2uwH": {
     "defaultMessage": "Select a tournament to view details and participate"
@@ -18,12 +27,36 @@
   "9z9/zc": {
     "defaultMessage": "Create Arena"
   },
+  "Am8glJ": {
+    "defaultMessage": "Game"
+  },
+  "BoEpk9": {
+    "defaultMessage": "Introduction"
+  },
   "DNeuzb": {
     "defaultMessage": "Teams"
+  },
+  "H+vBOj": {
+    "defaultMessage": "Winner"
+  },
+  "Humfno": {
+    "defaultMessage": "End date"
+  },
+  "IZy6Qj": {
+    "defaultMessage": "New game"
+  },
+  "JbOjXc": {
+    "defaultMessage": "Playing"
+  },
+  "JfG49w": {
+    "defaultMessage": "Open"
   },
   "Jt74Kw": {
     "defaultMessage": "Organize & Play programming tournaments",
     "description": "Home page subtitle"
+  },
+  "K1m+OJ": {
+    "defaultMessage": "Create new Tournament"
   },
   "OInXkN": {
     "defaultMessage": "Arena name"
@@ -34,8 +67,17 @@
   "PrrEYR": {
     "defaultMessage": "Create new Arena"
   },
+  "RJ2Udg": {
+    "defaultMessage": "Create Tournament"
+  },
   "SQJto2": {
     "defaultMessage": "Sign in"
+  },
+  "SsZjMp": {
+    "defaultMessage": "Bot Connection Info"
+  },
+  "VaCXl1": {
+    "defaultMessage": "How to connect a bot to this Arena"
   },
   "Vfh9eb": {
     "defaultMessage": "Test and debug your bot in an arena"
@@ -43,11 +85,17 @@
   "VzzYJk": {
     "defaultMessage": "Create"
   },
+  "W1UJVD": {
+    "defaultMessage": "Configuration saved"
+  },
   "WDC11f": {
     "defaultMessage": "Minimum {min} characters"
   },
   "WKCiPu": {
     "defaultMessage": "Competition"
+  },
+  "XR+SW+": {
+    "defaultMessage": "The previously selected game is no longer available."
   },
   "aHOR77": {
     "defaultMessage": "Arenas"
@@ -55,20 +103,44 @@
   "dc98WB": {
     "defaultMessage": "Logout test"
   },
+  "f/5V+H": {
+    "defaultMessage": "Coding a Bot"
+  },
   "iC/aF6": {
     "defaultMessage": "Test Arenas"
+  },
+  "jvo0vs": {
+    "defaultMessage": "Save"
   },
   "mkx2Z7": {
     "defaultMessage": "PlayfulBot",
     "description": "Home page title"
   },
+  "n5QvJy": {
+    "defaultMessage": "Start date"
+  },
   "o7nzDs": {
     "defaultMessage": "User name"
   },
-  "sV2v5L": {
-    "defaultMessage": "Instructions"
+  "pmypxK": {
+    "defaultMessage": "Manage your tournament's settings"
+  },
+  "qzCTft": {
+    "defaultMessage": "Game Rules"
+  },
+  "r+km64": {
+    "defaultMessage": "Player {playerNb}"
+  },
+  "rTuUcF": {
+    "defaultMessage": "Arena"
+  },
+  "rbrahO": {
+    "defaultMessage": "Close"
   },
   "yBFAhB": {
     "defaultMessage": "Tournaments"
+  },
+  "yongOz": {
+    "defaultMessage": "Back to Tournament"
   }
 }
